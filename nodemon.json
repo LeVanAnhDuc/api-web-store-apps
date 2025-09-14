@@ -9,5 +9,5 @@
     "dist",
     "build"
   ],
-  "exec": "npx ts-node ./src/app.ts"
+  "exec": "npx ts-node -r tsconfig-paths/register ./src/app.ts"
 }
