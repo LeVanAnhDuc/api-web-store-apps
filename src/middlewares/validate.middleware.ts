@@ -7,7 +7,7 @@ import { Model, Document, isValidObjectId, FilterQuery } from 'mongoose';
 import { plainToClass, ClassConstructor, classToPlain } from 'class-transformer';
 import { validate } from 'class-validator';
 // others
-import { BadRequestError } from '../core/error.response';
+import { BadRequestError } from '../responses/error.response';
 
 const TIME_RATE_LIMIT = 2 * 60 * 1000;
 const REQUEST_RATE_LIMIT = 10;

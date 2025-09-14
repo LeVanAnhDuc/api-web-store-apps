@@ -10,15 +10,12 @@ import { UserResponseDTO } from '../dto/user';
 // others
 import CONSTANTS from '../constants';
 import { formatSI, setCookie } from '../utils';
-import { BadRequestError, ForbiddenError, UnauthorizedError } from '../core/error.response';
+import { BadRequestError, ForbiddenError, UnauthorizedError } from '../responses/error.response';
+import { decodeAccessToken } from '../libs/jwt';
 
-const {
-  SUBJECT_EMAIL_SIGNUP,
-  TEMPLATE_EMAIL_SIGNUP,
-  EXPIRE_TOKEN,
-  SUBJECT_EMAIL_RESET_PASS,
-  TEMPLATE_EMAIL_RESET_PASS,
-} = CONSTANTS;
+const { SUBJECT_EMAIL_SIGNUP, TEMPLATE_EMAIL_SIGNUP, SUBJECT_EMAIL_RESET_PASS, TEMPLATE_EMAIL_RESET_PASS } =
+  CONSTANTS.TEMPLATE_EMAIL;
+const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } = CONSTANTS.TOKEN;
 
 class AuthService {
   static login = async ({ email, password }, res) => {
@@ -32,12 +29,16 @@ class AuthService {
 
     await authRepo.updateLastLoginRepo(id as string);
 
-    const { accessToken, refreshToken } = jwt.generatePairToken({ id });
+    const { accessToken, refreshToken } = jwt.generatePairToken({ abc: id });
+
+    const a = await decodeAccessToken<{ abc: string }>(accessToken);
+    console.log(a.abc);
+
     const userInfo = new UserResponseDTO(infoUser);
 
-    setCookie({ res, name: 'accessToken', value: accessToken, maxAge: EXPIRE_TOKEN.NUMBER_ACCESS_TOKEN });
-    setCookie({ res, name: 'refreshToken', value: refreshToken, maxAge: EXPIRE_TOKEN.NUMBER_REFRESH_TOKEN });
-    setCookie({ res, name: 'userInfo', value: userInfo, maxAge: EXPIRE_TOKEN.NUMBER_REFRESH_TOKEN });
+    setCookie({ res, name: 'accessToken', value: accessToken, maxAge: NUMBER_ACCESS_TOKEN });
+    setCookie({ res, name: 'refreshToken', value: refreshToken, maxAge: NUMBER_REFRESH_TOKEN });
+    setCookie({ res, name: 'userInfo', value: userInfo, maxAge: NUMBER_REFRESH_TOKEN });
 
     return { message: 'login successfully' };
   };
@@ -121,18 +122,18 @@ class AuthService {
   };
 
   static refreshAccessToken = async (res: Response, req: Request) => {
-    const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) throw new UnauthorizedError('Refresh token is not found');
+    //   const refreshToken = req.cookies.refreshToken;
+    //   if (!refreshToken) throw new UnauthorizedError('Refresh token is not found');
 
-    const payload = jwt.decodeRefreshToken(refreshToken);
+    //   const payload = jwt.decodeRefreshToken(refreshToken);
 
-    if (!payload || !payload.id) throw new UnauthorizedError('Invalid refresh token');
+    //   if (!payload || !payload.id) throw new UnauthorizedError('Invalid refresh token');
 
-    const accessToken = jwt.generateAccessToken({
-      id: payload.id,
-    });
+    //   const accessToken = jwt.generateAccessToken({
+    //     id: payload.id,
+    //   });
 
-    setCookie({ res, name: 'accessToken', value: accessToken, maxAge: EXPIRE_TOKEN.NUMBER_ACCESS_TOKEN });
+    //   setCookie({ res, name: 'accessToken', value: accessToken, maxAge: NUMBER_ACCESS_TOKEN });
 
     return { message: 'Refresh token successfully' };
   };
@@ -151,7 +152,7 @@ class AuthService {
       otpCode,
       otpExpireAt: new Date(Date.now() + timeExpire * 1000),
       resetToken: resetPasswordToken,
-      resetTokenExpireAt: new Date(Date.now() + EXPIRE_TOKEN.NUMBER_RESET_PASS_TOKEN),
+      resetTokenExpireAt: new Date(Date.now() + NUMBER_RESET_PASS_TOKEN),
     });
 
     await sendEmail({
@@ -164,42 +165,42 @@ class AuthService {
       res,
       name: 'resetPasswordToken',
       value: resetPasswordToken,
-      maxAge: EXPIRE_TOKEN.NUMBER_RESET_PASS_TOKEN + 1000,
+      maxAge: NUMBER_RESET_PASS_TOKEN + 1000,
     });
 
     return { message: 'Send OTP successfully' };
   };
 
   static confirmOpForgotPassword = async ({ otpCode }, req) => {
-    const resetPasswordToken = req.cookies.resetPasswordToken;
-    if (!resetPasswordToken) throw new UnauthorizedError('Reset password token is not found');
+    //   const resetPasswordToken = req.cookies.resetPasswordToken;
+    //   if (!resetPasswordToken) throw new UnauthorizedError('Reset password token is not found');
 
-    const payload = jwt.decodeResetPasswordToken(resetPasswordToken);
-    if (!payload || !payload.id) throw new UnauthorizedError('Invalid reset password token');
+    //   const payload = jwt.decodeResetPasswordToken(resetPasswordToken);
+    //   if (!payload || !payload.id) throw new UnauthorizedError('Invalid reset password token');
 
-    const verifiedOTP = speakeasy.verifiedOTP(otpCode);
-    if (!verifiedOTP) throw new BadRequestError('OTP not match');
+    //   const verifiedOTP = speakeasy.verifiedOTP(otpCode);
+    //   if (!verifiedOTP) throw new BadRequestError('OTP not match');
 
-    userResetPasswordTokenRepo.updateVerifyOTP(resetPasswordToken);
+    //   userResetPasswordTokenRepo.updateVerifyOTP(resetPasswordToken);
 
     return { message: 'Confirm OTP successfully' };
   };
 
   static updatePasswordForgotPassword = async ({ password }, req) => {
-    const resetPasswordToken = req.cookies.resetPasswordToken;
-    if (!resetPasswordToken) throw new UnauthorizedError('Reset password token is not found');
+    //   const resetPasswordToken = req.cookies.resetPasswordToken;
+    //   if (!resetPasswordToken) throw new UnauthorizedError('Reset password token is not found');
 
-    const payload = jwt.decodeResetPasswordToken(resetPasswordToken);
-    if (!payload || !payload.id) throw new UnauthorizedError('Invalid reset password token');
+    //   const payload = jwt.decodeResetPasswordToken(resetPasswordToken);
+    //   if (!payload || !payload.id) throw new UnauthorizedError('Invalid reset password token');
 
-    const verifiedOTP = userResetPasswordTokenRepo.getVerifiedOTP(resetPasswordToken);
-    if (!verifiedOTP) throw new BadRequestError('OTP is not verified');
+    //   const verifiedOTP = userResetPasswordTokenRepo.getVerifiedOTP(resetPasswordToken);
+    //   if (!verifiedOTP) throw new BadRequestError('OTP is not verified');
 
-    const hashPassWord = bcrypt.hashPassword(password);
-    authRepo.updatePasswordById({ id: payload.id, password: hashPassWord });
-    userResetPasswordTokenRepo.usedForPasswordResetToken(resetPasswordToken);
+    //   const hashPassWord = bcrypt.hashPassword(password);
+    //   authRepo.updatePasswordById({ id: payload.id, password: hashPassWord });
+    //   userResetPasswordTokenRepo.usedForPasswordResetToken(resetPasswordToken);
 
-    setCookie({ res: req.res, name: 'resetPasswordToken', value: '', maxAge: 0 });
+    //   setCookie({ res: req.res, name: 'resetPasswordToken', value: '', maxAge: 0 });
 
     return { message: 'Update password successfully' };
   };

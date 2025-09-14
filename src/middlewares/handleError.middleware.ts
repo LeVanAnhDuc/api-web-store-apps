@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { ErrorResponse } from '../core/error.response';
+import { ErrorResponse } from '../responses/error.response';
 
 export const handleNotFound = (req: Request, res: Response, next: NextFunction) => {
   const error = new ErrorResponse('Not Found', 404);

@@ -12,7 +12,7 @@ import instanceMongoDatabase from './databases/init.mongodb';
 import { handleError, handleNotFound } from './middlewares/handleError.middleware';
 import { rateLimitInstance } from './middlewares/validate.middleware';
 // others
-import config from './config';
+import config from './constants/env';
 
 const app = express();
 

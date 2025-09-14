@@ -1,14 +1,13 @@
 // libs
 import speakeasy from 'speakeasy';
 // others
-import config from '../config';
+import CONSTANTS from '../constants';
 
-const secret = speakeasy.generateSecret({ length: 20, name: config.DB_NAME });
+const { OTP, ENV } = CONSTANTS;
+const { TIME_EXPIRE_OTP, OTP_LENGTH, ENCODING, SECRET_LENGTH } = OTP;
 
-const TIME_EXPIRE_OTP = 120;
-const OTP_LENGTH = 6;
+const secret = speakeasy.generateSecret({ length: SECRET_LENGTH, name: ENV.DB_NAME });
 const SECRET_TOKEN = secret.base32;
-const ENCODING = 'base32';
 
 export const getOTP = () => {
   const otp = speakeasy.totp({

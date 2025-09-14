@@ -54,7 +54,6 @@ router.post(
   asyncHandler(AuthController.updatePasswordForgotPassword),
 );
 
-// Forgot Password
 // Change Password,
 // Revoke Token, 2FA
 

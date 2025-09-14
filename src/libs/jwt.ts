@@ -1,74 +1,45 @@
 // libs
-import jwt from 'jsonwebtoken';
+import jwt, { type PublicKey, type PrivateKey, type Secret } from 'jsonwebtoken';
+// types
+import { TExpiresIn, TPayload } from '../types/jwt';
+// responses
+import { ForbiddenError } from '../responses/error.response';
 // others
-import config from '../config';
 import CONSTANTS from '../constants';
 
-const { EXPIRE_TOKEN } = CONSTANTS;
+const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } = CONSTANTS.TOKEN;
+const { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_RESET_PASS_SECRET } = CONSTANTS.ENV;
 
-const ALGORITHM_TOKEN = 'HS256';
+const generateToken = (payload: TPayload, secret: Secret | PrivateKey, expiresIn: TExpiresIn) => {
+  const token = jwt.sign(payload, secret, { expiresIn });
 
-export const generatePairToken = (payload) => {
-  const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
-    algorithm: ALGORITHM_TOKEN,
-    expiresIn: EXPIRE_TOKEN.ACCESS_TOKEN,
-  });
+  return token;
+};
 
-  const refreshToken = jwt.sign(payload, config.JWT_REFRESH_SECRET, {
-    algorithm: ALGORITHM_TOKEN,
-    expiresIn: EXPIRE_TOKEN.REFRESH_TOKEN,
-  });
+const verifyToken = <T>(token: string, secret: Secret | PublicKey): T => {
+  try {
+    const payload = jwt.verify(token, secret);
+    return payload as T;
+  } catch (err) {
+    throw new ForbiddenError(err.message);
+  }
+};
 
+export const generateAccessToken = (payload: TPayload) =>
+  generateToken(payload, JWT_ACCESS_SECRET, NUMBER_ACCESS_TOKEN);
+const generateRefreshToken = (payload: TPayload) => generateToken(payload, JWT_ACCESS_SECRET, NUMBER_REFRESH_TOKEN);
+export const generateResetPasswordToken = (payload: TPayload) =>
+  generateToken(payload, JWT_RESET_PASS_SECRET, NUMBER_RESET_PASS_TOKEN);
+
+export const generatePairToken = (payload: TPayload) => {
   return {
-    accessToken,
-    refreshToken,
+    accessToken: generateAccessToken(payload),
+    refreshToken: generateRefreshToken(payload),
   };
 };
 
-export const generateAccessToken = (payload) => {
-  const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
-    algorithm: ALGORITHM_TOKEN,
-    expiresIn: EXPIRE_TOKEN.ACCESS_TOKEN,
-  });
+export const decodeRefreshToken = <T>(token: string) => verifyToken<T>(token, JWT_REFRESH_SECRET);
 
-  return accessToken;
-};
+export const decodeAccessToken = <T>(token: string) => verifyToken<T>(token, JWT_ACCESS_SECRET);
 
-export const generateResetPasswordToken = (payload) => {
-  const ResetPasswordToken = jwt.sign(payload, config.JWT_RESET_PASS_SECRET, {
-    algorithm: ALGORITHM_TOKEN,
-    expiresIn: EXPIRE_TOKEN.RESET_PASS_TOKEN,
-  });
-
-  return ResetPasswordToken;
-};
-
-export const decodeRefreshToken = (token) => {
-  try {
-    return jwt.verify(token, config.JWT_REFRESH_SECRET, {
-      algorithms: ALGORITHM_TOKEN,
-    });
-  } catch {
-    return null;
-  }
-};
-
-export const decodeAccessToken = (token) => {
-  try {
-    return jwt.verify(token, config.JWT_ACCESS_SECRET, {
-      algorithms: ALGORITHM_TOKEN,
-    });
-  } catch {
-    return null;
-  }
-};
-
-export const decodeResetPasswordToken = (token) => {
-  try {
-    return jwt.verify(token, config.JWT_RESET_PASS_SECRET, {
-      algorithms: ALGORITHM_TOKEN,
-    });
-  } catch {
-    return null;
-  }
-};
+export const decodeResetPasswordToken = <T>(token: string) => verifyToken<T>(token, JWT_RESET_PASS_SECRET);

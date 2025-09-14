@@ -2,8 +2,8 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const config = {
-  APP_PORT: process.env.APP_PORT || '3000',
+const ENV = {
+  APP_PORT: process.env.APP_PORT,
 
   DB_URL: process.env.DB_URL,
   DB_NAME: process.env.DB_NAME,
@@ -21,4 +21,5 @@ const config = {
   USERNAME_EMAIL: process.env.USERNAME_EMAIL,
   PASSWORD_EMAIL: process.env.PASSWORD_EMAIL,
 };
-export default config;
+
+export default ENV;

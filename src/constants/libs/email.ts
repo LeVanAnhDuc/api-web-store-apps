@@ -1,4 +1,4 @@
-export const TEMPLATE_EMAIL_SIGNUP = `
+const TEMPLATE_EMAIL_SIGNUP = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -84,7 +84,7 @@ export const TEMPLATE_EMAIL_SIGNUP = `
     </html>
     `;
 
-export const TEMPLATE_EMAIL_RESET_PASS = `
+const TEMPLATE_EMAIL_RESET_PASS = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -170,6 +170,15 @@ export const TEMPLATE_EMAIL_RESET_PASS = `
     </html>
     `;
 
-export const SUBJECT_EMAIL_SIGNUP = 'Account Registration Confirmation - DucApp';
+const SUBJECT_EMAIL_SIGNUP = 'Account Registration Confirmation - DucApp';
 
-export const SUBJECT_EMAIL_RESET_PASS = 'Reset Password - DucApp';
+const SUBJECT_EMAIL_RESET_PASS = 'Reset Password - DucApp';
+
+const TEMPLATE_EMAIL = {
+  TEMPLATE_EMAIL_SIGNUP,
+  TEMPLATE_EMAIL_RESET_PASS,
+  SUBJECT_EMAIL_SIGNUP,
+  SUBJECT_EMAIL_RESET_PASS,
+};
+
+export default TEMPLATE_EMAIL;

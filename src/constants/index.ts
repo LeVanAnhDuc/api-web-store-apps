@@ -1,10 +1,8 @@
+// others
 import END_POINTS from './endpoint';
-import {
-  SUBJECT_EMAIL_SIGNUP,
-  TEMPLATE_EMAIL_SIGNUP,
-  TEMPLATE_EMAIL_RESET_PASS,
-  SUBJECT_EMAIL_RESET_PASS,
-} from './email';
+import ENV from './env';
+import { TOKEN, OTP, TEMPLATE_EMAIL } from './libs';
+import { REASON_PHRASES, STATUS_CODES } from './status';
 
 enum EGender {
   MALE = 'MALE',
@@ -18,24 +16,17 @@ enum ERole {
   MODERATOR = 'MODERATOR',
 }
 
-const EXPIRE_TOKEN = {
-  ACCESS_TOKEN: '8h',
-  REFRESH_TOKEN: '7day',
-  RESET_PASS_TOKEN: '15m',
-  NUMBER_ACCESS_TOKEN: 8 * 60 * 60 * 1000,
-  NUMBER_REFRESH_TOKEN: 7 * 24 * 60 * 60 * 1000,
-  NUMBER_RESET_PASS_TOKEN: 15 * 60 * 1000,
-};
-
 const CONSTANTS = {
   EGender,
   ERole,
   END_POINTS,
-  SUBJECT_EMAIL_SIGNUP,
-  TEMPLATE_EMAIL_SIGNUP,
-  EXPIRE_TOKEN,
-  SUBJECT_EMAIL_RESET_PASS,
-  TEMPLATE_EMAIL_RESET_PASS,
+  TOKEN,
+  TEMPLATE_EMAIL,
+  ENV,
+  SALT_OR_ROUNDS: 10,
+  OTP,
+  REASON_PHRASES,
+  STATUS_CODES,
 };
 
 export default CONSTANTS;

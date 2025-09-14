@@ -1,11 +1,13 @@
 // libs
 import nodemailer from 'nodemailer';
+// types
+import { ISendEmail } from '../types/nodemailer';
 // others
-import config from '../config';
+import config from '../constants/env';
 
 const SERVICE = 'gmail';
 
-const sendEmail = ({ email, subject, message }: { email: string; subject: string; message: string }) => {
+const sendEmail = ({ email, subject, message }: ISendEmail) => {
   const transporter = nodemailer.createTransport({
     service: SERVICE,
     auth: {

@@ -1,5 +1,5 @@
 import { CreateTodoDTO, GetTodosQueryParamsDTO, UpdateTodoDTO } from '../dto/todo.dto';
-import { BadRequestError, NotFoundError } from '../core/error.response';
+import { BadRequestError, NotFoundError } from '../responses/error.response';
 import { authRepo, todoRepo } from '../repositories';
 import { jwt } from '../libs';
 import { IUser } from '../types/users';
@@ -58,7 +58,8 @@ class TodoService {
 
     const idUser = jwt.decodeAccessToken(accessToken);
 
-    const userCreate: IUser = await authRepo.findIDUserRepo(idUser.id);
+    // const userCreate: IUser = await authRepo.findIDUserRepo(idUser.id);
+    const userCreate: IUser = undefined;
 
     const newTodo = await todoRepo.addTodoRepo({
       name,

@@ -1,6 +1,7 @@
 // others
-import { reasonPhrases } from '../utils/reasonPhrases';
-import { statusCodes } from '../utils/statusCodes';
+import CONSTANTS from '../constants';
+
+const { STATUS_CODES, REASON_PHRASES } = CONSTANTS;
 
 class SuccessResponse {
   message: string;
@@ -24,23 +25,23 @@ class SuccessResponse {
   }
 }
 
-export class OKResponse extends SuccessResponse {
-  constructor({ message = '', status = statusCodes.OK, reasonStatusCode = reasonPhrases.OK, data = {} }) {
+export class OkSuccess extends SuccessResponse {
+  constructor({ message = '', status = STATUS_CODES.OK, reasonStatusCode = REASON_PHRASES.OK, data = {} }) {
     super({ message, status, reasonStatusCode, data });
   }
 }
 
-export class CreatedResponse extends SuccessResponse {
-  constructor({ message = '', status = statusCodes.CREATED, reasonStatusCode = reasonPhrases.CREATED, data = {} }) {
+export class CreatedSuccess extends SuccessResponse {
+  constructor({ message = '', status = STATUS_CODES.CREATED, reasonStatusCode = REASON_PHRASES.CREATED, data = {} }) {
     super({ message, status, reasonStatusCode, data });
   }
 }
 
-export class NoContentResponse extends SuccessResponse {
+export class NoContentSuccess extends SuccessResponse {
   constructor({
     message = '',
-    status = statusCodes.NO_CONTENT,
-    reasonStatusCode = reasonPhrases.NO_CONTENT,
+    status = STATUS_CODES.NO_CONTENT,
+    reasonStatusCode = REASON_PHRASES.NO_CONTENT,
     data = {},
   }) {
     super({ message, status, reasonStatusCode, data });
