@@ -5,7 +5,9 @@ import type { IUserResetPasswordToken } from '../types/tokens';
 
 const { Schema } = mongoose;
 
-export interface IUserResetPasswordTokenDocument extends IUserResetPasswordToken, Document {}
+export interface IUserResetPasswordTokenDocument
+  extends IUserResetPasswordToken,
+    Document {}
 
 const IUserResetPasswordTokenSchema = new Schema<IUserResetPasswordToken>(
   {
@@ -18,17 +20,17 @@ const IUserResetPasswordTokenSchema = new Schema<IUserResetPasswordToken>(
     otpExpireAt: { type: Date, default: null },
     resetToken: { type: String, default: null },
     resetTokenExpireAt: { type: Date, default: null },
-    otpVerified: { type: Boolean, default: false },
+    otpVerified: { type: Boolean, default: false }
   },
   {
     collection: 'user_reset_password_tokens',
-    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
-  },
+    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
+  }
 );
 
 const UserResetPasswordToken = mongoose.model<IUserResetPasswordToken>(
   'UserResetPasswordToken',
-  IUserResetPasswordTokenSchema,
+  IUserResetPasswordTokenSchema
 );
 
 export default UserResetPasswordToken;

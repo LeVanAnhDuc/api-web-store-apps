@@ -10,12 +10,21 @@ import { UserResponseDTO } from '../dto/user';
 // others
 import CONSTANTS from '../constants';
 import { formatSI, setCookie } from '../utils';
-import { BadRequestError, ForbiddenError, UnauthorizedError } from '../responses/error.response';
+import {
+  BadRequestError,
+  ForbiddenError,
+  UnauthorizedError
+} from '../responses/error.response';
 import { decodeAccessToken } from '../libs/jwt';
 
-const { SUBJECT_EMAIL_SIGNUP, TEMPLATE_EMAIL_SIGNUP, SUBJECT_EMAIL_RESET_PASS, TEMPLATE_EMAIL_RESET_PASS } =
-  CONSTANTS.TEMPLATE_EMAIL;
-const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } = CONSTANTS.TOKEN;
+const {
+  SUBJECT_EMAIL_SIGNUP,
+  TEMPLATE_EMAIL_SIGNUP,
+  SUBJECT_EMAIL_RESET_PASS,
+  TEMPLATE_EMAIL_RESET_PASS
+} = CONSTANTS.TEMPLATE_EMAIL;
+const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } =
+  CONSTANTS.TOKEN;
 
 class AuthService {
   static login = async ({ email, password }, res) => {
@@ -24,7 +33,8 @@ class AuthService {
     const { _id: id, password: passWorkHash, verifiedEmail } = infoUser;
     const passwordMatch = bcrypt.isValidPassword(password, passWorkHash);
 
-    if (!infoUser || !passwordMatch) throw new BadRequestError('Invalid email or password');
+    if (!infoUser || !passwordMatch)
+      throw new BadRequestError('Invalid email or password');
     if (!verifiedEmail) throw new ForbiddenError('Account is not verify');
 
     await authRepo.updateLastLoginRepo(id as string);
@@ -36,15 +46,32 @@ class AuthService {
 
     const userInfo = new UserResponseDTO(infoUser);
 
-    setCookie({ res, name: 'accessToken', value: accessToken, maxAge: NUMBER_ACCESS_TOKEN });
-    setCookie({ res, name: 'refreshToken', value: refreshToken, maxAge: NUMBER_REFRESH_TOKEN });
-    setCookie({ res, name: 'userInfo', value: userInfo, maxAge: NUMBER_REFRESH_TOKEN });
+    setCookie({
+      res,
+      name: 'accessToken',
+      value: accessToken,
+      maxAge: NUMBER_ACCESS_TOKEN
+    });
+    setCookie({
+      res,
+      name: 'refreshToken',
+      value: refreshToken,
+      maxAge: NUMBER_REFRESH_TOKEN
+    });
+    setCookie({
+      res,
+      name: 'userInfo',
+      value: userInfo,
+      maxAge: NUMBER_REFRESH_TOKEN
+    });
 
     return { message: 'login successfully' };
   };
 
   static signup = async ({ fullName, email, phone, password }) => {
-    const userExists = (await authRepo.findUserRepo(email)) || (await authRepo.findUserRepo(phone));
+    const userExists =
+      (await authRepo.findUserRepo(email)) ||
+      (await authRepo.findUserRepo(phone));
     if (userExists) throw new BadRequestError('Email or phone already exists');
 
     const hashPassWord = bcrypt.hashPassword(password);
@@ -56,16 +83,18 @@ class AuthService {
       phone,
       password: hashPassWord,
       otpCode,
-      otpExpireAt: new Date(Date.now() + timeExpire * 1000),
+      otpExpireAt: new Date(Date.now() + timeExpire * 1000)
     });
 
     sendEmail({
       email,
       subject: SUBJECT_EMAIL_SIGNUP,
-      message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode }),
+      message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode })
     });
 
-    return { message: 'Sign up successfully. Please check your email to verify' };
+    return {
+      message: 'Sign up successfully. Please check your email to verify'
+    };
   };
 
   static verifySignup = async ({ email, otpCode }) => {
@@ -75,7 +104,8 @@ class AuthService {
     const { _id: id, otpExpireAt, verifiedEmail } = infoUser;
 
     if (verifiedEmail) throw new BadRequestError('Account already verified');
-    if (new Date().getTime() > otpExpireAt.getTime()) throw new BadRequestError('OTP expired. Please resend OTP');
+    if (new Date().getTime() > otpExpireAt.getTime())
+      throw new BadRequestError('OTP expired. Please resend OTP');
 
     const verifiedOTP = speakeasy.verifiedOTP(otpCode);
 
@@ -100,13 +130,13 @@ class AuthService {
     await authRepo.updateOTP({
       email,
       otpCode,
-      otpExpireAt: new Date(Date.now() + timeExpire * 1000),
+      otpExpireAt: new Date(Date.now() + timeExpire * 1000)
     });
 
     await sendEmail({
       email,
       subject: SUBJECT_EMAIL_SIGNUP,
-      message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode }),
+      message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode })
     });
 
     return { message: 'Re-send OTP successfully' };
@@ -152,20 +182,20 @@ class AuthService {
       otpCode,
       otpExpireAt: new Date(Date.now() + timeExpire * 1000),
       resetToken: resetPasswordToken,
-      resetTokenExpireAt: new Date(Date.now() + NUMBER_RESET_PASS_TOKEN),
+      resetTokenExpireAt: new Date(Date.now() + NUMBER_RESET_PASS_TOKEN)
     });
 
     await sendEmail({
       email,
       subject: SUBJECT_EMAIL_RESET_PASS,
-      message: formatSI(TEMPLATE_EMAIL_RESET_PASS, { fullName, otpCode }),
+      message: formatSI(TEMPLATE_EMAIL_RESET_PASS, { fullName, otpCode })
     });
 
     setCookie({
       res,
       name: 'resetPasswordToken',
       value: resetPasswordToken,
-      maxAge: NUMBER_RESET_PASS_TOKEN + 1000,
+      maxAge: NUMBER_RESET_PASS_TOKEN + 1000
     });
 
     return { message: 'Send OTP successfully' };

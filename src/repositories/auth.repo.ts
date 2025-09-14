@@ -8,7 +8,7 @@ class AuthRepo extends Repository {
 
   findUserRepo = async (emailOrPhone: string) => {
     return await this.findOne({
-      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }]
     });
   };
 
@@ -16,13 +16,27 @@ class AuthRepo extends Repository {
     return await this.updateMany(
       { _id: id },
       {
-        lastLoginAt: new Date(),
-      },
+        lastLoginAt: new Date()
+      }
     );
   };
 
-  registerAccountRepo = async ({ fullName, email, phone, password, otpCode, otpExpireAt }) => {
-    return await this.create({ fullName, email, phone, password, otpCode, otpExpireAt });
+  registerAccountRepo = async ({
+    fullName,
+    email,
+    phone,
+    password,
+    otpCode,
+    otpExpireAt
+  }) => {
+    return await this.create({
+      fullName,
+      email,
+      phone,
+      password,
+      otpCode,
+      otpExpireAt
+    });
   };
 
   verifySignup = async (id) => {
@@ -31,8 +45,8 @@ class AuthRepo extends Repository {
       {
         verifiedEmail: true,
         otpCode: null,
-        otpExpireAt: null,
-      },
+        otpExpireAt: null
+      }
     );
   };
 
@@ -41,12 +55,13 @@ class AuthRepo extends Repository {
       { email },
       {
         otpCode,
-        otpExpireAt,
-      },
+        otpExpireAt
+      }
     );
   };
 
-  updatePasswordById = async ({ id, password }) => await this.findByIdAndUpdate(id, { password });
+  updatePasswordById = async ({ id, password }) =>
+    await this.findByIdAndUpdate(id, { password });
 }
 
 export default AuthRepo;

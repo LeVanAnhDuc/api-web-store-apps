@@ -1,4 +1,8 @@
-import { CreateTodoDTO, GetTodosQueryParamsDTO, UpdateTodoDTO } from '../dto/todo.dto';
+import {
+  CreateTodoDTO,
+  GetTodosQueryParamsDTO,
+  UpdateTodoDTO
+} from '../dto/todo.dto';
 import { BadRequestError, NotFoundError } from '../responses/error.response';
 import { authRepo, todoRepo } from '../repositories';
 import { jwt } from '../libs';
@@ -6,7 +10,14 @@ import { IUser } from '../types/users';
 
 class TodoService {
   static getTodosService = async (query: GetTodosQueryParamsDTO) => {
-    const { pageSize, pageNo, status, projectName, searchKey, isActive = true } = query;
+    const {
+      pageSize,
+      pageNo,
+      status,
+      projectName,
+      searchKey,
+      isActive = true
+    } = query;
 
     const skipTodo = (pageNo - 1) * pageSize;
 
@@ -28,9 +39,9 @@ class TodoService {
       todoRepo.getTodosRepo({
         filter,
         skip: skipTodo,
-        limit: pageSize,
+        limit: pageSize
       }),
-      todoRepo.getCountTodosRepo(),
+      todoRepo.getCountTodosRepo()
     ]);
 
     const totalPages = Math.ceil(totalItems / pageSize);
@@ -39,7 +50,7 @@ class TodoService {
 
     return {
       message: 'Get list todo successfully',
-      data: { data, currentPage: pageNo, perPage, totalItems, totalPages },
+      data: { data, currentPage: pageNo, perPage, totalItems, totalPages }
     };
   };
 
@@ -73,14 +84,17 @@ class TodoService {
         email: userCreate.email,
         phone: userCreate.phone,
         isActive: userCreate.isActive,
-        avatar: userCreate.avatar,
-      },
+        avatar: userCreate.avatar
+      }
     });
 
     return { message: 'add todo successfully', data: newTodo };
   };
 
-  static updateTodoService = async (updatedTodoData: UpdateTodoDTO, id: string) => {
+  static updateTodoService = async (
+    updatedTodoData: UpdateTodoDTO,
+    id: string
+  ) => {
     const date = new Date();
     const objectUpdate = { ...updatedTodoData, updatedAt: date };
 

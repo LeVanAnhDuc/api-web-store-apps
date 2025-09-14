@@ -7,13 +7,13 @@ import { REASON_PHRASES, STATUS_CODES } from './status';
 enum EGender {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
-  OTHER = 'OTHER',
+  OTHER = 'OTHER'
 }
 
 enum ERole {
   ADMIN = 'ADMIN',
   USER = 'USER',
-  MODERATOR = 'MODERATOR',
+  MODERATOR = 'MODERATOR'
 }
 
 const CONSTANTS = {
@@ -26,7 +26,7 @@ const CONSTANTS = {
   SALT_OR_ROUNDS: 10,
   OTP,
   REASON_PHRASES,
-  STATUS_CODES,
+  STATUS_CODES
 };
 
 export default CONSTANTS;

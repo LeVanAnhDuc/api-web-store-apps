@@ -4,7 +4,11 @@ import { rateLimit } from 'express-rate-limit';
 import { NextFunction, Request, Response } from 'express';
 import lodash from 'lodash';
 import { Model, Document, isValidObjectId, FilterQuery } from 'mongoose';
-import { plainToClass, ClassConstructor, classToPlain } from 'class-transformer';
+import {
+  plainToClass,
+  ClassConstructor,
+  classToPlain
+} from 'class-transformer';
 import { validate } from 'class-validator';
 // others
 import { BadRequestError } from '../responses/error.response';
@@ -26,7 +30,9 @@ export const validateSchema = (schema: {
 
       validateFields.forEach((field) => {
         if (schema[field]) {
-          const { error, value } = schema[field].validate(req[field], { abortEarly: true });
+          const { error, value } = schema[field].validate(req[field], {
+            abortEarly: true
+          });
 
           if (error) {
             throw new BadRequestError(error.details[0].message);
@@ -51,8 +57,8 @@ export const rateLimitInstance = rateLimit({
     res.status(options.statusCode).send({
       status: 'Too Many Requests',
       code: options.statusCode,
-      message: options.message,
-    }),
+      message: options.message
+    })
 });
 
 export const requiredBody = (req: Request) => {

@@ -22,4 +22,7 @@ export interface IUser {
 }
 
 export interface IUserSpecifically
-  extends Pick<IUser, 'userName' | 'fullName' | 'email' | 'isActive' | 'phone' | 'avatar'> {}
+  extends Pick<
+    IUser,
+    'userName' | 'fullName' | 'email' | 'isActive' | 'phone' | 'avatar'
+  > {}

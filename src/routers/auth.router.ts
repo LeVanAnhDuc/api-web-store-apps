@@ -10,7 +10,7 @@ import {
   sendOtpForgotPassword,
   signupSchema,
   signupVerifySchema,
-  updatePasswordForgotPasswordSchema,
+  updatePasswordForgotPasswordSchema
 } from '../schema/auth.schema';
 // middlewares
 import { validateSchema } from '../middlewares/validate.middleware';
@@ -27,31 +27,47 @@ const {
   LOGOUT,
   CONFIRM_OTP_FORGOT_PASSWORD,
   SEND_OTP_FORGOT_PASSWORD,
-  UPDATE_PASSWORD_FORGOT_PASSWORD,
+  UPDATE_PASSWORD_FORGOT_PASSWORD
 } = CONSTANTS.END_POINTS;
 
 const router = express.Router();
 
-router.post(LOGIN, validateSchema({ body: loginSchema }), asyncHandler(AuthController.login));
-router.post(SIGNUP, validateSchema({ body: signupSchema }), asyncHandler(AuthController.signup));
-router.post(VERIFY_SIGNUP, validateSchema({ body: signupVerifySchema }), asyncHandler(AuthController.verifySignup));
-router.post(RESEND_OTP, validateSchema({ body: reSendOtpSchema }), asyncHandler(AuthController.reSendOTPSignup));
+router.post(
+  LOGIN,
+  validateSchema({ body: loginSchema }),
+  asyncHandler(AuthController.login)
+);
+router.post(
+  SIGNUP,
+  validateSchema({ body: signupSchema }),
+  asyncHandler(AuthController.signup)
+);
+router.post(
+  VERIFY_SIGNUP,
+  validateSchema({ body: signupVerifySchema }),
+  asyncHandler(AuthController.verifySignup)
+);
+router.post(
+  RESEND_OTP,
+  validateSchema({ body: reSendOtpSchema }),
+  asyncHandler(AuthController.reSendOTPSignup)
+);
 router.post(LOGOUT, asyncHandler(AuthController.logOut));
 router.post(REFRESH_TOKEN, asyncHandler(AuthController.refreshAccessToken));
 router.post(
   SEND_OTP_FORGOT_PASSWORD,
   validateSchema({ body: sendOtpForgotPassword }),
-  asyncHandler(AuthController.sendOtpForgotPassword),
+  asyncHandler(AuthController.sendOtpForgotPassword)
 );
 router.post(
   CONFIRM_OTP_FORGOT_PASSWORD,
   validateSchema({ body: confirmOpForgotPasswordSchema }),
-  asyncHandler(AuthController.confirmOpForgotPassword),
+  asyncHandler(AuthController.confirmOpForgotPassword)
 );
 router.post(
   UPDATE_PASSWORD_FORGOT_PASSWORD,
   validateSchema({ body: updatePasswordForgotPasswordSchema }),
-  asyncHandler(AuthController.updatePasswordForgotPassword),
+  asyncHandler(AuthController.updatePasswordForgotPassword)
 );
 
 // Change Password,

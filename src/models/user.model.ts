@@ -18,11 +18,11 @@ export const IUserSpecificallySchema = new Schema<IUserSpecifically>(
     email: { type: String, trim: true },
     phone: { type: String, trim: true },
     isActive: { type: Boolean, default: true },
-    avatar: { type: String, default: null },
+    avatar: { type: String, default: null }
   },
   {
-    _id: false,
-  },
+    _id: false
+  }
 );
 
 const UserSchema = new Schema<IUser>(
@@ -33,13 +33,13 @@ const UserSchema = new Schema<IUser>(
       type: String,
       trim: true,
       unique: true,
-      required: true,
+      required: true
     },
     phone: {
       type: String,
       trim: true,
       unique: true,
-      required: true,
+      required: true
     },
     password: { type: String, trim: true, required: true },
     isActive: { type: Boolean, default: true },
@@ -53,12 +53,12 @@ const UserSchema = new Schema<IUser>(
     verifiedEmail: { type: Boolean, default: false },
     otpCode: { type: String, default: null },
     otpExpireAt: { type: Date, default: null },
-    lastLoginAt: { type: Date, default: null },
+    lastLoginAt: { type: Date, default: null }
   },
   {
     collection: 'users',
-    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
-  },
+    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
+  }
 );
 
 const User = mongoose.model<IUser>('User', UserSchema);

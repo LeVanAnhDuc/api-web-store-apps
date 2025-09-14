@@ -19,7 +19,7 @@ const ENV = {
   JWT_RESET_PASS_SECRET: process.env.JWT_RESET_PASS_SECRET,
 
   USERNAME_EMAIL: process.env.USERNAME_EMAIL,
-  PASSWORD_EMAIL: process.env.PASSWORD_EMAIL,
+  PASSWORD_EMAIL: process.env.PASSWORD_EMAIL
 };
 
 export default ENV;

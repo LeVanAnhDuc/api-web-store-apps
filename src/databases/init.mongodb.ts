@@ -10,15 +10,15 @@ enum statusConnectMongo {
   DISCONNECT = 'disconnected',
   RECONNECT = 'reconnected',
   ERROR = 'error',
-  CLOSE = 'close',
+  CLOSE = 'close'
 }
 
 const MONGO_CONNECT_TIMEOUT = 10000;
 const MONGO_CONNECT_MESSAGE = {
   code: -99,
   message: {
-    en: 'service connect mongo error',
-  },
+    en: 'service connect mongo error'
+  }
 };
 
 class MongoDatabase {
@@ -40,7 +40,7 @@ class MongoDatabase {
     if (config.DB_URL && config.DB_NAME) {
       this.handleEventConnect();
       await mongoose.connect(config.DB_URL, {
-        dbName: config.DB_NAME,
+        dbName: config.DB_NAME
       });
     }
   };
@@ -74,7 +74,10 @@ class MongoDatabase {
 
   private handleTimeoutError = () => {
     this.connectionTimeout = setTimeout(() => {
-      throw new MongoError(MONGO_CONNECT_MESSAGE.message.en, MONGO_CONNECT_MESSAGE.code);
+      throw new MongoError(
+        MONGO_CONNECT_MESSAGE.message.en,
+        MONGO_CONNECT_MESSAGE.code
+      );
     }, MONGO_CONNECT_TIMEOUT);
   };
 }

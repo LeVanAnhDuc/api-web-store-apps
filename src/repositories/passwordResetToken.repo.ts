@@ -8,7 +8,14 @@ class UserResetPasswordTokenRepo extends Repository {
     super(UserResetPasswordToken, 'UserResetPasswordToken');
   }
 
-  createPasswordResetToken = async ({ userId, email, otpCode, otpExpireAt, resetToken, resetTokenExpireAt }) => {
+  createPasswordResetToken = async ({
+    userId,
+    email,
+    otpCode,
+    otpExpireAt,
+    resetToken,
+    resetTokenExpireAt
+  }) => {
     return await this.create({
       userId,
       otpCode,
@@ -16,7 +23,7 @@ class UserResetPasswordTokenRepo extends Repository {
       used: false,
       email,
       resetToken,
-      resetTokenExpireAt,
+      resetTokenExpireAt
     });
   };
 
@@ -26,15 +33,19 @@ class UserResetPasswordTokenRepo extends Repository {
       {
         otpVerified: true,
         otpCode: null,
-        otpExpireAt: null,
-      },
+        otpExpireAt: null
+      }
     );
   };
 
-  getVerifiedOTP = async (token) => await this.findOne({ resetToken: token, otpVerified: true });
+  getVerifiedOTP = async (token) =>
+    await this.findOne({ resetToken: token, otpVerified: true });
 
   usedForPasswordResetToken = async (token) =>
-    await this.findOneAndUpdate({ resetToken: token }, { used: true, usedAt: Date.now() });
+    await this.findOneAndUpdate(
+      { resetToken: token },
+      { used: true, usedAt: Date.now() }
+    );
 }
 
 export default UserResetPasswordTokenRepo;

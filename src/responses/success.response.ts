@@ -21,18 +21,32 @@ class SuccessResponse {
       ? res.status(this.status).json(this)
       : res
           .status(this.status)
-          .json({ message: this.message, status: this.status, reasonStatusCode: this.reasonStatusCode });
+          .json({
+            message: this.message,
+            status: this.status,
+            reasonStatusCode: this.reasonStatusCode
+          });
   }
 }
 
 export class OkSuccess extends SuccessResponse {
-  constructor({ message = '', status = STATUS_CODES.OK, reasonStatusCode = REASON_PHRASES.OK, data = {} }) {
+  constructor({
+    message = '',
+    status = STATUS_CODES.OK,
+    reasonStatusCode = REASON_PHRASES.OK,
+    data = {}
+  }) {
     super({ message, status, reasonStatusCode, data });
   }
 }
 
 export class CreatedSuccess extends SuccessResponse {
-  constructor({ message = '', status = STATUS_CODES.CREATED, reasonStatusCode = REASON_PHRASES.CREATED, data = {} }) {
+  constructor({
+    message = '',
+    status = STATUS_CODES.CREATED,
+    reasonStatusCode = REASON_PHRASES.CREATED,
+    data = {}
+  }) {
     super({ message, status, reasonStatusCode, data });
   }
 }
@@ -42,7 +56,7 @@ export class NoContentSuccess extends SuccessResponse {
     message = '',
     status = STATUS_CODES.NO_CONTENT,
     reasonStatusCode = REASON_PHRASES.NO_CONTENT,
-    data = {},
+    data = {}
   }) {
     super({ message, status, reasonStatusCode, data });
   }

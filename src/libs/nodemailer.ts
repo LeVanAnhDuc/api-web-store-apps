@@ -12,15 +12,15 @@ const sendEmail = ({ email, subject, message }: ISendEmail) => {
     service: SERVICE,
     auth: {
       user: config.USERNAME_EMAIL,
-      pass: config.PASSWORD_EMAIL,
-    },
+      pass: config.PASSWORD_EMAIL
+    }
   });
 
   const mailOptions = {
     from: config.USERNAME_EMAIL,
     to: email,
     subject,
-    html: message,
+    html: message
   };
 
   transporter.sendMail(mailOptions, (error) => {

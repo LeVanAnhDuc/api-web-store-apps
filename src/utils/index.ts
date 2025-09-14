@@ -9,7 +9,10 @@ import { Response } from 'express';
  * @param {string} stringDataSource - string be localed
  * @param {Array} stringInterpolation - includes item need replace
  */
-export const formatSI = (stringDataSource: string, stringInterpolation: object) => {
+export const formatSI = (
+  stringDataSource: string,
+  stringInterpolation: object
+) => {
   if (stringDataSource === '') return '';
 
   if (!stringDataSource) {
@@ -25,7 +28,10 @@ export const formatSI = (stringDataSource: string, stringInterpolation: object) 
   // Result: 8 = [["name", "A"], ["age", 20]]
   const placeholderNames = Object.entries({ ...stringInterpolation });
   placeholderNames.forEach(([placeholderName, placeholderValue]) => {
-    stringFormatted = stringFormatted.replace(new RegExp(`\\[${placeholderName}\\]`, 'g'), placeholderValue as string);
+    stringFormatted = stringFormatted.replace(
+      new RegExp(`\\[${placeholderName}\\]`, 'g'),
+      placeholderValue as string
+    );
   });
   return stringFormatted;
 };
@@ -40,10 +46,20 @@ export const formatSI = (stringDataSource: string, stringInterpolation: object) 
  * @param {number} maxAge - The maximum age in milliseconds for the cookie.
  */
 
-export const setCookie = ({ res, name, value, maxAge }: { res: Response; name: string; value: any; maxAge: number }) =>
+export const setCookie = ({
+  res,
+  name,
+  value,
+  maxAge
+}: {
+  res: Response;
+  name: string;
+  value: any;
+  maxAge: number;
+}) =>
   res.cookie(name, value, {
     httpOnly: true,
     secure: true,
     sameSite: 'strict',
-    maxAge,
+    maxAge
   });

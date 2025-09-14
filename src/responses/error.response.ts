@@ -47,13 +47,19 @@ export class UnauthorizedError extends ErrorResponse {
 }
 
 export class RedisError extends ErrorResponse {
-  constructor(message = REASON_PHRASES.INTERNAL_SERVER_ERROR, statusCode = STATUS_CODES.INTERNAL_SERVER_ERROR) {
+  constructor(
+    message = REASON_PHRASES.INTERNAL_SERVER_ERROR,
+    statusCode = STATUS_CODES.INTERNAL_SERVER_ERROR
+  ) {
     super(message, statusCode);
   }
 }
 
 export class MongoError extends ErrorResponse {
-  constructor(message = REASON_PHRASES.INTERNAL_SERVER_ERROR, statusCode = STATUS_CODES.INTERNAL_SERVER_ERROR) {
+  constructor(
+    message = REASON_PHRASES.INTERNAL_SERVER_ERROR,
+    statusCode = STATUS_CODES.INTERNAL_SERVER_ERROR
+  ) {
     super(message, statusCode);
   }
 }

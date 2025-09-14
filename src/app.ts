@@ -9,7 +9,10 @@ import router from './routers';
 import instanceMongoDatabase from './databases/init.mongodb';
 // import instanceRedis from './dbs/init.redis';
 // middlewares
-import { handleError, handleNotFound } from './middlewares/handleError.middleware';
+import {
+  handleError,
+  handleNotFound
+} from './middlewares/handleError.middleware';
 import { rateLimitInstance } from './middlewares/validate.middleware';
 // others
 import config from './constants/env';

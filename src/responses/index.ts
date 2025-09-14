@@ -5,9 +5,13 @@ import {
   UnauthorizedError,
   ConflictRequestError,
   MongoError,
-  RedisError,
+  RedisError
 } from './error.response';
-import { CreatedSuccess, OkSuccess, NoContentSuccess } from './success.response';
+import {
+  CreatedSuccess,
+  OkSuccess,
+  NoContentSuccess
+} from './success.response';
 
 const responses = {
   BadRequestError,
@@ -19,7 +23,7 @@ const responses = {
   RedisError,
   CreatedSuccess,
   OkSuccess,
-  NoContentSuccess,
+  NoContentSuccess
 };
 
 export default responses;

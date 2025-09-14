@@ -27,19 +27,27 @@ class AuthController {
   };
 
   refreshAccessToken = async (req: Request, res: Response) => {
-    return new CreatedSuccess(await AuthService.refreshAccessToken(res, req)).send(res);
+    return new CreatedSuccess(
+      await AuthService.refreshAccessToken(res, req)
+    ).send(res);
   };
 
   sendOtpForgotPassword = async (req: Request, res: Response) => {
-    return new OkSuccess(await AuthService.sendOtpForgotPassword(req.body, res)).send(res);
+    return new OkSuccess(
+      await AuthService.sendOtpForgotPassword(req.body, res)
+    ).send(res);
   };
 
   confirmOpForgotPassword = async (req: Request, res: Response) => {
-    return new OkSuccess(await AuthService.confirmOpForgotPassword(req.body, req)).send(res);
+    return new OkSuccess(
+      await AuthService.confirmOpForgotPassword(req.body, req)
+    ).send(res);
   };
 
   updatePasswordForgotPassword = async (req: Request, res: Response) => {
-    return new OkSuccess(await AuthService.updatePasswordForgotPassword(req.body, req)).send(res);
+    return new OkSuccess(
+      await AuthService.updatePasswordForgotPassword(req.body, req)
+    ).send(res);
   };
 }
 

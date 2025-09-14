@@ -6,7 +6,7 @@ const statusConnectRedis = {
   CONNECT: 'connect',
   END: 'end',
   RECONNECT: 'reconnecting',
-  ERROR: 'error',
+  ERROR: 'error'
 };
 
 const REDIS_CONNECT_TIMEOUT = 10000;
@@ -14,8 +14,8 @@ const REDIS_CONNECT_MESSAGE = {
   code: -99,
   message: {
     vn: 'redis bị lỗi',
-    en: 'service connect redis error',
-  },
+    en: 'service connect redis error'
+  }
 };
 
 // Singleton pattern
@@ -47,7 +47,10 @@ class RedisDatabase {
 
   public getRedis = () => {
     if (!this.client) {
-      throw new RedisError(REDIS_CONNECT_MESSAGE.message.en, REDIS_CONNECT_MESSAGE.code);
+      throw new RedisError(
+        REDIS_CONNECT_MESSAGE.message.en,
+        REDIS_CONNECT_MESSAGE.code
+      );
     }
     return this.client;
   };
@@ -58,7 +61,10 @@ class RedisDatabase {
       this.handleEventConnect(this.client);
       this.client = null;
     } else {
-      throw new RedisError(REDIS_CONNECT_MESSAGE.message.en, REDIS_CONNECT_MESSAGE.code);
+      throw new RedisError(
+        REDIS_CONNECT_MESSAGE.message.en,
+        REDIS_CONNECT_MESSAGE.code
+      );
     }
   };
 
@@ -86,7 +92,10 @@ class RedisDatabase {
 
   private handleTimeoutError = () => {
     this.connectionTimeout = setTimeout(() => {
-      throw new RedisError(REDIS_CONNECT_MESSAGE.message.en, REDIS_CONNECT_MESSAGE.code);
+      throw new RedisError(
+        REDIS_CONNECT_MESSAGE.message.en,
+        REDIS_CONNECT_MESSAGE.code
+      );
     }, REDIS_CONNECT_TIMEOUT);
   };
 }

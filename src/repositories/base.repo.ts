@@ -53,7 +53,11 @@ class Cache {
     }
   };
 
-  private hSet = async (key: string, field: string, value: any): Promise<void> => {
+  private hSet = async (
+    key: string,
+    field: string,
+    value: any
+  ): Promise<void> => {
     await this.redis.hSet(key, field, JSON.stringify(value));
     await this.redis.expire(key, this.expireTimeInSecondsRedis);
   };
@@ -67,12 +71,20 @@ class Cache {
     }
   };
 
-  public set = async (key: string, value: any, redisOptions: any = undefined): Promise<void> => {
+  public set = async (
+    key: string,
+    value: any,
+    redisOptions: any = undefined
+  ): Promise<void> => {
     await this.redis.set(key, JSON.stringify(value), redisOptions);
     await this.redis.expire(key, this.expireTimeInSecondsRedis);
   };
 
-  public findWithCache = async (filter: any, query: any, redisOptions: any = undefined): Promise<any> => {
+  public findWithCache = async (
+    filter: any,
+    query: any,
+    redisOptions: any = undefined
+  ): Promise<any> => {
     const key = this.key(filter);
 
     let item = await this.get(key);
@@ -86,25 +98,35 @@ class Cache {
     return item;
   };
 
-  public findOneInHsetWithCache = async (filter: any, query: any): Promise<any> => {
+  public findOneInHsetWithCache = async (
+    filter: any,
+    query: any
+  ): Promise<any> => {
     const key = this.key(filter);
 
     let item = await this.hGetAll(key);
     if (Object.keys(item).length === 0 && query) {
       item = await query();
 
-      Object.entries(item._doc).map(async (value) => await this.hSet(key, value[0].toString(), value[1]));
+      Object.entries(item._doc).map(
+        async (value) => await this.hSet(key, value[0].toString(), value[1])
+      );
     }
 
     return item;
   };
 
-  public SetHsetWithCache = async (filter: Record<string, any>, object: Record<string, any>): Promise<any> => {
+  public SetHsetWithCache = async (
+    filter: Record<string, any>,
+    object: Record<string, any>
+  ): Promise<any> => {
     const key = this.key(filter);
 
     let item = await this.hGetAll(key);
     if (Object.keys(item).length === 0) {
-      item = Object.entries(object).map(async (value) => await this.hSet(key, value[0].toString(), value[1]));
+      item = Object.entries(object).map(
+        async (value) => await this.hSet(key, value[0].toString(), value[1])
+      );
     }
 
     return item;
@@ -126,19 +148,28 @@ class Repository extends Cache {
   public insertMany = async (objects): Promise<any> => {
     return await this.model.insertMany(objects, {
       upsert: true,
-      new: true,
+      new: true
     });
   };
 
   public updateMany = async (filter, object) => {
-    return await this.model.updateMany({ ...filter }, { ...object }, { new: true });
+    return await this.model.updateMany(
+      { ...filter },
+      { ...object },
+      { new: true }
+    );
   };
 
   public deleteMany = async (filter): Promise<any> => {
     return await this.model.deleteMany(filter);
   };
 
-  public find = async (filter, skip: number = 0, limit: number = 0, saveCache = false): Promise<any> => {
+  public find = async (
+    filter,
+    skip: number = 0,
+    limit: number = 0,
+    saveCache = false
+  ): Promise<any> => {
     const query = async () =>
       await this.model
         .find({ ...filter })
@@ -146,7 +177,10 @@ class Repository extends Cache {
         .limit(limit);
 
     if (saveCache) {
-      return await this.findWithCache({ ...filter, limit, page: skip / limit + 1 }, query);
+      return await this.findWithCache(
+        { ...filter, limit, page: skip / limit + 1 },
+        query
+      );
     }
 
     return await query();
@@ -173,7 +207,11 @@ class Repository extends Cache {
   };
 
   public findOneAndUpdate = async (filter, object): Promise<any> => {
-    return await this.model.findOneAndUpdate({ ...filter }, { ...object }, { new: true });
+    return await this.model.findOneAndUpdate(
+      { ...filter },
+      { ...object },
+      { new: true }
+    );
   };
 
   public findByIdAndDelete = async (id): Promise<any> => {

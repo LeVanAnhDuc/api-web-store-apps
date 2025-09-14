@@ -31,12 +31,12 @@ const TodoSchema = new Schema<ITodo>(
     assigneeTo: { type: IUserSpecificallySchema },
     reporter: { type: IUserSpecificallySchema },
     createBy: { type: IUserSpecificallySchema },
-    updatedBy: { type: IUserSpecificallySchema },
+    updatedBy: { type: IUserSpecificallySchema }
   },
   {
     collection: 'todos',
-    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
-  },
+    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
+  }
 );
 
 const Todo = mongoose.model<ITodo>('Todo', TodoSchema);
