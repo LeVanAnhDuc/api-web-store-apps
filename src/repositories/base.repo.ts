@@ -1,4 +1,14 @@
-import instanceRedis from '../databases/init.redis';
+// libs
+import {
+  Document,
+  FilterQuery,
+  InsertManyOptions,
+  Model,
+  MongooseUpdateQueryOptions,
+  QueryOptions,
+  UpdateQuery
+} from "mongoose";
+import instanceRedis from "../databases/init.redis";
 
 class Cache {
   private redis: any;
@@ -17,7 +27,7 @@ class Cache {
       return `${key}:${filter[key].toString()}`;
     });
 
-    return `${this.name}:${fields.join(':')}`;
+    return `${this.name}:${fields.join(":")}`;
   };
 
   private hGetAll = async (key: string): Promise<any> => {
@@ -25,15 +35,15 @@ class Cache {
 
     const cleanedObj = {};
     for (let key in obj) {
-      let value = obj[key].replace(/^"(.*)"$/, '$1');
+      let value = obj[key].replace(/^"(.*)"$/, "$1");
 
       // Convert string to number if possible
       if (!isNaN(value)) {
         cleanedObj[key] = Number(value);
       }
       // Convert 'true'/'false' to boolean
-      else if (value === 'true' || value === 'false') {
-        cleanedObj[key] = value === 'true';
+      else if (value === "true" || value === "false") {
+        cleanedObj[key] = value === "true";
       }
       // Otherwise, keep the value as is
       else {
@@ -133,98 +143,171 @@ class Cache {
   };
 }
 
-class Repository extends Cache {
-  private model: any;
+class Repository<T extends Pick<Document, "_id">> extends Cache {
+  private model: Model<T>;
 
-  constructor(model: any, name: string, redis = '') {
+  constructor(model: Model<T>, name: string, redis = "") {
     super(redis, name);
     this.model = model;
   }
 
-  public create = async (object): Promise<any> => {
-    return await this.model.create(object);
-  };
+  public async create(object: Partial<T>): Promise<T> {
+    try {
+      return await this.model.create(object);
+    } catch (error) {
+      throw new Error(`Failed to create document: ${error.message}`);
+    }
+  }
 
-  public insertMany = async (objects): Promise<any> => {
-    return await this.model.insertMany(objects, {
-      upsert: true,
-      new: true
-    });
-  };
+  public async insertMany(
+    objects: Partial<T>[],
+    options: InsertManyOptions = {}
+  ): Promise<T[]> {
+    try {
+      const result = await this.model.insertMany(objects, options);
 
-  public updateMany = async (filter, object) => {
-    return await this.model.updateMany(
-      { ...filter },
-      { ...object },
-      { new: true }
-    );
-  };
+      return result.map((doc) => doc.toObject()) as T[];
+    } catch (error) {
+      throw new Error(`Failed to insert documents: ${error.message}`);
+    }
+  }
 
-  public deleteMany = async (filter): Promise<any> => {
-    return await this.model.deleteMany(filter);
-  };
+  public async updateMany(
+    filter: FilterQuery<T>,
+    update: UpdateQuery<T>,
+    options: MongooseUpdateQueryOptions<T> = {}
+  ): Promise<{ matchedCount: number; modifiedCount: number }> {
+    try {
+      return await this.model.updateMany(filter, update, options);
+    } catch (error) {
+      throw new Error(`Failed to update documents: ${error.message}`);
+    }
+  }
 
-  public find = async (
-    filter,
+  public async deleteMany(
+    filter: FilterQuery<T>
+  ): Promise<{ deletedCount: number }> {
+    try {
+      return await this.model.deleteMany(filter);
+    } catch (error) {
+      throw new Error(`Failed to delete documents: ${error.message}`);
+    }
+  }
+
+  public async find(
+    filter: FilterQuery<T>,
     skip: number = 0,
     limit: number = 0,
+    options: QueryOptions = {},
     saveCache = false
-  ): Promise<any> => {
-    const query = async () =>
-      await this.model
-        .find({ ...filter })
+  ): Promise<T[]> {
+    try {
+      const query = this.model
+        .find(filter, null, options)
         .skip(skip)
         .limit(limit);
 
-    if (saveCache) {
-      return await this.findWithCache(
-        { ...filter, limit, page: skip / limit + 1 },
-        query
-      );
+      if (saveCache) {
+        return await this.findWithCache(
+          { filter, limit, page: skip / limit + 1 },
+          async () => await query.exec()
+        );
+      }
+      return await query.exec();
+    } catch (error) {
+      throw new Error(`Failed to find documents: ${error.message}`);
     }
+  }
 
-    return await query();
-  };
+  public async findOne(
+    filter: FilterQuery<T>,
+    options: QueryOptions = {},
+    saveCache = false
+  ): Promise<T | null> {
+    try {
+      const query = this.model.findOne(filter, null, options);
 
-  public findOne = async (filter, saveCache = false): Promise<any> => {
-    const query = async () => await this.model.findOne({ ...filter });
+      if (saveCache) {
+        await this.findOneInHsetWithCache(
+          filter,
+          async () => await query.exec()
+        );
+      }
 
-    if (saveCache) await this.findOneInHsetWithCache({ ...filter }, query);
-
-    return await query();
-  };
-
-  public findById = async (id, saveCache = false): Promise<any> => {
-    const query = async () => await this.model.findById(id);
-    if (saveCache) {
-      return await this.findOneInHsetWithCache({ _id: id }, query);
+      return await query.exec();
+    } catch (error) {
+      throw new Error(`Failed to find document: ${error.message}`);
     }
-    return await query();
-  };
+  }
 
-  public findByIdAndUpdate = async (id, object): Promise<any> => {
-    return await this.model.findByIdAndUpdate(id, { ...object }, { new: true });
-  };
+  public async findById(
+    id: string,
+    options: QueryOptions = {},
+    saveCache = false
+  ): Promise<T | null> {
+    try {
+      const query = this.model.findById(id, null, options);
 
-  public findOneAndUpdate = async (filter, object): Promise<any> => {
-    return await this.model.findOneAndUpdate(
-      { ...filter },
-      { ...object },
-      { new: true }
-    );
-  };
+      if (saveCache) {
+        return await this.findOneInHsetWithCache(
+          { _id: id },
+          async () => await query.exec()
+        );
+      }
 
-  public findByIdAndDelete = async (id): Promise<any> => {
-    return await this.model.findByIdAndDelete(id);
-  };
+      return await query.exec();
+    } catch (error) {
+      throw new Error(`Failed to find document by ID: ${error.message}`);
+    }
+  }
 
-  public findOneAndDelete = async (filter): Promise<any> => {
-    return await this.model.findOneAndDelete({ ...filter });
-  };
+  public async findByIdAndUpdate(
+    id: string,
+    update: UpdateQuery<T>,
+    options: QueryOptions = { new: true }
+  ): Promise<T | null> {
+    try {
+      return await this.model.findByIdAndUpdate(id, update, options).exec();
+    } catch (error) {
+      throw new Error(`Failed to update document by ID: ${error.message}`);
+    }
+  }
 
-  public countDocuments = async (filter): Promise<any> => {
-    return await this.model.countDocuments({ ...filter });
-  };
+  public async findOneAndUpdate(
+    filter: FilterQuery<T>,
+    update: UpdateQuery<T>,
+    options: QueryOptions = { new: true }
+  ): Promise<T | null> {
+    try {
+      return await this.model.findOneAndUpdate(filter, update, options).exec();
+    } catch (error) {
+      throw new Error(`Failed to update document: ${error.message}`);
+    }
+  }
+
+  public async findByIdAndDelete(id: string): Promise<T | null> {
+    try {
+      return await this.model.findByIdAndDelete(id).exec();
+    } catch (error) {
+      throw new Error(`Failed to delete document by ID: ${error.message}`);
+    }
+  }
+
+  public async findOneAndDelete(filter: FilterQuery<T>): Promise<T | null> {
+    try {
+      return await this.model.findOneAndDelete(filter).exec();
+    } catch (error) {
+      throw new Error(`Failed to delete document: ${error.message}`);
+    }
+  }
+
+  public async countDocuments(filter: FilterQuery<T>): Promise<number> {
+    try {
+      return await this.model.countDocuments(filter).exec();
+    } catch (error) {
+      throw new Error(`Failed to count documents: ${error.message}`);
+    }
+  }
 }
 
 export default Repository;
