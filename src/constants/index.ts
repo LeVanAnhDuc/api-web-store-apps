@@ -1,24 +1,10 @@
 // others
-import END_POINTS from './endpoint';
-import ENV from './env';
-import { TOKEN, OTP, TEMPLATE_EMAIL } from './libs';
-import { REASON_PHRASES, STATUS_CODES } from './status';
-
-enum EGender {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
-  OTHER = 'OTHER'
-}
-
-enum ERole {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-  MODERATOR = 'MODERATOR'
-}
+import END_POINTS from "./endpoint";
+import ENV from "./env";
+import { TOKEN, OTP, TEMPLATE_EMAIL } from "./libs";
+import { REASON_PHRASES, STATUS_CODES } from "./status";
 
 const CONSTANTS = {
-  EGender,
-  ERole,
   END_POINTS,
   TOKEN,
   TEMPLATE_EMAIL,
