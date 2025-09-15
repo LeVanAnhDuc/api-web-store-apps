@@ -1,8 +1,9 @@
-import { ERROR_MESSAGES } from "./en";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "./en";
 
 const LOCALES = {
   EN: {
-    ERROR_MESSAGES
+    ERROR_MESSAGES,
+    SUCCESS_MESSAGES
   }
 };
 

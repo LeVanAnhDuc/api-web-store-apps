@@ -1,5 +1,5 @@
 // types
-import type { IAuthDocument } from "@/types/modules/auth";
+import { ERole, type IAuthDocument } from "@/types/modules/auth";
 // models
 import AuthModel from "./auth.model";
 // repositories
@@ -16,23 +16,14 @@ class AuthRepository extends Repository<IAuthDocument> {
   public updateLastLogin = async (id: string) =>
     await this.findByIdAndUpdate(id, { lastLogin: new Date() });
 
-  // registerAccountRepo = async ({
-  //   fullName,
-  //   email,
-  //   phone,
-  //   password,
-  //   otpCode,
-  //   otpExpireAt
-  // }) => {
-  //   return await this.create({
-  //     fullName,
-  //     email,
-  //     phone,
-  //     password,
-  //     otpCode,
-  //     otpExpireAt
-  //   });
-  // };
+  public createAccount = async ({ email, password }) =>
+    await this.create({
+      email,
+      password,
+      lastLogin: new Date(),
+      roles: ERole.USER,
+      verifiedEmail: false
+    });
 
   // verifySignup = async (id) => {
   //   return await this.updateMany(

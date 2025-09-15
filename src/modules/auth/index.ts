@@ -21,6 +21,7 @@ import { validateSchema } from "@/middlewares/validate.middleware";
 // others
 import CONSTANTS from "@/constants";
 import { asyncHandler } from "@/helper";
+import UserRepository from "../user/user.repository";
 
 const {
   LOGIN,
@@ -36,7 +37,8 @@ const {
 
 const authRouter = express.Router();
 const authRepository = new AuthRepository();
-const authService = new AuthService(authRepository);
+const userRepository = new UserRepository();
+const authService = new AuthService(authRepository, userRepository);
 const authController = new AuthController(authService);
 
 authRouter.post(
@@ -44,11 +46,13 @@ authRouter.post(
   validateSchema({ body: loginSchema }),
   asyncHandler(authController.login)
 );
-// authRouter.post(
-//   SIGNUP,
-//   validateSchema({ body: signupSchema }),
-//   asyncHandler(authController.signup)
-// );
+
+authRouter.post(
+  SIGNUP,
+  validateSchema({ body: signupSchema }),
+  asyncHandler(authController.signup)
+);
+
 // authRouter.post(
 //   VERIFY_SIGNUP,
 //   validateSchema({ body: signupVerifySchema }),
@@ -83,4 +87,5 @@ authRouter.post(
 // Revoke Token: ô hiệu hóa một refreshToken hoặc accessToken cụ thể, thường dùng khi phát hiện hành vi đáng ngờ hoặc người dùng đăng xuất
 // từ một thiết bị cụ thể.
 
+export { authRepository, authService, authController };
 export default authRouter;

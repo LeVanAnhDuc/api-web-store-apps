@@ -1,9 +1,7 @@
 // libs
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 // types
 import { ERole, type IAuthDocument } from "@/types/modules/auth";
-
-const { Schema } = mongoose;
 
 const AuthSchema = new Schema<IAuthDocument>(
   {
@@ -27,6 +25,6 @@ const AuthSchema = new Schema<IAuthDocument>(
   }
 );
 
-const AuthModel = mongoose.model<IAuthDocument>("Authentication", AuthSchema);
+const AuthModel = model<IAuthDocument>("Authentication", AuthSchema);
 
 export default AuthModel;

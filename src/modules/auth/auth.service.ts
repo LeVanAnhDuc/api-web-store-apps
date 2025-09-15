@@ -8,6 +8,7 @@ import type { IAuthDocument, ILoginResponse } from "@/types/modules/auth";
 import { IUserDocument } from "@/models/user.model";
 // repositories
 import AuthRepository from "./auth.repository";
+import UserRepository from "../user/user.repository";
 // dto
 // import { UserResponseDTO } from "@/dto/user";
 // others
@@ -21,8 +22,9 @@ import {
 import { decodeAccessToken } from "@/libs/jwt";
 import LOCALES from "./locales";
 
-const { ACCOUNT_NOT_VERIFY, INVALID_EMAIL_OR_PASSWORD, LOGIN_SUCCESS } =
+const { ACCOUNT_NOT_VERIFY, INVALID_EMAIL_OR_PASSWORD, EMAIL_ALREADY_EXISTS } =
   LOCALES.EN.ERROR_MESSAGES;
+const { SIGNUP_SUCCESS, LOGIN_SUCCESS } = LOCALES.EN.SUCCESS_MESSAGES;
 
 const {
   SUBJECT_EMAIL_SIGNUP,
@@ -34,7 +36,10 @@ const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } =
   CONSTANTS.TOKEN;
 
 class AuthService {
-  constructor(private authRepository: AuthRepository) {}
+  constructor(
+    private authRepository: AuthRepository,
+    private userRepository: UserRepository
+  ) {}
 
   public login = async ({
     email,
@@ -71,33 +76,37 @@ class AuthService {
     };
   };
 
-  public signup = async ({ fullName, email, phone, password }) => {
-    // const userExists =
-    //   (await this.authRepository.findUserRepo(email)) ||
-    //   (await this.authRepository.findUserRepo(phone));
-    // if (userExists) throw new BadRequestError("Email or phone already exists");
+  public signup = async ({
+    fullName,
+    email,
+    phone,
+    password
+  }: {
+    fullName: string;
+    email: string;
+    phone: string;
+    password: string;
+  }): Promise<Partial<ISuccessResponse<string>>> => {
+    const emailExists = await this.authRepository.findUserByEmail(email);
 
-    // const hashPassWord = bcrypt.hashPassword(password);
+    if (emailExists) throw new BadRequestError(EMAIL_ALREADY_EXISTS);
+
+    const hashPassWord = bcrypt.hashPassword(password);
+    const { _id } = await this.authRepository.createAccount({
+      email,
+      password: hashPassWord
+    });
+
+    await this.userRepository.createUser({ fullName, authId: _id, phone });
+
     // const { otp: otpCode, timeExpire } = speakeasy.getOTP();
-
-    // await this.authRepository.registerAccountRepo({
-    //   fullName,
-    //   email,
-    //   phone,
-    //   password: hashPassWord,
-    //   otpCode,
-    //   otpExpireAt: new Date(Date.now() + timeExpire * 1000)
-    // });
-
     // sendEmail({
     //   email,
     //   subject: SUBJECT_EMAIL_SIGNUP,
     //   message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode })
     // });
 
-    return {
-      message: "Sign up successfully. Please check your email to verify"
-    };
+    return { message: SIGNUP_SUCCESS };
   };
 
   public verifySignup = async ({ email, otpCode }) => {
