@@ -5,7 +5,6 @@ import { Response, Request } from "express";
 import type { ISuccessResponse } from "@/types/common";
 import type { IAuthDocument, ILoginResponse } from "@/types/modules/auth";
 // models
-import { IUserDocument } from "@/models/user.model";
 // repositories
 import AuthRepository from "./auth.repository";
 import UserRepository from "../user/user.repository";

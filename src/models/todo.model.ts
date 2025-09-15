@@ -1,6 +1,5 @@
-import mongoose, { Document } from 'mongoose';
-import { IUserSpecificallySchema } from './user.model';
-import { IUserSpecifically } from '../types/users';
+import mongoose, { Document } from "mongoose";
+import { IUserSpecifically } from "../types/users";
 
 const Schema = mongoose.Schema;
 interface ITodo extends Document {
@@ -27,18 +26,14 @@ const TodoSchema = new Schema<ITodo>(
     updatedAt: { type: Date, default: Date.now, required: true },
     projectName: { type: String, trim: true, required: true },
     status: { type: String, trim: true, required: true },
-    summary: { type: String, trim: true },
-    assigneeTo: { type: IUserSpecificallySchema },
-    reporter: { type: IUserSpecificallySchema },
-    createBy: { type: IUserSpecificallySchema },
-    updatedBy: { type: IUserSpecificallySchema }
+    summary: { type: String, trim: true }
   },
   {
-    collection: 'todos',
-    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
+    collection: "todos",
+    timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" }
   }
 );
 
-const Todo = mongoose.model<ITodo>('Todo', TodoSchema);
+const Todo = mongoose.model<ITodo>("Todo", TodoSchema);
 
 export default Todo;
