@@ -36,7 +36,7 @@ class AuthController {
 
   public refreshAccessToken = async (req: Request, res: Response) => {
     return new CreatedSuccess(
-      await this.authService.refreshAccessToken(res, req)
+      await this.authService.refreshAccessToken(req)
     ).send(res);
   };
 

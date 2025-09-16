@@ -12,7 +12,7 @@ import { asyncHandler } from "@/helper";
 
 const {
   LOGIN,
-  // REFRESH_TOKEN,
+  REFRESH_ACCESS_TOKEN,
   // RESEND_OTP,
   SIGNUP
   // VERIFY_SIGNUP,
@@ -49,7 +49,12 @@ authRouter.post(
 // );
 
 // authRouter.post(LOGOUT, asyncHandler(authController.logOut));
-// authRouter.post(REFRESH_TOKEN, asyncHandler(authController.refreshAccessToken));
+
+authRouter.post(
+  REFRESH_ACCESS_TOKEN,
+  asyncHandler(authController.refreshAccessToken)
+);
+
 // authRouter.post(
 //   SEND_OTP_FORGOT_PASSWORD,
 //   //   validateSchema({ body: sendOtpForgotPassword }),

@@ -15,15 +15,20 @@ import UserRepository from "../user/user.repository";
 // import { formatSI, setCookie } from "@/utils";
 import {
   BadRequestError,
-  ForbiddenError
-  // UnauthorizedError
+  ForbiddenError,
+  UnauthorizedError
 } from "@/responses/error.response";
 // import { decodeAccessToken } from "@/libs/jwt";
 import LOCALES from "./locales";
 
-const { ACCOUNT_NOT_VERIFY, INVALID_EMAIL_OR_PASSWORD, EMAIL_ALREADY_EXISTS } =
-  LOCALES.EN.ERROR_MESSAGES;
-const { SIGNUP_SUCCESS, LOGIN_SUCCESS } = LOCALES.EN.SUCCESS_MESSAGES;
+const {
+  ACCOUNT_NOT_VERIFY,
+  INVALID_EMAIL_OR_PASSWORD,
+  EMAIL_ALREADY_EXISTS,
+  REFRESH_TOKEN_NOT_FOUND
+} = LOCALES.EN.ERROR_MESSAGES;
+const { SIGNUP_SUCCESS, LOGIN_SUCCESS, REFRESH_TOKEN_SUCCESS } =
+  LOCALES.EN.SUCCESS_MESSAGES;
 
 // const {
 //   SUBJECT_EMAIL_SIGNUP,
@@ -60,11 +65,9 @@ class AuthService {
 
     if (!verifiedEmail) throw new ForbiddenError(ACCOUNT_NOT_VERIFY);
 
-    await this.authRepository.updateLastLogin(userId.toString());
-
-    const { accessToken, refreshToken } = jwt.generatePairToken(
-      userId.toString()
-    );
+    const { accessToken, refreshToken } = jwt.generatePairToken({
+      userId: userId.toString()
+    });
 
     return {
       message: LOGIN_SUCCESS,
@@ -164,21 +167,17 @@ class AuthService {
     return { message: "Log out successfully" };
   };
 
-  public refreshAccessToken = async (res: Response, req: Request) => {
-    //   const refreshToken = req.cookies.refreshToken;
-    //   if (!refreshToken) throw new UnauthorizedError('Refresh token is not found');
+  public refreshAccessToken = async (
+    req: Request
+  ): Promise<Partial<ISuccessResponse<{ accessToken: string }>>> => {
+    const { refreshToken } = req.body;
+    if (!refreshToken) throw new UnauthorizedError(REFRESH_TOKEN_NOT_FOUND);
 
-    //   const payload = jwt.decodeRefreshToken(refreshToken);
+    const payload = jwt.decodeRefreshToken<{ userId: string }>(refreshToken);
 
-    //   if (!payload || !payload.id) throw new UnauthorizedError('Invalid refresh token');
+    const accessToken = jwt.generateAccessToken({ userId: payload.userId });
 
-    //   const accessToken = jwt.generateAccessToken({
-    //     id: payload.id,
-    //   });
-
-    //   setCookie({ res, name: 'accessToken', value: accessToken, maxAge: NUMBER_ACCESS_TOKEN });
-
-    return { message: "Refresh token successfully" };
+    return { message: REFRESH_TOKEN_SUCCESS, data: { accessToken } };
   };
 
   public sendOtpForgotPassword = async ({ email }, res) => {
