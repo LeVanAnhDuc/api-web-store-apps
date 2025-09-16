@@ -170,9 +170,9 @@ const TEMPLATE_EMAIL_RESET_PASS = `
     </html>
     `;
 
-const SUBJECT_EMAIL_SIGNUP = 'Account Registration Confirmation - DucApp';
+const SUBJECT_EMAIL_SIGNUP = "Account Registration Confirmation - DucApp";
 
-const SUBJECT_EMAIL_RESET_PASS = 'Reset Password - DucApp';
+const SUBJECT_EMAIL_RESET_PASS = "Reset Password - DucApp";
 
 const TEMPLATE_EMAIL = {
   TEMPLATE_EMAIL_SIGNUP,

@@ -1,3 +1,3 @@
-import { asyncHandler, asyncMiddlewareHandler } from './asyncHandler';
+import { asyncHandler, asyncMiddlewareHandler } from "./asyncHandler";
 
 export { asyncHandler, asyncMiddlewareHandler };

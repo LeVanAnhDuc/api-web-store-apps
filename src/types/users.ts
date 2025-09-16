@@ -1,5 +1,5 @@
-export type TGender = 'FEMALE' | 'MALE' | 'OTHER';
-export type TRole = 'ADMIN' | 'USER' | 'MODERATOR';
+export type TGender = "FEMALE" | "MALE" | "OTHER";
+export type TRole = "ADMIN" | "USER" | "MODERATOR";
 
 export interface IUser {
   userName: string;
@@ -24,5 +24,5 @@ export interface IUser {
 export interface IUserSpecifically
   extends Pick<
     IUser,
-    'userName' | 'fullName' | 'email' | 'isActive' | 'phone' | 'avatar'
+    "userName" | "fullName" | "email" | "isActive" | "phone" | "avatar"
   > {}

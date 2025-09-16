@@ -1,5 +1,5 @@
 // others
-import CONSTANTS from '../constants';
+import CONSTANTS from "../constants";
 
 const { STATUS_CODES, REASON_PHRASES } = CONSTANTS;
 

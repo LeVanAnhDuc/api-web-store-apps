@@ -2,11 +2,11 @@ import {
   CreateTodoDTO,
   GetTodosQueryParamsDTO,
   UpdateTodoDTO
-} from '../dto/todo.dto';
-import { BadRequestError, NotFoundError } from '../responses/error.response';
-import { authRepo, todoRepo } from '../repositories';
-import { jwt } from '../libs';
-import { IUser } from '../types/users';
+} from "../dto/todo.dto";
+import { BadRequestError, NotFoundError } from "../responses/error.response";
+import { authRepo, todoRepo } from "../repositories";
+import { jwt } from "../libs";
+import { IUser } from "../types/users";
 
 class TodoService {
   static getTodosService = async (query: GetTodosQueryParamsDTO) => {
@@ -32,7 +32,7 @@ class TodoService {
     }
 
     if (searchKey) {
-      filter.name = { $regex: searchKey, $options: 'i' };
+      filter.name = { $regex: searchKey, $options: "i" };
     }
 
     const [data, totalItems] = await Promise.all([
@@ -49,7 +49,7 @@ class TodoService {
     const perPage = data.length;
 
     return {
-      message: 'Get list todo successfully',
+      message: "Get list todo successfully",
       data: { data, currentPage: pageNo, perPage, totalItems, totalPages }
     };
   };
@@ -58,10 +58,10 @@ class TodoService {
     const data = await todoRepo.getTodoByIDRepo(id, false);
 
     if (!data) {
-      throw new NotFoundError('Todo not found');
+      throw new NotFoundError("Todo not found");
     }
 
-    return { message: 'Get one todo successfully', data: data };
+    return { message: "Get one todo successfully", data: data };
   };
 
   static addTodoService = async (accessToken: string, body: CreateTodoDTO) => {
@@ -88,7 +88,7 @@ class TodoService {
       }
     });
 
-    return { message: 'add todo successfully', data: newTodo };
+    return { message: "add todo successfully", data: newTodo };
   };
 
   static updateTodoService = async (
@@ -101,20 +101,20 @@ class TodoService {
     const updatedTodo = await todoRepo.updateTodoRepo(id, objectUpdate);
 
     if (!updatedTodo) {
-      throw new NotFoundError('Todo is not found');
+      throw new NotFoundError("Todo is not found");
     }
 
-    return { message: 'update todo successfully', data: updatedTodo };
+    return { message: "update todo successfully", data: updatedTodo };
   };
 
   static deleteTodoService = async (id: string) => {
     const deletedTodo = await todoRepo.deleteTodoRepo(id);
 
     if (!deletedTodo) {
-      throw new BadRequestError('Todo is not found');
+      throw new BadRequestError("Todo is not found");
     }
 
-    return { message: 'Todo deleted successfully' };
+    return { message: "Todo deleted successfully" };
   };
 }
 

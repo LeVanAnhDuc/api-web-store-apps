@@ -1,9 +1,9 @@
-import Todo from '../models/todo.model';
-import Repository from './base.repo';
+import Todo from "../models/todo.model";
+import Repository from "./base.repo";
 
 class TodoRepo extends Repository {
   constructor() {
-    super(Todo, 'Todo');
+    super(Todo, "Todo");
   }
 
   public getTodosRepo = async ({

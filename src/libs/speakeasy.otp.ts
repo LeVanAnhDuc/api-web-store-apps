@@ -1,7 +1,7 @@
 // libs
-import speakeasy from 'speakeasy';
+import speakeasy from "speakeasy";
 // others
-import CONSTANTS from '../constants';
+import CONSTANTS from "../constants";
 
 const { OTP, ENV } = CONSTANTS;
 const { TIME_EXPIRE_OTP, OTP_LENGTH, ENCODING, SECRET_LENGTH } = OTP;

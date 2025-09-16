@@ -1,4 +1,4 @@
-import { Expose, Transform } from 'class-transformer';
+import { Expose, Transform } from "class-transformer";
 import {
   IsString,
   IsNotEmpty,
@@ -7,7 +7,7 @@ import {
   IsInt,
   Max,
   Min
-} from 'class-validator';
+} from "class-validator";
 
 export class GetTodosQueryParamsDTO {
   @Expose()
@@ -28,9 +28,9 @@ export class GetTodosQueryParamsDTO {
   @Transform(({ value }) => {
     if (!value) return true;
 
-    if (typeof value === 'string') {
-      if (value === 'true') return true;
-      if (value === 'false') return false;
+    if (typeof value === "string") {
+      if (value === "true") return true;
+      if (value === "false") return false;
     }
 
     return Boolean(value);

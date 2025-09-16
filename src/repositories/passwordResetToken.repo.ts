@@ -1,11 +1,11 @@
 // models
-import UserResetPasswordToken from '../models/passwordResetToken.model';
+import UserResetPasswordToken from "../models/passwordResetToken.model";
 // repositories
-import Repository from './base.repo';
+import Repository from "./base.repo";
 
 class UserResetPasswordTokenRepo extends Repository {
   constructor() {
-    super(UserResetPasswordToken, 'UserResetPasswordToken');
+    super(UserResetPasswordToken, "UserResetPasswordToken");
   }
 
   createPasswordResetToken = async ({

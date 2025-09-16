@@ -1,7 +1,7 @@
 // libs
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document } from "mongoose";
 // types
-import type { IUserResetPasswordToken } from '../types/tokens';
+import type { IUserResetPasswordToken } from "../types/tokens";
 
 const { Schema } = mongoose;
 
@@ -11,7 +11,7 @@ export interface IUserResetPasswordTokenDocument
 
 const IUserResetPasswordTokenSchema = new Schema<IUserResetPasswordToken>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     email: { type: String, required: true },
     used: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
@@ -23,13 +23,13 @@ const IUserResetPasswordTokenSchema = new Schema<IUserResetPasswordToken>(
     otpVerified: { type: Boolean, default: false }
   },
   {
-    collection: 'user_reset_password_tokens',
-    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
+    collection: "user_reset_password_tokens",
+    timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" }
   }
 );
 
 const UserResetPasswordToken = mongoose.model<IUserResetPasswordToken>(
-  'UserResetPasswordToken',
+  "UserResetPasswordToken",
   IUserResetPasswordTokenSchema
 );
 

@@ -1,12 +1,12 @@
-import { NextFunction, Request, Response } from 'express';
-import { ErrorResponse } from '../responses/error.response';
+import { NextFunction, Request, Response } from "express";
+import { ErrorResponse } from "../responses/error.response";
 
 export const handleNotFound = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const error = new ErrorResponse('Not Found', 404);
+  const error = new ErrorResponse("Not Found", 404);
   next(error);
 };
 
@@ -19,8 +19,8 @@ export const handleError = (
   const statusCode = error instanceof ErrorResponse ? error.getStatus() : 500;
 
   return res.status(statusCode).json({
-    status: 'Error',
+    status: "Error",
     code: statusCode,
-    message: error.message || 'Internal Server error'
+    message: error.message || "Internal Server error"
   });
 };

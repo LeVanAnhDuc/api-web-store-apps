@@ -6,12 +6,12 @@ import {
   ConflictRequestError,
   MongoError,
   RedisError
-} from './error.response';
+} from "./error.response";
 import {
   CreatedSuccess,
   OkSuccess,
   NoContentSuccess
-} from './success.response';
+} from "./success.response";
 
 const responses = {
   BadRequestError,

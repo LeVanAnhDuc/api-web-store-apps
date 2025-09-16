@@ -1,8 +1,8 @@
-import { plainToClass } from 'class-transformer';
-import { NextFunction, Request, Response } from 'express';
-import TodoService from '../services/todo.service';
-import { GetTodosQueryParamsDTO } from '../dto/todo.dto';
-import { CreatedSuccess, OkSuccess } from '../responses/success.response';
+import { plainToClass } from "class-transformer";
+import { NextFunction, Request, Response } from "express";
+import TodoService from "../services/todo.service";
+import { GetTodosQueryParamsDTO } from "../dto/todo.dto";
+import { CreatedSuccess, OkSuccess } from "../responses/success.response";
 
 class TodoController {
   getTodosController = async (
@@ -32,7 +32,7 @@ class TodoController {
     res: Response,
     next: NextFunction
   ) => {
-    const accessToken = req.headers.authorization.split(' ')[1];
+    const accessToken = req.headers.authorization.split(" ")[1];
 
     return new CreatedSuccess(
       await TodoService.addTodoService(accessToken, req.body)

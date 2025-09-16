@@ -1,20 +1,20 @@
-import { createClient } from 'redis';
-import config from '../constants/env';
-import { RedisError } from '../responses/error.response';
+import { createClient } from "redis";
+import config from "../constants/env";
+import { RedisError } from "../responses/error.response";
 
 const statusConnectRedis = {
-  CONNECT: 'connect',
-  END: 'end',
-  RECONNECT: 'reconnecting',
-  ERROR: 'error'
+  CONNECT: "connect",
+  END: "end",
+  RECONNECT: "reconnecting",
+  ERROR: "error"
 };
 
 const REDIS_CONNECT_TIMEOUT = 10000;
 const REDIS_CONNECT_MESSAGE = {
   code: -99,
   message: {
-    vn: 'redis bị lỗi',
-    en: 'service connect redis error'
+    vn: "redis bị lỗi",
+    en: "service connect redis error"
   }
 };
 
@@ -70,17 +70,17 @@ class RedisDatabase {
 
   private handleEventConnect = (redisClient) => {
     redisClient.on(statusConnectRedis.CONNECT, () => {
-      console.log('connected redis: connected');
+      console.log("connected redis: connected");
       clearTimeout(this.connectionTimeout);
     });
 
     redisClient.on(statusConnectRedis.END, () => {
-      console.log('connected redis: end');
+      console.log("connected redis: end");
       this.handleTimeoutError();
     });
 
     redisClient.on(statusConnectRedis.RECONNECT, () => {
-      console.log('connected redis: reconnecting');
+      console.log("connected redis: reconnecting");
       clearTimeout(this.connectionTimeout);
     });
 
