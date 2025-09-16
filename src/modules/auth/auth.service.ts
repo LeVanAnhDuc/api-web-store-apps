@@ -1,9 +1,9 @@
 // libs
-import { bcrypt, jwt, sendEmail, speakeasy } from "@/libs";
+import { bcrypt, jwt } from "@/libs";
 import { Response, Request } from "express";
 // types
 import type { ISuccessResponse } from "@/types/common";
-import type { IAuthDocument, ILoginResponse } from "@/types/modules/auth";
+import type { ILoginResponse } from "@/types/modules/auth";
 // models
 // repositories
 import AuthRepository from "./auth.repository";
@@ -11,28 +11,28 @@ import UserRepository from "../user/user.repository";
 // dto
 // import { UserResponseDTO } from "@/dto/user";
 // others
-import CONSTANTS from "@/constants";
-import { formatSI, setCookie } from "@/utils";
+// import CONSTANTS from "@/constants";
+// import { formatSI, setCookie } from "@/utils";
 import {
   BadRequestError,
-  ForbiddenError,
-  UnauthorizedError
+  ForbiddenError
+  // UnauthorizedError
 } from "@/responses/error.response";
-import { decodeAccessToken } from "@/libs/jwt";
+// import { decodeAccessToken } from "@/libs/jwt";
 import LOCALES from "./locales";
 
 const { ACCOUNT_NOT_VERIFY, INVALID_EMAIL_OR_PASSWORD, EMAIL_ALREADY_EXISTS } =
   LOCALES.EN.ERROR_MESSAGES;
 const { SIGNUP_SUCCESS, LOGIN_SUCCESS } = LOCALES.EN.SUCCESS_MESSAGES;
 
-const {
-  SUBJECT_EMAIL_SIGNUP,
-  TEMPLATE_EMAIL_SIGNUP,
-  SUBJECT_EMAIL_RESET_PASS,
-  TEMPLATE_EMAIL_RESET_PASS
-} = CONSTANTS.TEMPLATE_EMAIL;
-const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } =
-  CONSTANTS.TOKEN;
+// const {
+//   SUBJECT_EMAIL_SIGNUP,
+//   TEMPLATE_EMAIL_SIGNUP,
+//   SUBJECT_EMAIL_RESET_PASS,
+//   TEMPLATE_EMAIL_RESET_PASS
+// } = CONSTANTS.TEMPLATE_EMAIL;
+// const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } =
+//   CONSTANTS.TOKEN;
 
 class AuthService {
   constructor(

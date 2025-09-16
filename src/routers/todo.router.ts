@@ -1,24 +1,24 @@
-import express from 'express';
-import TodoController from '../controllers/todo.controller';
-import { isIDObject, requiredBody } from '../middlewares/validate.middleware';
-import { authorMiddleware } from '../middlewares/auth.middleware';
+import express from "express";
+import TodoController from "../controllers/todo.controller";
+import { isIDObject, requiredBody } from "../middlewares/validate.middleware";
+import { authorMiddleware } from "../middlewares/auth.middleware";
 import {
   CreateTodoDTO,
   GetTodosQueryParamsDTO,
   UpdateTodoDTO
-} from '../dto/todo.dto';
-import { asyncHandler, asyncMiddlewareHandler } from '../helper';
+} from "../dto/todo.dto";
+import { asyncHandler, asyncMiddlewareHandler } from "../helper";
 
 const router = express.Router();
 
 router.get(
-  '/',
+  "/",
   // asyncMiddlewareHandler(validateFieldsRequestQuery(GetTodosQueryParamsDTO)),
   asyncHandler(TodoController.getTodosController)
 );
 
 router.get(
-  '/:id',
+  "/:id",
   asyncMiddlewareHandler(isIDObject),
   asyncHandler(TodoController.getTodoByIDController)
 );
@@ -26,14 +26,14 @@ router.get(
 router.use(asyncMiddlewareHandler(authorMiddleware));
 
 router.post(
-  '/',
+  "/",
   asyncMiddlewareHandler(requiredBody),
   // asyncMiddlewareHandler(validateFieldsRequestBody(CreateTodoDTO)),
   asyncHandler(TodoController.addTodoController)
 );
 
 router.put(
-  '/:id',
+  "/:id",
   asyncMiddlewareHandler(isIDObject),
   asyncMiddlewareHandler(requiredBody),
   // asyncMiddlewareHandler(validateFieldsRequestBody(UpdateTodoDTO)),
@@ -41,7 +41,7 @@ router.put(
 );
 
 router.delete(
-  '/:id',
+  "/:id",
   asyncMiddlewareHandler(isIDObject),
   asyncHandler(TodoController.deleteTodoController)
 );

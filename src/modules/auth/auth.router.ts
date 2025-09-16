@@ -12,14 +12,14 @@ import { asyncHandler } from "@/helper";
 
 const {
   LOGIN,
-  REFRESH_TOKEN,
-  RESEND_OTP,
-  SIGNUP,
-  VERIFY_SIGNUP,
-  LOGOUT,
-  CONFIRM_OTP_FORGOT_PASSWORD,
-  SEND_OTP_FORGOT_PASSWORD,
-  UPDATE_PASSWORD_FORGOT_PASSWORD
+  // REFRESH_TOKEN,
+  // RESEND_OTP,
+  SIGNUP
+  // VERIFY_SIGNUP,
+  // LOGOUT,
+  // CONFIRM_OTP_FORGOT_PASSWORD,
+  // SEND_OTP_FORGOT_PASSWORD,
+  // UPDATE_PASSWORD_FORGOT_PASSWORD
 } = CONSTANTS.END_POINTS;
 
 const authRouter = express.Router();
@@ -41,11 +41,13 @@ authRouter.post(
 //   validateSchema({ body: signupVerifySchema }),
 //   asyncHandler(authController.verifySignup)
 // );
+
 // authRouter.post(
 //   RESEND_OTP,
 //   validateSchema({ body: reSendOtpSchema }),
 //   asyncHandler(authController.reSendOTPSignup)
 // );
+
 // authRouter.post(LOGOUT, asyncHandler(authController.logOut));
 // authRouter.post(REFRESH_TOKEN, asyncHandler(authController.refreshAccessToken));
 // authRouter.post(

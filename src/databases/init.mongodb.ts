@@ -1,23 +1,23 @@
 // libs
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 // others
-import config from '../constants/env';
-import { MongoError } from '../responses/error.response';
+import config from "../constants/env";
+import { MongoError } from "../responses/error.response";
 
 enum statusConnectMongo {
-  OPEN = 'open',
-  CONNECT = 'connected',
-  DISCONNECT = 'disconnected',
-  RECONNECT = 'reconnected',
-  ERROR = 'error',
-  CLOSE = 'close'
+  OPEN = "open",
+  CONNECT = "connected",
+  DISCONNECT = "disconnected",
+  RECONNECT = "reconnected",
+  ERROR = "error",
+  CLOSE = "close"
 }
 
 const MONGO_CONNECT_TIMEOUT = 10000;
 const MONGO_CONNECT_MESSAGE = {
   code: -99,
   message: {
-    en: 'service connect mongo error'
+    en: "service connect mongo error"
   }
 };
 
@@ -47,19 +47,19 @@ class MongoDatabase {
 
   private handleEventConnect = () => {
     mongoose.connection.on(statusConnectMongo.CONNECT, () => {
-      console.log('connected mongo: connected');
+      console.log("connected mongo: connected");
       clearTimeout(this.connectionTimeout);
     });
     mongoose.connection.on(statusConnectMongo.OPEN, () => {
-      console.log('connected mongo: open');
+      console.log("connected mongo: open");
       clearTimeout(this.connectionTimeout);
     });
     mongoose.connection.on(statusConnectMongo.DISCONNECT, () => {
-      console.log('connected mongo: disconnect');
+      console.log("connected mongo: disconnect");
       this.handleTimeoutError();
     });
     mongoose.connection.on(statusConnectMongo.RECONNECT, () => {
-      console.log('connected mongo: reconnecting');
+      console.log("connected mongo: reconnecting");
       clearTimeout(this.connectionTimeout);
     });
     mongoose.connection.on(statusConnectMongo.ERROR, (error) => {
@@ -67,7 +67,7 @@ class MongoDatabase {
       this.handleTimeoutError();
     });
     mongoose.connection.on(statusConnectMongo.CLOSE, () => {
-      console.log('connected mongo: close');
+      console.log("connected mongo: close");
       clearTimeout(this.connectionTimeout);
     });
   };
@@ -82,4 +82,4 @@ class MongoDatabase {
   };
 }
 
-export default MongoDatabase.getInstance();
+export default MongoDatabase;

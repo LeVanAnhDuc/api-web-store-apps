@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 // routers
 import router from "./modules";
 // databases
-import instanceMongoDatabase from "./databases/init.mongodb";
+import MongoDatabase from "./databases/init.mongodb";
 // import instanceRedis from './dbs/init.redis';
 // middlewares
 import {
@@ -19,7 +19,7 @@ import config from "./constants/env";
 
 const app = express();
 
-instanceMongoDatabase;
+MongoDatabase.getInstance();
 // instanceRedis;
 
 //init middleware

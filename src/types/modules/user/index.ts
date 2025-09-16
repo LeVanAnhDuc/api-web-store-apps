@@ -24,5 +24,8 @@ export interface IUserDocument extends IUser, Pick<Document, "_id"> {
   _id: Schema.Types.ObjectId;
 }
 
-export interface IUserCreation
-  extends Pick<IUser, "authId" | "phone" | "fullName"> {}
+export interface IUserCreation {
+  authId: IUser["authId"];
+  phone: IUser["phone"];
+  fullName: IUser["fullName"];
+}

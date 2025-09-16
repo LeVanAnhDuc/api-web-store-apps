@@ -1,5 +1,5 @@
 // libs
-import { Response } from 'express';
+import { Response } from "express";
 
 /**
  * Format string interpolation - For Example:
@@ -13,13 +13,13 @@ export const formatSI = (
   stringDataSource: string,
   stringInterpolation: object
 ) => {
-  if (stringDataSource === '') return '';
+  if (stringDataSource === "") return "";
 
   if (!stringDataSource) {
-    throw TypeError('stringDataSource should be a string');
+    throw TypeError("stringDataSource should be a string");
   }
   if (!stringInterpolation) {
-    throw TypeError('stringInterpolation should be an array or object');
+    throw TypeError("stringInterpolation should be an array or object");
   }
   let stringFormatted = stringDataSource;
   // stringInterpolation = ["A", 20]
@@ -29,7 +29,7 @@ export const formatSI = (
   const placeholderNames = Object.entries({ ...stringInterpolation });
   placeholderNames.forEach(([placeholderName, placeholderValue]) => {
     stringFormatted = stringFormatted.replace(
-      new RegExp(`\\[${placeholderName}\\]`, 'g'),
+      new RegExp(`\\[${placeholderName}\\]`, "g"),
       placeholderValue as string
     );
   });
@@ -46,7 +46,7 @@ export const formatSI = (
  * @param {number} maxAge - The maximum age in milliseconds for the cookie.
  */
 
-export const setCookie = ({
+export const setCookie = <T>({
   res,
   name,
   value,
@@ -54,12 +54,12 @@ export const setCookie = ({
 }: {
   res: Response;
   name: string;
-  value: any;
+  value: T;
   maxAge: number;
 }) =>
   res.cookie(name, value, {
     httpOnly: true,
     secure: true,
-    sameSite: 'strict',
+    sameSite: "strict",
     maxAge
   });

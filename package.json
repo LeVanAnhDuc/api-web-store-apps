@@ -33,13 +33,17 @@
     "validator": "^13.11.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.35.0",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.10",
-    "eslint": "^9.0.0",
+    "eslint": "^9.35.0",
+    "globals": "^16.4.0",
+    "jiti": "^2.5.1",
     "nodemon": "^3.1.0",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^8.44.0"
   }
 }
