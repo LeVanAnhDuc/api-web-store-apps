@@ -2,12 +2,16 @@
 import { Schema, model } from "mongoose";
 // types
 import { type IUserDocument, EGender } from "@/types/modules/user";
+// others
+import CONSTANTS from "@/constants";
+
+const { AUTHENTICATION, USER } = CONSTANTS.MODEL_NAME;
 
 const UserSchema = new Schema<IUserDocument>(
   {
     authId: {
       type: Schema.Types.ObjectId,
-      ref: "Authentication",
+      ref: AUTHENTICATION,
       required: true,
       unique: true
     },
@@ -25,6 +29,6 @@ const UserSchema = new Schema<IUserDocument>(
   }
 );
 
-const User = model<IUserDocument>("User", UserSchema);
+const User = model<IUserDocument>(USER, UserSchema);
 
 export default User;

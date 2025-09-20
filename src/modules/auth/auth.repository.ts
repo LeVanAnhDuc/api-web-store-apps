@@ -4,10 +4,14 @@ import { ERole, type IAuthDocument } from "@/types/modules/auth";
 import AuthModel from "./auth.model";
 // repositories
 import Repository from "@/repositories/base.repo";
+// others
+import CONSTANTS from "@/constants";
+
+const { AUTHENTICATION } = CONSTANTS.MODEL_NAME;
 
 class AuthRepository extends Repository<IAuthDocument> {
   constructor() {
-    super(AuthModel, "Auth");
+    super(AuthModel, AUTHENTICATION);
   }
 
   public findUserByEmail = async (email: string) =>

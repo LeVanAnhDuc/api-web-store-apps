@@ -2,6 +2,10 @@
 import { Schema, model } from "mongoose";
 // types
 import { ERole, type IAuthDocument } from "@/types/modules/auth";
+// others
+import CONSTANTS from "@/constants";
+
+const { AUTHENTICATION } = CONSTANTS.MODEL_NAME;
 
 const AuthSchema = new Schema<IAuthDocument>(
   {
@@ -25,6 +29,6 @@ const AuthSchema = new Schema<IAuthDocument>(
   }
 );
 
-const AuthModel = model<IAuthDocument>("Authentication", AuthSchema);
+const AuthModel = model<IAuthDocument>(AUTHENTICATION, AuthSchema);
 
 export default AuthModel;
