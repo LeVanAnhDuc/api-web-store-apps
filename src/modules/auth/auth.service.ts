@@ -59,10 +59,8 @@ class AuthService {
     const { _id: userId, password: hashedPassword, verifiedEmail } = foundUser;
 
     const passwordMatch = bcrypt.isValidPassword(password, hashedPassword);
-    if (!passwordMatch) {
-      throw new BadRequestError(INVALID_EMAIL_OR_PASSWORD);
-    }
 
+    if (!passwordMatch) throw new BadRequestError(INVALID_EMAIL_OR_PASSWORD);
     if (!verifiedEmail) throw new ForbiddenError(ACCOUNT_NOT_VERIFY);
 
     const { accessToken, refreshToken } = jwt.generatePairToken({

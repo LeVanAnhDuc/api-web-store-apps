@@ -1,5 +1,5 @@
 // libs
-import { Document, Schema } from "mongoose";
+import { Document } from "mongoose";
 
 export enum ERole {
   ADMIN = "ADMIN",
@@ -18,9 +18,7 @@ export interface IAuth {
   lastLogin: Date;
 }
 
-export interface IAuthDocument extends IAuth, Pick<Document, "_id"> {
-  _id: Schema.Types.ObjectId;
-}
+export interface IAuthDocument extends IAuth, Document {}
 
 export interface ILoginResponse {
   accessToken: string;

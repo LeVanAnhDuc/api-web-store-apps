@@ -1,6 +1,5 @@
 // libs
 import {
-  Document,
   FilterQuery,
   InsertManyOptions,
   Model,
@@ -8,7 +7,7 @@ import {
   QueryOptions,
   UpdateQuery
 } from "mongoose";
-import instanceRedis from "../databases/init.redis";
+// import instanceRedis from "../databases/init.redis";
 
 class Cache {
   private redis: any;
@@ -34,8 +33,8 @@ class Cache {
     const obj = await this.redis.hGetAll(key);
 
     const cleanedObj = {};
-    for (let key in obj) {
-      let value = obj[key].replace(/^"(.*)"$/, "$1");
+    for (const key in obj) {
+      const value = obj[key].replace(/^"(.*)"$/, "$1");
 
       // Convert string to number if possible
       if (!isNaN(value)) {
@@ -143,7 +142,7 @@ class Cache {
   };
 }
 
-class Repository<T extends Pick<Document, "_id">> extends Cache {
+class Repository<T> extends Cache {
   private model: Model<T>;
 
   constructor(model: Model<T>, name: string, redis = "") {
