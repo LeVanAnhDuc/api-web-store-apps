@@ -4,7 +4,9 @@
   "description": "",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "npx nodemon",
+    "dev": "nodemon",
+    "dev:check": "tsc --noEmit --watch",
+    "type-check": "tsc --noEmit",
     "build": "rimraf ./dist && tsc",
     "start": "npm run build && node dist/app.js",
     "lint": "eslint . --ext .ts",

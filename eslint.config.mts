@@ -76,6 +76,7 @@ export default tseslint.config(
       "dist",
       "build",
       ".husky",
+      ".doc",
       "*.json",
       ".eslintignore",
       ".prettierrc",

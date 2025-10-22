@@ -4,6 +4,12 @@
 
 API được viết bằng TS compile qua JS
 
+### 📚 Tài liệu chi tiết
+
+Xem thêm các tài liệu kỹ thuật chi tiết trong folder [`.doc/`](./.doc/):
+
+- [Nodemon Configuration Guide](./.doc/nodemon-config.md) - Giải thích chi tiết cấu hình Nodemon
+
 ## 2. Cài đặt dự án (require: Mongo, Node)
 
 ### Bước 1: Cài đặt dependencies
@@ -32,8 +38,34 @@ npm run dev
 
 ## 3. Các lệnh khả dụng
 
+### Development
+
 ```bash
-npm run dev          # Chạy server ở chế độ development với nodemon
+npm run dev          # Chạy server với nodemon (fast reload, no type checking)
+npm run dev:check    # Watch mode type checking (chạy trong terminal riêng)
+npm run type-check   # Kiểm tra TypeScript types một lần
+```
+
+**💡 Workflow khuyến nghị:**
+
+```bash
+# Terminal 1: Development server (fast reload)
+npm run dev
+
+# Terminal 2 (optional): Type checking watch mode
+npm run dev:check
+```
+
+Nodemon đã được tối ưu với:
+
+- Fast restart với `--transpile-only`
+- Delay 1000ms tránh restart nhiều lần
+- Gõ `rs` trong terminal để force restart
+- Auto clear console và hiển thị emoji khi restart/crash
+
+### Production & Code Quality
+
+```bash
 npm run build        # Build TypeScript sang JavaScript
 npm start            # Build và chạy production server
 npm run lint         # Kiểm tra code với ESLint
