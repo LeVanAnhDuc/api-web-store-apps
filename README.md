@@ -9,6 +9,7 @@ API được viết bằng TS compile qua JS
 Xem thêm các tài liệu kỹ thuật chi tiết trong folder [`.doc/`](./.doc/):
 
 - [Nodemon Configuration Guide](./.doc/nodemon-config.md) - Giải thích chi tiết cấu hình Nodemon
+- [Code Quality Tools Guide](./.doc/code-quality-tools.md) - Hướng dẫn ESLint, Prettier, Husky, Lint-staged
 
 ## 2. Cài đặt dự án (require: Mongo, Node)
 

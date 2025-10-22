@@ -9,7 +9,8 @@
 ```
 .doc/
 ├── README.md                 # File này - Giới thiệu về folder
-└── nodemon-config.md         # Hướng dẫn chi tiết về Nodemon configuration
+├── nodemon-config.md         # Hướng dẫn chi tiết về Nodemon configuration
+└── code-quality-tools.md     # Hướng dẫn ESLint, Prettier, Husky, Lint-staged
 ```
 
 ---
@@ -30,9 +31,11 @@ Folder `.doc/` chứa các tài liệu kỹ thuật chi tiết về:
 ### 1. [Nodemon Configuration Guide](./nodemon-config.md)
 
 **Audience**: Newbie to Senior
+**Size**: 19KB | **Reading time**: ~15 mins
+
 **Topics covered**:
 - Nodemon là gì và tại sao cần nó
-- Giải thích chi tiết từng config option
+- Giải thích chi tiết từng config option (12 options)
 - So sánh các cấu hình khác nhau
 - Troubleshooting common issues
 - Best practices
@@ -42,6 +45,34 @@ Folder `.doc/` chứa các tài liệu kỹ thuật chi tiết về:
 - ✅ Bạn muốn hiểu cấu hình Nodemon
 - ✅ Gặp issues với Nodemon
 - ✅ Muốn tối ưu development workflow
+
+---
+
+### 2. [Code Quality Tools Guide](./code-quality-tools.md)
+
+**Audience**: Newbie to Senior
+**Size**: 35KB+ | **Reading time**: ~25 mins
+
+**Topics covered**:
+- **Prettier**: Code formatter configuration
+  - 9 config options giải thích chi tiết
+  - .prettierignore patterns
+- **ESLint**: Code linter setup
+  - Plugin system explained
+  - 20+ rules giải thích
+  - TypeScript integration
+- **Husky**: Git hooks automation
+  - Pre-commit setup
+  - Available hooks
+- **Lint-staged**: Staged files processing
+  - Pattern matching
+  - Command chains
+
+**Khi nào đọc?**
+- ✅ Bạn mới setup project
+- ✅ Muốn hiểu code quality workflow
+- ✅ Gặp issues với linting/formatting
+- ✅ Cần customize rules cho team
 
 ---
 
