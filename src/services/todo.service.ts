@@ -1,12 +1,12 @@
-import {
+import type {
   CreateTodoDTO,
   GetTodosQueryParamsDTO,
   UpdateTodoDTO
 } from "../dto/todo.dto";
 import { BadRequestError, NotFoundError } from "../responses/error.response";
-import { authRepo, todoRepo } from "../repositories";
+import { todoRepo } from "../repositories";
 import { jwt } from "../libs";
-import { IUser } from "../types/users";
+import type { IUser } from "../types/users";
 
 class TodoService {
   static getTodosService = async (query: GetTodosQueryParamsDTO) => {
@@ -21,6 +21,7 @@ class TodoService {
 
     const skipTodo = (pageNo - 1) * pageSize;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: Record<string, any> = { isActive };
 
     if (projectName) {
@@ -67,9 +68,9 @@ class TodoService {
   static addTodoService = async (accessToken: string, body: CreateTodoDTO) => {
     const { name, description, projectName, status, summary } = body;
 
-    const idUser = jwt.decodeAccessToken(accessToken);
+    const _idUser = jwt.decodeAccessToken(accessToken);
 
-    // const userCreate: IUser = await authRepo.findIDUserRepo(idUser.id);
+    // const userCreate: IUser = await authRepo.findIDUserRepo(_idUser.id);
     const userCreate: IUser = undefined;
 
     const newTodo = await todoRepo.addTodoRepo({

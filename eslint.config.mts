@@ -1,14 +1,85 @@
-import js from "@eslint/js";
 import globals from "globals";
+import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
-import { defineConfig } from "eslint/config";
+import pluginPrettier from "eslint-plugin-prettier";
+import pluginPromise from "eslint-plugin-promise";
+import pluginUnusedImports from "eslint-plugin-unused-imports";
 
-export default defineConfig([
+export default tseslint.config(
   {
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
-    plugins: { js },
-    extends: ["js/recommended"],
-    languageOptions: { globals: globals.browser }
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.es2021
+      },
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        project: "./tsconfig.json"
+      }
+    },
+    plugins: {
+      "@typescript-eslint": tseslint.plugin,
+      prettier: pluginPrettier,
+      promise: pluginPromise,
+      "unused-imports": pluginUnusedImports
+    },
+    rules: {
+      ...pluginJs.configs.recommended.rules,
+      // Prettier integration
+      "prettier/prettier": [
+        "error",
+        {
+          endOfLine: "auto"
+        }
+      ],
+      // TypeScript rules
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/ban-ts-comment": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_"
+        }
+      ],
+      "@typescript-eslint/consistent-type-imports": "error",
+      // General JavaScript rules
+      "no-undef": "off",
+      "no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_"
+        }
+      ],
+      "prefer-const": "warn",
+      "no-var": "error",
+      "no-console": "warn",
+      "spaced-comment": "error",
+      "arrow-body-style": ["error", "as-needed"],
+      // Import rules
+      "unused-imports/no-unused-imports": "error",
+      // Promise rules
+      "promise/always-return": "warn",
+      "promise/no-return-wrap": "warn",
+      "promise/param-names": "warn",
+      "promise/catch-or-return": "warn"
+    }
   },
-  tseslint.configs.recommended
-]);
+  {
+    ignores: [
+      "node_modules",
+      "dist",
+      "build",
+      ".husky",
+      "*.json",
+      ".eslintignore",
+      ".prettierrc",
+      ".prettierignore"
+    ]
+  }
+);

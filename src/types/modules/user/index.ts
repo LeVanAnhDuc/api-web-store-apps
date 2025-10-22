@@ -2,8 +2,11 @@
 import type { Document, Schema } from "mongoose";
 
 export enum EGender {
+  // eslint-disable-next-line no-unused-vars
   MALE = "MALE",
+  // eslint-disable-next-line no-unused-vars
   FEMALE = "FEMALE",
+  // eslint-disable-next-line no-unused-vars
   OTHER = "OTHER"
 }
 

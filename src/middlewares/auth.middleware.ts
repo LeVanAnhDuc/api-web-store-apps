@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { jwt } from "../libs";
 import {
   BadRequestError,
@@ -7,8 +7,8 @@ import {
 
 export const authorMiddleware = (
   req: Request,
-  res: Response,
-  next: NextFunction
+  _res: Response,
+  _next: NextFunction
 ) => {
   if (!req.headers?.authorization) {
     throw new BadRequestError("token is not found");

@@ -1,5 +1,5 @@
 // libs
-import { Types } from "mongoose";
+import type { Types } from "mongoose";
 
 export interface IUserResetPasswordToken {
   userId: Types.ObjectId;

@@ -22,7 +22,7 @@ const app = express();
 MongoDatabase.getInstance();
 // instanceRedis;
 
-//init middleware
+// init middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());

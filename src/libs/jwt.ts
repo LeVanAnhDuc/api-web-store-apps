@@ -5,7 +5,7 @@ import jwt, {
   type Secret
 } from "jsonwebtoken";
 // types
-import { TExpiresIn, TPayload } from "../types/jwt";
+import type { TExpiresIn, TPayload } from "../types/jwt";
 // responses
 import { ForbiddenError } from "../responses/error.response";
 // others
@@ -51,12 +51,10 @@ const generateRefreshToken = (payload: TPayload) =>
 export const generateResetPasswordToken = (payload: TPayload) =>
   generateToken(payload, JWT_RESET_PASS_SECRET, NUMBER_RESET_PASS_TOKEN);
 
-export const generatePairToken = (payload: TPayload) => {
-  return {
-    accessToken: generateAccessToken(payload),
-    refreshToken: generateRefreshToken(payload)
-  };
-};
+export const generatePairToken = (payload: TPayload) => ({
+  accessToken: generateAccessToken(payload),
+  refreshToken: generateRefreshToken(payload)
+});
 
 export const decodeRefreshToken = <T>(token: string) =>
   verifyToken<T>(token, JWT_REFRESH_SECRET);

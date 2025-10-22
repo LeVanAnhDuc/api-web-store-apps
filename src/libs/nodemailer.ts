@@ -1,7 +1,7 @@
 // libs
 import nodemailer from "nodemailer";
 // types
-import { ISendEmail } from "../types/nodemailer";
+import type { ISendEmail } from "../types/nodemailer";
 // others
 import config from "../constants/env";
 

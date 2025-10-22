@@ -5,11 +5,17 @@ import config from "../constants/env";
 import { MongoError } from "../responses/error.response";
 
 enum statusConnectMongo {
+  // eslint-disable-next-line no-unused-vars
   OPEN = "open",
+  // eslint-disable-next-line no-unused-vars
   CONNECT = "connected",
+  // eslint-disable-next-line no-unused-vars
   DISCONNECT = "disconnected",
+  // eslint-disable-next-line no-unused-vars
   RECONNECT = "reconnected",
+  // eslint-disable-next-line no-unused-vars
   ERROR = "error",
+  // eslint-disable-next-line no-unused-vars
   CLOSE = "close"
 }
 

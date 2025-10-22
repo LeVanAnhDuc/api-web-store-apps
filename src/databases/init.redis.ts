@@ -22,6 +22,7 @@ const REDIS_CONNECT_MESSAGE = {
 class RedisDatabase {
   private static instance: RedisDatabase | null = null;
   private connectionTimeout;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public client: Record<string, any>;
 
   constructor() {

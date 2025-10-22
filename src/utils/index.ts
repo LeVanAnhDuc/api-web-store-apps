@@ -1,5 +1,5 @@
 // libs
-import { Response } from "express";
+import type { Response } from "express";
 
 /**
  * Format string interpolation - For Example:

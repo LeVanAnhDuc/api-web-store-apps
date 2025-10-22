@@ -2,11 +2,7 @@ import express from "express";
 import TodoController from "../controllers/todo.controller";
 import { isIDObject, requiredBody } from "../middlewares/validate.middleware";
 import { authorMiddleware } from "../middlewares/auth.middleware";
-import {
-  CreateTodoDTO,
-  GetTodosQueryParamsDTO,
-  UpdateTodoDTO
-} from "../dto/todo.dto";
+
 import { asyncHandler, asyncMiddlewareHandler } from "../helper";
 
 const router = express.Router();

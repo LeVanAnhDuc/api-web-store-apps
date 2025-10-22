@@ -1,5 +1,6 @@
-import mongoose, { Document } from "mongoose";
-import { IUserSpecifically } from "../types/users";
+import type { Document } from "mongoose";
+import mongoose from "mongoose";
+import type { IUserSpecifically } from "../types/users";
 
 const Schema = mongoose.Schema;
 interface ITodo extends Document {

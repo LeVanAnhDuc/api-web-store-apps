@@ -1,13 +1,13 @@
 // libs
 import { bcrypt, jwt } from "@/libs";
-import { Request } from "express";
+import type { Request } from "express";
 // types
 import type { ISuccessResponse } from "@/types/common";
 import type { ILoginResponse } from "@/types/modules/auth";
 // models
 // repositories
-import AuthRepository from "./auth.repository";
-import UserRepository from "../user/user.repository";
+import type AuthRepository from "./auth.repository";
+import type UserRepository from "../user/user.repository";
 // dto
 // import { UserResponseDTO } from "@/dto/user";
 // others
@@ -41,8 +41,10 @@ const { SIGNUP_SUCCESS, LOGIN_SUCCESS, REFRESH_TOKEN_SUCCESS, LOGOUT_SUCCESS } =
 
 class AuthService {
   constructor(
-    private authRepository: AuthRepository,
-    private userRepository: UserRepository
+    // eslint-disable-next-line no-unused-vars
+    private readonly authRepository: AuthRepository,
+    // eslint-disable-next-line no-unused-vars
+    private readonly userRepository: UserRepository
   ) {}
 
   public login = async ({
@@ -117,7 +119,7 @@ class AuthService {
     return { message: SIGNUP_SUCCESS };
   };
 
-  public verifySignup = async ({ email, otpCode }) => {
+  public verifySignup = async ({ email: _email, otpCode: _otpCode }) =>
     // const infoUser: IUserDocument =
     //   await this.authRepository.findUserRepo(email);
     // if (!infoUser) throw new BadRequestError("Email not found");
@@ -134,10 +136,9 @@ class AuthService {
 
     // await this.authRepository.verifySignup(id);
 
-    return { message: "Verify successfully" };
-  };
+    ({ message: "Verify successfully" });
 
-  public reSendOTPSignup = async ({ email }) => {
+  public reSendOTPSignup = async ({ email: _email }) =>
     // const infoUser: IUserDocument =
     //   await this.authRepository.findUserRepo(email);
 
@@ -161,8 +162,7 @@ class AuthService {
     //   message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode })
     // });
 
-    return { message: "Re-send OTP successfully" };
-  };
+    ({ message: "Re-send OTP successfully" });
 
   public logout = async ({
     userId
@@ -187,7 +187,7 @@ class AuthService {
     return { message: REFRESH_TOKEN_SUCCESS, data: { accessToken } };
   };
 
-  public sendOtpForgotPassword = async ({ email }, res) => {
+  public sendOtpForgotPassword = async ({ email: _email }, _res) =>
     // const infoUser: IUserDocument = await this.authRepository.findUserRepo(email);
     // if (!infoUser) throw new BadRequestError("Email not found");
     // const { _id: id, fullName } = infoUser;
@@ -212,10 +212,9 @@ class AuthService {
     //   value: resetPasswordToken,
     //   maxAge: NUMBER_RESET_PASS_TOKEN + 1000
     // });
-    return { message: "Send OTP successfully" };
-  };
+    ({ message: "Send OTP successfully" });
 
-  public confirmOpForgotPassword = async ({ otpCode }, req) => {
+  public confirmOpForgotPassword = async ({ otpCode: _otpCode }, _req) =>
     //   const resetPasswordToken = req.cookies.resetPasswordToken;
     //   if (!resetPasswordToken) throw new UnauthorizedError('Reset password token is not found');
 
@@ -227,10 +226,9 @@ class AuthService {
 
     //   userResetPasswordTokenRepo.updateVerifyOTP(resetPasswordToken);
 
-    return { message: "Confirm OTP successfully" };
-  };
+    ({ message: "Confirm OTP successfully" });
 
-  public updatePasswordForgotPassword = async ({ password }, req) => {
+  public updatePasswordForgotPassword = async ({ password: _password }, _req) =>
     //   const resetPasswordToken = req.cookies.resetPasswordToken;
     //   if (!resetPasswordToken) throw new UnauthorizedError('Reset password token is not found');
 
@@ -246,8 +244,7 @@ class AuthService {
 
     //   setCookie({ res: req.res, name: 'resetPasswordToken', value: '', maxAge: 0 });
 
-    return { message: "Update password successfully" };
-  };
+    ({ message: "Update password successfully" });
 }
 
 export default AuthService;

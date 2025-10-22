@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { ErrorResponse } from "../responses/error.response";
 
 export const handleNotFound = (
@@ -12,9 +12,9 @@ export const handleNotFound = (
 
 export const handleError = (
   error: ErrorResponse,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const statusCode = error instanceof ErrorResponse ? error.getStatus() : 500;
 

@@ -1,15 +1,10 @@
 // libs
-import joi from "joi";
+import type joi from "joi";
 import { rateLimit } from "express-rate-limit";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import lodash from "lodash";
-import { Model, Document, isValidObjectId, FilterQuery } from "mongoose";
-import {
-  plainToClass,
-  ClassConstructor,
-  classToPlain
-} from "class-transformer";
-import { validate } from "class-validator";
+import { isValidObjectId } from "mongoose";
+
 // others
 import { BadRequestError } from "../responses/error.response";
 
@@ -17,12 +12,13 @@ const TIME_RATE_LIMIT = 2 * 60 * 1000;
 const REQUEST_RATE_LIMIT = 10;
 const MESSAGE_RATE_LIMIT = "Too many requests, please try again later.";
 
-export const validateSchema = (schema: {
-  body?: joi.ObjectSchema;
-  query?: joi.ObjectSchema;
-  params?: joi.ObjectSchema;
-}) => {
-  return (req: Request, _: Response, next: NextFunction) => {
+export const validateSchema =
+  (schema: {
+    body?: joi.ObjectSchema;
+    query?: joi.ObjectSchema;
+    params?: joi.ObjectSchema;
+  }) =>
+  (req: Request, _: Response, next: NextFunction) => {
     // All errors will be collected in one place : (abortEarly: false)
 
     try {
@@ -47,7 +43,6 @@ export const validateSchema = (schema: {
       next(err);
     }
   };
-};
 
 export const rateLimitInstance = rateLimit({
   windowMs: TIME_RATE_LIMIT,

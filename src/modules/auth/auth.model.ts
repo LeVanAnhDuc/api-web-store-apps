@@ -1,5 +1,6 @@
 // libs
-import { Model, Schema, model } from "mongoose";
+import type { Model } from "mongoose";
+import { Schema, model } from "mongoose";
 // types
 import { ERole, type IAuthDocument } from "@/types/modules/auth";
 // others

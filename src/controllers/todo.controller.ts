@@ -1,5 +1,5 @@
 import { plainToClass } from "class-transformer";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import TodoService from "../services/todo.service";
 import { GetTodosQueryParamsDTO } from "../dto/todo.dto";
 import { CreatedSuccess, OkSuccess } from "../responses/success.response";
@@ -8,7 +8,7 @@ class TodoController {
   getTodosController = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ) => {
     const query = plainToClass(GetTodosQueryParamsDTO, req.query, {
       excludeExtraneousValues: true
@@ -20,7 +20,7 @@ class TodoController {
   getTodoByIDController = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ) => {
     const { id } = req.params;
 
@@ -30,7 +30,7 @@ class TodoController {
   addTodoController = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ) => {
     const accessToken = req.headers.authorization.split(" ")[1];
 
@@ -42,7 +42,7 @@ class TodoController {
   updateTodoController = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ) => {
     const updatedTodoData = req.body;
     const { id } = req.params;
@@ -55,7 +55,7 @@ class TodoController {
   deleteTodoController = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ) => {
     const { id } = req.params;
 

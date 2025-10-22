@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // libs
-import {
+import type {
   FilterQuery,
   InsertManyOptions,
   Model,
@@ -22,9 +23,7 @@ class Cache {
 
   private key = (filter: { [key: string]: any }): string => {
     const filterKey = Object.keys(filter).sort();
-    const fields = filterKey.map((key) => {
-      return `${key}:${filter[key].toString()}`;
-    });
+    const fields = filterKey.map((key) => `${key}:${filter[key].toString()}`);
 
     return `${this.name}:${fields.join(":")}`;
   };
