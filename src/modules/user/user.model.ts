@@ -1,5 +1,5 @@
 // libs
-import { Schema, model } from "mongoose";
+import { Model, Schema, model } from "mongoose";
 // types
 import { type IUserDocument, EGender } from "@/types/modules/user";
 // others
@@ -29,6 +29,6 @@ const UserSchema = new Schema<IUserDocument>(
   }
 );
 
-const User = model<IUserDocument>(USER, UserSchema);
+const User: Model<IUserDocument> = model<IUserDocument>(USER, UserSchema);
 
 export default User;

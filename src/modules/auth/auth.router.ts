@@ -14,9 +14,9 @@ const {
   LOGIN,
   REFRESH_ACCESS_TOKEN,
   // RESEND_OTP,
-  SIGNUP
+  SIGNUP,
   // VERIFY_SIGNUP,
-  // LOGOUT,
+  LOGOUT
   // CONFIRM_OTP_FORGOT_PASSWORD,
   // SEND_OTP_FORGOT_PASSWORD,
   // UPDATE_PASSWORD_FORGOT_PASSWORD
@@ -48,7 +48,7 @@ authRouter.post(
 //   asyncHandler(authController.reSendOTPSignup)
 // );
 
-// authRouter.post(LOGOUT, asyncHandler(authController.logOut));
+authRouter.post(LOGOUT, asyncHandler(authController.logout));
 
 authRouter.post(
   REFRESH_ACCESS_TOKEN,

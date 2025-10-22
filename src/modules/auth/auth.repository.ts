@@ -29,6 +29,17 @@ class AuthRepository extends Repository<IAuthDocument> {
       verifiedEmail: false
     });
 
+  public setSessionUser = async ({
+    id,
+    refreshToken
+  }: {
+    id: string;
+    refreshToken: string;
+  }) => await this.findByIdAndUpdate(id, { refreshToken });
+
+  public removeSessionUser = async (id: string) =>
+    await this.findByIdAndUpdate(id, { refreshToken: null });
+
   // verifySignup = async (id) => {
   //   return await this.updateMany(
   //     { _id: id },

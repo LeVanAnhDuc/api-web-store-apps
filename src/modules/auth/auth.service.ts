@@ -1,6 +1,6 @@
 // libs
 import { bcrypt, jwt } from "@/libs";
-import { Response, Request } from "express";
+import { Request } from "express";
 // types
 import type { ISuccessResponse } from "@/types/common";
 import type { ILoginResponse } from "@/types/modules/auth";
@@ -27,7 +27,7 @@ const {
   EMAIL_ALREADY_EXISTS,
   REFRESH_TOKEN_NOT_FOUND
 } = LOCALES.EN.ERROR_MESSAGES;
-const { SIGNUP_SUCCESS, LOGIN_SUCCESS, REFRESH_TOKEN_SUCCESS } =
+const { SIGNUP_SUCCESS, LOGIN_SUCCESS, REFRESH_TOKEN_SUCCESS, LOGOUT_SUCCESS } =
   LOCALES.EN.SUCCESS_MESSAGES;
 
 // const {
@@ -57,14 +57,18 @@ class AuthService {
     if (!foundUser) throw new BadRequestError(INVALID_EMAIL_OR_PASSWORD);
 
     const { _id: userId, password: hashedPassword, verifiedEmail } = foundUser;
+    if (!verifiedEmail) throw new ForbiddenError(ACCOUNT_NOT_VERIFY);
 
     const passwordMatch = bcrypt.isValidPassword(password, hashedPassword);
-
     if (!passwordMatch) throw new BadRequestError(INVALID_EMAIL_OR_PASSWORD);
-    if (!verifiedEmail) throw new ForbiddenError(ACCOUNT_NOT_VERIFY);
 
     const { accessToken, refreshToken } = jwt.generatePairToken({
       userId: userId.toString()
+    });
+
+    await this.authRepository.setSessionUser({
+      id: userId.toString(),
+      refreshToken
     });
 
     return {
@@ -97,7 +101,11 @@ class AuthService {
       password: hashPassWord
     });
 
-    await this.userRepository.createUser({ fullName, authId: _id, phone });
+    await this.userRepository.createUser({
+      fullName,
+      authId: _id,
+      phone
+    });
 
     // const { otp: otpCode, timeExpire } = speakeasy.getOTP();
     // sendEmail({
@@ -156,13 +164,14 @@ class AuthService {
     return { message: "Re-send OTP successfully" };
   };
 
-  public logOut = async (res: Response) => {
-    // setCookie({ res, name: "accessToken", value: "", maxAge: 0 });
-    // setCookie({ res, name: "refreshToken", value: "", maxAge: 0 });
-    // setCookie({ res, name: "userInfo", value: "", maxAge: 0 });
-    // setCookie({ res, name: "resetPasswordToken", value: "", maxAge: 0 });
+  public logout = async ({
+    userId
+  }: {
+    userId: string;
+  }): Promise<Partial<ISuccessResponse<string>>> => {
+    await this.authRepository.removeSessionUser(userId);
 
-    return { message: "Log out successfully" };
+    return { message: LOGOUT_SUCCESS };
   };
 
   public refreshAccessToken = async (

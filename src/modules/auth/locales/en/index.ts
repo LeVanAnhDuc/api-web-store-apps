@@ -8,7 +8,8 @@ const ERROR_MESSAGES = {
 const SUCCESS_MESSAGES = {
   LOGIN_SUCCESS: "Login successfully",
   SIGNUP_SUCCESS: "Sign up successfully. Please check your email to verify",
-  REFRESH_TOKEN_SUCCESS: "Refresh token successfully"
+  REFRESH_TOKEN_SUCCESS: "Refresh token successfully",
+  LOGOUT_SUCCESS: "Logout successfully"
 };
 
 export { ERROR_MESSAGES, SUCCESS_MESSAGES };

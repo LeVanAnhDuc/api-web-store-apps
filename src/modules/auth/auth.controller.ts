@@ -30,8 +30,10 @@ class AuthController {
     );
   };
 
-  public logOut = async (req: Request, res: Response) => {
-    return new OkSuccess(await this.authService.logOut(res)).send(res);
+  public logout = async (req: Request, res: Response) => {
+    return new OkSuccess(
+      await this.authService.logout({ userId: req.params.id })
+    ).send(res);
   };
 
   public refreshAccessToken = async (req: Request, res: Response) => {

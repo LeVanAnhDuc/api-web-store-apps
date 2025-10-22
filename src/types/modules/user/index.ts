@@ -20,7 +20,7 @@ export interface IUser {
   address: string;
 }
 
-export interface IUserDocument extends IUser, Pick<Document, "_id"> {
+export interface IUserDocument extends IUser, Document {
   _id: Schema.Types.ObjectId;
 }
 
