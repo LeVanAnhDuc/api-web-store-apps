@@ -12,7 +12,7 @@
     "logs",
     "*.log"
   ],
-  "exec": "ts-node --transpile-only -r tsconfig-paths/register ./src/app.ts",
+  "exec": "ts-node --transpile-only -r tsconfig-paths/register ./src/server.ts",
   "env": {
     "NODE_ENV": "development"
   },

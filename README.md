@@ -18,11 +18,7 @@ Xem thêm các tài liệu kỹ thuật chi tiết trong folder [`.doc/`](./.doc
 ### Bước 1: Cài đặt dependencies
 
 ```bash
-npm install
-# hoặc
 yarn install
-# hoặc
-pnpm install
 ```
 
 ### Bước 2: Cấu hình môi trường
@@ -32,7 +28,7 @@ pnpm install
 ### Bước 3: Chạy server development
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 ### Bước 4: Truy cập
@@ -44,19 +40,19 @@ npm run dev
 ### Development
 
 ```bash
-npm run dev          # Chạy server với nodemon (fast reload, no type checking)
-npm run dev:check    # Watch mode type checking (chạy trong terminal riêng)
-npm run type-check   # Kiểm tra TypeScript types một lần
+yarn dev          # Chạy server với nodemon (fast reload, no type checking)
+yarn dev:check    # Watch mode type checking (chạy trong terminal riêng)
+yarn type-check   # Kiểm tra TypeScript types một lần
 ```
 
 **💡 Workflow khuyến nghị:**
 
 ```bash
 # Terminal 1: Development server (fast reload)
-npm run dev
+yarn dev
 
 # Terminal 2 (optional): Type checking watch mode
-npm run dev:check
+yarn dev:check
 ```
 
 Nodemon đã được tối ưu với:
@@ -69,15 +65,15 @@ Nodemon đã được tối ưu với:
 ### Production & Code Quality
 
 ```bash
-npm run build        # Build TypeScript sang JavaScript
-npm start            # Build và chạy production server
-npm run lint         # Kiểm tra code với ESLint
-npm run lint:fix     # Tự động fix các lỗi ESLint có thể sửa được
-npm run format       # Format code với Prettier
-npm run format:check # Kiểm tra format code mà không thay đổi files
+yarn build        # Build TypeScript sang JavaScript
+yarn start        # Build và chạy production server
+yarn lint         # Kiểm tra code với ESLint
+yarn lint:fix     # Tự động fix các lỗi ESLint có thể sửa được
+yarn format       # Format code với Prettier
+yarn format:check # Kiểm tra format code mà không thay đổi files
 ```
 
-> **Lưu ý:** Bạn có thể sử dụng npm, yarn hoặc pnpm tùy thích. Chỉ cần thống nhất trong một dự án và không commit lock files của package manager khác.
+> **Lưu ý:** Dự án này sử dụng Yarn. Vui lòng chỉ commit `yarn.lock` và không commit `package-lock.json`.
 
 ## 4. Code Quality & Git Hooks
 
