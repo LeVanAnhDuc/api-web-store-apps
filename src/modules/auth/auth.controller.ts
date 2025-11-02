@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 // services
 import type AuthService from "./auth.service";
 // others
-import { CreatedSuccess, OkSuccess } from "@/responses/success.response";
+import { CreatedSuccess, OkSuccess } from "@/core/responses/success.response";
 
 class AuthController {
   // eslint-disable-next-line no-unused-vars

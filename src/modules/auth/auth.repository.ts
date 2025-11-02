@@ -1,11 +1,11 @@
 // types
-import { ERole, type IAuthDocument } from "@/types/modules/auth";
+import { ERole, type IAuthDocument } from "@/modules/auth/auth.types";
 // models
-import AuthModel from "./auth.model";
+import AuthModel from "@/database/models/auth.model";
 // repositories
-import Repository from "@/repositories/base.repo";
+import Repository from "@/core/repositories/base.repo";
 // others
-import CONSTANTS from "@/constants";
+import CONSTANTS from "@/core/constants";
 
 const { AUTHENTICATION } = CONSTANTS.MODEL_NAME;
 

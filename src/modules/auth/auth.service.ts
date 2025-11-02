@@ -1,13 +1,15 @@
 // libs
-import { bcrypt, jwt } from "@/libs";
+import * as bcrypt from "@/core/utils/bcrypt";
+import * as jwt from "@/core/utils/jwt";
 import type { Request } from "express";
 // types
-import type { ISuccessResponse } from "@/types/common";
-import type { ILoginResponse } from "@/types/modules/auth";
+import type { ISuccessResponse } from "@/core/types/common";
+import type { ILoginResponse } from "@/modules/auth/auth.types";
 // models
 // repositories
 import type AuthRepository from "./auth.repository";
-import type UserRepository from "../user/user.repository";
+// TODO: Uncomment when user module is implemented
+// import type UserRepository from "../user/user.repository";
 // dto
 // import { UserResponseDTO } from "@/dto/user";
 // others
@@ -17,7 +19,7 @@ import {
   BadRequestError,
   ForbiddenError,
   UnauthorizedError
-} from "@/responses/error.response";
+} from "@/core/responses/error.response";
 // import { decodeAccessToken } from "@/libs/jwt";
 import LOCALES from "./locales";
 
@@ -42,9 +44,10 @@ const { SIGNUP_SUCCESS, LOGIN_SUCCESS, REFRESH_TOKEN_SUCCESS, LOGOUT_SUCCESS } =
 class AuthService {
   constructor(
     // eslint-disable-next-line no-unused-vars
-    private readonly authRepository: AuthRepository,
-    // eslint-disable-next-line no-unused-vars
-    private readonly userRepository: UserRepository
+    private readonly authRepository: AuthRepository
+    // TODO: Uncomment when user module is implemented
+
+    // private readonly userRepository: UserRepository
   ) {}
 
   public login = async ({
@@ -103,11 +106,17 @@ class AuthService {
       password: hashPassWord
     });
 
-    await this.userRepository.createUser({
-      fullName,
-      authId: _id,
-      phone
-    });
+    // TODO: Uncomment when user module is implemented
+    // await this.userRepository.createUser({
+    //   fullName,
+    //   authId: _id,
+    //   phone
+    // });
+
+    // Prevent unused variable warning
+    void fullName;
+    void _id;
+    void phone;
 
     // const { otp: otpCode, timeExpire } = speakeasy.getOTP();
     // sendEmail({

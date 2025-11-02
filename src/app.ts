@@ -1,40 +1,54 @@
 // libs
 import express from "express";
 import helmet from "helmet";
-import "reflect-metadata";
 import cookieParser from "cookie-parser";
-// routers
-import router from "./modules";
-// databases
-import MongoDatabase from "./databases/init.mongodb";
-// import instanceRedis from './dbs/init.redis';
+// routes
+import apiV1Routes from "./api/v1/routes";
 // middlewares
-import {
-  handleError,
-  handleNotFound
-} from "./middlewares/handleError.middleware";
-import { rateLimitInstance } from "./middlewares/validate.middleware";
-// others
-import config from "./constants/env";
-import { Logger } from "./libs";
+import { requestLogger } from "./core/middlewares/requestLogger";
+import { rateLimitInstance } from "./core/middlewares/validate";
+import { handleError, handleNotFound } from "./core/middlewares/errorHandler";
 
+// Create Express application
 const app = express();
 
-MongoDatabase.getInstance();
-// instanceRedis;
-
-// init middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+/**
+ * Configure middleware
+ */
+// Security middleware
 app.use(helmet());
-app.use(rateLimitInstance);
+
+// Body parsing middleware
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// Cookie parser
 app.use(cookieParser());
 
-// router
-app.use("/api/v1", router);
+// Request logging
+app.use(requestLogger);
+
+// Rate limiting
+app.use(rateLimitInstance);
+
+/**
+ * Configure routes
+ */
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "healthy",
+    timestamp: new Date().toISOString()
+  });
+});
+
+// API routes
+app.use("/api/v1", apiV1Routes);
+
+/**
+ * Error handlers (must be last)
+ */
 app.use(handleNotFound);
 app.use(handleError);
 
-app.listen(config.APP_PORT, () =>
-  Logger.info(`http://localhost:${config.APP_PORT}`)
-);
+export default app;
