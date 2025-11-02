@@ -2,49 +2,110 @@
 import type { Request, Response } from "express";
 // services
 import type AuthService from "./auth.service";
-// others
+// responses
 import { CreatedSuccess, OkSuccess } from "@/core/responses/success.response";
+// others
+import { asyncHandler } from "@/core/utils/asyncHandler";
 
 class AuthController {
-  // eslint-disable-next-line no-unused-vars
-  constructor(private readonly authService: AuthService) {}
+  private readonly authService: AuthService;
 
-  public login = async (req: Request, res: Response) =>
-    new OkSuccess(await this.authService.login(req.body)).send(res);
+  constructor(authService: AuthService) {
+    this.authService = authService;
+  }
 
-  public signup = async (req: Request, res: Response) =>
-    new CreatedSuccess(await this.authService.signup(req.body)).send(res);
+  /**
+   * Handle user login
+   */
+  login = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const result = await this.authService.login(req.body);
+    new OkSuccess(result).send(res);
+  });
 
-  public verifySignup = async (req: Request, res: Response) =>
-    new OkSuccess(await this.authService.verifySignup(req.body)).send(res);
+  /**
+   * Handle user signup
+   */
+  signup = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const result = await this.authService.signup(req.body);
+    new CreatedSuccess(result).send(res);
+  });
 
-  public reSendOTPSignup = async (req: Request, res: Response) =>
-    new OkSuccess(await this.authService.reSendOTPSignup(req.body)).send(res);
+  /**
+   * Handle signup verification
+   */
+  verifySignup = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const result = await this.authService.verifySignup(req.body);
+      new OkSuccess(result).send(res);
+    }
+  );
 
-  public logout = async (req: Request, res: Response) =>
-    new OkSuccess(
-      await this.authService.logout({ userId: req.params.id })
-    ).send(res);
+  /**
+   * Handle resend OTP for signup
+   */
+  reSendOTPSignup = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const result = await this.authService.reSendOTPSignup(req.body);
+      new OkSuccess(result).send(res);
+    }
+  );
 
-  public refreshAccessToken = async (req: Request, res: Response) =>
-    new CreatedSuccess(await this.authService.refreshAccessToken(req)).send(
-      res
-    );
+  /**
+   * Handle user logout
+   */
+  logout = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const result = await this.authService.logout({ userId: req.params.id });
+    new OkSuccess(result).send(res);
+  });
 
-  public sendOtpForgotPassword = async (req: Request, res: Response) =>
-    new OkSuccess(
-      await this.authService.sendOtpForgotPassword(req.body, res)
-    ).send(res);
+  /**
+   * Handle refresh access token
+   */
+  refreshAccessToken = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const result = await this.authService.refreshAccessToken(req);
+      new CreatedSuccess(result).send(res);
+    }
+  );
 
-  public confirmOpForgotPassword = async (req: Request, res: Response) =>
-    new OkSuccess(
-      await this.authService.confirmOpForgotPassword(req.body, req)
-    ).send(res);
+  /**
+   * Handle send OTP for forgot password
+   */
+  sendOtpForgotPassword = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const result = await this.authService.sendOtpForgotPassword(
+        req.body,
+        res
+      );
+      new OkSuccess(result).send(res);
+    }
+  );
 
-  public updatePasswordForgotPassword = async (req: Request, res: Response) =>
-    new OkSuccess(
-      await this.authService.updatePasswordForgotPassword(req.body, req)
-    ).send(res);
+  /**
+   * Handle confirm OTP for forgot password
+   */
+  confirmOpForgotPassword = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const result = await this.authService.confirmOpForgotPassword(
+        req.body,
+        req
+      );
+      new OkSuccess(result).send(res);
+    }
+  );
+
+  /**
+   * Handle update password after forgot password
+   */
+  updatePasswordForgotPassword = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const result = await this.authService.updatePasswordForgotPassword(
+        req.body,
+        req
+      );
+      new OkSuccess(result).send(res);
+    }
+  );
 }
 
 export default AuthController;

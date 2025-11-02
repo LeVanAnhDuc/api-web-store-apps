@@ -1,16 +1,14 @@
 // libs
 import type { ConnectOptions } from "mongoose";
 
+/* eslint-disable no-unused-vars */
 export enum EConnectionState {
-  // eslint-disable-next-line no-unused-vars
   DISCONNECTED = 0,
-  // eslint-disable-next-line no-unused-vars
   CONNECTED = 1,
-  // eslint-disable-next-line no-unused-vars
   CONNECTING = 2,
-  // eslint-disable-next-line no-unused-vars
   DISCONNECTING = 3
 }
+/* eslint-enable no-unused-vars */
 
 /**
  * MongoDB configuration interface

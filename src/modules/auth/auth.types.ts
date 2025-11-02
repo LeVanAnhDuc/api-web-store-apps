@@ -1,12 +1,12 @@
 // libs
 import type { Document, Schema } from "mongoose";
 
+/* eslint-disable no-unused-vars */
 export enum ERole {
-  // eslint-disable-next-line no-unused-vars
   ADMIN = "ADMIN",
-  // eslint-disable-next-line no-unused-vars
   USER = "USER"
 }
+/* eslint-enable no-unused-vars */
 export type TRole = `${ERole}`;
 
 export interface IAuth {

@@ -5,22 +5,17 @@ import type { Request } from "express";
 // types
 import type { ISuccessResponse } from "@/core/types/common";
 import type { ILoginResponse } from "@/modules/auth/auth.types";
-// models
 // repositories
 import type AuthRepository from "./auth.repository";
 // TODO: Uncomment when user module is implemented
 // import type UserRepository from "../user/user.repository";
-// dto
-// import { UserResponseDTO } from "@/dto/user";
-// others
-// import CONSTANTS from "@/constants";
-// import { formatSI, setCookie } from "@/utils";
+// responses
 import {
   BadRequestError,
   ForbiddenError,
   UnauthorizedError
 } from "@/core/responses/error.response";
-// import { decodeAccessToken } from "@/libs/jwt";
+// others
 import LOCALES from "./locales";
 
 const {
@@ -29,76 +24,72 @@ const {
   EMAIL_ALREADY_EXISTS,
   REFRESH_TOKEN_NOT_FOUND
 } = LOCALES.EN.ERROR_MESSAGES;
+
 const { SIGNUP_SUCCESS, LOGIN_SUCCESS, REFRESH_TOKEN_SUCCESS, LOGOUT_SUCCESS } =
   LOCALES.EN.SUCCESS_MESSAGES;
 
-// const {
-//   SUBJECT_EMAIL_SIGNUP,
-//   TEMPLATE_EMAIL_SIGNUP,
-//   SUBJECT_EMAIL_RESET_PASS,
-//   TEMPLATE_EMAIL_RESET_PASS
-// } = CONSTANTS.TEMPLATE_EMAIL;
-// const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } =
-//   CONSTANTS.TOKEN;
-
 class AuthService {
-  constructor(
-    // eslint-disable-next-line no-unused-vars
-    private readonly authRepository: AuthRepository
-    // TODO: Uncomment when user module is implemented
+  private readonly authRepository: AuthRepository;
+  // TODO: Uncomment when user module is implemented
+  // private readonly userRepository: UserRepository;
 
-    // private readonly userRepository: UserRepository
-  ) {}
+  constructor(authRepository: AuthRepository) {
+    this.authRepository = authRepository;
+  }
 
-  public login = async ({
-    email,
-    password
-  }: {
+  /**
+   * User login with email and password
+   */
+  async login(credentials: {
     email: string;
     password: string;
-  }): Promise<Partial<ISuccessResponse<ILoginResponse>>> => {
-    const foundUser = await this.authRepository.findUserByEmail(email);
+  }): Promise<Partial<ISuccessResponse<ILoginResponse>>> {
+    const { email, password } = credentials;
 
-    if (!foundUser) throw new BadRequestError(INVALID_EMAIL_OR_PASSWORD);
+    const foundUser = await this.authRepository.findUserByEmail(email);
+    if (!foundUser) {
+      throw new BadRequestError(INVALID_EMAIL_OR_PASSWORD);
+    }
 
     const { _id: userId, password: hashedPassword, verifiedEmail } = foundUser;
-    if (!verifiedEmail) throw new ForbiddenError(ACCOUNT_NOT_VERIFY);
+
+    if (!verifiedEmail) {
+      throw new ForbiddenError(ACCOUNT_NOT_VERIFY);
+    }
 
     const passwordMatch = bcrypt.isValidPassword(password, hashedPassword);
-    if (!passwordMatch) throw new BadRequestError(INVALID_EMAIL_OR_PASSWORD);
+    if (!passwordMatch) {
+      throw new BadRequestError(INVALID_EMAIL_OR_PASSWORD);
+    }
 
-    const { accessToken, refreshToken } = jwt.generatePairToken({
-      userId: userId.toString()
-    });
+    const tokens = this.generateTokenPair(userId.toString());
 
     await this.authRepository.setSessionUser({
       id: userId.toString(),
-      refreshToken
+      refreshToken: tokens.refreshToken
     });
 
     return {
       message: LOGIN_SUCCESS,
-      data: {
-        accessToken,
-        refreshToken
-      }
+      data: tokens
     };
-  };
+  }
 
-  public signup = async ({
-    fullName,
-    email,
-    phone,
-    password
-  }: {
+  /**
+   * User signup with email, password and profile info
+   */
+  async signup(data: {
     fullName: string;
     email: string;
     phone: string;
     password: string;
-  }): Promise<Partial<ISuccessResponse<string>>> => {
-    const emailExists = await this.authRepository.findUserByEmail(email);
+  }): Promise<Partial<ISuccessResponse<string>>> {
+    const { fullName, email, phone, password } = data;
 
-    if (emailExists) throw new BadRequestError(EMAIL_ALREADY_EXISTS);
+    const emailExists = await this.authRepository.findUserByEmail(email);
+    if (emailExists) {
+      throw new BadRequestError(EMAIL_ALREADY_EXISTS);
+    }
 
     const hashPassWord = bcrypt.hashPassword(password);
     const { _id } = await this.authRepository.createAccount({
@@ -113,48 +104,63 @@ class AuthService {
     //   phone
     // });
 
-    // Prevent unused variable warning
-    void fullName;
-    void _id;
-    void phone;
-
+    // TODO: Uncomment when email service is implemented
     // const { otp: otpCode, timeExpire } = speakeasy.getOTP();
-    // sendEmail({
+    // await sendEmail({
     //   email,
     //   subject: SUBJECT_EMAIL_SIGNUP,
     //   message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode })
     // });
 
-    return { message: SIGNUP_SUCCESS };
-  };
+    // Prevent unused variable warnings
+    void fullName;
+    void _id;
+    void phone;
 
-  public verifySignup = async ({ email: _email, otpCode: _otpCode }) =>
-    // const infoUser: IUserDocument =
-    //   await this.authRepository.findUserRepo(email);
+    return { message: SIGNUP_SUCCESS };
+  }
+
+  /**
+   * Verify signup with OTP code
+   */
+  async verifySignup(data: {
+    email: string;
+    otpCode: string;
+  }): Promise<{ message: string }> {
+    // TODO: Implement OTP verification
+    void data;
+    return { message: "Verify successfully" };
+
+    // const { email, otpCode } = data;
+    // const infoUser = await this.authRepository.findUserByEmail(email);
     // if (!infoUser) throw new BadRequestError("Email not found");
 
     // const { _id: id, otpExpireAt, verifiedEmail } = infoUser;
 
     // if (verifiedEmail) throw new BadRequestError("Account already verified");
-    // if (new Date().getTime() > otpExpireAt.getTime())
+    // if (new Date().getTime() > otpExpireAt.getTime()) {
     //   throw new BadRequestError("OTP expired. Please resend OTP");
+    // }
 
     // const verifiedOTP = speakeasy.verifiedOTP(otpCode);
-
     // if (!verifiedOTP) throw new BadRequestError("OTP not match");
 
     // await this.authRepository.verifySignup(id);
+  }
 
-    ({ message: "Verify successfully" });
+  /**
+   * Resend OTP for signup verification
+   */
+  async reSendOTPSignup(data: { email: string }): Promise<{ message: string }> {
+    // TODO: Implement resend OTP
+    void data;
+    return { message: "Re-send OTP successfully" };
 
-  public reSendOTPSignup = async ({ email: _email }) =>
-    // const infoUser: IUserDocument =
-    //   await this.authRepository.findUserRepo(email);
-
+    // const { email } = data;
+    // const infoUser = await this.authRepository.findUserByEmail(email);
     // if (!infoUser) throw new BadRequestError("Email not found");
 
     // const { fullName, verifiedEmail } = infoUser;
-
     // if (verifiedEmail) throw new BadRequestError("Account already verified");
 
     // const { otp: otpCode, timeExpire } = speakeasy.getOTP();
@@ -170,38 +176,61 @@ class AuthService {
     //   subject: SUBJECT_EMAIL_SIGNUP,
     //   message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode })
     // });
+  }
 
-    ({ message: "Re-send OTP successfully" });
-
-  public logout = async ({
-    userId
-  }: {
+  /**
+   * User logout
+   */
+  async logout(data: {
     userId: string;
-  }): Promise<Partial<ISuccessResponse<string>>> => {
+  }): Promise<Partial<ISuccessResponse<string>>> {
+    const { userId } = data;
     await this.authRepository.removeSessionUser(userId);
 
     return { message: LOGOUT_SUCCESS };
-  };
+  }
 
-  public refreshAccessToken = async (
+  /**
+   * Refresh access token using refresh token
+   */
+  async refreshAccessToken(
     req: Request
-  ): Promise<Partial<ISuccessResponse<{ accessToken: string }>>> => {
+  ): Promise<Partial<ISuccessResponse<{ accessToken: string }>>> {
     const { refreshToken } = req.body;
-    if (!refreshToken) throw new UnauthorizedError(REFRESH_TOKEN_NOT_FOUND);
+
+    if (!refreshToken) {
+      throw new UnauthorizedError(REFRESH_TOKEN_NOT_FOUND);
+    }
 
     const payload = jwt.decodeRefreshToken<{ userId: string }>(refreshToken);
-
     const accessToken = jwt.generateAccessToken({ userId: payload.userId });
 
-    return { message: REFRESH_TOKEN_SUCCESS, data: { accessToken } };
-  };
+    return {
+      message: REFRESH_TOKEN_SUCCESS,
+      data: { accessToken }
+    };
+  }
 
-  public sendOtpForgotPassword = async ({ email: _email }, _res) =>
-    // const infoUser: IUserDocument = await this.authRepository.findUserRepo(email);
+  /**
+   * Send OTP for forgot password
+   */
+  async sendOtpForgotPassword(
+    data: { email: string },
+    res: unknown
+  ): Promise<{ message: string }> {
+    // TODO: Implement forgot password OTP
+    void data;
+    void res;
+    return { message: "Send OTP successfully" };
+
+    // const { email } = data;
+    // const infoUser = await this.authRepository.findUserByEmail(email);
     // if (!infoUser) throw new BadRequestError("Email not found");
+
     // const { _id: id, fullName } = infoUser;
     // const { otp: otpCode, timeExpire } = speakeasy.getOTP();
     // const resetPasswordToken = jwt.generateResetPasswordToken({ id });
+
     // await userResetPasswordTokenRepo.createPasswordResetToken({
     //   userId: id,
     //   email,
@@ -210,50 +239,99 @@ class AuthService {
     //   resetToken: resetPasswordToken,
     //   resetTokenExpireAt: new Date(Date.now() + NUMBER_RESET_PASS_TOKEN)
     // });
+
     // await sendEmail({
     //   email,
     //   subject: SUBJECT_EMAIL_RESET_PASS,
     //   message: formatSI(TEMPLATE_EMAIL_RESET_PASS, { fullName, otpCode })
     // });
+
     // setCookie({
     //   res,
     //   name: "resetPasswordToken",
     //   value: resetPasswordToken,
     //   maxAge: NUMBER_RESET_PASS_TOKEN + 1000
     // });
-    ({ message: "Send OTP successfully" });
+  }
 
-  public confirmOpForgotPassword = async ({ otpCode: _otpCode }, _req) =>
-    //   const resetPasswordToken = req.cookies.resetPasswordToken;
-    //   if (!resetPasswordToken) throw new UnauthorizedError('Reset password token is not found');
+  /**
+   * Confirm OTP for forgot password
+   */
+  async confirmOpForgotPassword(
+    data: { otpCode: string },
+    req: Request
+  ): Promise<{ message: string }> {
+    // TODO: Implement OTP confirmation
+    void data;
+    void req;
+    return { message: "Confirm OTP successfully" };
 
-    //   const payload = jwt.decodeResetPasswordToken(resetPasswordToken);
-    //   if (!payload || !payload.id) throw new UnauthorizedError('Invalid reset password token');
+    // const { otpCode } = data;
+    // const resetPasswordToken = req.cookies.resetPasswordToken;
 
-    //   const verifiedOTP = speakeasy.verifiedOTP(otpCode);
-    //   if (!verifiedOTP) throw new BadRequestError('OTP not match');
+    // if (!resetPasswordToken) {
+    //   throw new UnauthorizedError('Reset password token is not found');
+    // }
 
-    //   userResetPasswordTokenRepo.updateVerifyOTP(resetPasswordToken);
+    // const payload = jwt.decodeResetPasswordToken(resetPasswordToken);
+    // if (!payload || !payload.id) {
+    //   throw new UnauthorizedError('Invalid reset password token');
+    // }
 
-    ({ message: "Confirm OTP successfully" });
+    // const verifiedOTP = speakeasy.verifiedOTP(otpCode);
+    // if (!verifiedOTP) throw new BadRequestError('OTP not match');
 
-  public updatePasswordForgotPassword = async ({ password: _password }, _req) =>
-    //   const resetPasswordToken = req.cookies.resetPasswordToken;
-    //   if (!resetPasswordToken) throw new UnauthorizedError('Reset password token is not found');
+    // userResetPasswordTokenRepo.updateVerifyOTP(resetPasswordToken);
+  }
 
-    //   const payload = jwt.decodeResetPasswordToken(resetPasswordToken);
-    //   if (!payload || !payload.id) throw new UnauthorizedError('Invalid reset password token');
+  /**
+   * Update password after forgot password flow
+   */
+  async updatePasswordForgotPassword(
+    data: { password: string },
+    req: Request
+  ): Promise<{ message: string }> {
+    // TODO: Implement password update
+    void data;
+    void req;
+    return { message: "Update password successfully" };
 
-    //   const verifiedOTP = userResetPasswordTokenRepo.getVerifiedOTP(resetPasswordToken);
-    //   if (!verifiedOTP) throw new BadRequestError('OTP is not verified');
+    // const { password } = data;
+    // const resetPasswordToken = req.cookies.resetPasswordToken;
 
-    //   const hashPassWord = bcrypt.hashPassword(password);
-    //   this.authRepository.updatePasswordById({ id: payload.id, password: hashPassWord });
-    //   userResetPasswordTokenRepo.usedForPasswordResetToken(resetPasswordToken);
+    // if (!resetPasswordToken) {
+    //   throw new UnauthorizedError('Reset password token is not found');
+    // }
 
-    //   setCookie({ res: req.res, name: 'resetPasswordToken', value: '', maxAge: 0 });
+    // const payload = jwt.decodeResetPasswordToken(resetPasswordToken);
+    // if (!payload || !payload.id) {
+    //   throw new UnauthorizedError('Invalid reset password token');
+    // }
 
-    ({ message: "Update password successfully" });
+    // const verifiedOTP = userResetPasswordTokenRepo.getVerifiedOTP(resetPasswordToken);
+    // if (!verifiedOTP) throw new BadRequestError('OTP is not verified');
+
+    // const hashPassWord = bcrypt.hashPassword(password);
+    // await this.authRepository.updatePasswordById({
+    //   id: payload.id,
+    //   password: hashPassWord
+    // });
+    // userResetPasswordTokenRepo.usedForPasswordResetToken(resetPasswordToken);
+
+    // setCookie({ res: req.res, name: 'resetPasswordToken', value: '', maxAge: 0 });
+  }
+
+  /**
+   * Private helper: Generate access and refresh tokens
+   */
+  private generateTokenPair(userId: string): ILoginResponse {
+    const { accessToken, refreshToken } = jwt.generatePairToken({ userId });
+
+    return {
+      accessToken,
+      refreshToken
+    };
+  }
 }
 
 export default AuthService;

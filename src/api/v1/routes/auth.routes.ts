@@ -8,7 +8,6 @@ import { loginSchema, signupSchema } from "@/modules/auth/auth.schema";
 import { validateSchema } from "@/core/middlewares/validate";
 // others
 import { END_POINTS } from "@/modules/auth/constants";
-import { asyncHandler } from "@/core/utils/asyncHandler";
 
 const {
   LOGIN,
@@ -27,33 +26,30 @@ const authRouter = express.Router();
 authRouter.post(
   LOGIN,
   validateSchema({ body: loginSchema }),
-  asyncHandler(authController.login)
+  authController.login
 );
 
 authRouter.post(
   SIGNUP,
   validateSchema({ body: signupSchema }),
-  asyncHandler(authController.signup)
+  authController.signup
 );
 
 // authRouter.post(
 //   VERIFY_SIGNUP,
 //   validateSchema({ body: signupVerifySchema }),
-//   asyncHandler(authController.verifySignup)
+//   authController.verifySignup
 // );
 
 // authRouter.post(
 //   RESEND_OTP,
 //   validateSchema({ body: reSendOtpSchema }),
-//   asyncHandler(authController.reSendOTPSignup)
+//   authController.reSendOTPSignup
 // );
 
-authRouter.post(LOGOUT, asyncHandler(authController.logout));
+authRouter.post(LOGOUT, authController.logout);
 
-authRouter.post(
-  REFRESH_ACCESS_TOKEN,
-  asyncHandler(authController.refreshAccessToken)
-);
+authRouter.post(REFRESH_ACCESS_TOKEN, authController.refreshAccessToken);
 
 // authRouter.post(
 //   SEND_OTP_FORGOT_PASSWORD,
