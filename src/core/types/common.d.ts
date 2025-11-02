@@ -1,4 +1,4 @@
-export interface ISuccessResponse<T> {
+interface ISuccessResponse<T> {
   message: string;
   status: number;
   reasonStatusCode: string;

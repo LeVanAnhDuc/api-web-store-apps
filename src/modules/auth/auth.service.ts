@@ -3,7 +3,6 @@ import * as bcrypt from "@/core/utils/bcrypt";
 import * as jwt from "@/core/utils/jwt";
 import type { Request } from "express";
 // types
-import type { ISuccessResponse } from "@/core/types/common";
 import type { ILoginResponse } from "@/modules/auth/auth.types";
 // repositories
 import type AuthRepository from "./auth.repository";
