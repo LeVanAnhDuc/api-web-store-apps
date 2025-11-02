@@ -3,6 +3,7 @@ import ENV from "@/core/configs/env";
 import { TOKEN, OTP } from "./libs";
 import { REASON_PHRASES, STATUS_CODES } from "./status";
 import MODEL_NAME from "./models";
+import { CONNECTION_STATE } from "./database";
 
 const CONSTANTS = {
   TOKEN,
@@ -11,7 +12,8 @@ const CONSTANTS = {
   OTP,
   REASON_PHRASES,
   STATUS_CODES,
-  MODEL_NAME
+  MODEL_NAME,
+  CONNECTION_STATE
 };
 
 export default CONSTANTS;

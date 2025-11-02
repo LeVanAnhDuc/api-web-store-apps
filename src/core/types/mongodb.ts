@@ -1,28 +1,18 @@
-// libs
+// types
 import type { ConnectOptions } from "mongoose";
+// cores
+import type { CONNECTION_STATE } from "@/core/constants/database";
 
-/* eslint-disable no-unused-vars */
-export enum EConnectionState {
-  DISCONNECTED = 0,
-  CONNECTED = 1,
-  CONNECTING = 2,
-  DISCONNECTING = 3
-}
-/* eslint-enable no-unused-vars */
+export type ConnectionStateValue =
+  (typeof CONNECTION_STATE)[keyof typeof CONNECTION_STATE];
 
-/**
- * MongoDB configuration interface
- */
-export interface IMongoConfig {
+export interface MongoConfig {
   url: string;
   dbName: string;
   options?: ConnectOptions;
 }
 
-/**
- * Connection metrics for monitoring
- */
-export interface IConnectionMetrics {
+export interface ConnectionMetrics {
   connectionAttempts: number;
   reconnectionAttempts: number;
   lastConnectionTime: Date | null;
@@ -31,14 +21,11 @@ export interface IConnectionMetrics {
   uptime?: number;
 }
 
-/**
- * Database statistics for health monitoring
- */
-export interface IDatabaseStats {
+export interface DatabaseStats {
   isHealthy: boolean;
   state: string;
   readyState: number;
-  metrics: IConnectionMetrics;
+  metrics: ConnectionMetrics;
   config: {
     database: string | undefined;
     maxPoolSize: number | undefined;

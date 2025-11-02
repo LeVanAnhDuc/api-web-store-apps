@@ -1,0 +1,6 @@
+export const CONNECTION_STATE = {
+  DISCONNECTED: 0,
+  CONNECTED: 1,
+  CONNECTING: 2,
+  DISCONNECTING: 3
+} as const;
