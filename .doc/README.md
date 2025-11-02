@@ -9,6 +9,8 @@
 ```
 .doc/
 ├── README.md                 # File này - Giới thiệu về folder
+├── PROJECT_OVERVIEW.md       # Tổng quan toàn diện về dự án và architecture
+├── logger.md                 # Hướng dẫn chi tiết Logger system cho newbie
 ├── nodemon-config.md         # Hướng dẫn chi tiết về Nodemon configuration
 └── code-quality-tools.md     # Hướng dẫn ESLint, Prettier, Husky, Lint-staged
 ```
@@ -28,7 +30,51 @@ Folder `.doc/` chứa các tài liệu kỹ thuật chi tiết về:
 
 ## 📖 Tài liệu hiện có
 
-### 1. [Nodemon Configuration Guide](./nodemon-config.md)
+### 1. 🏗️ [PROJECT OVERVIEW](./PROJECT_OVERVIEW.md)
+
+**Audience**: All team members
+**Size**: 45KB+ | **Reading time**: ~30 mins
+
+**Topics covered**:
+- **Project Architecture**: Layered architecture, design patterns
+- **Technology Stack**: Complete tech stack với versions
+- **Coding Standards**: Import rules, naming conventions, TypeScript rules
+- **Project Structure**: Detailed folder structure
+- **Key Features**: Auth, DB, Caching, Security, Logging
+- **Development Workflow**: Setup, dev, build, git workflow
+- **Best Practices**: Code organization, type safety, security
+
+**Khi nào đọc?**
+- ✅ **BẮT BUỘC** cho new team members
+- ✅ Muốn hiểu tổng quan architecture
+- ✅ Cần reference coding standards
+- ✅ Review project structure
+
+---
+
+### 2. 📝 [Logger System Guide](./logger.md)
+
+**Audience**: Newbie to Intermediate
+**Size**: 20KB | **Reading time**: ~15 mins
+
+**Topics covered**:
+- Logger là gì và tại sao cần nó
+- 5 cấp độ log (error, warn, info, http, debug)
+- Cách sử dụng Logger class
+- Nơi lưu trữ logs và cách xem
+- Tích hợp với Express/Morgan
+- Best practices và troubleshooting
+- Ví dụ thực tế với auth flow
+
+**Khi nào đọc?**
+- ✅ Mới làm quen với Winston logger
+- ✅ Muốn hiểu logging best practices
+- ✅ Cần debug ứng dụng
+- ✅ Setup monitoring
+
+---
+
+### 3. [Nodemon Configuration Guide](./nodemon-config.md)
 
 **Audience**: Newbie to Senior
 **Size**: 19KB | **Reading time**: ~15 mins
@@ -48,7 +94,7 @@ Folder `.doc/` chứa các tài liệu kỹ thuật chi tiết về:
 
 ---
 
-### 2. [Code Quality Tools Guide](./code-quality-tools.md)
+### 4. [Code Quality Tools Guide](./code-quality-tools.md)
 
 **Audience**: Newbie to Senior
 **Size**: 35KB+ | **Reading time**: ~25 mins
@@ -170,9 +216,10 @@ Tài liệu nên đặt tên theo format:
 
 Bạn mới join team? Đọc các docs theo thứ tự:
 
-1. **README.md** (root) - Project overview
-2. **nodemon-config.md** - Development workflow
-3. [Future docs...] - Các docs khác
+1. **PROJECT_OVERVIEW.md** - Tổng quan dự án (MUST READ!)
+2. **logger.md** - Hiểu về logging system
+3. **nodemon-config.md** - Development workflow
+4. **code-quality-tools.md** - Code standards & tools
 
 ---
 

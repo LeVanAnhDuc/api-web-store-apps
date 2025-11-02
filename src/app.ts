@@ -16,6 +16,7 @@ import {
 import { rateLimitInstance } from "./middlewares/validate.middleware";
 // others
 import config from "./constants/env";
+import { Logger } from "./libs";
 
 const app = express();
 
@@ -34,6 +35,6 @@ app.use("/api/v1", router);
 app.use(handleNotFound);
 app.use(handleError);
 
-app.listen(config.APP_PORT, () => {
-  console.log(`http://localhost:${config.APP_PORT}`);
-});
+app.listen(config.APP_PORT, () =>
+  Logger.info(`http://localhost:${config.APP_PORT}`)
+);

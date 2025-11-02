@@ -44,12 +44,15 @@
     "redis": "^4.6.13",
     "reflect-metadata": "^0.2.2",
     "speakeasy": "^2.0.0",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "winston": "^3.18.3",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/winston": "^2.4.4",
     "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
