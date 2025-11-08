@@ -3,7 +3,7 @@ import express from "express";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 // routes
-import apiV1Routes from "./api/v1/routes";
+import apiV1Routes from "./routes/v1.routes";
 // middlewares
 import { requestLogger } from "./core/middlewares/requestLogger";
 import { rateLimitInstance } from "./core/middlewares/validate";
