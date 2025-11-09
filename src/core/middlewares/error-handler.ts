@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { ErrorResponse } from "@/core/responses/error.response";
+import { ErrorResponse } from "@/core/responses/error";
 
 export const handleNotFound = (
   req: Request,

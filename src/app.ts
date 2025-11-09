@@ -5,9 +5,9 @@ import cookieParser from "cookie-parser";
 // routes
 import apiV1Routes from "./routes/v1.routes";
 // middlewares
-import { requestLogger } from "./core/middlewares/requestLogger";
+import { requestLogger } from "./core/middlewares/request-logger";
 import { rateLimitInstance } from "./core/middlewares/validate";
-import { handleError, handleNotFound } from "./core/middlewares/errorHandler";
+import { handleError, handleNotFound } from "./core/middlewares/error-handler";
 
 // Create Express application
 const app = express();

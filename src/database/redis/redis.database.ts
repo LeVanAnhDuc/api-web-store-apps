@@ -1,7 +1,7 @@
 // libs
 import { ConnectionTimeoutError, createClient } from "redis";
 // responses
-import { RedisError } from "@/core/responses/error.response";
+import { RedisError } from "@/core/responses/error";
 // utils
 import { Logger } from "@/core/utils/logger";
 // local

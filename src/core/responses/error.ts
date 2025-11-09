@@ -1,5 +1,5 @@
 // others
-import CONSTANTS from "../../shared/constants";
+import CONSTANTS from "@/shared/constants";
 
 const { STATUS_CODES, REASON_PHRASES } = CONSTANTS;
 

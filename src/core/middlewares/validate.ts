@@ -1,12 +1,10 @@
 // libs
-import type joi from "joi";
 import { rateLimit } from "express-rate-limit";
+// types
 import type { NextFunction, Request, Response } from "express";
-import lodash from "lodash";
-import { isValidObjectId } from "mongoose";
-
+import type joi from "joi";
 // others
-import { BadRequestError } from "@/core/responses/error.response";
+import { BadRequestError } from "@/core/responses/error";
 
 const TIME_RATE_LIMIT = 2 * 60 * 1000;
 const REQUEST_RATE_LIMIT = 10;
@@ -55,21 +53,3 @@ export const rateLimitInstance = rateLimit({
       message: options.message
     })
 });
-
-export const requiredBody = (req: Request) => {
-  if (lodash.isEmpty(req.body)) {
-    throw new BadRequestError("data not empty");
-  }
-
-  return Promise.resolve();
-};
-
-export const isIDObject = (req: Request) => {
-  const { id } = req.params;
-
-  if (id && !isValidObjectId(id)) {
-    throw new BadRequestError("id not valid");
-  }
-
-  return Promise.resolve();
-};
