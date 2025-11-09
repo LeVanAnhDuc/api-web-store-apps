@@ -1,7 +1,7 @@
 // libs
 import type { Response } from "express";
 // constants
-import CONSTANTS from "../constants";
+import CONSTANTS from "../../shared/constants";
 
 const { STATUS_CODES, REASON_PHRASES } = CONSTANTS;
 

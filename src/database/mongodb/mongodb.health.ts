@@ -8,7 +8,7 @@ import type {
   MongoConfig
 } from "@/types/mongodb";
 // constants
-import CONSTANTS from "@/core/constants";
+import CONSTANTS from "@/shared/constants";
 
 const { CONNECTION_STATE } = CONSTANTS;
 

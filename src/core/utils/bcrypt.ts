@@ -1,7 +1,7 @@
 // libs
 import * as bcrypt from "bcrypt";
 // others
-import CONSTANTS from "@/core/constants";
+import CONSTANTS from "@/shared/constants";
 
 export const hashPassword = (password: string) =>
   bcrypt.hashSync(password, CONSTANTS.SALT_OR_ROUNDS);

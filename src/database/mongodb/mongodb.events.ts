@@ -5,7 +5,7 @@ import type { ConnectionStateValue } from "@/types/mongodb";
 // utils
 import { Logger } from "@/core/utils/logger";
 // constants
-import CONSTANTS from "@/core/constants";
+import CONSTANTS from "@/shared/constants";
 
 const { CONNECTION_STATE } = CONSTANTS;
 

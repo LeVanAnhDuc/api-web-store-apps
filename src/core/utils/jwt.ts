@@ -9,7 +9,7 @@ import type { TExpiresIn, TPayload } from "@/types/jwt";
 // responses
 import { ForbiddenError } from "@/core/responses/error.response";
 // others
-import CONSTANTS from "@/core/constants";
+import CONSTANTS from "@/shared/constants";
 
 const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } =
   CONSTANTS.TOKEN.TIME;

@@ -1,7 +1,7 @@
 // types
 import type { ConnectOptions } from "mongoose";
 // cores
-import type { CONNECTION_STATE } from "@/core/constants/database";
+import type { CONNECTION_STATE } from "@/shared/constants/database";
 
 export type ConnectionStateValue =
   (typeof CONNECTION_STATE)[keyof typeof CONNECTION_STATE];

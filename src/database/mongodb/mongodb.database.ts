@@ -9,7 +9,7 @@ import type {
 // utils
 import { Logger } from "@/core/utils/logger";
 // constants
-import CONSTANTS from "@/core/constants";
+import CONSTANTS from "@/shared/constants";
 // local
 import { buildMongoConfig, MAX_RECONNECT_ATTEMPTS } from "./mongodb.config";
 import { setupEventHandlers, updateConnectionState } from "./mongodb.events";
