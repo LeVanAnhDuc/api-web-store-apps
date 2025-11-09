@@ -6,8 +6,8 @@ import cookieParser from "cookie-parser";
 import apiV1Routes from "./routes/v1.routes";
 // middlewares
 import { requestLogger } from "./core/middlewares/request-logger";
-import { rateLimitInstance } from "./core/middlewares/validate";
 import { handleError, handleNotFound } from "./core/middlewares/error-handler";
+import { setLocale } from "./shared/middlewares/locale";
 
 // Create Express application
 const app = express();
@@ -28,8 +28,8 @@ app.use(cookieParser());
 // Request logging
 app.use(requestLogger);
 
-// Rate limiting
-app.use(rateLimitInstance);
+// Set locale from Accept-Language header
+app.use(setLocale);
 
 /**
  * Configure routes

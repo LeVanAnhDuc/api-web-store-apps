@@ -1,12 +1,10 @@
 // libs
 import { Router } from "express";
 // routes
-// TODO: Uncomment when user module is implemented
-// import userRoutes from "./user.routes";
+import signupRouter from "@/modules/signup/routes";
 
 const router = Router();
 
-// TODO: Uncomment when user module is implemented
-// router.use("/users", userRoutes);
+router.use("/auth/signup", signupRouter);
 
 export default router;
