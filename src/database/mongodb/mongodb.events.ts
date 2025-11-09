@@ -1,7 +1,7 @@
 // libs
 import type { Connection } from "mongoose";
 // types
-import type { ConnectionStateValue } from "@/core/types/mongodb";
+import type { ConnectionStateValue } from "@/types/mongodb";
 // utils
 import { Logger } from "@/core/utils/logger";
 // constants

@@ -5,7 +5,7 @@ import jwt, {
   type Secret
 } from "jsonwebtoken";
 // types
-import type { TExpiresIn, TPayload } from "@/core/types/jwt";
+import type { TExpiresIn, TPayload } from "@/types/jwt";
 // responses
 import { ForbiddenError } from "@/core/responses/error.response";
 // others

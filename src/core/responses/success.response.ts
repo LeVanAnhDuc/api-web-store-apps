@@ -1,7 +1,6 @@
-// types
+// libs
 import type { Response } from "express";
-import type { ISuccessResponse } from "@/core/types/common";
-// others
+// constants
 import CONSTANTS from "../constants";
 
 const { STATUS_CODES, REASON_PHRASES } = CONSTANTS;
@@ -17,7 +16,7 @@ abstract class SuccessResponse<T> {
     status,
     reasonStatusCode,
     data
-  }: Partial<ISuccessResponse<T>>) {
+  }: Partial<ResponsePattern<T>>) {
     this.message = message || reasonStatusCode;
     this.status = status;
     this.reasonStatusCode = reasonStatusCode;
@@ -33,7 +32,7 @@ export class OkSuccess<T> extends SuccessResponse<T> {
     status = STATUS_CODES.OK,
     reasonStatusCode = REASON_PHRASES.OK,
     data = undefined
-  }: Partial<ISuccessResponse<T>>) {
+  }: Partial<ResponsePattern<T>>) {
     super({ message, status, reasonStatusCode, data });
   }
 }
@@ -44,7 +43,7 @@ export class CreatedSuccess<T> extends SuccessResponse<T> {
     status = STATUS_CODES.CREATED,
     reasonStatusCode = REASON_PHRASES.CREATED,
     data = undefined
-  }: Partial<ISuccessResponse<T>>) {
+  }: Partial<ResponsePattern<T>>) {
     super({ message, status, reasonStatusCode, data });
   }
 }
@@ -55,7 +54,7 @@ export class NoContentSuccess<T> extends SuccessResponse<T> {
     status = STATUS_CODES.NO_CONTENT,
     reasonStatusCode = REASON_PHRASES.NO_CONTENT,
     data = undefined
-  }: Partial<ISuccessResponse<T>>) {
+  }: Partial<ResponsePattern<T>>) {
     super({ message, status, reasonStatusCode, data });
   }
 }

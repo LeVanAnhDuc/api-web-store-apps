@@ -9,9 +9,12 @@
     "outDir": "dist",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "lib": ["es2015"]
+  "lib": ["es2015"],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "backup"]
 }

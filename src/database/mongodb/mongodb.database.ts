@@ -5,7 +5,7 @@ import type {
   ConnectionStateValue,
   MongoConfig,
   ConnectionMetrics
-} from "@/core/types/mongodb";
+} from "@/types/mongodb";
 // utils
 import { Logger } from "@/core/utils/logger";
 // constants

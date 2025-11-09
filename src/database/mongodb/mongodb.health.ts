@@ -6,7 +6,7 @@ import type {
   ConnectionMetrics,
   DatabaseStats,
   MongoConfig
-} from "@/core/types/mongodb";
+} from "@/types/mongodb";
 // constants
 import CONSTANTS from "@/core/constants";
 

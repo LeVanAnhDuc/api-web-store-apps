@@ -43,19 +43,15 @@ export default tseslint.config(
         "error",
         {
           argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_"
+          varsIgnorePattern: "^_",
+          args: "after-used",
+          caughtErrors: "none"
         }
       ],
       "@typescript-eslint/consistent-type-imports": "error",
       // General JavaScript rules
       "no-undef": "off",
-      "no-unused-vars": [
-        "error",
-        {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_"
-        }
-      ],
+      "no-unused-vars": "off",
       "prefer-const": "warn",
       "no-var": "error",
       "no-console": "warn",
@@ -75,9 +71,11 @@ export default tseslint.config(
       "node_modules",
       "dist",
       "build",
+      "backup",
       ".husky",
       ".doc",
       "*.json",
+      "eslint.config.mts",
       ".eslintignore",
       ".prettierrc",
       ".prettierignore"
