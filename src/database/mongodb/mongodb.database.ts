@@ -5,7 +5,7 @@ import type {
   ConnectionStateValue,
   MongoConfig,
   ConnectionMetrics
-} from "@/types/mongodb";
+} from "@/shared/types/databases/mongodb";
 // utils
 import { Logger } from "@/core/utils/logger";
 // constants
@@ -15,7 +15,7 @@ import { buildMongoConfig, MAX_RECONNECT_ATTEMPTS } from "./mongodb.config";
 import { setupEventHandlers, updateConnectionState } from "./mongodb.events";
 import { isHealthy, getStats } from "./mongodb.health";
 
-const { CONNECTION_STATE } = CONSTANTS;
+const { CONNECTION_STATE } = CONSTANTS.DATABASE;
 
 class MongoDatabase {
   private static instance: MongoDatabase | null = null;

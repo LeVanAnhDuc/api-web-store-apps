@@ -6,11 +6,11 @@ import type {
   ConnectionMetrics,
   DatabaseStats,
   MongoConfig
-} from "@/types/mongodb";
+} from "@/shared/types/databases/mongodb";
 // constants
 import CONSTANTS from "@/shared/constants";
 
-const { CONNECTION_STATE } = CONSTANTS;
+const { CONNECTION_STATE } = CONSTANTS.DATABASE;
 
 export const isHealthy = (state: ConnectionStateValue): boolean =>
   state === CONNECTION_STATE.CONNECTED && mongoose.connection.readyState === 1;

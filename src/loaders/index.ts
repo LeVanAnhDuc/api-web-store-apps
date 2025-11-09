@@ -1,6 +1,6 @@
 import { loadDatabase, closeDatabase } from "./database.loader";
 import { loadRedis, closeRedis } from "./redis.loader";
-import { Logger } from "../core/utils/logger";
+import { Logger } from "@/core/utils/logger";
 
 export const loadAll = async (): Promise<void> => {
   try {

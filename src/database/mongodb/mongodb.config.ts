@@ -1,7 +1,7 @@
 // libs
 import type { ConnectOptions } from "mongoose";
 // types
-import type { MongoConfig } from "@/types/mongodb";
+import type { MongoConfig } from "@/shared/types/databases/mongodb";
 // configs
 import config from "@/core/configs/env";
 

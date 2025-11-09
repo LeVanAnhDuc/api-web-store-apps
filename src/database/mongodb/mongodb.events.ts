@@ -1,13 +1,13 @@
 // libs
 import type { Connection } from "mongoose";
 // types
-import type { ConnectionStateValue } from "@/types/mongodb";
+import type { ConnectionStateValue } from "@/shared/types/databases/mongodb";
 // utils
 import { Logger } from "@/core/utils/logger";
 // constants
 import CONSTANTS from "@/shared/constants";
 
-const { CONNECTION_STATE } = CONSTANTS;
+const { CONNECTION_STATE } = CONSTANTS.DATABASE;
 
 interface EventHandlers {
   onConnected: () => void;
