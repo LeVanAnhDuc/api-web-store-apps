@@ -1,0 +1,38 @@
+// libs
+import type { ConnectOptions } from "mongoose";
+// types
+import type { MongoConfig } from "@/core/types/mongodb";
+// configs
+import config from "@/core/configs/env";
+
+export const MAX_RECONNECT_ATTEMPTS = 10;
+
+export const buildMongoConfig = (): MongoConfig => {
+  if (!config.DB_URL?.trim()) {
+    throw new Error("MongoDB connection URL is required");
+  }
+
+  if (!config.DB_NAME?.trim()) {
+    throw new Error("MongoDB database name is required");
+  }
+
+  const options: ConnectOptions = {
+    maxPoolSize: 10,
+    minPoolSize: 2,
+    maxIdleTimeMS: 30000,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+    compressors:
+      process.env.NODE_ENV === "development" ? [] : ["snappy", "zlib"],
+    retryWrites: true,
+    w: "majority",
+    autoCreate: true,
+    autoIndex: true
+  };
+
+  return {
+    url: config.DB_URL,
+    dbName: config.DB_NAME,
+    options
+  };
+};
