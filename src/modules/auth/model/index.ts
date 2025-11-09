@@ -1,14 +1,14 @@
 // libs
 import { Schema, model, type Model } from "mongoose";
 // types
-import type { IAuthDocument } from "@/shared/types/modules/auth";
+import type { AuthDocument } from "@/shared/types/modules/auth";
 // constants
 import { AUTH_ROLES } from "@/shared/constants/database/auth";
 import CONSTANTS from "@/shared/constants";
 
 const { AUTHENTICATION } = CONSTANTS.MODEL_NAME;
 
-const AuthSchema = new Schema<IAuthDocument>(
+const AuthSchema = new Schema<AuthDocument>(
   {
     email: {
       type: String,
@@ -63,7 +63,7 @@ const AuthSchema = new Schema<IAuthDocument>(
 AuthSchema.index({ email: 1 });
 AuthSchema.index({ refreshToken: 1 });
 
-const AuthModel: Model<IAuthDocument> = model<IAuthDocument>(
+const AuthModel: Model<AuthDocument> = model<AuthDocument>(
   AUTHENTICATION,
   AuthSchema
 );

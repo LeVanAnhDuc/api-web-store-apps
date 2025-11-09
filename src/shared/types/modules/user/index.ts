@@ -11,7 +11,7 @@ export type TGender = (typeof GENDERS)[keyof typeof GENDERS];
 /**
  * User document interface
  */
-export interface IUserDocument {
+export interface UserDocument {
   _id: Schema.Types.ObjectId;
   authId: Schema.Types.ObjectId;
   fullName: string;

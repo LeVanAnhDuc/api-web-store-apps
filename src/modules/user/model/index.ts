@@ -1,7 +1,7 @@
 // libs
 import { Schema, model, type Model } from "mongoose";
 // types
-import type { IUserDocument } from "@/shared/types/modules/user";
+import type { UserDocument } from "@/shared/types/modules/user";
 // constants
 import { GENDERS } from "@/shared/constants/database/user.constants";
 import CONSTANTS from "@/shared/constants";
@@ -11,7 +11,7 @@ const { USER, AUTHENTICATION } = CONSTANTS.MODEL_NAME;
 /**
  * User schema for profile data
  */
-const UserSchema = new Schema<IUserDocument>(
+const UserSchema = new Schema<UserDocument>(
   {
     authId: {
       type: Schema.Types.ObjectId,
@@ -71,6 +71,6 @@ UserSchema.virtual("auth", {
   justOne: true
 });
 
-const UserModel: Model<IUserDocument> = model<IUserDocument>(USER, UserSchema);
+const UserModel: Model<UserDocument> = model<UserDocument>(USER, UserSchema);
 
 export default UserModel;

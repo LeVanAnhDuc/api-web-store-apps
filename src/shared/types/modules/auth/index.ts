@@ -5,7 +5,7 @@ import type { AUTH_ROLES } from "@/shared/constants/database/auth";
 
 export type TAuthRole = (typeof AUTH_ROLES)[keyof typeof AUTH_ROLES];
 
-export interface IAuthDocument {
+export interface AuthDocument {
   _id: Schema.Types.ObjectId;
   email: string;
   password: string;
