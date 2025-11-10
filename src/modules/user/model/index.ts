@@ -3,14 +3,11 @@ import { Schema, model, type Model } from "mongoose";
 // types
 import type { UserDocument } from "@/shared/types/modules/user";
 // constants
-import { GENDERS } from "@/shared/constants/database/user.constants";
-import CONSTANTS from "@/shared/constants";
+import { GENDERS } from "@/shared/constants/user";
+import { MODEL_NAMES } from "@/shared/constants/models";
 
-const { USER, AUTHENTICATION } = CONSTANTS.MODEL_NAME;
+const { USER, AUTHENTICATION } = MODEL_NAMES;
 
-/**
- * User schema for profile data
- */
 const UserSchema = new Schema<UserDocument>(
   {
     authId: {

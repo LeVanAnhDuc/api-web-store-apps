@@ -1,9 +1,9 @@
 // types
 import type { ConnectOptions } from "mongoose";
-import type DATABASE_CONSTANTS from "@/shared/constants/database";
+import type { CONNECTION_STATES } from "@/database/mongodb/constants";
 
 export type ConnectionStateValue =
-  (typeof DATABASE_CONSTANTS)["CONNECTION_STATE"][keyof (typeof DATABASE_CONSTANTS)["CONNECTION_STATE"]];
+  (typeof CONNECTION_STATES)[keyof typeof CONNECTION_STATES];
 
 export interface MongoConfig {
   url: string;

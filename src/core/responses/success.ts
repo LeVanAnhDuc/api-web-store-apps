@@ -1,9 +1,7 @@
 // libs
 import type { Response } from "express";
 // constants
-import CONSTANTS from "@/shared/constants";
-
-const { STATUS_CODES, REASON_PHRASES } = CONSTANTS;
+import { STATUS_CODES, REASON_PHRASES } from "@/core/constants/http";
 
 abstract class SuccessResponse<T> {
   private readonly message: string;

@@ -1,6 +1,4 @@
-const MODEL_NAME = {
+export const MODEL_NAMES = {
   AUTHENTICATION: "Authentication",
   USER: "User"
-};
-
-export default MODEL_NAME;
+} as const;

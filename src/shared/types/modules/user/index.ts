@@ -1,16 +1,13 @@
 // libs
 import type { Schema } from "mongoose";
 // constants
-import type { GENDERS } from "@/shared/constants/database/user.constants";
+import type { GENDERS } from "@/shared/constants/user";
 
 /**
  * Gender type derived from GENDERS constant
  */
-export type TGender = (typeof GENDERS)[keyof typeof GENDERS];
+export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
 
-/**
- * User document interface
- */
 export interface UserDocument {
   _id: Schema.Types.ObjectId;
   authId: Schema.Types.ObjectId;
@@ -19,7 +16,7 @@ export interface UserDocument {
   avatar?: string;
   address?: string;
   dateOfBirth?: Date;
-  gender?: TGender;
+  gender?: Gender;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -8,14 +8,14 @@ import jwt, {
 import type { TExpiresIn, TPayload } from "@/shared/types/databases/jwt";
 // responses
 import { ForbiddenError } from "@/core/responses/error";
-// others
-import CONSTANTS from "@/shared/constants";
+// constants
+import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/core/configs/jwt";
+import ENV from "@/core/configs/env";
 
 const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } =
-  CONSTANTS.TOKEN.TIME;
-const { JSON_WEB_TOKEN_ERROR, TOKEN_EXPIRED_ERROR } = CONSTANTS.TOKEN.ERROR;
-const { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_RESET_PASS_SECRET } =
-  CONSTANTS.ENV;
+  TOKEN_EXPIRY;
+const { JSON_WEB_TOKEN_ERROR, TOKEN_EXPIRED_ERROR } = TOKEN_ERRORS;
+const { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_RESET_PASS_SECRET } = ENV;
 
 const ERROR_MESSAGES_MAPPING = {
   [JSON_WEB_TOKEN_ERROR]: "Invalid token",

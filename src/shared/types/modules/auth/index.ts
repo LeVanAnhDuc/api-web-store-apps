@@ -1,7 +1,7 @@
 // libs
 import type { Schema } from "mongoose";
 // constants
-import type { AUTH_ROLES } from "@/shared/constants/database/auth";
+import type { AUTH_ROLES } from "@/shared/constants/auth";
 
 export type TAuthRole = (typeof AUTH_ROLES)[keyof typeof AUTH_ROLES];
 

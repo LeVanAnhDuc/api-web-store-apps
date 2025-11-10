@@ -9,17 +9,16 @@ import type {
 // utils
 import { Logger } from "@/core/utils/logger";
 // constants
-import CONSTANTS from "@/shared/constants";
+import { CONNECTION_STATES } from "./constants";
 // local
 import { buildMongoConfig, MAX_RECONNECT_ATTEMPTS } from "./mongodb.config";
 import { setupEventHandlers, updateConnectionState } from "./mongodb.events";
 import { isHealthy, getStats } from "./mongodb.health";
 
-const { CONNECTION_STATE } = CONSTANTS.DATABASE;
-
 class MongoDatabase {
   private static instance: MongoDatabase | null = null;
-  private connectionState: ConnectionStateValue = CONNECTION_STATE.DISCONNECTED;
+  private connectionState: ConnectionStateValue =
+    CONNECTION_STATES.DISCONNECTED;
   private connectionPromise: Promise<void> | null = null;
   private reconnectAttempts = 0;
   private config: MongoConfig | null = null;
@@ -63,7 +62,7 @@ class MongoDatabase {
 
     this.setupEventListeners();
 
-    if (this.connectionState === CONNECTION_STATE.CONNECTED) {
+    if (this.connectionState === CONNECTION_STATES.CONNECTED) {
       Logger.debug("MongoDB is already connected");
       return;
     }
@@ -75,7 +74,7 @@ class MongoDatabase {
 
     this.connectionState = updateConnectionState(
       this.connectionState,
-      CONNECTION_STATE.CONNECTING
+      CONNECTION_STATES.CONNECTING
     );
     this.connectionPromise = this.performConnection();
 
@@ -121,7 +120,7 @@ class MongoDatabase {
   private handleConnectionSuccess(): void {
     this.connectionState = updateConnectionState(
       this.connectionState,
-      CONNECTION_STATE.CONNECTED
+      CONNECTION_STATES.CONNECTED
     );
     this.metrics.lastConnectionTime = new Date();
     this.reconnectAttempts = 0;
@@ -143,7 +142,7 @@ class MongoDatabase {
   private async handleConnectionError(error: unknown): Promise<void> {
     this.connectionState = updateConnectionState(
       this.connectionState,
-      CONNECTION_STATE.DISCONNECTED
+      CONNECTION_STATES.DISCONNECTED
     );
 
     const errorMessage =
@@ -160,20 +159,20 @@ class MongoDatabase {
   private handleConnected(): void {
     this.connectionState = updateConnectionState(
       this.connectionState,
-      CONNECTION_STATE.CONNECTED
+      CONNECTION_STATES.CONNECTED
     );
     this.metrics.lastConnectionTime = new Date();
   }
 
   private handleDisconnected(): void {
-    if (this.connectionState === CONNECTION_STATE.DISCONNECTING) {
+    if (this.connectionState === CONNECTION_STATES.DISCONNECTING) {
       Logger.info("MongoDB disconnected gracefully");
       return;
     }
 
     this.connectionState = updateConnectionState(
       this.connectionState,
-      CONNECTION_STATE.DISCONNECTED
+      CONNECTION_STATES.DISCONNECTED
     );
     this.metrics.lastDisconnectionTime = new Date();
 
@@ -187,7 +186,7 @@ class MongoDatabase {
   private handleReconnected(): void {
     this.connectionState = updateConnectionState(
       this.connectionState,
-      CONNECTION_STATE.CONNECTED
+      CONNECTION_STATES.CONNECTED
     );
     this.metrics.lastConnectionTime = new Date();
     this.metrics.reconnectionAttempts++;
@@ -220,21 +219,21 @@ class MongoDatabase {
   }
 
   public async disconnect(): Promise<void> {
-    if (this.connectionState === CONNECTION_STATE.DISCONNECTED) {
+    if (this.connectionState === CONNECTION_STATES.DISCONNECTED) {
       Logger.debug("MongoDB is already disconnected");
       return;
     }
 
     this.connectionState = updateConnectionState(
       this.connectionState,
-      CONNECTION_STATE.DISCONNECTING
+      CONNECTION_STATES.DISCONNECTING
     );
 
     try {
       await mongoose.connection.close();
       this.connectionState = updateConnectionState(
         this.connectionState,
-        CONNECTION_STATE.DISCONNECTED
+        CONNECTION_STATES.DISCONNECTED
       );
       Logger.info("MongoDB disconnected gracefully");
     } catch (error) {

@@ -3,10 +3,10 @@ import { Schema, model, type Model } from "mongoose";
 // types
 import type { AuthDocument } from "@/shared/types/modules/auth";
 // constants
-import { AUTH_ROLES } from "@/shared/constants/database/auth";
-import CONSTANTS from "@/shared/constants";
+import { AUTH_ROLES } from "@/shared/constants/auth";
+import { MODEL_NAMES } from "@/shared/constants/models";
 
-const { AUTHENTICATION } = CONSTANTS.MODEL_NAME;
+const { AUTHENTICATION } = MODEL_NAMES;
 
 const AuthSchema = new Schema<AuthDocument>(
   {

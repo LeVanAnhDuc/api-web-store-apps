@@ -5,9 +5,7 @@ import type { ConnectionStateValue } from "@/shared/types/databases/mongodb";
 // utils
 import { Logger } from "@/core/utils/logger";
 // constants
-import CONSTANTS from "@/shared/constants";
-
-const { CONNECTION_STATE } = CONSTANTS.DATABASE;
+import { CONNECTION_STATES } from "./constants";
 
 interface EventHandlers {
   onConnected: () => void;
@@ -56,8 +54,14 @@ export const updateConnectionState = (
   newState: ConnectionStateValue
 ): ConnectionStateValue => {
   if (currentState !== newState) {
+    const stateNames: Record<ConnectionStateValue, string> = {
+      [CONNECTION_STATES.DISCONNECTED]: "DISCONNECTED",
+      [CONNECTION_STATES.CONNECTED]: "CONNECTED",
+      [CONNECTION_STATES.CONNECTING]: "CONNECTING",
+      [CONNECTION_STATES.DISCONNECTING]: "DISCONNECTING"
+    };
     Logger.debug(
-      `MongoDB state changed: ${CONNECTION_STATE[currentState]} → ${CONNECTION_STATE[newState]}`
+      `MongoDB state changed: ${stateNames[currentState]} → ${stateNames[newState]}`
     );
   }
   return newState;

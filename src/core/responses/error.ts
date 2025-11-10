@@ -1,7 +1,5 @@
-// others
-import CONSTANTS from "@/shared/constants";
-
-const { STATUS_CODES, REASON_PHRASES } = CONSTANTS;
+// constants
+import { STATUS_CODES, REASON_PHRASES } from "@/core/constants/http";
 
 export class ErrorResponse extends Error {
   private status: number;

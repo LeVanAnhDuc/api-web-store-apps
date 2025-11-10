@@ -8,12 +8,10 @@ import type {
   MongoConfig
 } from "@/shared/types/databases/mongodb";
 // constants
-import CONSTANTS from "@/shared/constants";
-
-const { CONNECTION_STATE } = CONSTANTS.DATABASE;
+import { CONNECTION_STATES } from "./constants";
 
 export const isHealthy = (state: ConnectionStateValue): boolean =>
-  state === CONNECTION_STATE.CONNECTED && mongoose.connection.readyState === 1;
+  state === CONNECTION_STATES.CONNECTED && mongoose.connection.readyState === 1;
 
 export const getStats = (
   state: ConnectionStateValue,
@@ -24,9 +22,16 @@ export const getStats = (
     ? Date.now() - metrics.lastConnectionTime.getTime()
     : 0;
 
+  const stateNames: Record<ConnectionStateValue, string> = {
+    [CONNECTION_STATES.DISCONNECTED]: "DISCONNECTED",
+    [CONNECTION_STATES.CONNECTED]: "CONNECTED",
+    [CONNECTION_STATES.CONNECTING]: "CONNECTING",
+    [CONNECTION_STATES.DISCONNECTING]: "DISCONNECTING"
+  };
+
   return {
     isHealthy: isHealthy(state),
-    state: CONNECTION_STATE[state],
+    state: stateNames[state],
     readyState: mongoose.connection.readyState,
     metrics: {
       ...metrics,
