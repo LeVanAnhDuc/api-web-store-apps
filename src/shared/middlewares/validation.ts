@@ -1,15 +1,11 @@
-// libs
 import type { Request } from "express";
 import type { Schema } from "joi";
-// utils
-import { getMessage } from "@/core/helpers/i18n";
+
 import { asyncMiddlewareHandler } from "@/core/utils/async-handler";
-// responses
 import { BadRequestError } from "@/core/responses/error";
 
 export const validate = (
   schema: Schema,
-  messagePrefix: string,
   source: "body" | "params" | "query" = "body"
 ) =>
   asyncMiddlewareHandler(async (req: Request): Promise<void> => {
@@ -20,8 +16,9 @@ export const validate = (
     });
 
     if (error) {
-      const errorCode = error.details[0].message;
-      const message = getMessage(`${messagePrefix}.${errorCode}`, req.locale);
+      const translationKey = error.details[0].message;
+      // Translation key is configured directly in Joi schema messages
+      const message = req.t(translationKey as I18n.Key);
       throw new BadRequestError(message);
     }
 

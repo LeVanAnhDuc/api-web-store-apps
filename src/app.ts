@@ -1,13 +1,12 @@
-// libs
 import express from "express";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
-// routes
+
 import apiV1Routes from "./routes/v1.routes";
-// middlewares
 import { requestLogger } from "./core/middlewares/request-logger";
 import { handleError, handleNotFound } from "./core/middlewares/error-handler";
-import { setLocale } from "./shared/middlewares/locale";
+import { handleMongooseError } from "./core/middlewares/mongoose-error-handler";
+import { i18nMiddleware } from "./i18n";
 
 // Create Express application
 const app = express();
@@ -25,11 +24,9 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // Cookie parser
 app.use(cookieParser());
 
-// Request logging
 app.use(requestLogger);
 
-// Set locale from Accept-Language header
-app.use(setLocale);
+app.use(i18nMiddleware);
 
 /**
  * Configure routes
@@ -49,6 +46,7 @@ app.use("/api/v1", apiV1Routes);
  * Error handlers (must be last)
  */
 app.use(handleNotFound);
+app.use(handleMongooseError);
 app.use(handleError);
 
 export default app;

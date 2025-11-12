@@ -17,9 +17,11 @@ const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } =
 const { JSON_WEB_TOKEN_ERROR, TOKEN_EXPIRED_ERROR } = TOKEN_ERRORS;
 const { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_RESET_PASS_SECRET } = ENV;
 
+// Using translation keys instead of hardcoded messages
+// These will be translated in the error handler middleware
 const ERROR_MESSAGES_MAPPING = {
-  [JSON_WEB_TOKEN_ERROR]: "Invalid token",
-  [TOKEN_EXPIRED_ERROR]: "Token expired"
+  [JSON_WEB_TOKEN_ERROR]: "common:errors.invalidToken",
+  [TOKEN_EXPIRED_ERROR]: "common:errors.tokenExpired"
 };
 
 const generateToken = (

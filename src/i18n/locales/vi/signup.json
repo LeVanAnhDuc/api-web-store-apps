@@ -1,0 +1,13 @@
+{
+  "errors": {
+    "emailRequired": "Email là bắt buộc",
+    "invalidEmailFormat": "Email không hợp lệ",
+    "emailAlreadyExists": "Email đã được đăng ký",
+    "rateLimitExceeded": "Bạn đã vượt quá số lần thử cho phép",
+    "resendCooldown": "Vui lòng đợi trước khi gửi lại OTP",
+    "emailSendFailed": "Không thể gửi email. Vui lòng thử lại sau"
+  },
+  "success": {
+    "otpSent": "Mã OTP đã được gửi đến email"
+  }
+}

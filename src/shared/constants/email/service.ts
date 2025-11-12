@@ -19,7 +19,16 @@ export const EMAIL_RATE_LIMIT = {
   DELTA_MS: 1000
 } as const;
 
+// Using process.cwd() for absolute path from project root
+// Avoids relative path errors and works in both dev (src) and prod (dist)
+const isCompiledCode = __dirname.includes("dist");
+const PROJECT_ROOT = process.cwd();
+
 export const EMAIL_PATHS = {
   /** Directory containing email HTML templates */
-  TEMPLATES_DIR: path.join(__dirname, "../../../templates/email")
+  TEMPLATES_DIR: path.join(
+    PROJECT_ROOT,
+    isCompiledCode ? "dist" : "src",
+    "shared/templates/email"
+  )
 } as const;

@@ -1,0 +1,17 @@
+{
+  "fields": {
+    "authId": "Auth ID",
+    "fullName": "Họ và tên",
+    "phone": "Số điện thoại",
+    "address": "Địa chỉ"
+  },
+  "validation": {
+    "authIdRequired": "Auth ID là bắt buộc",
+    "fullNameRequired": "Họ và tên là bắt buộc",
+    "fullNameMinLength": "Họ và tên phải có ít nhất 2 ký tự",
+    "fullNameMaxLength": "Họ và tên không được vượt quá 100 ký tự",
+    "phoneRequired": "Số điện thoại là bắt buộc",
+    "phoneInvalid": "Số điện thoại không hợp lệ",
+    "addressMaxLength": "Địa chỉ không được vượt quá 500 ký tự"
+  }
+}

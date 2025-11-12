@@ -1,16 +1,11 @@
-// libs
 import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 import fs from "fs/promises";
 import path from "path";
-// types
-import type { Locale } from "@/shared/locales";
-// utils
+
+import i18next from "@/i18n";
 import { Logger } from "@/core/utils/logger";
-import { getEmailTranslations } from "@/shared/templates/locales";
-// configs
 import config from "@/core/configs/env";
-// constants
 import {
   EMAIL_SERVICE,
   EMAIL_POOL,
@@ -34,7 +29,7 @@ const transporter: Transporter = nodemailer.createTransport({
 const renderEmailTemplate = async (
   templateName: string,
   variables: Record<string, string | number>,
-  locale: Locale = "en"
+  locale: I18n.Locale = "en"
 ): Promise<string> => {
   try {
     const templatePath = path.join(
@@ -43,7 +38,21 @@ const renderEmailTemplate = async (
     );
     let template = await fs.readFile(templatePath, "utf-8");
 
-    const translations = getEmailTranslations(locale, templateName);
+    // Using i18next with fixed language for email translations
+    const t = i18next.getFixedT(locale);
+
+    // Getting all translations for the template from i18next
+    const translations = {
+      header_title: t("email:otpVerification.headerTitle"),
+      greeting: t("email:otpVerification.greeting"),
+      intro_text: t("email:otpVerification.introText"),
+      expiry_text: t("email:otpVerification.expiryText"),
+      expiry_minutes_label: t("email:otpVerification.expiryMinutesLabel"),
+      resend_text: t("email:otpVerification.resendText"),
+      warning_text: t("email:otpVerification.warningText"),
+      footer_text: t("email:otpVerification.footerText"),
+      copyright: t("email:otpVerification.copyright")
+    };
 
     const allVariables = {
       ...translations,
@@ -58,7 +67,10 @@ const renderEmailTemplate = async (
     return template;
   } catch (error) {
     Logger.error(`Failed to render email template: ${templateName}`, error);
-    throw new Error(`Email template rendering failed: ${templateName}`);
+    const errorMessage = i18next.t("common:errors.emailTemplateFailed", {
+      templateName
+    });
+    throw new Error(errorMessage);
   }
 };
 
@@ -79,7 +91,8 @@ export const sendEmail = async (
     Logger.info(`Email sent successfully to ${to}`);
   } catch (error) {
     Logger.error(`Failed to send email to ${to}`, error);
-    throw new Error("Email sending failed");
+    const errorMessage = i18next.t("common:errors.emailSendFailed");
+    throw new Error(errorMessage);
   }
 };
 
@@ -88,7 +101,7 @@ export const sendTemplatedEmail = async (
   subject: string,
   templateName: string,
   variables: Record<string, string | number>,
-  locale: Locale = "en"
+  locale: I18n.Locale = "en"
 ): Promise<void> => {
   const htmlContent = await renderEmailTemplate(
     templateName,

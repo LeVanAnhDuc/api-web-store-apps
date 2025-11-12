@@ -1,0 +1,17 @@
+{
+  "errors": {
+    "notFound": "Not Found",
+    "internalServer": "Internal Server error",
+    "invalidToken": "Invalid token",
+    "tokenExpired": "Token expired",
+    "emailTemplateFailed": "Email template rendering failed: {{templateName}}",
+    "emailSendFailed": "Email sending failed"
+  },
+  "validation": {
+    "required": "{{field}} is required",
+    "invalid": "{{field}} is invalid",
+    "minLength": "{{field}} must be at least {{min}} characters",
+    "maxLength": "{{field}} must not exceed {{max}} characters",
+    "invalidFormat": "Please provide a valid {{field}}"
+  }
+}

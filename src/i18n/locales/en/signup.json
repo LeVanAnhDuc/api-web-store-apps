@@ -1,0 +1,13 @@
+{
+  "errors": {
+    "emailRequired": "Email is required",
+    "invalidEmailFormat": "Invalid email format",
+    "emailAlreadyExists": "Email is already registered",
+    "rateLimitExceeded": "You have exceeded the allowed number of attempts",
+    "resendCooldown": "Please wait before resending OTP",
+    "emailSendFailed": "Failed to send email. Please try again later"
+  },
+  "success": {
+    "otpSent": "OTP code has been sent to your email"
+  }
+}

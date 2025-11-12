@@ -1,4 +1,4 @@
-import type { Locale } from "@/shared/locales";
+import type { TFunction } from "i18next";
 
 declare global {
   interface ResponsePattern<T> {
@@ -10,7 +10,8 @@ declare global {
 
   namespace Express {
     interface Request {
-      locale: Locale;
+      language: string;
+      t: TFunction;
     }
   }
 }

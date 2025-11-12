@@ -1,27 +1,20 @@
-// libs
 import type { Request } from "express";
-// types
+import type { TFunction } from "i18next";
+
 import type { SendOtpResponse } from "@/shared/types/modules/signup";
-import type { Locale } from "@/shared/locales";
-// models
 import AuthModel from "@/modules/auth/model";
-// utils
 import { generateOtp, generateSessionId } from "@/modules/signup/utils/otp";
 import { Logger } from "@/core/utils/logger";
-import { getMessage } from "@/core/helpers/i18n";
+import i18next from "@/i18n";
 import {
   checkIpRateLimit,
   checkEmailRateLimit,
   checkOtpCooldown,
   setOtpCooldown
 } from "@/shared/utils/rate-limit";
-// services
 import { sendTemplatedEmail } from "@/shared/services/email/email.service";
-// responses
 import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
-// constants
 import { OTP_CONFIG, SIGNUP_RATE_LIMITS } from "@/shared/constants/signup";
-import { EMAIL_TRANSLATIONS } from "@/shared/templates/locales";
 
 const SECONDS_PER_MINUTE = 60;
 const UNKNOWN_IP = "unknown";
@@ -37,9 +30,10 @@ const getClientIp = (req: Request): string => {
 export const sendOtpEmail = async (
   email: string,
   otp: string,
-  locale: Locale
+  locale: I18n.Locale
 ): Promise<void> => {
-  const subject = EMAIL_TRANSLATIONS[locale].EMAIL_SUBJECTS.title;
+  const t = i18next.getFixedT(locale);
+  const subject = t("email:subjects.otpVerification");
 
   await sendTemplatedEmail(
     email,
@@ -56,7 +50,7 @@ export const sendOtpEmail = async (
 const checkRateLimits = async (
   ipAddress: string,
   email: string,
-  locale: Locale
+  t: TFunction
 ): Promise<void> => {
   const [isIpAllowed, isEmailAllowed] = await Promise.all([
     checkIpRateLimit(
@@ -72,20 +66,18 @@ const checkRateLimits = async (
   ]);
 
   if (!isIpAllowed || !isEmailAllowed) {
-    const message = getMessage("SIGNUP.ERRORS.RATE_LIMIT_EXCEEDED", locale);
-    throw new BadRequestError(message);
+    throw new BadRequestError(t("signup:errors.rateLimitExceeded"));
   }
 };
 
 const checkAndSetOtpCooldown = async (
   email: string,
-  locale: Locale
+  t: TFunction
 ): Promise<void> => {
   const canSend = await checkOtpCooldown(email);
 
   if (!canSend) {
-    const message = getMessage("SIGNUP.ERRORS.RESEND_COOLDOWN", locale);
-    throw new BadRequestError(message);
+    throw new BadRequestError(t("signup:errors.resendCooldown"));
   }
 
   await setOtpCooldown(email, OTP_CONFIG.RESEND_COOLDOWN_SECONDS);
@@ -93,14 +85,12 @@ const checkAndSetOtpCooldown = async (
 
 const checkEmailAvailability = async (
   email: string,
-  ipAddress: string,
-  locale: Locale
+  t: TFunction
 ): Promise<void> => {
   const existingUser = await AuthModel.findOne({ email });
 
   if (existingUser) {
-    const message = getMessage("SIGNUP.ERRORS.EMAIL_ALREADY_EXISTS", locale);
-    throw new ConflictRequestError(message);
+    throw new ConflictRequestError(t("signup:errors.emailAlreadyExists"));
   }
 };
 
@@ -116,15 +106,15 @@ export const sendOtp = async (
 ): Promise<Partial<ResponsePattern<SendOtpResponse>>> => {
   const { email } = req.body;
   const ipAddress = getClientIp(req);
-  const { locale } = req;
+  const { language, t } = req;
 
-  await checkRateLimits(ipAddress, email, locale);
-  await checkAndSetOtpCooldown(email, locale);
-  await checkEmailAvailability(email, ipAddress, locale);
+  await checkRateLimits(ipAddress, email, t);
+  await checkAndSetOtpCooldown(email, t);
+  await checkEmailAvailability(email, t);
 
   const { otp, sessionId } = createOtpVerification();
 
-  sendOtpEmail(email, otp, locale)
+  sendOtpEmail(email, otp, language as I18n.Locale)
     .then(() => Logger.info(`OTP sent successfully to ${email}`))
     .catch((error) =>
       Logger.error(`Background email sending failed for ${email}`, error)
@@ -132,8 +122,10 @@ export const sendOtp = async (
 
   const expiresInSeconds = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 
+  const responseMessage = t("signup:success.otpSent");
+
   return {
-    message: getMessage("SIGNUP.SUCCESS.OTP_SENT", locale),
+    message: responseMessage,
     data: {
       success: true,
       sessionId,
