@@ -3,7 +3,7 @@ import { Schema, model, type Model } from "mongoose";
 // types
 import type { AuthDocument } from "@/shared/types/modules/auth";
 // constants
-import { AUTH_ROLES } from "@/shared/constants/auth";
+import { AUTH_ROLES, PASSWORD_VALIDATION } from "@/shared/constants/auth";
 import { MODEL_NAMES } from "@/shared/constants/models";
 
 const { AUTHENTICATION } = MODEL_NAMES;
@@ -25,7 +25,10 @@ const AuthSchema = new Schema<AuthDocument>(
       type: String,
       required: [true, "Password is required"],
       trim: true,
-      minlength: [8, "Password must be at least 8 characters"]
+      minlength: [
+        PASSWORD_VALIDATION.MIN_LENGTH,
+        `Password must be at least ${PASSWORD_VALIDATION.MIN_LENGTH} characters`
+      ]
     },
     verifiedEmail: {
       type: Boolean,

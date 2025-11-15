@@ -3,7 +3,9 @@
     "authId": "Auth ID",
     "fullName": "Họ và tên",
     "phone": "Số điện thoại",
-    "address": "Địa chỉ"
+    "address": "Địa chỉ",
+    "gender": "Giới tính",
+    "birthday": "Ngày sinh"
   },
   "validation": {
     "authIdRequired": "Auth ID là bắt buộc",
@@ -12,6 +14,8 @@
     "fullNameMaxLength": "Họ và tên không được vượt quá 100 ký tự",
     "phoneRequired": "Số điện thoại là bắt buộc",
     "phoneInvalid": "Số điện thoại không hợp lệ",
-    "addressMaxLength": "Địa chỉ không được vượt quá 500 ký tự"
+    "addressMaxLength": "Địa chỉ không được vượt quá 500 ký tự",
+    "genderInvalid": "Giới tính phải là nam, nữ hoặc khác",
+    "birthdayInvalid": "Ngày sinh không thể ở tương lai"
   }
 }

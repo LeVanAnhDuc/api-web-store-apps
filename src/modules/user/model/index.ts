@@ -3,7 +3,7 @@ import { Schema, model, type Model } from "mongoose";
 // types
 import type { UserDocument } from "@/shared/types/modules/user";
 // constants
-import { GENDERS } from "@/shared/constants/user";
+import { GENDERS, FULLNAME_VALIDATION } from "@/shared/constants/user";
 import { MODEL_NAMES } from "@/shared/constants/models";
 
 const { USER, AUTHENTICATION } = MODEL_NAMES;
@@ -20,12 +20,18 @@ const UserSchema = new Schema<UserDocument>(
       type: String,
       required: [true, "Full name is required"],
       trim: true,
-      minlength: [2, "Full name must be at least 2 characters"],
-      maxlength: [100, "Full name must not exceed 100 characters"]
+      minlength: [
+        FULLNAME_VALIDATION.MIN_LENGTH,
+        `Full name must be at least ${FULLNAME_VALIDATION.MIN_LENGTH} characters`
+      ],
+      maxlength: [
+        FULLNAME_VALIDATION.MAX_LENGTH,
+        `Full name must not exceed ${FULLNAME_VALIDATION.MAX_LENGTH} characters`
+      ]
     },
     phone: {
       type: String,
-      required: [true, "Phone number is required"],
+      required: false,
       trim: true,
       match: [/^[\d\s()+-]+$/, "Please provide a valid phone number"]
     },

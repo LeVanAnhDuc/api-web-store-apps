@@ -1,37 +1,49 @@
 // libs
-import type { Response } from "express";
+import type { Response, Request } from "express";
 // constants
-import { STATUS_CODES, REASON_PHRASES } from "@/core/constants/http";
+import { STATUS_CODES } from "@/core/constants/http";
+
+interface SuccessResponsePattern<T> extends ResponsePattern<T> {
+  status: number;
+}
 
 abstract class SuccessResponse<T> {
-  private readonly message: string;
+  route: string;
+  timestamp: string;
   private readonly status: number;
-  private readonly reasonStatusCode: string;
+  private readonly message: string;
   private readonly data: T;
 
   constructor({
-    message,
+    route,
+    timestamp,
+    data,
     status,
-    reasonStatusCode,
-    data
-  }: Partial<ResponsePattern<T>>) {
-    this.message = message || reasonStatusCode;
+    message
+  }: Partial<SuccessResponsePattern<T>>) {
+    this.timestamp = timestamp;
+    this.route = route;
     this.status = status;
-    this.reasonStatusCode = reasonStatusCode;
+    this.message = message;
     this.data = data;
   }
 
-  public send = (res: Response) => res.status(this.status).json(this);
+  public send = (req: Request, res: Response) =>
+    res.status(this.status).json({
+      timestamp: new Date().toISOString(),
+      route: req.originalUrl,
+      message: this.message,
+      data: this.data
+    });
 }
 
 export class OkSuccess<T> extends SuccessResponse<T> {
   constructor({
     message = "",
     status = STATUS_CODES.OK,
-    reasonStatusCode = REASON_PHRASES.OK,
     data = undefined
-  }: Partial<ResponsePattern<T>>) {
-    super({ message, status, reasonStatusCode, data });
+  }: Partial<SuccessResponsePattern<T>>) {
+    super({ message, status, data });
   }
 }
 
@@ -39,10 +51,9 @@ export class CreatedSuccess<T> extends SuccessResponse<T> {
   constructor({
     message = "",
     status = STATUS_CODES.CREATED,
-    reasonStatusCode = REASON_PHRASES.CREATED,
     data = undefined
-  }: Partial<ResponsePattern<T>>) {
-    super({ message, status, reasonStatusCode, data });
+  }: Partial<SuccessResponsePattern<T>>) {
+    super({ message, status, data });
   }
 }
 
@@ -50,9 +61,8 @@ export class NoContentSuccess<T> extends SuccessResponse<T> {
   constructor({
     message = "",
     status = STATUS_CODES.NO_CONTENT,
-    reasonStatusCode = REASON_PHRASES.NO_CONTENT,
     data = undefined
-  }: Partial<ResponsePattern<T>>) {
-    super({ message, status, reasonStatusCode, data });
+  }: Partial<SuccessResponsePattern<T>>) {
+    super({ message, status, data });
   }
 }

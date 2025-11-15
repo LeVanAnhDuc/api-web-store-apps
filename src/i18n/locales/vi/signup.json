@@ -4,10 +4,20 @@
     "invalidEmailFormat": "Email không hợp lệ",
     "emailAlreadyExists": "Email đã được đăng ký",
     "rateLimitExceeded": "Bạn đã vượt quá số lần thử cho phép",
-    "resendCooldown": "Vui lòng đợi trước khi gửi lại OTP",
-    "emailSendFailed": "Không thể gửi email. Vui lòng thử lại sau"
+    "resendCoolDown": "Vui lòng đợi trước khi gửi lại OTP",
+    "emailSendFailed": "Không thể gửi email. Vui lòng thử lại sau",
+    "invalidOtp": "Mã OTP không hợp lệ",
+    "passwordRequired": "Mật khẩu là bắt buộc",
+    "sessionIdRequired": "Session ID là bắt buộc",
+    "invalidSession": "Phiên đã hết hạn hoặc không hợp lệ. Vui lòng xác thực OTP lại",
+    "acceptTermsRequired": "Bạn phải chấp nhận điều khoản và điều kiện",
+    "fullNameRequired": "Họ và tên là bắt buộc",
+    "genderRequired": "Giới tính là bắt buộc",
+    "birthdayRequired": "Ngày sinh là bắt buộc"
   },
   "success": {
-    "otpSent": "Mã OTP đã được gửi đến email"
+    "otpSent": "Mã OTP đã được gửi đến email",
+    "otpVerified": "Mã OTP đã được xác thực",
+    "signupCompleted": "Tạo tài khoản thành công"
   }
 }

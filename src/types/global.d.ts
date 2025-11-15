@@ -3,9 +3,18 @@ import type { TFunction } from "i18next";
 declare global {
   interface ResponsePattern<T> {
     message: string;
-    status: number;
-    reasonStatusCode: string;
+    timestamp: string;
+    route: string;
     data?: T;
+  }
+
+  interface ErrorPattern {
+    timestamp: string;
+    route: string;
+    error: {
+      code: string;
+      message: string;
+    };
   }
 
   namespace Express {

@@ -1,25 +1,158 @@
 import type { Request } from "express";
 import type { TFunction } from "i18next";
-
-import type { SendOtpResponse } from "@/shared/types/modules/signup";
+import type {
+  CompleteSignupResponse,
+  SendOtpResponse,
+  VerifyOtpResponse
+} from "@/shared/types/modules/signup";
 import AuthModel from "@/modules/auth/model";
+import UserModel from "@/modules/user/model";
 import { generateOtp, generateSessionId } from "@/modules/signup/utils/otp";
 import { Logger } from "@/core/utils/logger";
 import i18next from "@/i18n";
 import {
   checkIpRateLimit,
   checkEmailRateLimit,
-  checkOtpCooldown,
-  setOtpCooldown
-} from "@/shared/utils/rate-limit";
+  checkOtpCoolDown,
+  setOtpCoolDown,
+  createAndStoreOtp,
+  checkOtpExists,
+  deleteOtpCoolDown,
+  deleteOtp,
+  storeSession,
+  verifySession,
+  deleteSession
+} from "@/modules/signup/utils/store";
 import { sendTemplatedEmail } from "@/shared/services/email/email.service";
 import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
 import { OTP_CONFIG, SIGNUP_RATE_LIMITS } from "@/shared/constants/signup";
+import { hashPasswordAsync } from "@/core/helpers/bcrypt";
+import { generatePairToken } from "@/core/helpers/jwt";
+import { AUTH_ROLES } from "@/shared/constants/auth";
+import { TOKEN_EXPIRY } from "@/core/configs/jwt";
 
 const SECONDS_PER_MINUTE = 60;
 const UNKNOWN_IP = "unknown";
 
-const getClientIp = (req: Request): string => {
+/*
+ * Services for signup
+ */
+
+export const sendOtp = async (
+  req: Request
+): Promise<Partial<ResponsePattern<SendOtpResponse>>> => {
+  const { email } = req.body;
+  const { language, t } = req;
+
+  // await checkRateLimits(ipAddress, email, t);
+  // await checkAndSetOtpCoolDown(email, t);
+  // await checkEmailAvailability(email, t);
+
+  const otp = generateOtp();
+
+  await checkAndCreateOtp(
+    email,
+    otp,
+    OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE
+  );
+
+  sendOtpEmail(email, otp, language as I18n.Locale)
+    .then(() => Logger.info(`OTP sent successfully to ${email}`))
+    .catch((error) =>
+      Logger.error(`Background email sending failed for ${email}`, error)
+    );
+
+  const expiresInSeconds = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
+
+  return {
+    message: t("signup:success.otpSent"),
+    data: {
+      success: true,
+      expiresIn: expiresInSeconds
+    }
+  };
+};
+
+export const verifyOtp = async (
+  req: Request
+): Promise<Partial<ResponsePattern<VerifyOtpResponse>>> => {
+  const { email, otp } = req.body;
+  const { t } = req;
+
+  await checkMatchOtp(email, otp, t);
+
+  const expiresInSeconds = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
+  const sessionId = generateSessionId();
+
+  await storeSession(email, sessionId, expiresInSeconds);
+
+  return {
+    message: t("signup:success.otpVerified"),
+    data: {
+      success: true,
+      sessionId,
+      expiresIn: expiresInSeconds
+    }
+  };
+};
+
+export const completeSignup = async (
+  req: Request
+): Promise<Partial<ResponsePattern<CompleteSignupResponse>>> => {
+  const { email, password, fullName, gender, birthday, sessionId } = req.body;
+  const { t } = req;
+
+  await checkSessionValidity(email, sessionId, t);
+  await checkEmailAvailability(email, t);
+
+  const hashedPassword = await hashPasswordAsync(password);
+
+  const auth = await AuthModel.create({
+    email,
+    password: hashedPassword,
+    verifiedEmail: true,
+    roles: AUTH_ROLES.USER
+  });
+
+  const user = await UserModel.create({
+    authId: auth._id,
+    fullName,
+    gender,
+    dateOfBirth: new Date(birthday)
+  });
+
+  const { accessToken, refreshToken, idToken } = generatePairToken({
+    userId: user._id.toString(),
+    authId: auth._id.toString(),
+    email: auth.email,
+    roles: auth.roles
+  });
+
+  await AuthModel.findByIdAndUpdate(auth._id, { refreshToken });
+
+  await deleteOtp(email);
+  await deleteSession(email);
+
+  return {
+    message: t("signup:success.signupCompleted"),
+    data: {
+      success: true,
+      message: t("signup:success.signupCompleted"),
+      data: {
+        accessToken,
+        refreshToken,
+        idToken,
+        expiresIn: TOKEN_EXPIRY.NUMBER_ACCESS_TOKEN
+      }
+    }
+  };
+};
+
+/*
+ * Helpers --------------------------------------------------------------------------------------------------------------
+ */
+
+const _getClientIp = (req: Request): string => {
   const forwarded = req.headers["x-forwarded-for"];
   if (typeof forwarded === "string") {
     return forwarded.split(",")[0].trim();
@@ -27,7 +160,7 @@ const getClientIp = (req: Request): string => {
   return req.socket.remoteAddress || UNKNOWN_IP;
 };
 
-export const sendOtpEmail = async (
+const sendOtpEmail = async (
   email: string,
   otp: string,
   locale: I18n.Locale
@@ -47,7 +180,7 @@ export const sendOtpEmail = async (
   );
 };
 
-const checkRateLimits = async (
+const _checkRateLimits = async (
   ipAddress: string,
   email: string,
   t: TFunction
@@ -70,17 +203,17 @@ const checkRateLimits = async (
   }
 };
 
-const checkAndSetOtpCooldown = async (
+const _checkAndSetOtpCoolDown = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
-  const canSend = await checkOtpCooldown(email);
+  const canSend = await checkOtpCoolDown(email);
 
   if (!canSend) {
-    throw new BadRequestError(t("signup:errors.resendCooldown"));
+    throw new BadRequestError(t("signup:errors.resendCoolDown"));
   }
 
-  await setOtpCooldown(email, OTP_CONFIG.RESEND_COOLDOWN_SECONDS);
+  await setOtpCoolDown(email, OTP_CONFIG.RESEND_COOLDOWN_SECONDS);
 };
 
 const checkEmailAvailability = async (
@@ -94,42 +227,36 @@ const checkEmailAvailability = async (
   }
 };
 
-const createOtpVerification = () => {
-  const otp = generateOtp();
-  const sessionId = generateSessionId();
+const checkSessionValidity = async (
+  email: string,
+  sessionId: string,
+  t: TFunction
+): Promise<void> => {
+  const isValid = await verifySession(email, sessionId);
 
-  return { otp, sessionId };
+  if (!isValid) {
+    throw new BadRequestError(t("signup:errors.invalidSession"));
+  }
 };
 
-export const sendOtp = async (
-  req: Request
-): Promise<Partial<ResponsePattern<SendOtpResponse>>> => {
-  const { email } = req.body;
-  const ipAddress = getClientIp(req);
-  const { language, t } = req;
+const checkAndCreateOtp = async (
+  email: string,
+  otp: string,
+  expireTime: number
+): Promise<void> => {
+  await deleteOtp(email);
+  await createAndStoreOtp(email, otp, expireTime);
+};
 
-  await checkRateLimits(ipAddress, email, t);
-  await checkAndSetOtpCooldown(email, t);
-  await checkEmailAvailability(email, t);
+const checkMatchOtp = async (
+  email: string,
+  otp: string,
+  t: TFunction
+): Promise<void> => {
+  const isOtpValid = await checkOtpExists(email, otp);
 
-  const { otp, sessionId } = createOtpVerification();
+  if (!isOtpValid) throw new BadRequestError(t("signup:errors.invalidOtp"));
 
-  sendOtpEmail(email, otp, language as I18n.Locale)
-    .then(() => Logger.info(`OTP sent successfully to ${email}`))
-    .catch((error) =>
-      Logger.error(`Background email sending failed for ${email}`, error)
-    );
-
-  const expiresInSeconds = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
-
-  const responseMessage = t("signup:success.otpSent");
-
-  return {
-    message: responseMessage,
-    data: {
-      success: true,
-      sessionId,
-      expiresIn: expiresInSeconds
-    }
-  };
+  await deleteOtp(email);
+  await deleteOtpCoolDown(email);
 };

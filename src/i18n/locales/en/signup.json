@@ -4,10 +4,20 @@
     "invalidEmailFormat": "Invalid email format",
     "emailAlreadyExists": "Email is already registered",
     "rateLimitExceeded": "You have exceeded the allowed number of attempts",
-    "resendCooldown": "Please wait before resending OTP",
-    "emailSendFailed": "Failed to send email. Please try again later"
+    "resendCoolDown": "Please wait before resending OTP",
+    "emailSendFailed": "Failed to send email. Please try again later",
+    "invalidOtp": "Invalid OTP",
+    "passwordRequired": "Password is required",
+    "sessionIdRequired": "Session ID is required",
+    "invalidSession": "Session expired or invalid. Please verify OTP again",
+    "acceptTermsRequired": "You must accept the terms and conditions",
+    "fullNameRequired": "Full name is required",
+    "genderRequired": "Gender is required",
+    "birthdayRequired": "Birthday is required"
   },
   "success": {
-    "otpSent": "OTP code has been sent to your email"
+    "otpSent": "OTP code has been sent to your email",
+    "otpVerified": "OTP code has been verified",
+    "signupCompleted": "Account created successfully"
   }
 }

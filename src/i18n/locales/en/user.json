@@ -3,7 +3,9 @@
     "authId": "Auth ID",
     "fullName": "Full name",
     "phone": "Phone number",
-    "address": "Address"
+    "address": "Address",
+    "gender": "Gender",
+    "birthday": "Birthday"
   },
   "validation": {
     "authIdRequired": "Auth ID is required",
@@ -12,6 +14,8 @@
     "fullNameMaxLength": "Full name must not exceed 100 characters",
     "phoneRequired": "Phone number is required",
     "phoneInvalid": "Please provide a valid phone number",
-    "addressMaxLength": "Address must not exceed 500 characters"
+    "addressMaxLength": "Address must not exceed 500 characters",
+    "genderInvalid": "Gender must be male, female, or other",
+    "birthdayInvalid": "Birthday cannot be in the future"
   }
 }

@@ -1,30 +1,47 @@
 import type { NextFunction, Request, Response } from "express";
 
 import { ErrorResponse } from "@/core/responses/error";
+import { STATUS_CODES } from "../constants/http";
 
 export const handleNotFound = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  // I18n.Key is now global - no import needed!
   const message = req.t("common:errors.notFound");
-  const error = new ErrorResponse(message, 404);
+
+  const error = new ErrorResponse({
+    code: "NOT_FOUND",
+    message,
+    status: STATUS_CODES.NOT_FOUND
+  });
+
   next(error);
 };
 
 export const handleError = (
-  error: ErrorResponse,
+  err: ErrorResponse,
   req: Request,
   res: Response,
   _next: NextFunction
 ) => {
-  const statusCode = error instanceof ErrorResponse ? error.getStatus() : 500;
-  const message = error.message || req.t("common:errors.internalServer");
+  if (err instanceof ErrorResponse) {
+    const {
+      error,
+      route = req.originalUrl,
+      status,
+      timestamp = new Date().toISOString()
+    } = err;
 
-  return res.status(statusCode).json({
-    status: "Error",
-    code: statusCode,
-    message
+    return res.status(status).json({ timestamp, route, error });
+  }
+
+  return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+    timestamp: new Date().toISOString(),
+    route: req.originalUrl,
+    error: {
+      code: "INTERNAL_SERVER_ERROR",
+      message: req.t("common:errors.internalServer")
+    }
   });
 };

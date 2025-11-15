@@ -1,68 +1,89 @@
-// libs
 import jwt, {
-  type PublicKey,
+  type Secret,
   type PrivateKey,
-  type Secret
+  type PublicKey
 } from "jsonwebtoken";
-// types
+
 import type { TExpiresIn, TPayload } from "@/shared/types/databases/jwt";
-// responses
 import { ForbiddenError } from "@/core/responses/error";
-// constants
 import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/core/configs/jwt";
 import ENV from "@/core/configs/env";
 
-const { NUMBER_ACCESS_TOKEN, NUMBER_REFRESH_TOKEN, NUMBER_RESET_PASS_TOKEN } =
-  TOKEN_EXPIRY;
-const { JSON_WEB_TOKEN_ERROR, TOKEN_EXPIRED_ERROR } = TOKEN_ERRORS;
-const { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_RESET_PASS_SECRET } = ENV;
+const enum TokenType {
+  ACCESS = "ACCESS",
+  REFRESH = "REFRESH",
+  JWT_ID_SECRET = "JWT_ID_SECRET"
+}
 
-// Using translation keys instead of hardcoded messages
-// These will be translated in the error handler middleware
-const ERROR_MESSAGES_MAPPING = {
-  [JSON_WEB_TOKEN_ERROR]: "common:errors.invalidToken",
-  [TOKEN_EXPIRED_ERROR]: "common:errors.tokenExpired"
+interface TokenConfig {
+  secret: Secret | PrivateKey;
+  expiresIn: TExpiresIn;
+}
+
+const TOKEN_CONFIGS: Record<TokenType, TokenConfig> = {
+  [TokenType.ACCESS]: {
+    secret: ENV.JWT_ACCESS_SECRET,
+    expiresIn: TOKEN_EXPIRY.NUMBER_ACCESS_TOKEN
+  },
+  [TokenType.REFRESH]: {
+    secret: ENV.JWT_REFRESH_SECRET,
+    expiresIn: TOKEN_EXPIRY.NUMBER_REFRESH_TOKEN
+  },
+  [TokenType.JWT_ID_SECRET]: {
+    secret: ENV.JWT_RESET_PASS_SECRET,
+    expiresIn: TOKEN_EXPIRY.NUMBER_RESET_PASS_TOKEN
+  }
+} as const;
+
+const ERROR_TRANSLATION_KEYS: Record<string, I18n.Key> = {
+  [TOKEN_ERRORS.JSON_WEB_TOKEN_ERROR]: "common:errors.invalidToken",
+  [TOKEN_ERRORS.TOKEN_EXPIRED_ERROR]: "common:errors.tokenExpired"
+} as const;
+
+const generateToken = (payload: TPayload, type: TokenType): string => {
+  const { secret, expiresIn } = TOKEN_CONFIGS[type];
+  return jwt.sign(payload, secret, { expiresIn });
 };
 
-const generateToken = (
-  payload: TPayload,
-  secret: Secret | PrivateKey,
-  expiresIn: TExpiresIn
-) => {
-  const token = jwt.sign(payload, secret, { expiresIn });
-
-  return token;
-};
-
-const verifyToken = <T>(token: string, secret: Secret | PublicKey): T => {
+const verifyToken = <T = TPayload>(token: string, type: TokenType): T => {
   try {
-    const payload = jwt.verify(token, secret);
+    const { secret } = TOKEN_CONFIGS[type];
+    const payload = jwt.verify(token, secret as Secret | PublicKey);
     return payload as T;
-  } catch (err) {
-    if (ERROR_MESSAGES_MAPPING[err.name])
-      throw new ForbiddenError(ERROR_MESSAGES_MAPPING[err.name]);
+  } catch (error) {
+    const errorName = error instanceof Error ? error.name : "UnknownError";
+    const translationKey = ERROR_TRANSLATION_KEYS[errorName];
 
-    throw new ForbiddenError(err.message);
+    if (translationKey) {
+      throw new ForbiddenError(translationKey);
+    }
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Token verification failed";
+    throw new ForbiddenError(errorMessage);
   }
 };
 
-export const generateAccessToken = (payload: TPayload) =>
-  generateToken(payload, JWT_ACCESS_SECRET, NUMBER_ACCESS_TOKEN);
-const generateRefreshToken = (payload: TPayload) =>
-  generateToken(payload, JWT_REFRESH_SECRET, NUMBER_REFRESH_TOKEN);
-export const generateResetPasswordToken = (payload: TPayload) =>
-  generateToken(payload, JWT_RESET_PASS_SECRET, NUMBER_RESET_PASS_TOKEN);
+export const generateAccessToken = (payload: TPayload): string =>
+  generateToken(payload, TokenType.ACCESS);
+
+export const generateRefreshToken = (payload: TPayload): string =>
+  generateToken(payload, TokenType.REFRESH);
+
+export const generateResetIdToken = (payload: TPayload): string =>
+  generateToken(payload, TokenType.JWT_ID_SECRET);
 
 export const generatePairToken = (payload: TPayload) => ({
   accessToken: generateAccessToken(payload),
-  refreshToken: generateRefreshToken(payload)
+  refreshToken: generateRefreshToken(payload),
+  idToken: generateResetIdToken(payload)
 });
 
-export const decodeRefreshToken = <T>(token: string) =>
-  verifyToken<T>(token, JWT_REFRESH_SECRET);
+export const verifyAccessToken = <T = TPayload>(token: string): T =>
+  verifyToken<T>(token, TokenType.ACCESS);
 
-export const decodeAccessToken = <T>(token: string) =>
-  verifyToken<T>(token, JWT_ACCESS_SECRET);
+export const verifyRefreshToken = <T = TPayload>(token: string): T =>
+  verifyToken<T>(token, TokenType.REFRESH);
 
-export const decodeResetPasswordToken = <T>(token: string) =>
-  verifyToken<T>(token, JWT_RESET_PASS_SECRET);
+export const verifyResetIdToken = <T = TPayload>(token: string): T =>
+  verifyToken<T>(token, TokenType.JWT_ID_SECRET);
