@@ -17,7 +17,6 @@ export const validate = (
 
     if (error) {
       const translationKey = error.details[0].message;
-      // Translation key is configured directly in Joi schema messages
       const message = req.t(translationKey as I18n.Key);
       throw new BadRequestError(message);
     }

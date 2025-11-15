@@ -3,7 +3,10 @@ import type { TFunction } from "i18next";
 import type {
   CompleteSignupResponse,
   SendOtpResponse,
-  VerifyOtpResponse
+  VerifyOtpResponse,
+  SendOtpRequest,
+  VerifyOtpRequest,
+  CompleteSignupRequest
 } from "@/shared/types/modules/signup";
 import AuthModel from "@/modules/auth/model";
 import UserModel from "@/modules/user/model";
@@ -39,7 +42,7 @@ const UNKNOWN_IP = "unknown";
  */
 
 export const sendOtp = async (
-  req: Request
+  req: SendOtpRequest
 ): Promise<Partial<ResponsePattern<SendOtpResponse>>> => {
   const { email } = req.body;
   const { language, t } = req;
@@ -74,7 +77,7 @@ export const sendOtp = async (
 };
 
 export const verifyOtp = async (
-  req: Request
+  req: VerifyOtpRequest
 ): Promise<Partial<ResponsePattern<VerifyOtpResponse>>> => {
   const { email, otp } = req.body;
   const { t } = req;
@@ -97,7 +100,7 @@ export const verifyOtp = async (
 };
 
 export const completeSignup = async (
-  req: Request
+  req: CompleteSignupRequest
 ): Promise<Partial<ResponsePattern<CompleteSignupResponse>>> => {
   const { email, password, fullName, gender, birthday, sessionId } = req.body;
   const { t } = req;
