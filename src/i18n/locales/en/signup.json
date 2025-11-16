@@ -1,12 +1,10 @@
 {
   "errors": {
-    "emailRequired": "Email is required",
-    "invalidEmailFormat": "Invalid email format",
     "emailAlreadyExists": "Email is already registered",
     "rateLimitExceeded": "You have exceeded the allowed number of attempts",
     "resendCoolDown": "Please wait before resending OTP",
-    "emailSendFailed": "Failed to send email. Please try again later",
     "invalidOtp": "Invalid OTP",
+    "otpRequired": "OTP is required",
     "passwordRequired": "Password is required",
     "sessionIdRequired": "Session ID is required",
     "invalidSession": "Session expired or invalid. Please verify OTP again",

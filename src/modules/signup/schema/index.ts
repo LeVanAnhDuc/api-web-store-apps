@@ -1,7 +1,7 @@
 import Joi from "joi";
-
 import { PASSWORD_VALIDATION } from "@/shared/constants/auth";
 import { GENDERS, FULLNAME_VALIDATION } from "@/shared/constants/user";
+import { emailSchema } from "@/shared/schemas/auth.schema";
 import type {
   SendOtpBody,
   VerifyOtpBody,
@@ -11,19 +11,11 @@ import type {
 const GENDER_VALUES = Object.values(GENDERS);
 
 export const sendOtpSchema: Joi.ObjectSchema<SendOtpBody> = Joi.object({
-  email: Joi.string().email().required().messages({
-    "string.email": "signup:errors.invalidEmailFormat",
-    "string.empty": "signup:errors.emailRequired",
-    "any.required": "signup:errors.emailRequired"
-  })
+  email: emailSchema
 });
 
 export const verifyOtpSchema: Joi.ObjectSchema<VerifyOtpBody> = Joi.object({
-  email: Joi.string().email().required().messages({
-    "string.email": "signup:errors.invalidEmailFormat",
-    "string.empty": "signup:errors.emailRequired",
-    "any.required": "signup:errors.emailRequired"
-  }),
+  email: emailSchema,
   otp: Joi.string().required().messages({
     "string.empty": "signup:errors.otpRequired",
     "any.required": "signup:errors.otpRequired"
@@ -32,11 +24,7 @@ export const verifyOtpSchema: Joi.ObjectSchema<VerifyOtpBody> = Joi.object({
 
 export const completeSignupSchema: Joi.ObjectSchema<CompleteSignupBody> =
   Joi.object({
-    email: Joi.string().email().required().messages({
-      "string.email": "signup:errors.invalidEmailFormat",
-      "string.empty": "signup:errors.emailRequired",
-      "any.required": "signup:errors.emailRequired"
-    }),
+    email: emailSchema,
     password: Joi.string()
       .min(PASSWORD_VALIDATION.MIN_LENGTH)
       .required()
