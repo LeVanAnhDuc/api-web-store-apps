@@ -3,7 +3,12 @@ import { Schema, model, type Model } from "mongoose";
 // types
 import type { AuthDocument } from "@/shared/types/modules/auth";
 // constants
-import { AUTH_ROLES, PASSWORD_VALIDATION } from "@/shared/constants/auth";
+import {
+  AUTH_ROLES,
+  PASSWORD_VALIDATION,
+  EMAIL_FORMAT_PATTERN,
+  SAFE_EMAIL_PATTERN
+} from "@/shared/constants/auth";
 import { MODEL_NAMES } from "@/shared/constants/models";
 
 const { AUTHENTICATION } = MODEL_NAMES;
@@ -16,10 +21,20 @@ const AuthSchema = new Schema<AuthDocument>(
       unique: true,
       trim: true,
       lowercase: true,
-      match: [
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        "Please provide a valid email address"
-      ]
+      validate: {
+        validator: function (email: string) {
+          // Check basic email format
+          if (!EMAIL_FORMAT_PATTERN.test(email)) {
+            return false;
+          }
+          // Check for dangerous Unicode characters
+          if (!SAFE_EMAIL_PATTERN.test(email)) {
+            return false;
+          }
+          return true;
+        },
+        message: "Please provide a valid email address"
+      }
     },
     password: {
       type: String,

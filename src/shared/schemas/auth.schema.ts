@@ -1,12 +1,9 @@
 import Joi from "joi";
-import { EMAIL_VALIDATION, PASSWORD_VALIDATION } from "@/shared/constants/auth";
-
-// Regex to block dangerous Unicode characters in email
-// Blocks: control chars, RTL/LTR overrides, zero-width chars, null bytes, etc.
-
-const SAFE_EMAIL_PATTERN =
-  // eslint-disable-next-line no-control-regex
-  /^[^\u0000-\u001F\u007F-\u009F\u200B-\u200D\u202A-\u202E\uFEFF]+$/;
+import {
+  EMAIL_VALIDATION,
+  PASSWORD_VALIDATION,
+  SAFE_EMAIL_PATTERN
+} from "@/shared/constants/auth";
 
 /**
  * Common email validation schema
