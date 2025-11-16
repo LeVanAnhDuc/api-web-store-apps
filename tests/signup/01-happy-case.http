@@ -8,7 +8,7 @@
 ### Variables
 @baseUrl = http://localhost:5000/api/v1
 @contentType = application/json
-@email = mass.assignment@example.com
+@email = test.signup@example.com
 @password = SecurePass123!@#
 @fullName = Nguyen Van Test User
 @gender = male
@@ -40,7 +40,7 @@ Accept-Language: {{language}}
 
 {
   "email": "{{email}}",
-  "otp": "541883"
+  "otp": "621992"
 }
 
 ###
