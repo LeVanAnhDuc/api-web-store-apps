@@ -1,0 +1,314 @@
+### ============================================
+### INVALID INPUT - MALFORMED DATA
+### ============================================
+### Tests with invalid data types, formats, and values
+### Change @language to 'vi' to test in Vietnamese
+### ============================================
+
+### Variables
+@baseUrl = http://localhost:5000/api/v1
+@contentType = application/json
+@email = test.signup@example.com
+@password = SecurePass123!@#
+@fullName = Nguyen Van Test User
+@gender = male
+@birthday = 1995-06-15
+@futureDate = 2030-12-31
+# @language = en
+@language = vi
+
+### ============================================
+### INVALID EMAIL FORMAT
+### ============================================
+
+### Email without @ symbol
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "invalidemail.com"
+}
+
+###
+
+### Email without domain
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "user@"
+}
+
+###
+
+### Email with spaces
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "user name@example.com"
+}
+
+###
+
+### Email with multiple @ symbols
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "user@@example.com"
+}
+
+###
+
+### ============================================
+### INVALID PASSWORD
+### ============================================
+
+### Password Too Short (< 8 chars)
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "Pass12",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### Empty String Password
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### INVALID FULLNAME
+### ============================================
+
+### FullName Too Short (< 2 chars)
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "X",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### FullName Too Long (> 100 chars)
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "This Is A Very Long Full Name That Exceeds The Maximum Length Of One Hundred Characters Allowed By The System Validation",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### Empty String FullName
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### INVALID GENDER
+### ============================================
+
+### Invalid Gender Value
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "invalid-gender",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### Gender as Number (Type Error)
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": 123,
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### Empty String Gender
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### INVALID BIRTHDAY
+### ============================================
+
+### Birthday in the Future
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{futureDate}}"
+}
+
+###
+
+### Invalid Date Format
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "31/12/1990"
+}
+
+###
+
+### Birthday as String (not date)
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "not-a-date"
+}
+
+###
+
+### ============================================
+### INVALID ACCEPTTERMS
+### ============================================
+
+### AcceptTerms = false (Should Fail)
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": false,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### AcceptTerms as String (Type Error)
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": "true",
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### EXPECTED RESPONSES
+### ============================================
+### All invalid inputs: 400 Bad Request
+### Error message localized based on @language
+### ============================================

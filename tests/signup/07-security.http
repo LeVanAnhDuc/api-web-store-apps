@@ -1,0 +1,541 @@
+### Variables
+@baseUrl = http://localhost:5000/api/v1
+@contentType = application/json
+@email = test.signup@example.com
+@password = SecurePass123!@#
+@fullName = Nguyen Van Test User
+@gender = male
+@birthday = 1995-06-15
+@language = en
+# @language = vi
+
+### ============================================
+### SECURITY TESTS
+### ============================================
+### Tests for security vulnerabilities and attack prevention
+### Covers: SQL Injection, XSS, CSRF, Rate Limiting, etc.
+### ============================================
+
+### ============================================
+### SQL/NoSQL INJECTION ATTEMPTS
+### ============================================
+
+### SQL Injection in Email - OR 1=1
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "user@example.com' OR '1'='1"
+}
+
+###
+
+### SQL Injection - Comment Attack
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "admin'--"
+}
+
+###
+
+### NoSQL Injection - $ne Operator
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": {"$ne": null}
+}
+
+###
+
+### NoSQL Injection - $gt Operator
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "test@example.com",
+  "otp": {"$gt": ""}
+}
+
+###
+
+### MongoDB Query Injection in CompleteSignup
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": {"$regex": ".*"},
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### XSS (CROSS-SITE SCRIPTING) ATTEMPTS
+### ============================================
+
+### XSS in FullName - Script Tag
+# @name xssSendOtp
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "xss.test@example.com"
+}
+
+### Verify
+# @name xssVerifyOtp
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "xss.test@example.com",
+  "otp": "206260"
+}
+
+### Complete with XSS
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "xss.test@example.com",
+  "password": "{{password}}",
+  "sessionId": "{{xssVerifyOtp.response.body.data.sessionId}}",
+  "acceptTerms": true,
+  "fullName": "<script>alert('XSS')</script>",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### XSS - Image Tag with Event Handler
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "xss.test@example.com",
+  "password": "{{password}}",
+  "sessionId": "{{xssVerifyOtp.response.body.data.sessionId}}",
+  "acceptTerms": true,
+  "fullName": "<img src=x onerror=alert('XSS')>",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### XSS - Event Handler
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "xss.test@example.com",
+  "password": "{{password}}",
+  "sessionId": "{{xssVerifyOtp.response.body.data.sessionId}}",
+  "acceptTerms": true,
+  "fullName": "<div onload=alert('XSS')>Test</div>",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### XSS - JavaScript URI
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "xss.test@example.com",
+  "password": "{{password}}",
+  "sessionId": "{{xssVerifyOtp.response.body.data.sessionId}}",
+  "acceptTerms": true,
+  "fullName": "javascript:alert('XSS')",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### COMMAND INJECTION ATTEMPTS
+### ============================================
+
+### Command Injection in Email
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "test@example.com; ls -la"
+}
+
+###
+
+### Command Injection with Pipe
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "test@example.com | cat /etc/passwd"
+}
+
+###
+
+### Command Injection with Backticks
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "test@example.com`whoami`"
+}
+
+###
+
+### ============================================
+### PATH TRAVERSAL ATTEMPTS
+### ============================================
+
+### Path Traversal in Email
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "../../../etc/passwd@example.com"
+}
+
+###
+
+### Path Traversal in FullName
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "../../etc/passwd",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### MASS ASSIGNMENT / PARAMETER POLLUTION
+### ============================================
+
+### Extra Fields - Attempt to Set Admin Role
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "mass.assignment@example.com",
+  "password": "{{password}}",
+  "sessionId": "3420f1c50d1fe80106421fd9b476cca6115f94365d81d1b8e5e2ebafce5a767a",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}",
+  "roles": "admin",
+  "isAdmin": true,
+  "verifiedEmail": true
+}
+
+###
+
+### Extra Invalid Fields - Superuser Attempt
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "privilege.escalation@example.com",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}",
+  "admin": true,
+  "superuser": true
+}
+
+###
+
+### ============================================
+### RATE LIMITING VALIDATION
+### ============================================
+### Note: Rate limiting may not be active. Check implementation.
+### Test Rate Limit - Send Multiple OTPs
+
+### Send 1
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "rate.limit.test@example.com"
+}
+
+###
+
+### Send 2
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "rate.limit.test@example.com"
+}
+
+###
+
+### Send 3
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "rate.limit.test@example.com"
+}
+
+###
+
+### Send 4 (May be rate limited)
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "rate.limit.test@example.com"
+}
+
+###
+
+### Send 5 (Should be rate limited if active)
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "rate.limit.test@example.com"
+}
+
+###
+
+### Send 6
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "rate.limit.test@example.com"
+}
+
+###
+
+### ============================================
+### BRUTE FORCE PROTECTION
+### ============================================
+### Brute Force OTP - Multiple Attempts
+
+### Attempt 1
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "otp": "000000"
+}
+
+###
+
+### Attempt 2
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "otp": "111111"
+}
+
+###
+
+### Attempt 3
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "otp": "222222"
+}
+
+###
+
+### Attempt 4 (Should be blocked if brute force protection active)
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "otp": "333333"
+}
+
+###
+
+### ============================================
+### SESSION HIJACKING ATTEMPTS
+### ============================================
+
+### Reuse SessionId After Completion
+### Note: This should fail as session is deleted after successful signup
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "session.hijack@example.com",
+  "password": "{{password}}",
+  "sessionId": "already-used-session-id",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### Use Another User's SessionId
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "different.email@example.com",
+  "password": "{{password}}",
+  "sessionId": "someone-elses-session-id",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### SPECIAL CHARACTER INJECTION
+### ============================================
+
+### Null Byte Injection
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "test@example.com\u0000.malicious.com"
+}
+
+###
+
+### Unicode Characters
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "test\u202e@example.com"
+}
+
+###
+
+### Format String Injection
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "%s%s%s%s%s%s%s%s",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### EMAIL HEADER INJECTION
+### ============================================
+
+### CRLF Injection in Email
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "test@example.com\r\nBcc: attacker@evil.com"
+}
+
+###
+
+### Newline Injection
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "test@example.com\nBcc: attacker@evil.com"
+}
+
+###
+
+### ============================================
+### SECURITY TEST EXPECTED BEHAVIORS
+### ============================================
+### ✅ All injection attempts: Should return 400 Bad Request
+### ✅ Malicious payloads: Should be sanitized or rejected
+### ✅ Extra fields (mass assignment): Should be ignored (stripUnknown: true)
+### ✅ Rate limiting: Should return 429 Too Many Requests (if active)
+### ✅ Brute force: Should lock/rate limit after N attempts (if implemented)
+### ✅ Session hijacking: Should fail with 400 Bad Request
+### ✅ XSS payloads: Should be escaped/sanitized before storage
+### ✅ SQL/NoSQL injection: Should fail with validation error
+###
+### ❌ NEVER expose:
+###    - Stack traces in error responses
+###    - Database error messages
+###    - Internal server paths
+###    - System information
+###    - User enumeration (same error for existing/non-existing emails)
+### ============================================

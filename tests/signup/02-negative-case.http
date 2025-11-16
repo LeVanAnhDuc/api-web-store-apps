@@ -1,0 +1,120 @@
+### ============================================
+### NEGATIVE CASES - BUSINESS LOGIC FAILURES
+### ============================================
+### Tests scenarios where valid input fails due to business rules
+### Covers: Email already exists, Invalid OTP, Expired session, etc.
+### ============================================
+
+### Variables
+@baseUrl = http://localhost:5000/api/v1
+@contentType = application/json
+@email = test.signup@example.com
+@password = SecurePass123!@#
+@fullName = Nguyen Van Test User
+@gender = male
+@birthday = 1995-06-15
+# @language = en
+@language = vi
+
+### ============================================
+### EMAIL ALREADY EXISTS
+### ============================================
+
+### Send OTP to Existing Email (Should return 409 if email exists)
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "test.signup@example.com"
+}
+
+###
+
+### ============================================
+### INVALID OTP
+### ============================================
+
+### Verify with Wrong OTP
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "otp": "000000"
+}
+
+###
+
+### ============================================
+### EXPIRED/INVALID SESSION
+### ============================================
+
+### Complete Signup with Invalid SessionId
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "invalid-session-id-12345",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### OTP NOT FOUND (Never Sent)
+### ============================================
+
+### Verify OTP without Sending First
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "never.sent.otp@example.com",
+  "otp": "123456"
+}
+
+###
+
+### ============================================
+### SESSION NOT FOUND (Expired or Never Created)
+### ============================================
+
+### Complete Signup without Session
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "no.session@example.com",
+  "password": "{{password}}",
+  "sessionId": "never-created-session-id",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### EXPECTED RESPONSES
+### ============================================
+### Email Already Exists: 409 Conflict
+### Invalid OTP: 400 Bad Request
+### Invalid Session: 400 Bad Request
+### OTP Not Found: 400 Bad Request
+### Session Not Found: 400 Bad Request
+###
+### Messages will be in the language specified by @language variable
+### EN: "Email is required", "Invalid OTP", etc.
+### VI: "Email là bắt buộc", "Mã OTP không chính xác", etc.
+### ============================================

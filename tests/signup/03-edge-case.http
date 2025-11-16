@@ -1,0 +1,316 @@
+### ============================================
+### EDGE CASES - BOUNDARY CONDITIONS
+### ============================================
+### Tests boundary values and edge scenarios
+### Covers: Min/max lengths, special characters, edge dates, etc.
+### ============================================
+
+### Variables
+@baseUrl = http://localhost:5000/api/v1
+@contentType = application/json
+@email = test.signup@example.com
+@password = SecurePass123!@#
+@fullName = Nguyen Van Test User
+@gender = male
+@birthday = 1995-06-15
+@language = en
+# @language = vi
+
+### ============================================
+### EMAIL EDGE CASES
+### ============================================
+
+### Email with Special Characters (Valid)
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "test+filter@sub-domain.example.co.uk"
+}
+
+###
+
+### Very Long Email (Valid)
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "averylongemailaddresswithmanycharacters123456789@verylongdomainname.example.com"
+}
+
+###
+
+### ============================================
+### FULLNAME EDGE CASES
+### ============================================
+
+### Minimum Length FullName (2 chars) - Should PASS
+# @name edgeMinName
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "min.name@example.com"
+}
+
+### Verify OTP
+# @name edgeMinNameVerify
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "min.name@example.com",
+  "otp": "725124"
+}
+
+### Complete with Min Length Name
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "min.name@example.com",
+  "password": "{{password}}",
+  "sessionId": "{{edgeMinNameVerify.response.body.data.sessionId}}",
+  "acceptTerms": true,
+  "fullName": "AB",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### Maximum Length FullName (100 chars) - Should PASS
+# @name edgeMaxName
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "max.name@example.com"
+}
+
+### Verify OTP
+# @name edgeMaxNameVerify
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "max.name@example.com",
+  "otp": "877580"
+}
+
+### Complete with Max Length Name
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "max.name@example.com",
+  "password": "{{password}}",
+  "sessionId": "{{edgeMaxNameVerify.response.body.data.sessionId}}",
+  "acceptTerms": true,
+  "fullName": "This Is A Very Long Full Name With Exactly One Hundred Characters To Test The Maximum Length Limit OK",
+  "gender": "other",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### PASSWORD EDGE CASES
+### ============================================
+
+### Minimum Length Password (8 chars) - Should PASS
+# @name edgeMinPass
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "min.pass@example.com"
+}
+
+### Verify OTP
+# @name edgeMinPassVerify
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "min.pass@example.com",
+  "otp": "679896"
+}
+
+### Complete with Min Password
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "min.pass@example.com",
+  "password": "Pass1234",
+  "sessionId": "{{edgeMinPassVerify.response.body.data.sessionId}}",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### Password with Special Characters - Should PASS
+# @name edgeSpecialPass
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "special.pass@example.com"
+}
+
+### Verify OTP
+# @name edgeSpecialPassVerify
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "special.pass@example.com",
+  "otp": "248331"
+}
+
+### Complete with Special Chars Password
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "special.pass@example.com",
+  "password": "P@$$w0rd!#%^&*()_+-=[]{}|;:,.<>?",
+  "sessionId": "{{edgeSpecialPassVerify.response.body.data.sessionId}}",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### BIRTHDAY EDGE CASES
+### ============================================
+
+### Birthday - Future Date (Should FAIL)
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "sessionId": "test-session",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "2030-12-31"
+}
+
+###
+
+### Birthday - Very Old Date (100+ years ago) - Should PASS
+# @name edgeOldBirthday
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "old.birthday@example.com"
+}
+
+### Verify OTP
+# @name edgeOldBirthdayVerify
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "old.birthday@example.com",
+  "otp": "639537"
+}
+
+### Complete with Very Old Birthday
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "old.birthday@example.com",
+  "password": "{{password}}",
+  "sessionId": "{{edgeOldBirthdayVerify.response.body.data.sessionId}}",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "{{gender}}",
+  "birthday": "1900-01-01"
+}
+
+###
+
+### ============================================
+### GENDER EDGE CASES
+### ============================================
+
+### Gender - "other" value - Should PASS
+# @name edgeGenderOther
+POST {{baseUrl}}/auth/signup/send-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "gender.other@example.com"
+}
+
+### Verify OTP
+# @name edgeGenderOtherVerify
+POST {{baseUrl}}/auth/signup/verify-otp
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "gender.other@example.com",
+  "otp": "192469"
+}
+
+### Complete with Gender "other"
+POST {{baseUrl}}/auth/signup/complete
+Content-Type: {{contentType}}
+Accept-Language: {{language}}
+
+{
+  "email": "gender.other@example.com",
+  "password": "{{password}}",
+  "sessionId": "{{edgeGenderOtherVerify.response.body.data.sessionId}}",
+  "acceptTerms": true,
+  "fullName": "{{fullName}}",
+  "gender": "other",
+  "birthday": "{{birthday}}"
+}
+
+###
+
+### ============================================
+### EXPECTED BEHAVIORS
+### ============================================
+### Min Length (2 chars): Should PASS
+### Max Length (100 chars): Should PASS
+### Birthday = Future: Should FAIL
+### Birthday 100+ years ago: Should PASS
+### Gender = "other": Should PASS
+### Special chars in email: Should PASS if valid format
+### Special chars in password: Should PASS
+### ============================================
