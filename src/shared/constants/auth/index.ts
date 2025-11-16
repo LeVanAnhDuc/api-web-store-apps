@@ -1,7 +1,6 @@
 export const AUTH_ROLES = {
   USER: "user",
-  ADMIN: "admin",
-  MODERATOR: "moderator"
+  ADMIN: "admin"
 } as const;
 
 export const EMAIL_VALIDATION = {
