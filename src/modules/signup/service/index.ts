@@ -49,8 +49,10 @@ export const sendOtp = async (
   const { email } = req.body;
   const { language, t } = req;
 
-  // await checkRateLimits(ipAddress, email, t);
-  // await checkAndSetOtpCoolDown(email, t);
+  const ipAddress = getClientIp(req);
+
+  await checkRateLimits(ipAddress, email, t);
+  await checkAndSetOtpCoolDown(email, t);
   await checkEmailAvailability(email, t);
 
   const otp = generateOtp();
@@ -156,7 +158,7 @@ export const completeSignup = async (
  * Helpers --------------------------------------------------------------------------------------------------------------
  */
 
-const _getClientIp = (req: Request): string => {
+const getClientIp = (req: Request): string => {
   const forwarded = req.headers["x-forwarded-for"];
   if (typeof forwarded === "string") {
     return forwarded.split(",")[0].trim();
@@ -184,7 +186,7 @@ const sendOtpEmail = async (
   );
 };
 
-const _checkRateLimits = async (
+const checkRateLimits = async (
   ipAddress: string,
   email: string,
   t: TFunction
@@ -207,7 +209,7 @@ const _checkRateLimits = async (
   }
 };
 
-const _checkAndSetOtpCoolDown = async (
+const checkAndSetOtpCoolDown = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
