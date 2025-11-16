@@ -12,6 +12,7 @@
     "fullNameRequired": "Họ và tên là bắt buộc",
     "fullNameMinLength": "Họ và tên phải có ít nhất 2 ký tự",
     "fullNameMaxLength": "Họ và tên không được vượt quá 100 ký tự",
+    "fullNameInvalid": "Họ và tên chỉ được chứa chữ cái, khoảng trắng, dấu gạch ngang, dấu nháy đơn và dấu chấm",
     "phoneRequired": "Số điện thoại là bắt buộc",
     "phoneInvalid": "Số điện thoại không hợp lệ",
     "addressMaxLength": "Địa chỉ không được vượt quá 500 ký tự",

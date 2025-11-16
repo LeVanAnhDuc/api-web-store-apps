@@ -12,6 +12,7 @@
     "fullNameRequired": "Full name is required",
     "fullNameMinLength": "Full name must be at least 2 characters",
     "fullNameMaxLength": "Full name must not exceed 100 characters",
+    "fullNameInvalid": "Full name can only contain letters, spaces, hyphens, apostrophes, and periods",
     "phoneRequired": "Phone number is required",
     "phoneInvalid": "Please provide a valid phone number",
     "addressMaxLength": "Address must not exceed 500 characters",

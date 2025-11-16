@@ -1,5 +1,9 @@
 import Joi from "joi";
-import { GENDERS, FULLNAME_VALIDATION } from "@/shared/constants/user";
+import {
+  GENDERS,
+  FULLNAME_VALIDATION,
+  SAFE_FULLNAME_PATTERN
+} from "@/shared/constants/user";
 import { emailSchema, passwordSchema } from "@/shared/schemas/auth.schema";
 import type {
   SendOtpBody,
@@ -37,11 +41,13 @@ export const completeSignupSchema: Joi.ObjectSchema<CompleteSignupBody> =
     fullName: Joi.string()
       .min(FULLNAME_VALIDATION.MIN_LENGTH)
       .max(FULLNAME_VALIDATION.MAX_LENGTH)
+      .pattern(SAFE_FULLNAME_PATTERN)
       .required()
       .messages({
         "string.empty": "signup:errors.fullNameRequired",
         "string.min": "user:validation.fullNameMinLength",
         "string.max": "user:validation.fullNameMaxLength",
+        "string.pattern.base": "user:validation.fullNameInvalid",
         "any.required": "signup:errors.fullNameRequired"
       }),
     gender: Joi.string()
