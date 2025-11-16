@@ -51,9 +51,14 @@ export const completeSignupSchema: Joi.ObjectSchema<CompleteSignupBody> =
         "any.required": "signup:errors.genderRequired",
         "any.only": "user:validation.genderInvalid"
       }),
-    birthday: Joi.date().max("now").required().messages({
-      "date.base": "signup:errors.birthdayRequired",
-      "date.max": "user:validation.birthdayInvalid",
-      "any.required": "signup:errors.birthdayRequired"
-    })
+    birthday: Joi.date()
+      .min(new Date(new Date().setFullYear(new Date().getFullYear() - 120)))
+      .max("now")
+      .required()
+      .messages({
+        "date.base": "signup:errors.birthdayRequired",
+        "date.min": "user:validation.birthdayTooOld",
+        "date.max": "user:validation.birthdayInvalid",
+        "any.required": "signup:errors.birthdayRequired"
+      })
   });

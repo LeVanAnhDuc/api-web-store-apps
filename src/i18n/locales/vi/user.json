@@ -16,6 +16,7 @@
     "phoneInvalid": "Số điện thoại không hợp lệ",
     "addressMaxLength": "Địa chỉ không được vượt quá 500 ký tự",
     "genderInvalid": "Giới tính phải là nam, nữ hoặc khác",
-    "birthdayInvalid": "Ngày sinh không thể ở tương lai"
+    "birthdayInvalid": "Ngày sinh không thể ở tương lai",
+    "birthdayTooOld": "Ngày sinh không thể quá 120 năm trước"
   }
 }

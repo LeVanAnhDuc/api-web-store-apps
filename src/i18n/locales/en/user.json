@@ -16,6 +16,7 @@
     "phoneInvalid": "Please provide a valid phone number",
     "addressMaxLength": "Address must not exceed 500 characters",
     "genderInvalid": "Gender must be male, female, or other",
-    "birthdayInvalid": "Birthday cannot be in the future"
+    "birthdayInvalid": "Birthday cannot be in the future",
+    "birthdayTooOld": "Birthday cannot be more than 120 years ago"
   }
 }
