@@ -8,6 +8,7 @@
     "sessionIdRequired": "Session ID là bắt buộc",
     "invalidSession": "Phiên đã hết hạn hoặc không hợp lệ. Vui lòng xác thực OTP lại",
     "acceptTermsRequired": "Bạn phải chấp nhận điều khoản và điều kiện",
+    "acceptTermsInvalid": "Chấp nhận điều khoản phải là giá trị boolean",
     "fullNameRequired": "Họ và tên là bắt buộc",
     "genderRequired": "Giới tính là bắt buộc",
     "birthdayRequired": "Ngày sinh là bắt buộc"

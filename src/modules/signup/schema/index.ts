@@ -29,7 +29,8 @@ export const completeSignupSchema: Joi.ObjectSchema<CompleteSignupBody> =
       "string.empty": "signup:errors.sessionIdRequired",
       "any.required": "signup:errors.sessionIdRequired"
     }),
-    acceptTerms: Joi.boolean().valid(true).required().messages({
+    acceptTerms: Joi.boolean().strict().valid(true).required().messages({
+      "boolean.base": "signup:errors.acceptTermsInvalid",
       "any.required": "signup:errors.acceptTermsRequired",
       "any.only": "signup:errors.acceptTermsRequired"
     }),

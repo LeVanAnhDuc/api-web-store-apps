@@ -8,6 +8,7 @@
     "sessionIdRequired": "Session ID is required",
     "invalidSession": "Session expired or invalid. Please verify OTP again",
     "acceptTermsRequired": "You must accept the terms and conditions",
+    "acceptTermsInvalid": "Accept terms must be a boolean value",
     "fullNameRequired": "Full name is required",
     "genderRequired": "Gender is required",
     "birthdayRequired": "Birthday is required"
