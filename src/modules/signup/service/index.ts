@@ -49,7 +49,7 @@ export const sendOtp = async (
 
   // await checkRateLimits(ipAddress, email, t);
   // await checkAndSetOtpCoolDown(email, t);
-  // await checkEmailAvailability(email, t);
+  await checkEmailAvailability(email, t);
 
   const otp = generateOtp();
 
