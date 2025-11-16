@@ -24,7 +24,10 @@ import {
   deleteOtp,
   storeSession,
   verifySession,
-  deleteSession
+  deleteSession,
+  isOtpAccountLocked,
+  incrementFailedOtpAttempts,
+  clearFailedOtpAttempts
 } from "@/modules/signup/utils/store";
 import { sendTemplatedEmail } from "@/shared/services/email/email.service";
 import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
@@ -80,9 +83,9 @@ export const verifyOtp = async (
   req: VerifyOtpRequest
 ): Promise<Partial<ResponsePattern<VerifyOtpResponse>>> => {
   const { email, otp } = req.body;
-  const { t } = req;
+  const { t, language } = req;
 
-  await checkMatchOtp(email, otp, t);
+  await checkMatchOtp(email, otp, t, language);
 
   const expiresInSeconds = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
   const sessionId = generateSessionId();
@@ -254,12 +257,42 @@ const checkAndCreateOtp = async (
 const checkMatchOtp = async (
   email: string,
   otp: string,
-  t: TFunction
+  t: TFunction,
+  language: string
 ): Promise<void> => {
+  // Check if account is locked due to too many failed attempts
+  const isLocked = await isOtpAccountLocked(
+    email,
+    OTP_CONFIG.MAX_FAILED_ATTEMPTS
+  );
+
+  if (isLocked) {
+    throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
+  }
+
   const isOtpValid = await checkOtpExists(email, otp);
 
-  if (!isOtpValid) throw new BadRequestError(t("signup:errors.invalidOtp"));
+  if (!isOtpValid) {
+    // Increment failed attempts counter
+    const failedCount = await incrementFailedOtpAttempts(
+      email,
+      OTP_CONFIG.LOCKOUT_DURATION_MINUTES
+    );
+    const remainingAttempts = OTP_CONFIG.MAX_FAILED_ATTEMPTS - failedCount;
 
+    if (remainingAttempts > 0) {
+      const errorMessage = i18next.t("signup:errors.invalidOtpWithRemaining", {
+        remaining: remainingAttempts,
+        lng: language
+      });
+      throw new BadRequestError(errorMessage);
+    } else {
+      throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
+    }
+  }
+
+  // Clear failed attempts on successful verification
+  await clearFailedOtpAttempts(email);
   await deleteOtp(email);
   await deleteOtpCoolDown(email);
 };

@@ -7,6 +7,7 @@ const MILLISECONDS_PER_SECOND = 1000;
 
 const KEY_OTP_SIGNUP = "otp-signup";
 const KEY_OTP_COOLDOWN = "otp-signup-cooldown";
+const KEY_OTP_FAILED_ATTEMPTS = "otp-failed-attempts";
 const KEY_RATE_LIMIT_IP = "rate-limit:ip";
 const KEY_RATE_LIMIT_EMAIL = "rate-limit:email";
 const KEY_SESSION_SIGNUP = "session-signup";
@@ -199,5 +200,86 @@ export const deleteSession = async (email: string): Promise<void> => {
     await redis.del(key);
   } catch (error) {
     Logger.error("Redis session deletion failed", error);
+  }
+};
+
+/**
+ * Increment failed OTP verification attempts for an email
+ * @param email - User's email address
+ * @param lockoutDurationMinutes - How long to lock the account after max attempts
+ * @returns Current number of failed attempts
+ */
+export const incrementFailedOtpAttempts = async (
+  email: string,
+  lockoutDurationMinutes: number
+): Promise<number> => {
+  try {
+    const redis = instanceRedis.getClient();
+    const key = `${KEY_OTP_FAILED_ATTEMPTS}:${email}`;
+
+    const count = await redis.incr(key);
+
+    if (count === 1) {
+      // Set expiry on first failed attempt
+      await redis.expire(key, lockoutDurationMinutes * 60);
+    }
+
+    return count;
+  } catch (error) {
+    Logger.error("Redis failed OTP attempts increment failed", error);
+    return 0;
+  }
+};
+
+/**
+ * Get number of failed OTP verification attempts for an email
+ * @param email - User's email address
+ * @returns Number of failed attempts
+ */
+export const getFailedOtpAttempts = async (email: string): Promise<number> => {
+  try {
+    const redis = instanceRedis.getClient();
+    const key = `${KEY_OTP_FAILED_ATTEMPTS}:${email}`;
+
+    const count = await redis.get(key);
+    return count ? parseInt(count, 10) : 0;
+  } catch (error) {
+    Logger.error("Redis failed OTP attempts check failed", error);
+    return 0;
+  }
+};
+
+/**
+ * Clear failed OTP verification attempts for an email
+ * Called after successful OTP verification
+ * @param email - User's email address
+ */
+export const clearFailedOtpAttempts = async (email: string): Promise<void> => {
+  try {
+    const redis = instanceRedis.getClient();
+    const key = `${KEY_OTP_FAILED_ATTEMPTS}:${email}`;
+
+    await redis.del(key);
+  } catch (error) {
+    Logger.error("Redis failed OTP attempts clear failed", error);
+  }
+};
+
+/**
+ * Check if account is locked due to too many failed OTP attempts
+ * @param email - User's email address
+ * @param maxAttempts - Maximum allowed failed attempts
+ * @returns true if account is locked, false otherwise
+ */
+export const isOtpAccountLocked = async (
+  email: string,
+  maxAttempts: number
+): Promise<boolean> => {
+  try {
+    const failedAttempts = await getFailedOtpAttempts(email);
+    return failedAttempts >= maxAttempts;
+  } catch (error) {
+    Logger.error("Redis OTP account lock check failed", error);
+    return false;
   }
 };
