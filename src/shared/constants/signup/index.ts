@@ -4,6 +4,12 @@ export const OTP_CONFIG = {
   RESEND_COOLDOWN_SECONDS: 60
 } as const;
 
+/**
+ * OTP validation pattern
+ * Only allows numeric digits to prevent XSS and injection attacks
+ */
+export const OTP_PATTERN = /^\d+$/;
+
 export const SIGNUP_RATE_LIMITS = {
   SEND_OTP: {
     PER_IP: {

@@ -4,6 +4,7 @@ import {
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN
 } from "@/shared/constants/user";
+import { OTP_PATTERN } from "@/shared/constants/signup";
 import { emailSchema, passwordSchema } from "@/shared/schemas/auth.schema";
 import type {
   SendOtpBody,
@@ -19,8 +20,9 @@ export const sendOtpSchema: Joi.ObjectSchema<SendOtpBody> = Joi.object({
 
 export const verifyOtpSchema: Joi.ObjectSchema<VerifyOtpBody> = Joi.object({
   email: emailSchema,
-  otp: Joi.string().required().messages({
+  otp: Joi.string().pattern(OTP_PATTERN).required().messages({
     "string.empty": "signup:errors.otpRequired",
+    "string.pattern.base": "signup:errors.otpInvalid",
     "any.required": "signup:errors.otpRequired"
   })
 });

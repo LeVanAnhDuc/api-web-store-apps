@@ -3,7 +3,12 @@ import { Schema, model, type Model } from "mongoose";
 // types
 import type { UserDocument } from "@/shared/types/modules/user";
 // constants
-import { GENDERS, FULLNAME_VALIDATION } from "@/shared/constants/user";
+import {
+  GENDERS,
+  FULLNAME_VALIDATION,
+  SAFE_FULLNAME_PATTERN,
+  SAFE_ADDRESS_PATTERN
+} from "@/shared/constants/user";
 import { MODEL_NAMES } from "@/shared/constants/models";
 
 const { USER, AUTHENTICATION } = MODEL_NAMES;
@@ -27,6 +32,10 @@ const UserSchema = new Schema<UserDocument>(
       maxlength: [
         FULLNAME_VALIDATION.MAX_LENGTH,
         `Full name must not exceed ${FULLNAME_VALIDATION.MAX_LENGTH} characters`
+      ],
+      match: [
+        SAFE_FULLNAME_PATTERN,
+        "Full name can only contain letters, spaces, hyphens, apostrophes, and periods"
       ]
     },
     phone: {
@@ -42,7 +51,8 @@ const UserSchema = new Schema<UserDocument>(
     address: {
       type: String,
       trim: true,
-      maxlength: [500, "Address must not exceed 500 characters"]
+      maxlength: [500, "Address must not exceed 500 characters"],
+      match: [SAFE_ADDRESS_PATTERN, "Address contains invalid characters"]
     },
     dateOfBirth: {
       type: Date
