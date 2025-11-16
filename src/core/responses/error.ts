@@ -63,12 +63,3 @@ export class RedisError extends ErrorResponse {
     super({ message, status: STATUS_CODES.INTERNAL_SERVER_ERROR, code });
   }
 }
-
-export class MongoError extends ErrorResponse {
-  constructor(
-    message = REASON_PHRASES.INTERNAL_SERVER_ERROR,
-    code = "MONGO_ERROR"
-  ) {
-    super({ message, status: STATUS_CODES.INTERNAL_SERVER_ERROR, code });
-  }
-}

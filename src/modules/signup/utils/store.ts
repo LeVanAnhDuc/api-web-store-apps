@@ -2,8 +2,8 @@
 import instanceRedis from "@/database/redis/redis.database";
 // utils
 import { Logger } from "@/core/utils/logger";
-
-const MILLISECONDS_PER_SECOND = 1000;
+// constants
+import { MILLISECONDS_PER_SECOND } from "@/shared/constants/time";
 
 const KEY_OTP_SIGNUP = "otp-signup";
 const KEY_OTP_COOLDOWN = "otp-signup-cooldown";

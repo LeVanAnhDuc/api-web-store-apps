@@ -36,8 +36,8 @@ import { hashPasswordAsync } from "@/core/helpers/bcrypt";
 import { generatePairToken } from "@/core/helpers/jwt";
 import { AUTH_ROLES } from "@/shared/constants/auth";
 import { TOKEN_EXPIRY } from "@/core/configs/jwt";
+import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
 
-const SECONDS_PER_MINUTE = 60;
 const UNKNOWN_IP = "unknown";
 
 /*
