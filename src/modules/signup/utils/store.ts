@@ -4,13 +4,15 @@ import instanceRedis from "@/database/redis/redis.database";
 import { Logger } from "@/core/utils/logger";
 // constants
 import { MILLISECONDS_PER_SECOND } from "@/shared/constants/time";
+import { REDIS_KEYS } from "@/shared/constants/redis";
 
-const KEY_OTP_SIGNUP = "otp-signup";
-const KEY_OTP_COOLDOWN = "otp-signup-cooldown";
-const KEY_OTP_FAILED_ATTEMPTS = "otp-failed-attempts";
-const KEY_RATE_LIMIT_IP = "rate-limit:ip";
-const KEY_RATE_LIMIT_EMAIL = "rate-limit:email";
-const KEY_SESSION_SIGNUP = "session-signup";
+const { SIGNUP, RATE_LIMIT } = REDIS_KEYS;
+const KEY_OTP_SIGNUP = SIGNUP.OTP;
+const KEY_OTP_COOLDOWN = SIGNUP.OTP_COOLDOWN;
+const KEY_OTP_FAILED_ATTEMPTS = SIGNUP.OTP_FAILED_ATTEMPTS;
+const KEY_SESSION_SIGNUP = SIGNUP.SESSION;
+const KEY_RATE_LIMIT_IP = RATE_LIMIT.IP;
+const KEY_RATE_LIMIT_EMAIL = RATE_LIMIT.EMAIL;
 
 export const checkIpRateLimit = async (
   ipAddress: string,
@@ -282,4 +284,28 @@ export const isOtpAccountLocked = async (
     Logger.error("Redis OTP account lock check failed", error);
     return false;
   }
+};
+
+/**
+ * Consolidated cleanup function for OTP verification data
+ * Called after successful OTP verification
+ * Clears: OTP, cooldown, and failed attempts
+ * @param email - User's email address
+ */
+export const cleanupOtpData = async (email: string): Promise<void> => {
+  await Promise.all([
+    clearFailedOtpAttempts(email),
+    deleteOtp(email),
+    deleteOtpCoolDown(email)
+  ]);
+};
+
+/**
+ * Consolidated cleanup function for signup session
+ * Called after signup completion
+ * Clears: OTP and session data
+ * @param email - User's email address
+ */
+export const cleanupSignupSession = async (email: string): Promise<void> => {
+  await Promise.all([deleteOtp(email), deleteSession(email)]);
 };

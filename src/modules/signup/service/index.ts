@@ -20,14 +20,13 @@ import {
   setOtpCoolDown,
   createAndStoreOtp,
   checkOtpExists,
-  deleteOtpCoolDown,
   deleteOtp,
   storeSession,
   verifySession,
-  deleteSession,
   isOtpAccountLocked,
   incrementFailedOtpAttempts,
-  clearFailedOtpAttempts
+  cleanupOtpData,
+  cleanupSignupSession
 } from "@/modules/signup/utils/store";
 import { sendTemplatedEmail } from "@/shared/services/email/email.service";
 import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
@@ -136,8 +135,7 @@ export const completeSignup = async (
 
   await AuthModel.findByIdAndUpdate(auth._id, { refreshToken });
 
-  await deleteOtp(email);
-  await deleteSession(email);
+  await cleanupSignupSession(email);
 
   return {
     message: t("signup:success.signupCompleted"),
@@ -291,8 +289,6 @@ const checkMatchOtp = async (
     }
   }
 
-  // Clear failed attempts on successful verification
-  await clearFailedOtpAttempts(email);
-  await deleteOtp(email);
-  await deleteOtpCoolDown(email);
+  // Clear all OTP-related data on successful verification
+  await cleanupOtpData(email);
 };
