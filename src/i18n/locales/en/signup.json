@@ -5,7 +5,6 @@
     "resendCoolDown": "Please wait before resending OTP",
     "invalidOtp": "Invalid OTP",
     "otpRequired": "OTP is required",
-    "passwordRequired": "Password is required",
     "sessionIdRequired": "Session ID is required",
     "invalidSession": "Session expired or invalid. Please verify OTP again",
     "acceptTermsRequired": "You must accept the terms and conditions",

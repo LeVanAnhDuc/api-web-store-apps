@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { EMAIL_VALIDATION } from "@/shared/constants/auth";
+import { EMAIL_VALIDATION, PASSWORD_VALIDATION } from "@/shared/constants/auth";
 
 // Regex to block dangerous Unicode characters in email
 // Blocks: control chars, RTL/LTR overrides, zero-width chars, null bytes, etc.
@@ -50,4 +50,38 @@ export const optionalEmailSchema = emailSchema.optional().messages({
   "string.min": "auth:validation.emailMinLength",
   "string.max": "auth:validation.emailMaxLength",
   "string.pattern.base": "auth:validation.emailInvalid"
+});
+
+/**
+ * Common password validation schema
+ * Can be reused across multiple modules (signup, reset password, change password)
+ *
+ * Validates:
+ * - Minimum length: 8 characters
+ * - Required field
+ *
+ * @example
+ * ```typescript
+ * import { passwordSchema } from "@/shared/schemas/auth.schema";
+ *
+ * const mySchema = Joi.object({
+ *   password: passwordSchema
+ * });
+ * ```
+ */
+export const passwordSchema = Joi.string()
+  .min(PASSWORD_VALIDATION.MIN_LENGTH)
+  .required()
+  .messages({
+    "string.empty": "auth:validation.passwordRequired",
+    "string.min": "auth:validation.passwordMinLength",
+    "any.required": "auth:validation.passwordRequired"
+  });
+
+/**
+ * Optional password schema (not required)
+ * Useful for update operations where password change is optional
+ */
+export const optionalPasswordSchema = passwordSchema.optional().messages({
+  "string.min": "auth:validation.passwordMinLength"
 });

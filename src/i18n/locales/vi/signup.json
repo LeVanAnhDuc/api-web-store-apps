@@ -5,7 +5,6 @@
     "resendCoolDown": "Vui lòng đợi trước khi gửi lại OTP",
     "invalidOtp": "Mã OTP không hợp lệ",
     "otpRequired": "Mã OTP là bắt buộc",
-    "passwordRequired": "Mật khẩu là bắt buộc",
     "sessionIdRequired": "Session ID là bắt buộc",
     "invalidSession": "Phiên đã hết hạn hoặc không hợp lệ. Vui lòng xác thực OTP lại",
     "acceptTermsRequired": "Bạn phải chấp nhận điều khoản và điều kiện",

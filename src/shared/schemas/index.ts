@@ -3,4 +3,9 @@
  * Export all reusable Joi schemas
  */
 
-export { emailSchema, optionalEmailSchema } from "./auth.schema";
+export {
+  emailSchema,
+  optionalEmailSchema,
+  passwordSchema,
+  optionalPasswordSchema
+} from "./auth.schema";
