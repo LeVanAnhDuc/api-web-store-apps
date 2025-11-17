@@ -1,12 +1,20 @@
 import type { NextFunction, Request, Response } from "express";
 
+type AsyncRequestHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void>;
+
 export const asyncHandler =
-  (fn) => (req: Request, res: Response, next: NextFunction) => {
+  (fn: AsyncRequestHandler) =>
+  (req: Request, res: Response, next: NextFunction): void => {
     fn(req, res, next).catch((error) => next(error));
   };
 
 export const asyncMiddlewareHandler =
-  (middleware) => (req: Request, res: Response, next: NextFunction) => {
+  (middleware: AsyncRequestHandler) =>
+  (req: Request, res: Response, next: NextFunction): void => {
     middleware(req, res, next)
       .then(() => next())
       .catch((error) => next(error));

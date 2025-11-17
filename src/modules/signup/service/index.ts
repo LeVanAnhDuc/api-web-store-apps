@@ -35,7 +35,7 @@ import {
   TooManyRequestsError
 } from "@/core/responses/error";
 import { OTP_CONFIG, SIGNUP_RATE_LIMITS } from "@/shared/constants/signup";
-import { hashPasswordAsync } from "@/core/helpers/bcrypt";
+import { hashPassword } from "@/core/helpers/bcrypt";
 import { generatePairToken } from "@/core/helpers/jwt";
 import { AUTH_ROLES } from "@/shared/constants/auth";
 import { TOKEN_EXPIRY } from "@/core/configs/jwt";
@@ -116,7 +116,7 @@ export const completeSignup = async (
   await checkSessionValidity(email, sessionId, t);
   await checkEmailAvailability(email, t);
 
-  const hashedPassword = await hashPasswordAsync(password);
+  const hashedPassword = hashPassword(password);
 
   const auth = await AuthModel.create({
     email,
