@@ -29,7 +29,11 @@ import {
   cleanupSignupSession
 } from "@/modules/signup/utils/store";
 import { sendTemplatedEmail } from "@/shared/services/email/email.service";
-import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
+import {
+  BadRequestError,
+  ConflictRequestError,
+  TooManyRequestsError
+} from "@/core/responses/error";
 import { OTP_CONFIG, SIGNUP_RATE_LIMITS } from "@/shared/constants/signup";
 import { hashPasswordAsync } from "@/core/helpers/bcrypt";
 import { generatePairToken } from "@/core/helpers/jwt";
@@ -205,7 +209,7 @@ const checkRateLimits = async (
   ]);
 
   if (!isIpAllowed || !isEmailAllowed) {
-    throw new BadRequestError(t("signup:errors.rateLimitExceeded"));
+    throw new TooManyRequestsError(t("signup:errors.rateLimitExceeded"));
   }
 };
 

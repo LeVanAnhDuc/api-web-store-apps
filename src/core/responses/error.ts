@@ -63,3 +63,21 @@ export class RedisError extends ErrorResponse {
     super({ message, status: STATUS_CODES.INTERNAL_SERVER_ERROR, code });
   }
 }
+
+export class TooManyRequestsError extends ErrorResponse {
+  constructor(
+    message = REASON_PHRASES.TOO_MANY_REQUESTS,
+    code = "TOO_MANY_REQUESTS"
+  ) {
+    super({ message, status: STATUS_CODES.TOO_MANY_REQUESTS, code });
+  }
+}
+
+export class ServiceUnavailableError extends ErrorResponse {
+  constructor(
+    message = REASON_PHRASES.SERVICE_UNAVAILABLE,
+    code = "SERVICE_UNAVAILABLE"
+  ) {
+    super({ message, status: STATUS_CODES.SERVICE_UNAVAILABLE, code });
+  }
+}
