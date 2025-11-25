@@ -38,21 +38,6 @@ export const setOtpCoolDown = async (
   }
 };
 
-export const getOtpCoolDownRemaining = async (
-  email: string
-): Promise<number> => {
-  try {
-    const redis = instanceRedis.getClient();
-    const key = `${KEY_OTP_COOLDOWN}:${email}`;
-
-    const ttl = await redis.ttl(key);
-    return ttl > 0 ? ttl : 0;
-  } catch (error) {
-    Logger.error("Redis OTP cooldown TTL check failed", error);
-    return 0;
-  }
-};
-
 export const deleteOtpCoolDown = async (email: string): Promise<void> => {
   try {
     const redis = instanceRedis.getClient();
