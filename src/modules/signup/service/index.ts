@@ -1,4 +1,3 @@
-import type { Request } from "express";
 import type { TFunction } from "i18next";
 import type {
   CompleteSignupResponse,
@@ -14,8 +13,6 @@ import { generateOtp, generateSessionId } from "@/modules/signup/utils/otp";
 import { Logger } from "@/core/utils/logger";
 import i18next from "@/i18n";
 import {
-  checkIpRateLimit,
-  checkEmailRateLimit,
   checkOtpCoolDown,
   setOtpCoolDown,
   createAndStoreOtp,
@@ -29,25 +26,17 @@ import {
   cleanupSignupSession
 } from "@/modules/signup/utils/store";
 import { sendTemplatedEmail } from "@/shared/services/email/email.service";
-import {
-  BadRequestError,
-  ConflictRequestError,
-  TooManyRequestsError
-} from "@/core/responses/error";
-import {
-  OTP_CONFIG,
-  SIGNUP_RATE_LIMITS
-} from "@/shared/constants/modules/signup";
+import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
+import { OTP_CONFIG } from "@/shared/constants/modules/signup";
 import { hashPassword } from "@/core/helpers/bcrypt";
 import { generatePairToken } from "@/core/helpers/jwt";
 import { AUTH_ROLES } from "@/shared/constants/modules/auth";
 import { TOKEN_EXPIRY } from "@/core/configs/jwt";
 import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
 
-const UNKNOWN_IP = "unknown";
-
 /*
  * Services for signup
+ * Note: Rate limiting (IP + Email) is handled by middleware in routes
  */
 
 export const sendOtp = async (
@@ -56,9 +45,6 @@ export const sendOtp = async (
   const { email } = req.body;
   const { language, t } = req;
 
-  const ipAddress = getClientIp(req);
-
-  await checkRateLimits(ipAddress, email, t);
   await checkAndSetOtpCoolDown(email, t);
   await checkEmailAvailability(email, t);
 
@@ -165,14 +151,6 @@ export const completeSignup = async (
  * Helpers --------------------------------------------------------------------------------------------------------------
  */
 
-const getClientIp = (req: Request): string => {
-  const forwarded = req.headers["x-forwarded-for"];
-  if (typeof forwarded === "string") {
-    return forwarded.split(",")[0].trim();
-  }
-  return req.socket.remoteAddress || UNKNOWN_IP;
-};
-
 const sendOtpEmail = async (
   email: string,
   otp: string,
@@ -191,29 +169,6 @@ const sendOtpEmail = async (
     },
     locale
   );
-};
-
-const checkRateLimits = async (
-  ipAddress: string,
-  email: string,
-  t: TFunction
-): Promise<void> => {
-  const [isIpAllowed, isEmailAllowed] = await Promise.all([
-    checkIpRateLimit(
-      ipAddress,
-      SIGNUP_RATE_LIMITS.SEND_OTP.PER_IP.MAX_REQUESTS,
-      SIGNUP_RATE_LIMITS.SEND_OTP.PER_IP.WINDOW_SECONDS
-    ),
-    checkEmailRateLimit(
-      email,
-      SIGNUP_RATE_LIMITS.SEND_OTP.PER_EMAIL.MAX_REQUESTS,
-      SIGNUP_RATE_LIMITS.SEND_OTP.PER_EMAIL.WINDOW_SECONDS
-    )
-  ]);
-
-  if (!isIpAllowed || !isEmailAllowed) {
-    throw new TooManyRequestsError(t("signup:errors.rateLimitExceeded"));
-  }
 };
 
 const checkAndSetOtpCoolDown = async (

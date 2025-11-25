@@ -3,66 +3,13 @@ import instanceRedis from "@/database/redis/redis.database";
 // utils
 import { Logger } from "@/core/utils/logger";
 // constants
-import { MILLISECONDS_PER_SECOND } from "@/shared/constants/time";
 import { REDIS_KEYS } from "@/shared/constants/redis";
 
-const { SIGNUP, RATE_LIMIT } = REDIS_KEYS;
+const { SIGNUP } = REDIS_KEYS;
 const KEY_OTP_SIGNUP = SIGNUP.OTP;
 const KEY_OTP_COOLDOWN = SIGNUP.OTP_COOLDOWN;
 const KEY_OTP_FAILED_ATTEMPTS = SIGNUP.OTP_FAILED_ATTEMPTS;
 const KEY_SESSION_SIGNUP = SIGNUP.SESSION;
-const KEY_RATE_LIMIT_IP = RATE_LIMIT.IP;
-const KEY_RATE_LIMIT_EMAIL = RATE_LIMIT.EMAIL;
-
-export const checkIpRateLimit = async (
-  ipAddress: string,
-  maxRequests: number,
-  windowSeconds: number
-): Promise<boolean> => {
-  try {
-    const redis = instanceRedis.getClient();
-    const currentWindow = Math.floor(
-      Date.now() / (windowSeconds * MILLISECONDS_PER_SECOND)
-    );
-    const key = `${KEY_RATE_LIMIT_IP}:${ipAddress}:${currentWindow}`;
-
-    const count = await redis.incr(key);
-
-    if (count === 1) {
-      await redis.expire(key, windowSeconds);
-    }
-
-    return count <= maxRequests;
-  } catch (error) {
-    Logger.error("Redis IP rate limit check failed", error);
-    return true;
-  }
-};
-
-export const checkEmailRateLimit = async (
-  email: string,
-  maxRequests: number,
-  windowSeconds: number
-): Promise<boolean> => {
-  try {
-    const redis = instanceRedis.getClient();
-    const currentWindow = Math.floor(
-      Date.now() / (windowSeconds * MILLISECONDS_PER_SECOND)
-    );
-    const key = `${KEY_RATE_LIMIT_EMAIL}:${email}:${currentWindow}`;
-
-    const count = await redis.incr(key);
-
-    if (count === 1) {
-      await redis.expire(key, windowSeconds);
-    }
-
-    return count <= maxRequests;
-  } catch (error) {
-    Logger.error("Redis email rate limit check failed", error);
-    return true;
-  }
-};
 
 export const checkOtpCoolDown = async (email: string): Promise<boolean> => {
   try {
