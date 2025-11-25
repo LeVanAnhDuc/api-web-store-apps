@@ -1,0 +1,10 @@
+{
+  "errors": {
+    "invalidCredentials": "Invalid email or password",
+    "rateLimitExceeded": "Too many login attempts. Please try again later",
+    "accountLocked": "Account temporarily locked after {{attempts}} failed attempts. Please try again in {{time}}"
+  },
+  "success": {
+    "loginSuccessful": "Login successful"
+  }
+}

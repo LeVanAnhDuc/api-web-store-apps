@@ -1,0 +1,10 @@
+{
+  "errors": {
+    "invalidCredentials": "Email hoặc mật khẩu không chính xác",
+    "rateLimitExceeded": "Quá nhiều lần đăng nhập. Vui lòng thử lại sau",
+    "accountLocked": "Tài khoản tạm thời bị khóa sau {{attempts}} lần đăng nhập sai. Vui lòng thử lại sau {{time}}"
+  },
+  "success": {
+    "loginSuccessful": "Đăng nhập thành công"
+  }
+}

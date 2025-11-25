@@ -12,6 +12,12 @@ export const REDIS_KEYS = {
     SESSION: "session-signup"
   },
 
+  // Login module keys
+  LOGIN: {
+    FAILED_ATTEMPTS: "login-failed-attempts",
+    LOCKOUT: "login-lockout"
+  },
+
   // Rate limiting keys
   RATE_LIMIT: {
     IP: "rate-limit:ip",
