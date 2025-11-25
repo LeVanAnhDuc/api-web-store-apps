@@ -8,7 +8,7 @@ import {
   PASSWORD_VALIDATION,
   EMAIL_FORMAT_PATTERN,
   SAFE_EMAIL_PATTERN
-} from "@/shared/constants/auth";
+} from "@/shared/constants/modules/auth";
 import { MODEL_NAMES } from "@/shared/constants/models";
 
 const { AUTHENTICATION } = MODEL_NAMES;

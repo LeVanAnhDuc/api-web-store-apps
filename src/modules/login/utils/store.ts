@@ -3,39 +3,12 @@ import instanceRedis from "@/database/redis/redis.database";
 // utils
 import { Logger } from "@/core/utils/logger";
 // constants
-import { MILLISECONDS_PER_SECOND } from "@/shared/constants/time";
 import { REDIS_KEYS } from "@/shared/constants/redis";
-import { LOGIN_LOCKOUT } from "@/shared/constants/login";
+import { LOGIN_LOCKOUT } from "@/shared/constants/modules/login";
 
-const { RATE_LIMIT, LOGIN } = REDIS_KEYS;
-const KEY_RATE_LIMIT_IP = RATE_LIMIT.IP;
+const { LOGIN } = REDIS_KEYS;
 const KEY_LOGIN_FAILED_ATTEMPTS = LOGIN.FAILED_ATTEMPTS;
 const KEY_LOGIN_LOCKOUT = LOGIN.LOCKOUT;
-
-export const checkIpRateLimit = async (
-  ipAddress: string,
-  maxRequests: number,
-  windowSeconds: number
-): Promise<boolean> => {
-  try {
-    const redis = instanceRedis.getClient();
-    const currentWindow = Math.floor(
-      Date.now() / (windowSeconds * MILLISECONDS_PER_SECOND)
-    );
-    const key = `${KEY_RATE_LIMIT_IP}:login:${ipAddress}:${currentWindow}`;
-
-    const count = await redis.incr(key);
-
-    if (count === 1) {
-      await redis.expire(key, windowSeconds);
-    }
-
-    return count <= maxRequests;
-  } catch (error) {
-    Logger.error("Redis IP rate limit check failed for login", error);
-    return true;
-  }
-};
 
 /**
  * Check if account is currently locked due to failed login attempts

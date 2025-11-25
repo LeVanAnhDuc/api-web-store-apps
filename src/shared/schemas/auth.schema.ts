@@ -3,7 +3,7 @@ import {
   EMAIL_VALIDATION,
   PASSWORD_VALIDATION,
   SAFE_EMAIL_PATTERN
-} from "@/shared/constants/auth";
+} from "@/shared/constants/modules/auth";
 
 /**
  * Common email validation schema

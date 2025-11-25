@@ -1,11 +1,11 @@
 // Authentication (Business roles)
-export * from "./auth";
+export * from "./modules/auth";
 
 // Models (Domain model names)
 export * from "./models";
 
 // Signup (Business logic)
-export * from "./signup";
+export * from "./modules/signup";
 
 // Email (Service config)
 export * from "./email";

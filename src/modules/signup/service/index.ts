@@ -34,10 +34,13 @@ import {
   ConflictRequestError,
   TooManyRequestsError
 } from "@/core/responses/error";
-import { OTP_CONFIG, SIGNUP_RATE_LIMITS } from "@/shared/constants/signup";
+import {
+  OTP_CONFIG,
+  SIGNUP_RATE_LIMITS
+} from "@/shared/constants/modules/signup";
 import { hashPassword } from "@/core/helpers/bcrypt";
 import { generatePairToken } from "@/core/helpers/jwt";
-import { AUTH_ROLES } from "@/shared/constants/auth";
+import { AUTH_ROLES } from "@/shared/constants/modules/auth";
 import { TOKEN_EXPIRY } from "@/core/configs/jwt";
 import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
 

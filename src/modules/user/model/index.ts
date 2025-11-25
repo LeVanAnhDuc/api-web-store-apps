@@ -8,7 +8,7 @@ import {
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN,
   SAFE_ADDRESS_PATTERN
-} from "@/shared/constants/user";
+} from "@/shared/constants/modules/user";
 import { MODEL_NAMES } from "@/shared/constants/models";
 
 const { USER, AUTHENTICATION } = MODEL_NAMES;

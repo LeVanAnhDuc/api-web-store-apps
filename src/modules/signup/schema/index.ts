@@ -3,8 +3,8 @@ import {
   GENDERS,
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN
-} from "@/shared/constants/user";
-import { OTP_PATTERN } from "@/shared/constants/signup";
+} from "@/shared/constants/modules/user";
+import { OTP_PATTERN } from "@/shared/constants/modules/signup";
 import { emailSchema, passwordSchema } from "@/shared/schemas/auth.schema";
 import type {
   SendOtpBody,

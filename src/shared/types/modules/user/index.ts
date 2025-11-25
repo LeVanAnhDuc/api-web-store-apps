@@ -1,7 +1,7 @@
 // libs
 import type { Schema } from "mongoose";
 // constants
-import type { GENDERS } from "@/shared/constants/user";
+import type { GENDERS } from "@/shared/constants/modules/user";
 
 /**
  * Gender type derived from GENDERS constant

@@ -1,4 +1,4 @@
-import type { GENDERS } from "@/shared/constants/user";
+import type { GENDERS } from "@/shared/constants/modules/user";
 import type { Request } from "express";
 
 export interface SendOtpResponse {
