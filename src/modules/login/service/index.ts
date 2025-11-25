@@ -1,18 +1,11 @@
-// libs
-import type { TFunction } from "i18next";
 import i18next from "@/i18n";
-// models
 import AuthModel from "@/modules/auth/model";
-// helpers
 import { isValidPassword } from "@/core/helpers/bcrypt";
 import { generatePairToken } from "@/core/helpers/jwt";
-// errors
 import { UnauthorizedError, BadRequestError } from "@/core/responses/error";
-// constants
 import { TOKEN_EXPIRY } from "@/core/configs/jwt";
-// types
+import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
 import type { LoginRequest, LoginResponse } from "@/shared/types/modules/login";
-// utils
 import {
   checkLoginLockout,
   incrementFailedLoginAttempts,
@@ -22,6 +15,7 @@ import {
 
 /*
  * Services for login
+ * Note: IP-based rate limiting is handled by middleware in routes
  */
 
 export const login = async (
@@ -30,7 +24,7 @@ export const login = async (
   const { email, password } = req.body;
   const { t, language } = req;
 
-  await checkAccountLockout(email, t, language);
+  await _checkAccountLockout(email, language);
 
   const auth = await AuthModel.findOne({ email });
 
@@ -41,12 +35,10 @@ export const login = async (
   const passwordValid = isValidPassword(password, auth.password);
 
   if (!passwordValid) {
-    // Increment failed attempts and apply progressive lockout
-    await handleFailedLogin(email, t, language);
+    await _handleFailedLogin(email, language);
     throw new UnauthorizedError(t("login:errors.invalidCredentials"));
   }
 
-  // Reset failed attempts on successful login
   await resetFailedLoginAttempts(email);
 
   const tokenPayload = {
@@ -79,30 +71,28 @@ export const login = async (
  * Helpers --------------------------------------------------------------------------------------------------------------
  */
 
-const checkAccountLockout = async (
+const _formatTimeMessage = (seconds: number, language: string): string => {
+  if (seconds >= SECONDS_PER_MINUTE) {
+    const minutes = Math.ceil(seconds / SECONDS_PER_MINUTE);
+    return language === "vi"
+      ? `${minutes} phút`
+      : `${minutes} minute${minutes > 1 ? "s" : ""}`;
+  }
+
+  return language === "vi"
+    ? `${seconds} giây`
+    : `${seconds} second${seconds > 1 ? "s" : ""}`;
+};
+
+const _checkAccountLockout = async (
   email: string,
-  t: TFunction,
   language: string
 ): Promise<void> => {
   const { isLocked, remainingSeconds } = await checkLoginLockout(email);
 
   if (isLocked) {
     const attemptCount = await getFailedLoginAttempts(email);
-
-    // Convert seconds to human-readable format
-    let timeMessage = "";
-    if (remainingSeconds >= 60) {
-      const minutes = Math.ceil(remainingSeconds / 60);
-      timeMessage =
-        language === "vi"
-          ? `${minutes} phút`
-          : `${minutes} minute${minutes > 1 ? "s" : ""}`;
-    } else {
-      timeMessage =
-        language === "vi"
-          ? `${remainingSeconds} giây`
-          : `${remainingSeconds} second${remainingSeconds > 1 ? "s" : ""}`;
-    }
+    const timeMessage = _formatTimeMessage(remainingSeconds, language);
 
     const errorMessage = i18next.t("login:errors.accountLocked", {
       attempts: attemptCount,
@@ -113,21 +103,15 @@ const checkAccountLockout = async (
   }
 };
 
-const handleFailedLogin = async (
+const _handleFailedLogin = async (
   email: string,
-  t: TFunction,
   language: string
 ): Promise<void> => {
   const { attemptCount, lockoutSeconds } =
     await incrementFailedLoginAttempts(email);
 
-  // Log the failed attempt for monitoring
-  if (attemptCount >= 5) {
-    const lockoutMinutes = Math.ceil(lockoutSeconds / 60);
-    const timeMessage =
-      language === "vi"
-        ? `${lockoutMinutes} phút`
-        : `${lockoutMinutes} minute${lockoutMinutes > 1 ? "s" : ""}`;
+  if (attemptCount >= 5 && lockoutSeconds > 0) {
+    const timeMessage = _formatTimeMessage(lockoutSeconds, language);
 
     const errorMessage = i18next.t("login:errors.accountLocked", {
       attempts: attemptCount,

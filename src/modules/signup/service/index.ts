@@ -45,18 +45,18 @@ export const sendOtp = async (
   const { email } = req.body;
   const { language, t } = req;
 
-  await checkAndSetOtpCoolDown(email, t);
-  await checkEmailAvailability(email, t);
+  await _checkAndSetOtpCoolDown(email, t);
+  await _checkEmailAvailability(email, t);
 
   const otp = generateOtp();
 
-  await checkAndCreateOtp(
+  await _checkAndCreateOtp(
     email,
     otp,
     OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE
   );
 
-  sendOtpEmail(email, otp, language as I18n.Locale)
+  _sendOtpEmail(email, otp, language as I18n.Locale)
     .then(() => Logger.info(`OTP sent successfully to ${email}`))
     .catch((error) =>
       Logger.error(`Background email sending failed for ${email}`, error)
@@ -79,7 +79,7 @@ export const verifyOtp = async (
   const { email, otp } = req.body;
   const { t, language } = req;
 
-  await checkMatchOtp(email, otp, t, language);
+  await _checkMatchOtp(email, otp, t, language);
 
   const expiresInSeconds = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
   const sessionId = generateSessionId();
@@ -102,8 +102,8 @@ export const completeSignup = async (
   const { email, password, fullName, gender, birthday, sessionId } = req.body;
   const { t } = req;
 
-  await checkSessionValidity(email, sessionId, t);
-  await checkEmailAvailability(email, t);
+  await _checkSessionValidity(email, sessionId, t);
+  await _checkEmailAvailability(email, t);
 
   const hashedPassword = hashPassword(password);
 
@@ -151,7 +151,7 @@ export const completeSignup = async (
  * Helpers --------------------------------------------------------------------------------------------------------------
  */
 
-const sendOtpEmail = async (
+const _sendOtpEmail = async (
   email: string,
   otp: string,
   locale: I18n.Locale
@@ -171,7 +171,7 @@ const sendOtpEmail = async (
   );
 };
 
-const checkAndSetOtpCoolDown = async (
+const _checkAndSetOtpCoolDown = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
@@ -184,7 +184,7 @@ const checkAndSetOtpCoolDown = async (
   await setOtpCoolDown(email, OTP_CONFIG.RESEND_COOLDOWN_SECONDS);
 };
 
-const checkEmailAvailability = async (
+const _checkEmailAvailability = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
@@ -195,7 +195,7 @@ const checkEmailAvailability = async (
   }
 };
 
-const checkSessionValidity = async (
+const _checkSessionValidity = async (
   email: string,
   sessionId: string,
   t: TFunction
@@ -207,7 +207,7 @@ const checkSessionValidity = async (
   }
 };
 
-const checkAndCreateOtp = async (
+const _checkAndCreateOtp = async (
   email: string,
   otp: string,
   expireTime: number
@@ -216,13 +216,12 @@ const checkAndCreateOtp = async (
   await createAndStoreOtp(email, otp, expireTime);
 };
 
-const checkMatchOtp = async (
+const _checkMatchOtp = async (
   email: string,
   otp: string,
   t: TFunction,
   language: string
 ): Promise<void> => {
-  // Check if account is locked due to too many failed attempts
   const isLocked = await isOtpAccountLocked(
     email,
     OTP_CONFIG.MAX_FAILED_ATTEMPTS
@@ -235,7 +234,6 @@ const checkMatchOtp = async (
   const isOtpValid = await checkOtpExists(email, otp);
 
   if (!isOtpValid) {
-    // Increment failed attempts counter
     const failedCount = await incrementFailedOtpAttempts(
       email,
       OTP_CONFIG.LOCKOUT_DURATION_MINUTES
@@ -253,6 +251,5 @@ const checkMatchOtp = async (
     }
   }
 
-  // Clear all OTP-related data on successful verification
   await cleanupOtpData(email);
 };
