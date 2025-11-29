@@ -11,7 +11,7 @@ type RateLimitHandler = (req: Request, res: Response) => void;
 /**
  * Creates a Redis store for rate limiting with lazy initialization
  */
-const _createRedisStore = (prefix: string): RedisStore =>
+const createRedisStore = (prefix: string): RedisStore =>
   new RedisStore({
     sendCommand: (...args: string[]) =>
       instanceRedis.getClient().sendCommand(args),
@@ -21,7 +21,7 @@ const _createRedisStore = (prefix: string): RedisStore =>
 /**
  * Creates a rate limit exceeded handler with custom error message
  */
-const _createRateLimitHandler =
+const createRateLimitHandler =
   (messageKey: I18n.Key): RateLimitHandler =>
   (req: Request, res: Response): void => {
     const { t } = req;
@@ -47,10 +47,10 @@ export const getLoginRateLimiter = (): RateLimitRequestHandler => {
     _loginRateLimiter = rateLimit({
       windowMs: LOGIN_RATE_LIMITS.PER_IP.WINDOW_SECONDS * 1000,
       max: LOGIN_RATE_LIMITS.PER_IP.MAX_REQUESTS,
-      store: _createRedisStore("rate-limit:login:ip:"),
+      store: createRedisStore("rate-limit:login:ip:"),
       standardHeaders: true,
       legacyHeaders: false,
-      handler: _createRateLimitHandler("login:errors.rateLimitExceeded")
+      handler: createRateLimitHandler("login:errors.rateLimitExceeded")
     });
   }
 
@@ -75,10 +75,10 @@ export const getSignupIpRateLimiter = (): RateLimitRequestHandler => {
     _signupIpRateLimiter = rateLimit({
       windowMs: SIGNUP_RATE_LIMITS.SEND_OTP.PER_IP.WINDOW_SECONDS * 1000,
       max: SIGNUP_RATE_LIMITS.SEND_OTP.PER_IP.MAX_REQUESTS,
-      store: _createRedisStore("rate-limit:signup:ip:"),
+      store: createRedisStore("rate-limit:signup:ip:"),
       standardHeaders: true,
       legacyHeaders: false,
-      handler: _createRateLimitHandler("signup:errors.rateLimitExceeded")
+      handler: createRateLimitHandler("signup:errors.rateLimitExceeded")
     });
   }
 
@@ -94,11 +94,11 @@ export const getSignupEmailRateLimiter = (): RateLimitRequestHandler => {
     _signupEmailRateLimiter = rateLimit({
       windowMs: SIGNUP_RATE_LIMITS.SEND_OTP.PER_EMAIL.WINDOW_SECONDS * 1000,
       max: SIGNUP_RATE_LIMITS.SEND_OTP.PER_EMAIL.MAX_REQUESTS,
-      store: _createRedisStore("rate-limit:signup:email:"),
+      store: createRedisStore("rate-limit:signup:email:"),
       standardHeaders: true,
       legacyHeaders: false,
       keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
-      handler: _createRateLimitHandler("signup:errors.rateLimitExceeded")
+      handler: createRateLimitHandler("signup:errors.rateLimitExceeded")
     });
   }
 

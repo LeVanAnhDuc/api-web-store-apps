@@ -24,7 +24,7 @@ export const login = async (
   const { email, password } = req.body;
   const { t, language } = req;
 
-  await _checkAccountLockout(email, language);
+  await checkAccountLockout(email, language);
 
   const auth = await AuthModel.findOne({ email });
 
@@ -35,7 +35,7 @@ export const login = async (
   const passwordValid = isValidPassword(password, auth.password);
 
   if (!passwordValid) {
-    await _handleFailedLogin(email, language);
+    await handleFailedLogin(email, language);
     throw new UnauthorizedError(t("login:errors.invalidCredentials"));
   }
 
@@ -71,7 +71,7 @@ export const login = async (
  * Helpers --------------------------------------------------------------------------------------------------------------
  */
 
-const _formatTimeMessage = (seconds: number, language: string): string => {
+const formatTimeMessage = (seconds: number, language: string): string => {
   if (seconds >= SECONDS_PER_MINUTE) {
     const minutes = Math.ceil(seconds / SECONDS_PER_MINUTE);
     return language === "vi"
@@ -84,7 +84,7 @@ const _formatTimeMessage = (seconds: number, language: string): string => {
     : `${seconds} second${seconds > 1 ? "s" : ""}`;
 };
 
-const _checkAccountLockout = async (
+const checkAccountLockout = async (
   email: string,
   language: string
 ): Promise<void> => {
@@ -92,7 +92,7 @@ const _checkAccountLockout = async (
 
   if (isLocked) {
     const attemptCount = await getFailedLoginAttempts(email);
-    const timeMessage = _formatTimeMessage(remainingSeconds, language);
+    const timeMessage = formatTimeMessage(remainingSeconds, language);
 
     const errorMessage = i18next.t("login:errors.accountLocked", {
       attempts: attemptCount,
@@ -103,7 +103,7 @@ const _checkAccountLockout = async (
   }
 };
 
-const _handleFailedLogin = async (
+const handleFailedLogin = async (
   email: string,
   language: string
 ): Promise<void> => {
@@ -111,7 +111,7 @@ const _handleFailedLogin = async (
     await incrementFailedLoginAttempts(email);
 
   if (attemptCount >= 5 && lockoutSeconds > 0) {
-    const timeMessage = _formatTimeMessage(lockoutSeconds, language);
+    const timeMessage = formatTimeMessage(lockoutSeconds, language);
 
     const errorMessage = i18next.t("login:errors.accountLocked", {
       attempts: attemptCount,
