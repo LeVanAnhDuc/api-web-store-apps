@@ -104,3 +104,28 @@ export const getSignupEmailRateLimiter = (): RateLimitRequestHandler => {
 
   return _signupEmailRateLimiter;
 };
+
+/*
+ * Check Email Rate Limiter
+ * IP-based protection for email availability check endpoint
+ */
+let _checkEmailRateLimiter: RateLimitRequestHandler | null = null;
+
+/**
+ * IP-based rate limiter for check-email endpoint
+ * Prevents email enumeration attacks
+ */
+export const getCheckEmailRateLimiter = (): RateLimitRequestHandler => {
+  if (_checkEmailRateLimiter === null) {
+    _checkEmailRateLimiter = rateLimit({
+      windowMs: SIGNUP_RATE_LIMITS.CHECK_EMAIL.PER_IP.WINDOW_SECONDS * 1000,
+      max: SIGNUP_RATE_LIMITS.CHECK_EMAIL.PER_IP.MAX_REQUESTS,
+      store: createRedisStore("rate-limit:check-email:ip:"),
+      standardHeaders: true,
+      legacyHeaders: false,
+      handler: createRateLimitHandler("signup:errors.rateLimitExceeded")
+    });
+  }
+
+  return _checkEmailRateLimiter;
+};

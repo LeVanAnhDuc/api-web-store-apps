@@ -2,7 +2,7 @@
  * Unit tests for Signup Service - Verify OTP
  */
 
-import { verifyOtpService } from "../service";
+import { verifyOtp } from "../service";
 import * as signupStore from "../utils/store";
 import * as otpUtils from "../utils/otp";
 import { BadRequestError } from "@/core/responses/error";
@@ -36,7 +36,7 @@ describe("Signup Service - Verify OTP", () => {
         otp: "123456"
       });
 
-      const result = await verifyOtpService(req);
+      const result = await verifyOtp(req);
 
       expect(result.message).toBe("signup:success.otpVerified");
       expect(result.data).toEqual({
@@ -52,7 +52,7 @@ describe("Signup Service - Verify OTP", () => {
         otp: "123456"
       });
 
-      await verifyOtpService(req);
+      await verifyOtp(req);
 
       expect(mockStore.storeSession).toHaveBeenCalledWith(
         "test@example.com",
@@ -67,7 +67,7 @@ describe("Signup Service - Verify OTP", () => {
         otp: "123456"
       });
 
-      await verifyOtpService(req);
+      await verifyOtp(req);
 
       expect(mockStore.cleanupOtpData).toHaveBeenCalledWith("test@example.com");
     });
@@ -81,7 +81,7 @@ describe("Signup Service - Verify OTP", () => {
         otp: "123456"
       });
 
-      await expect(verifyOtpService(req)).rejects.toThrow(BadRequestError);
+      await expect(verifyOtp(req)).rejects.toThrow(BadRequestError);
       expect(req.t).toHaveBeenCalledWith("signup:errors.otpAttemptsExceeded");
     });
 
@@ -93,7 +93,7 @@ describe("Signup Service - Verify OTP", () => {
       });
 
       try {
-        await verifyOtpService(req);
+        await verifyOtp(req);
       } catch {
         // Expected
       }
@@ -115,7 +115,7 @@ describe("Signup Service - Verify OTP", () => {
         otp: "wrong-otp"
       });
 
-      await expect(verifyOtpService(req)).rejects.toThrow(BadRequestError);
+      await expect(verifyOtp(req)).rejects.toThrow(BadRequestError);
       expect(mockStore.incrementFailedOtpAttempts).toHaveBeenCalledWith(
         "test@example.com",
         15
@@ -130,7 +130,7 @@ describe("Signup Service - Verify OTP", () => {
         otp: "wrong-otp"
       });
 
-      await expect(verifyOtpService(req)).rejects.toThrow(BadRequestError);
+      await expect(verifyOtp(req)).rejects.toThrow(BadRequestError);
       expect(req.t).toHaveBeenCalledWith("signup:errors.otpAttemptsExceeded");
     });
 
@@ -143,7 +143,7 @@ describe("Signup Service - Verify OTP", () => {
       });
 
       try {
-        await verifyOtpService(req);
+        await verifyOtp(req);
       } catch {
         // Expected
       }
@@ -159,7 +159,7 @@ describe("Signup Service - Verify OTP", () => {
       });
 
       try {
-        await verifyOtpService(req);
+        await verifyOtp(req);
       } catch {
         // Expected
       }

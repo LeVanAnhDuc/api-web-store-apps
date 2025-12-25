@@ -59,6 +59,7 @@ export interface CompleteSignupBody {
  */
 export interface CheckEmailParams {
   email: string;
+  [key: string]: string; // Index signature for Express ParamsDictionary
 }
 
 // ============================================================================

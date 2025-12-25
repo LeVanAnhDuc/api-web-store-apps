@@ -5,7 +5,7 @@
     "phone": "Phone number",
     "address": "Address",
     "gender": "Gender",
-    "birthday": "Birthday"
+    "dateOfBirth": "Date of birth"
   },
   "validation": {
     "authIdRequired": "Auth ID is required",
@@ -16,8 +16,8 @@
     "phoneRequired": "Phone number is required",
     "phoneInvalid": "Please provide a valid phone number",
     "addressMaxLength": "Address must not exceed 500 characters",
-    "genderInvalid": "Gender must be male, female, or other",
-    "birthdayInvalid": "Birthday cannot be in the future",
-    "birthdayTooOld": "Birthday cannot be more than 120 years ago"
+    "genderInvalid": "Gender must be male, female, other, or prefer not to say",
+    "dateOfBirthTooYoung": "You must be at least 13 years old",
+    "dateOfBirthTooOld": "Date of birth cannot be more than 120 years ago"
   }
 }

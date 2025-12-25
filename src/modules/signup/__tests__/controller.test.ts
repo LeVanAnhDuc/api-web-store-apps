@@ -61,7 +61,7 @@ describe("Signup Controllers", () => {
         const serviceResult = {
           message: "OTP sent successfully",
           data: {
-            success: true,
+            success: true as const,
             expiresIn: 300,
             cooldownSeconds: 60
           }
@@ -130,12 +130,12 @@ describe("Signup Controllers", () => {
         const serviceResult = {
           message: "OTP verified",
           data: {
-            success: true,
+            success: true as const,
             sessionToken: "session-token-123",
             expiresIn: 300
           }
         };
-        mockSignupService.verifyOtpService.mockResolvedValue(serviceResult);
+        mockSignupService.verifyOtp.mockResolvedValue(serviceResult);
         mockRequest.body = { email: "test@example.com", otp: "123456" };
 
         verifyOtpController(
@@ -146,9 +146,7 @@ describe("Signup Controllers", () => {
 
         await new Promise((resolve) => setImmediate(resolve));
 
-        expect(mockSignupService.verifyOtpService).toHaveBeenCalledWith(
-          mockRequest
-        );
+        expect(mockSignupService.verifyOtp).toHaveBeenCalledWith(mockRequest);
         expect(OkSuccess).toHaveBeenCalledWith({
           data: serviceResult.data,
           message: "OTP verified"
@@ -161,7 +159,7 @@ describe("Signup Controllers", () => {
       it("should pass BadRequestError to next when OTP invalid", async () => {
         const error = new Error("Invalid OTP");
         error.name = "BadRequestError";
-        mockSignupService.verifyOtpService.mockRejectedValue(error);
+        mockSignupService.verifyOtp.mockRejectedValue(error);
         mockRequest.body = { email: "test@example.com", otp: "wrong" };
 
         verifyOtpController(
@@ -177,7 +175,7 @@ describe("Signup Controllers", () => {
 
       it("should pass account locked error to next", async () => {
         const error = new Error("Account locked");
-        mockSignupService.verifyOtpService.mockRejectedValue(error);
+        mockSignupService.verifyOtp.mockRejectedValue(error);
 
         verifyOtpController(
           mockRequest as Request,
@@ -203,7 +201,7 @@ describe("Signup Controllers", () => {
         const serviceResult = {
           message: "Signup completed",
           data: {
-            success: true,
+            success: true as const,
             user: {
               id: "user-id-123",
               email: "test@example.com",
@@ -303,7 +301,7 @@ describe("Signup Controllers", () => {
     it("should pass request to sendOtp service", async () => {
       const serviceResult = {
         message: "Success",
-        data: { success: true, expiresIn: 300, cooldownSeconds: 60 }
+        data: { success: true as const, expiresIn: 300, cooldownSeconds: 60 }
       };
       mockSignupService.sendOtp.mockResolvedValue(serviceResult);
 
@@ -324,12 +322,12 @@ describe("Signup Controllers", () => {
       expect(mockSignupService.sendOtp).toHaveBeenCalledWith(customRequest);
     });
 
-    it("should pass request to verifyOtpService", async () => {
+    it("should pass request to verifyOtp service", async () => {
       const serviceResult = {
         message: "Success",
-        data: { success: true, sessionToken: "st", expiresIn: 300 }
+        data: { success: true as const, sessionToken: "st", expiresIn: 300 }
       };
-      mockSignupService.verifyOtpService.mockResolvedValue(serviceResult);
+      mockSignupService.verifyOtp.mockResolvedValue(serviceResult);
 
       const customRequest = {
         body: { email: "test@example.com", otp: "654321" },
@@ -345,16 +343,14 @@ describe("Signup Controllers", () => {
 
       await new Promise((resolve) => setImmediate(resolve));
 
-      expect(mockSignupService.verifyOtpService).toHaveBeenCalledWith(
-        customRequest
-      );
+      expect(mockSignupService.verifyOtp).toHaveBeenCalledWith(customRequest);
     });
 
     it("should pass request to completeSignup service", async () => {
       const serviceResult = {
         message: "Success",
         data: {
-          success: true,
+          success: true as const,
           user: {
             id: "uid",
             email: "test@example.com",
