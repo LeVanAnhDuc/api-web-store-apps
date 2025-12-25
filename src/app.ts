@@ -7,6 +7,7 @@ import { requestLogger } from "./core/middlewares/request-logger";
 import { handleError, handleNotFound } from "./core/middlewares/error-handler";
 import { handleMongooseError } from "./core/middlewares/mongoose-error-handler";
 import { i18nMiddleware } from "./i18n";
+import { setupSwagger } from "./core/configs/swagger.setup";
 
 // Create Express application
 const app = express();
@@ -27,6 +28,12 @@ app.use(cookieParser());
 app.use(requestLogger);
 
 app.use(i18nMiddleware);
+
+/**
+ * Swagger Documentation
+ * Available at /api-docs
+ */
+setupSwagger(app);
 
 /**
  * Configure routes
