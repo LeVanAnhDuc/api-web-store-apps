@@ -62,7 +62,8 @@ describe("Signup Controllers", () => {
           message: "OTP sent successfully",
           data: {
             success: true,
-            expiresIn: 600
+            expiresIn: 300,
+            cooldownSeconds: 60
           }
         };
         mockSignupService.sendOtp.mockResolvedValue(serviceResult);
@@ -125,16 +126,16 @@ describe("Signup Controllers", () => {
    */
   describe("verifyOtpController", () => {
     describe("Successful request", () => {
-      it("should verify OTP và return success response với sessionId", async () => {
+      it("should verify OTP và return success response với sessionToken", async () => {
         const serviceResult = {
           message: "OTP verified",
           data: {
             success: true,
-            sessionId: "session-id-123",
-            expiresIn: 600
+            sessionToken: "session-token-123",
+            expiresIn: 300
           }
         };
-        mockSignupService.verifyOtp.mockResolvedValue(serviceResult);
+        mockSignupService.verifyOtpService.mockResolvedValue(serviceResult);
         mockRequest.body = { email: "test@example.com", otp: "123456" };
 
         verifyOtpController(
@@ -145,7 +146,9 @@ describe("Signup Controllers", () => {
 
         await new Promise((resolve) => setImmediate(resolve));
 
-        expect(mockSignupService.verifyOtp).toHaveBeenCalledWith(mockRequest);
+        expect(mockSignupService.verifyOtpService).toHaveBeenCalledWith(
+          mockRequest
+        );
         expect(OkSuccess).toHaveBeenCalledWith({
           data: serviceResult.data,
           message: "OTP verified"
@@ -158,7 +161,7 @@ describe("Signup Controllers", () => {
       it("should pass BadRequestError to next when OTP invalid", async () => {
         const error = new Error("Invalid OTP");
         error.name = "BadRequestError";
-        mockSignupService.verifyOtp.mockRejectedValue(error);
+        mockSignupService.verifyOtpService.mockRejectedValue(error);
         mockRequest.body = { email: "test@example.com", otp: "wrong" };
 
         verifyOtpController(
@@ -174,7 +177,7 @@ describe("Signup Controllers", () => {
 
       it("should pass account locked error to next", async () => {
         const error = new Error("Account locked");
-        mockSignupService.verifyOtp.mockRejectedValue(error);
+        mockSignupService.verifyOtpService.mockRejectedValue(error);
 
         verifyOtpController(
           mockRequest as Request,
@@ -196,16 +199,19 @@ describe("Signup Controllers", () => {
    */
   describe("completeSignupController", () => {
     describe("Successful request", () => {
-      it("should complete signup và return tokens", async () => {
+      it("should complete signup và return user and tokens", async () => {
         const serviceResult = {
           message: "Signup completed",
           data: {
             success: true,
-            message: "Signup completed",
-            data: {
+            user: {
+              id: "user-id-123",
+              email: "test@example.com",
+              fullName: "Test User"
+            },
+            tokens: {
               accessToken: "access-token",
               refreshToken: "refresh-token",
-              idToken: "id-token",
               expiresIn: 3600
             }
           }
@@ -216,8 +222,8 @@ describe("Signup Controllers", () => {
           password: "password123",
           fullName: "Test User",
           gender: "male",
-          birthday: "1990-01-01",
-          sessionId: "session-id-123"
+          dateOfBirth: "1990-01-01",
+          sessionToken: "session-token-123"
         };
 
         completeSignupController(
@@ -297,7 +303,7 @@ describe("Signup Controllers", () => {
     it("should pass request to sendOtp service", async () => {
       const serviceResult = {
         message: "Success",
-        data: { success: true, expiresIn: 600 }
+        data: { success: true, expiresIn: 300, cooldownSeconds: 60 }
       };
       mockSignupService.sendOtp.mockResolvedValue(serviceResult);
 
@@ -318,12 +324,12 @@ describe("Signup Controllers", () => {
       expect(mockSignupService.sendOtp).toHaveBeenCalledWith(customRequest);
     });
 
-    it("should pass request to verifyOtp service", async () => {
+    it("should pass request to verifyOtpService", async () => {
       const serviceResult = {
         message: "Success",
-        data: { success: true, sessionId: "sid", expiresIn: 600 }
+        data: { success: true, sessionToken: "st", expiresIn: 300 }
       };
-      mockSignupService.verifyOtp.mockResolvedValue(serviceResult);
+      mockSignupService.verifyOtpService.mockResolvedValue(serviceResult);
 
       const customRequest = {
         body: { email: "test@example.com", otp: "654321" },
@@ -339,7 +345,9 @@ describe("Signup Controllers", () => {
 
       await new Promise((resolve) => setImmediate(resolve));
 
-      expect(mockSignupService.verifyOtp).toHaveBeenCalledWith(customRequest);
+      expect(mockSignupService.verifyOtpService).toHaveBeenCalledWith(
+        customRequest
+      );
     });
 
     it("should pass request to completeSignup service", async () => {
@@ -347,11 +355,14 @@ describe("Signup Controllers", () => {
         message: "Success",
         data: {
           success: true,
-          message: "Done",
-          data: {
+          user: {
+            id: "uid",
+            email: "test@example.com",
+            fullName: "Name"
+          },
+          tokens: {
             accessToken: "at",
             refreshToken: "rt",
-            idToken: "it",
             expiresIn: 3600
           }
         }
@@ -364,8 +375,8 @@ describe("Signup Controllers", () => {
           password: "pass",
           fullName: "Name",
           gender: "female",
-          birthday: "2000-01-01",
-          sessionId: "sid"
+          dateOfBirth: "2000-01-01",
+          sessionToken: "st"
         },
         t: jest.fn(),
         language: "vi"

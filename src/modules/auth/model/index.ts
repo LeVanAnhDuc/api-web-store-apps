@@ -58,6 +58,10 @@ const AuthSchema = new Schema<AuthDocument>(
       type: String,
       default: null
     },
+    isActive: {
+      type: Boolean,
+      default: true
+    },
     lastLogin: {
       type: Date,
       default: Date.now

@@ -48,16 +48,20 @@ describe("Signup Service - Complete Signup", () => {
   });
 
   describe("Successful signup", () => {
-    it("should return success response với tokens", async () => {
+    it("should return success response với user and tokens", async () => {
       const req = createMockRequest(validSignupBody);
 
       const result = await completeSignup(req);
 
       expect(result.message).toBe("signup:success.signupCompleted");
-      expect(result.data?.data).toEqual({
+      expect(result.data?.user).toEqual({
+        id: "user-id-123",
+        email: "test@example.com",
+        fullName: "Test User"
+      });
+      expect(result.data?.tokens).toEqual({
         accessToken: "access-token",
         refreshToken: "refresh-token",
-        idToken: "id-token",
         expiresIn: expect.any(Number)
       });
     });
@@ -69,7 +73,7 @@ describe("Signup Service - Complete Signup", () => {
 
       expect(mockStore.verifySession).toHaveBeenCalledWith(
         "test@example.com",
-        "session-id-123"
+        "session-token-123"
       );
     });
 
@@ -177,10 +181,10 @@ describe("Signup Service - Complete Signup", () => {
   });
 
   describe("Edge cases", () => {
-    it("should handle birthday edge case", async () => {
+    it("should handle dateOfBirth edge case", async () => {
       const req = createMockRequest({
         ...validSignupBody,
-        birthday: "2000-12-31"
+        dateOfBirth: "2000-12-31"
       });
 
       await completeSignup(req);

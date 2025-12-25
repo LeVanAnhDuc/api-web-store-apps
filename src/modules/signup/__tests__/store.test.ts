@@ -10,13 +10,14 @@
  * 6. Redis Error Handling
  */
 
+import * as bcrypt from "bcrypt";
 import instanceRedis from "@/database/redis/redis.database";
 import {
   checkOtpCoolDown,
   setOtpCoolDown,
   deleteOtpCoolDown,
   createAndStoreOtp,
-  checkOtpExists,
+  verifyOtp,
   deleteOtp,
   storeSession,
   verifySession,
@@ -28,6 +29,12 @@ import {
   cleanupOtpData,
   cleanupSignupSession
 } from "../utils/store";
+
+// Mock bcrypt
+jest.mock("bcrypt", () => ({
+  hashSync: jest.fn((otp: string) => `hashed_${otp}`),
+  compareSync: jest.fn((otp: string, hash: string) => hash === `hashed_${otp}`)
+}));
 
 // Mock Redis client
 const mockRedisClient = {
@@ -135,16 +142,18 @@ describe("Signup Store Utilities", () => {
    * ============================================================================
    */
   describe("createAndStoreOtp", () => {
-    it("should store OTP với expiry time", async () => {
+    it("should hash and store OTP với expiry time", async () => {
       mockRedisClient.setEx.mockResolvedValue("OK");
 
       await createAndStoreOtp("test@example.com", "123456", 600);
 
+      // Should store hashed OTP (using mock bcrypt.hashSync)
       expect(mockRedisClient.setEx).toHaveBeenCalledWith(
         "otp-signup:test@example.com",
         600,
-        "123456"
+        "hashed_123456"
       );
+      expect(bcrypt.hashSync).toHaveBeenCalledWith("123456", 10);
     });
 
     it("should không throw error khi Redis error", async () => {
@@ -156,48 +165,39 @@ describe("Signup Store Utilities", () => {
     });
   });
 
-  describe("checkOtpExists", () => {
+  describe("verifyOtp", () => {
     describe("Khi OTP hợp lệ", () => {
-      it("should return true khi OTP tồn tại và khớp", async () => {
-        mockRedisClient.exists.mockResolvedValue(1);
-        mockRedisClient.get.mockResolvedValue("123456");
+      it("should return true khi OTP khớp với hash", async () => {
+        // Store hashed OTP
+        mockRedisClient.get.mockResolvedValue("hashed_123456");
 
-        const result = await checkOtpExists("test@example.com", "123456");
+        const result = await verifyOtp("test@example.com", "123456");
 
         expect(result).toBe(true);
-        expect(mockRedisClient.exists).toHaveBeenCalledWith(
-          "otp-signup:test@example.com"
-        );
         expect(mockRedisClient.get).toHaveBeenCalledWith(
           "otp-signup:test@example.com"
+        );
+        expect(bcrypt.compareSync).toHaveBeenCalledWith(
+          "123456",
+          "hashed_123456"
         );
       });
     });
 
     describe("Khi OTP không hợp lệ", () => {
       it("should return false khi OTP không tồn tại", async () => {
-        mockRedisClient.exists.mockResolvedValue(0);
-
-        const result = await checkOtpExists("test@example.com", "123456");
-
-        expect(result).toBe(false);
-        expect(mockRedisClient.get).not.toHaveBeenCalled();
-      });
-
-      it("should return false khi OTP không khớp", async () => {
-        mockRedisClient.exists.mockResolvedValue(1);
-        mockRedisClient.get.mockResolvedValue("654321");
-
-        const result = await checkOtpExists("test@example.com", "123456");
-
-        expect(result).toBe(false);
-      });
-
-      it("should return false khi OTP đã hết hạn (value null)", async () => {
-        mockRedisClient.exists.mockResolvedValue(1);
         mockRedisClient.get.mockResolvedValue(null);
 
-        const result = await checkOtpExists("test@example.com", "123456");
+        const result = await verifyOtp("test@example.com", "123456");
+
+        expect(result).toBe(false);
+        expect(bcrypt.compareSync).not.toHaveBeenCalled();
+      });
+
+      it("should return false khi OTP không khớp với hash", async () => {
+        mockRedisClient.get.mockResolvedValue("hashed_654321");
+
+        const result = await verifyOtp("test@example.com", "123456");
 
         expect(result).toBe(false);
       });
@@ -205,9 +205,9 @@ describe("Signup Store Utilities", () => {
 
     describe("Xử lý lỗi Redis", () => {
       it("should return false khi Redis error", async () => {
-        mockRedisClient.exists.mockRejectedValue(new Error("Redis error"));
+        mockRedisClient.get.mockRejectedValue(new Error("Redis error"));
 
-        const result = await checkOtpExists("test@example.com", "123456");
+        const result = await verifyOtp("test@example.com", "123456");
 
         expect(result).toBe(false);
       });
@@ -525,24 +525,36 @@ describe("Signup Store Utilities", () => {
   });
 
   describe("cleanupSignupSession", () => {
-    it("should cleanup OTP và session data", async () => {
+    it("should cleanup all signup session data", async () => {
       mockRedisClient.del.mockResolvedValue(1);
 
       await cleanupSignupSession("test@example.com");
 
-      // Should delete: OTP and session
-      expect(mockRedisClient.del).toHaveBeenCalledTimes(2);
+      // Should delete: OTP, session, failed attempts, cooldown, resend count
+      expect(mockRedisClient.del).toHaveBeenCalledTimes(5);
       expect(mockRedisClient.del).toHaveBeenCalledWith(
         "otp-signup:test@example.com"
       );
       expect(mockRedisClient.del).toHaveBeenCalledWith(
         "session-signup:test@example.com"
       );
+      expect(mockRedisClient.del).toHaveBeenCalledWith(
+        "otp-failed-attempts:test@example.com"
+      );
+      expect(mockRedisClient.del).toHaveBeenCalledWith(
+        "otp-signup-cooldown:test@example.com"
+      );
+      expect(mockRedisClient.del).toHaveBeenCalledWith(
+        "otp-resend-count:test@example.com"
+      );
     });
 
     it("should không throw error khi operations fail", async () => {
       mockRedisClient.del
         .mockRejectedValueOnce(new Error("Redis error"))
+        .mockResolvedValueOnce(1)
+        .mockResolvedValueOnce(1)
+        .mockResolvedValueOnce(1)
         .mockResolvedValueOnce(1);
 
       await expect(

@@ -22,10 +22,12 @@ export const createMockRequest = (body: any, language = "en"): any => {
 export const validSignupBody = {
   email: "test@example.com",
   password: "password123",
+  confirmPassword: "password123",
   fullName: "Test User",
   gender: "male",
-  birthday: "1990-01-01",
-  sessionId: "session-id-123"
+  dateOfBirth: "1990-01-01",
+  sessionToken: "session-token-123",
+  acceptTerms: true
 };
 
 /**
@@ -41,7 +43,8 @@ export const mockAuthData = {
  * Mock user data
  */
 export const mockUserData = {
-  _id: { toString: () => "user-id-123" }
+  _id: { toString: () => "user-id-123" },
+  fullName: "Test User"
 };
 
 /**

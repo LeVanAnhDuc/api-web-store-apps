@@ -16,7 +16,7 @@ import {
   checkOtpCoolDown,
   setOtpCoolDown,
   createAndStoreOtp,
-  checkOtpExists,
+  verifyOtp as verifyOtpFromStore,
   deleteOtp,
   storeSession,
   verifySession,
@@ -68,12 +68,13 @@ export const sendOtp = async (
     message: t("signup:success.otpSent"),
     data: {
       success: true,
-      expiresIn: expiresInSeconds
+      expiresIn: expiresInSeconds,
+      cooldownSeconds: OTP_CONFIG.RESEND_COOLDOWN_SECONDS
     }
   };
 };
 
-export const verifyOtp = async (
+export const verifyOtpService = async (
   req: VerifyOtpRequest
 ): Promise<Partial<ResponsePattern<VerifyOtpResponse>>> => {
   const { email, otp } = req.body;
@@ -82,15 +83,15 @@ export const verifyOtp = async (
   await checkMatchOtp(email, otp, t, language);
 
   const expiresInSeconds = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
-  const sessionId = generateSessionId();
+  const sessionToken = generateSessionId();
 
-  await storeSession(email, sessionId, expiresInSeconds);
+  await storeSession(email, sessionToken, expiresInSeconds);
 
   return {
     message: t("signup:success.otpVerified"),
     data: {
       success: true,
-      sessionId,
+      sessionToken,
       expiresIn: expiresInSeconds
     }
   };
@@ -99,10 +100,11 @@ export const verifyOtp = async (
 export const completeSignup = async (
   req: CompleteSignupRequest
 ): Promise<Partial<ResponsePattern<CompleteSignupResponse>>> => {
-  const { email, password, fullName, gender, birthday, sessionId } = req.body;
+  const { email, password, fullName, gender, dateOfBirth, sessionToken } =
+    req.body;
   const { t } = req;
 
-  await checkSessionValidity(email, sessionId, t);
+  await checkSessionValidity(email, sessionToken, t);
   await checkEmailAvailability(email, t);
 
   const hashedPassword = hashPassword(password);
@@ -118,10 +120,10 @@ export const completeSignup = async (
     authId: auth._id,
     fullName,
     gender,
-    dateOfBirth: new Date(birthday)
+    dateOfBirth: new Date(dateOfBirth)
   });
 
-  const { accessToken, refreshToken, idToken } = generatePairToken({
+  const { accessToken, refreshToken } = generatePairToken({
     userId: user._id.toString(),
     authId: auth._id.toString(),
     email: auth.email,
@@ -136,11 +138,14 @@ export const completeSignup = async (
     message: t("signup:success.signupCompleted"),
     data: {
       success: true,
-      message: t("signup:success.signupCompleted"),
-      data: {
+      user: {
+        id: user._id.toString(),
+        email: auth.email,
+        fullName: user.fullName
+      },
+      tokens: {
         accessToken,
         refreshToken,
-        idToken,
         expiresIn: TOKEN_EXPIRY.NUMBER_ACCESS_TOKEN
       }
     }
@@ -231,7 +236,7 @@ const checkMatchOtp = async (
     throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
   }
 
-  const isOtpValid = await checkOtpExists(email, otp);
+  const isOtpValid = await verifyOtpFromStore(email, otp);
 
   if (!isOtpValid) {
     const failedCount = await incrementFailedOtpAttempts(

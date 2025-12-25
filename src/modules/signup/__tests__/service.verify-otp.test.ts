@@ -2,7 +2,7 @@
  * Unit tests for Signup Service - Verify OTP
  */
 
-import { verifyOtp } from "../service";
+import { verifyOtpService } from "../service";
 import * as signupStore from "../utils/store";
 import * as otpUtils from "../utils/otp";
 import { BadRequestError } from "@/core/responses/error";
@@ -20,29 +20,29 @@ describe("Signup Service - Verify OTP", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    mockStore.checkOtpExists.mockResolvedValue(true);
+    mockStore.verifyOtp.mockResolvedValue(true);
     mockStore.isOtpAccountLocked.mockResolvedValue(false);
     mockStore.incrementFailedOtpAttempts.mockResolvedValue(1);
     mockStore.cleanupOtpData.mockResolvedValue(undefined);
     mockStore.storeSession.mockResolvedValue(undefined);
 
-    mockOtpUtils.generateSessionId.mockReturnValue("session-id-123");
+    mockOtpUtils.generateSessionId.mockReturnValue("session-token-123");
   });
 
   describe("Successful OTP verification", () => {
-    it("should return success response với sessionId", async () => {
+    it("should return success response với sessionToken", async () => {
       const req = createMockRequest({
         email: "test@example.com",
         otp: "123456"
       });
 
-      const result = await verifyOtp(req);
+      const result = await verifyOtpService(req);
 
       expect(result.message).toBe("signup:success.otpVerified");
       expect(result.data).toEqual({
         success: true,
-        sessionId: "session-id-123",
-        expiresIn: 600
+        sessionToken: "session-token-123",
+        expiresIn: 300
       });
     });
 
@@ -52,12 +52,12 @@ describe("Signup Service - Verify OTP", () => {
         otp: "123456"
       });
 
-      await verifyOtp(req);
+      await verifyOtpService(req);
 
       expect(mockStore.storeSession).toHaveBeenCalledWith(
         "test@example.com",
-        "session-id-123",
-        600
+        "session-token-123",
+        300
       );
     });
 
@@ -67,7 +67,7 @@ describe("Signup Service - Verify OTP", () => {
         otp: "123456"
       });
 
-      await verifyOtp(req);
+      await verifyOtpService(req);
 
       expect(mockStore.cleanupOtpData).toHaveBeenCalledWith("test@example.com");
     });
@@ -81,7 +81,7 @@ describe("Signup Service - Verify OTP", () => {
         otp: "123456"
       });
 
-      await expect(verifyOtp(req)).rejects.toThrow(BadRequestError);
+      await expect(verifyOtpService(req)).rejects.toThrow(BadRequestError);
       expect(req.t).toHaveBeenCalledWith("signup:errors.otpAttemptsExceeded");
     });
 
@@ -93,7 +93,7 @@ describe("Signup Service - Verify OTP", () => {
       });
 
       try {
-        await verifyOtp(req);
+        await verifyOtpService(req);
       } catch {
         // Expected
       }
@@ -102,40 +102,40 @@ describe("Signup Service - Verify OTP", () => {
         "test@example.com",
         5
       );
-      expect(mockStore.checkOtpExists).not.toHaveBeenCalled();
+      expect(mockStore.verifyOtp).not.toHaveBeenCalled();
     });
   });
 
   describe("Invalid OTP", () => {
     it("should throw BadRequestError với remaining attempts khi OTP sai", async () => {
-      mockStore.checkOtpExists.mockResolvedValue(false);
+      mockStore.verifyOtp.mockResolvedValue(false);
       mockStore.incrementFailedOtpAttempts.mockResolvedValue(1);
       const req = createMockRequest({
         email: "test@example.com",
         otp: "wrong-otp"
       });
 
-      await expect(verifyOtp(req)).rejects.toThrow(BadRequestError);
+      await expect(verifyOtpService(req)).rejects.toThrow(BadRequestError);
       expect(mockStore.incrementFailedOtpAttempts).toHaveBeenCalledWith(
         "test@example.com",
-        10
+        15
       );
     });
 
     it("should throw với message khác khi hết attempts", async () => {
-      mockStore.checkOtpExists.mockResolvedValue(false);
+      mockStore.verifyOtp.mockResolvedValue(false);
       mockStore.incrementFailedOtpAttempts.mockResolvedValue(5);
       const req = createMockRequest({
         email: "test@example.com",
         otp: "wrong-otp"
       });
 
-      await expect(verifyOtp(req)).rejects.toThrow(BadRequestError);
+      await expect(verifyOtpService(req)).rejects.toThrow(BadRequestError);
       expect(req.t).toHaveBeenCalledWith("signup:errors.otpAttemptsExceeded");
     });
 
     it("should increment failed attempts khi OTP sai", async () => {
-      mockStore.checkOtpExists.mockResolvedValue(false);
+      mockStore.verifyOtp.mockResolvedValue(false);
       mockStore.incrementFailedOtpAttempts.mockResolvedValue(2);
       const req = createMockRequest({
         email: "test@example.com",
@@ -143,7 +143,7 @@ describe("Signup Service - Verify OTP", () => {
       });
 
       try {
-        await verifyOtp(req);
+        await verifyOtpService(req);
       } catch {
         // Expected
       }
@@ -152,14 +152,14 @@ describe("Signup Service - Verify OTP", () => {
     });
 
     it("should không store session khi verify thất bại", async () => {
-      mockStore.checkOtpExists.mockResolvedValue(false);
+      mockStore.verifyOtp.mockResolvedValue(false);
       const req = createMockRequest({
         email: "test@example.com",
         otp: "wrong-otp"
       });
 
       try {
-        await verifyOtp(req);
+        await verifyOtpService(req);
       } catch {
         // Expected
       }

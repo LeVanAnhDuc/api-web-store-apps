@@ -7,7 +7,11 @@ import type {
   CompleteSignupRequest
 } from "@/shared/types/modules/signup";
 // services
-import { completeSignup, sendOtp, verifyOtp } from "@/modules/signup/service";
+import {
+  completeSignup,
+  sendOtp,
+  verifyOtpService
+} from "@/modules/signup/service";
 // responses
 import { OkSuccess } from "@/core/responses/success";
 // utils
@@ -22,7 +26,7 @@ export const sendOtpController = asyncHandler(
 
 export const verifyOtpController = asyncHandler(
   async (req: VerifyOtpRequest, res: Response): Promise<void> => {
-    const { data, message } = await verifyOtp(req);
+    const { data, message } = await verifyOtpService(req);
     new OkSuccess({ data, message }).send(req, res);
   }
 );
