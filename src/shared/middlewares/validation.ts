@@ -2,8 +2,24 @@ import type { Request } from "express";
 import type { Schema } from "joi";
 
 import { asyncMiddlewareHandler } from "@/core/utils/async-handler";
-import { BadRequestError } from "@/core/responses/error";
+import { ValidationError, type FieldError } from "@/core/responses/error";
 
+/**
+ * Validation Middleware
+ * Validates request data against Joi schema
+ * Returns field-level errors for better client-side error handling
+ *
+ * Response format on validation error:
+ * {
+ *   timestamp: "ISO string",
+ *   route: "/api/v1/...",
+ *   error: {
+ *     code: "VALIDATION_ERROR",
+ *     message: "Validation failed",
+ *     fields: [{ field: "email", message: "Email is required" }]
+ *   }
+ * }
+ */
 export const validate = (
   schema: Schema,
   source: "body" | "params" | "query" = "body"
@@ -16,9 +32,16 @@ export const validate = (
     });
 
     if (error) {
-      const translationKey = error.details[0].message;
-      const message = req.t(translationKey as I18n.Key);
-      throw new BadRequestError(message);
+      // Map Joi errors to field-level errors with i18n translation
+      const fields: FieldError[] = error.details.map((detail) => ({
+        field: detail.path.join("."),
+        message: req.t(detail.message as I18n.Key)
+      }));
+
+      // Use first error message as the main error message
+      const mainMessage = req.t("common:errors.validationFailed");
+
+      throw new ValidationError(mainMessage, fields);
     }
 
     req[source] = value;

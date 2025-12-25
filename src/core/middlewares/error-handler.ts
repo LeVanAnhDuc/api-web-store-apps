@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 
-import { ErrorResponse } from "@/core/responses/error";
+import { ErrorResponse, ValidationError } from "@/core/responses/error";
 import { STATUS_CODES } from "../constants/http";
 
 export const handleNotFound = (
@@ -25,6 +25,25 @@ export const handleError = (
   res: Response,
   _next: NextFunction
 ) => {
+  if (err instanceof ValidationError) {
+    const {
+      error,
+      fields,
+      route = req.originalUrl,
+      status,
+      timestamp = new Date().toISOString()
+    } = err;
+
+    return res.status(status).json({
+      timestamp,
+      route,
+      error: {
+        ...error,
+        fields
+      }
+    });
+  }
+
   if (err instanceof ErrorResponse) {
     const {
       error,

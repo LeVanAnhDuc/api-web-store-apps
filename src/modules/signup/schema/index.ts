@@ -47,8 +47,18 @@ const getDateOfBirthBounds = (): { minDate: Date; maxDate: Date } => {
 
 /**
  * POST /signup/send-otp
+ * Request body: { email }
  */
 export const sendOtpSchema: Joi.ObjectSchema<SendOtpBody> = Joi.object({
+  email: emailSchema
+});
+
+/**
+ * POST /signup/resend-otp
+ * Request body: { email }
+ * Same as sendOtpSchema but defined separately for clarity
+ */
+export const resendOtpSchema: Joi.ObjectSchema<SendOtpBody> = Joi.object({
   email: emailSchema
 });
 

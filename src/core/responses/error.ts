@@ -81,3 +81,25 @@ export class ServiceUnavailableError extends ErrorResponse {
     super({ message, status: STATUS_CODES.SERVICE_UNAVAILABLE, code });
   }
 }
+
+/**
+ * Validation Error with field-level error details
+ * Used for form validation failures
+ */
+export interface FieldError {
+  field: string;
+  message: string;
+}
+
+export class ValidationError extends ErrorResponse {
+  readonly fields: FieldError[];
+
+  constructor(
+    message = REASON_PHRASES.BAD_REQUEST,
+    fields: FieldError[] = [],
+    code = "VALIDATION_ERROR"
+  ) {
+    super({ message, status: STATUS_CODES.BAD_REQUEST, code });
+    this.fields = fields;
+  }
+}

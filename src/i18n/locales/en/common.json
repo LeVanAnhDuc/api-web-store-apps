@@ -5,7 +5,8 @@
     "invalidToken": "Invalid token",
     "tokenExpired": "Token expired",
     "emailTemplateFailed": "Email template rendering failed: {{templateName}}",
-    "emailSendFailed": "Email sending failed"
+    "emailSendFailed": "Email sending failed",
+    "validationFailed": "Validation failed"
   },
   "validation": {
     "required": "{{field}} is required",
