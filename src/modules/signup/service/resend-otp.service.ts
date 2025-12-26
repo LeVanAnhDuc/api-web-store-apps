@@ -24,6 +24,9 @@ import type {
 // errors
 import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
 
+// logger
+import { Logger } from "@/core/utils/logger";
+
 // repository
 import { isEmailRegistered } from "@/modules/signup/repository";
 
@@ -47,14 +50,15 @@ import { generateOtp } from "@/modules/signup/utils/otp";
 import { OTP_CONFIG } from "@/shared/constants/modules/signup";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/shared/constants/time";
 
+const TIME_OTP_EXPIRES = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
+const TIME_OTP_RESEND = OTP_CONFIG.RESEND_COOLDOWN_SECONDS;
+const TIME_RESEND_OTP_PER_HOUR = MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
+const MAX_RESEND_COUNT = OTP_CONFIG.MAX_RESEND_COUNT;
+
 // =============================================================================
 // Business Rule Checks (Guard Functions)
 // =============================================================================
 
-/**
- * Ensure cooldown period has expired before resending OTP
- * @throws BadRequestError if cooldown is active
- */
 const ensureCooldownExpired = async (
   email: string,
   t: TFunction
@@ -62,32 +66,26 @@ const ensureCooldownExpired = async (
   const canSend = await checkOtpCoolDown(email);
 
   if (!canSend) {
+    Logger.warn("Resend OTP cooldown not expired", { email });
     throw new BadRequestError(t("signup:errors.resendCoolDown"));
   }
 };
 
-/**
- * Ensure user has not exceeded maximum resend attempts
- * @throws BadRequestError if limit exceeded
- */
 const ensureResendLimitNotExceeded = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
-  const exceeded = await hasExceededResendLimit(
-    email,
-    OTP_CONFIG.MAX_RESEND_COUNT
-  );
+  const exceeded = await hasExceededResendLimit(email, MAX_RESEND_COUNT);
 
   if (exceeded) {
+    Logger.warn("Resend OTP limit exceeded", {
+      email,
+      maxResends: MAX_RESEND_COUNT
+    });
     throw new BadRequestError(t("signup:errors.resendLimitExceeded"));
   }
 };
 
-/**
- * Ensure email is not already registered
- * @throws ConflictRequestError if email exists
- */
 const ensureEmailNotRegistered = async (
   email: string,
   t: TFunction
@@ -95,6 +93,7 @@ const ensureEmailNotRegistered = async (
   const exists = await isEmailRegistered(email);
 
   if (exists) {
+    Logger.warn("Resend OTP attempt with existing email", { email });
     throw new ConflictRequestError(t("signup:errors.emailAlreadyExists"));
   }
 };
@@ -103,86 +102,83 @@ const ensureEmailNotRegistered = async (
 // Business Operations
 // =============================================================================
 
-/**
- * Create and store new OTP for email
- * Deletes any existing OTP first (idempotency)
- */
 const createNewOtp = async (email: string): Promise<string> => {
   const otp = generateOtp();
-  const expirySeconds = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 
   // Delete existing OTP first (idempotency)
   await deleteOtp(email);
-  await createAndStoreOtp(email, otp, expirySeconds);
+  await createAndStoreOtp(email, otp, TIME_OTP_EXPIRES);
+
+  Logger.debug("New OTP created for resend", {
+    email,
+    expiresInSeconds: TIME_OTP_EXPIRES
+  });
 
   return otp;
 };
 
-/**
- * Start cooldown period for next resend
- */
 const startCooldown = async (email: string): Promise<void> => {
-  await setOtpCoolDown(email, OTP_CONFIG.RESEND_COOLDOWN_SECONDS);
+  await setOtpCoolDown(email, TIME_OTP_RESEND);
+
+  Logger.debug("Resend cooldown started", {
+    email,
+    cooldownSeconds: TIME_OTP_RESEND
+  });
 };
 
-/**
- * Track resend attempt
- * @returns Current resend count after increment
- */
 const trackResendAttempt = async (email: string): Promise<number> => {
   // Window: 1 hour for resend count tracking
-  const windowSeconds = MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
-  return incrementResendCount(email, windowSeconds);
+  const count = await incrementResendCount(email, TIME_RESEND_OTP_PER_HOUR);
+
+  Logger.debug("Resend attempt tracked", {
+    email,
+    currentCount: count,
+    maxResends: MAX_RESEND_COUNT,
+    windowSeconds: TIME_RESEND_OTP_PER_HOUR
+  });
+
+  return count;
 };
 
 // =============================================================================
 // Main Service
 // =============================================================================
 
-/**
- * Resend OTP to user email
- * Differs from sendOtp by tracking resend attempts
- *
- * @param req - Express request with ResendOtpBody
- * @returns ResendOtpResponse with resend count info
- *
- * @throws BadRequestError - Cooldown active or resend limit exceeded
- * @throws ConflictRequestError - Email already registered
- */
 export const resendOtp = async (
   req: ResendOtpRequest
 ): Promise<Partial<ResponsePattern<ResendOtpResponse>>> => {
   const { email } = req.body;
   const { language, t } = req;
 
-  // Step 1: Business rule validations
+  Logger.info("ResendOtp initiated", { email });
+
   await ensureCooldownExpired(email, t);
   await ensureResendLimitNotExceeded(email, t);
   await ensureEmailNotRegistered(email, t);
 
-  // Step 2: Generate and store OTP
   const otp = await createNewOtp(email);
 
-  // Step 3: Start cooldown for next resend
   await startCooldown(email);
 
-  // Step 4: Track resend attempt
   const currentResendCount = await trackResendAttempt(email);
 
-  // Step 5: Send email notification (async, controlled side effect)
   notifyOtpByEmail(email, otp, language as I18n.Locale);
 
-  // Step 6: Build response
-  const expiresInSeconds = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
+  Logger.info("ResendOtp completed", {
+    email,
+    resendCount: currentResendCount,
+    maxResends: MAX_RESEND_COUNT,
+    expiresIn: TIME_OTP_EXPIRES
+  });
 
   return {
     message: t("signup:success.otpResent"),
     data: {
       success: true,
-      expiresIn: expiresInSeconds,
-      cooldownSeconds: OTP_CONFIG.RESEND_COOLDOWN_SECONDS,
+      expiresIn: TIME_OTP_EXPIRES,
+      cooldownSeconds: TIME_OTP_RESEND,
       resendCount: currentResendCount,
-      maxResends: OTP_CONFIG.MAX_RESEND_COUNT
+      maxResends: MAX_RESEND_COUNT
     }
   };
 };
