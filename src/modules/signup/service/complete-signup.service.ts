@@ -26,6 +26,9 @@ import type {
 // errors
 import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
 
+// logger
+import { Logger } from "@/core/utils/logger";
+
 // repository
 import {
   isEmailRegistered,
@@ -46,15 +49,12 @@ import { generatePairToken } from "@/core/helpers/jwt";
 
 // constants
 import { TOKEN_EXPIRY } from "@/core/configs/jwt";
+import { AUTH_ROLES } from "@/shared/constants";
 
 // =============================================================================
 // Business Rule Checks (Guard Functions)
 // =============================================================================
 
-/**
- * Verify session token is valid for email
- * @throws BadRequestError if session is invalid or expired
- */
 const ensureSessionValid = async (
   email: string,
   sessionToken: string,
@@ -63,14 +63,11 @@ const ensureSessionValid = async (
   const isValid = await verifySession(email, sessionToken);
 
   if (!isValid) {
+    Logger.warn("Invalid or expired signup session", { email });
     throw new BadRequestError(t("signup:errors.invalidSession"));
   }
 };
 
-/**
- * Ensure email is not already registered (double-check before creating)
- * @throws ConflictRequestError if email exists
- */
 const ensureEmailNotRegistered = async (
   email: string,
   t: TFunction
@@ -78,6 +75,9 @@ const ensureEmailNotRegistered = async (
   const exists = await isEmailRegistered(email);
 
   if (exists) {
+    Logger.warn("Complete signup blocked - email registered during flow", {
+      email
+    });
     throw new ConflictRequestError(t("signup:errors.emailAlreadyExists"));
   }
 };
@@ -93,10 +93,6 @@ interface CreateAccountResult {
   fullName: string;
 }
 
-/**
- * Create user account (Auth + User records)
- * Transaction-like operation: creates both records
- */
 const createUserAccount = async (
   email: string,
   password: string,
@@ -104,21 +100,29 @@ const createUserAccount = async (
   gender: Gender,
   dateOfBirth: string
 ): Promise<CreateAccountResult> => {
-  // Hash password before storing
   const hashedPassword = hashPassword(password);
 
-  // Create auth record first (contains email and password)
   const auth = await createAuthRecord({
     email,
     hashedPassword
   });
 
-  // Create user profile linked to auth
+  Logger.debug("Auth record created", {
+    email,
+    authId: auth._id.toString()
+  });
+
   const user = await createUserProfile({
     authId: auth._id,
     fullName,
     gender,
     dateOfBirth: new Date(dateOfBirth)
+  });
+
+  Logger.info("User account created successfully", {
+    email,
+    userId: user._id.toString(),
+    authId: auth._id.toString()
   });
 
   return {
@@ -129,20 +133,15 @@ const createUserAccount = async (
   };
 };
 
-interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
-}
-
-/**
- * Issue JWT token pair for authenticated user
- */
 const issueAuthTokens = (
   userId: Schema.Types.ObjectId,
   authId: Schema.Types.ObjectId,
   email: string,
   roles: string
-): TokenPair =>
+): {
+  accessToken: string;
+  refreshToken: string;
+} =>
   generatePairToken({
     userId: userId.toString(),
     authId: authId.toString(),
@@ -150,9 +149,6 @@ const issueAuthTokens = (
     roles
   });
 
-/**
- * Persist refresh token to auth record
- */
 const persistRefreshToken = async (
   authId: Schema.Types.ObjectId,
   refreshToken: string
@@ -164,15 +160,6 @@ const persistRefreshToken = async (
 // Main Service
 // =============================================================================
 
-/**
- * Complete user signup with profile data
- *
- * @param req - Express request with CompleteSignupBody
- * @returns CompleteSignupResponse with user info and tokens
- *
- * @throws BadRequestError - Invalid session
- * @throws ConflictRequestError - Email already registered
- */
 export const completeSignup = async (
   req: CompleteSignupRequest
 ): Promise<Partial<ResponsePattern<CompleteSignupResponse>>> => {
@@ -180,13 +167,12 @@ export const completeSignup = async (
     req.body;
   const { t } = req;
 
-  // Step 1: Verify session is valid
+  Logger.info("CompleteSignup initiated", { email });
+
   await ensureSessionValid(email, sessionToken, t);
 
-  // Step 2: Double-check email availability (race condition protection)
   await ensureEmailNotRegistered(email, t);
 
-  // Step 3: Create user account (Auth + User)
   const account = await createUserAccount(
     email,
     password,
@@ -195,21 +181,22 @@ export const completeSignup = async (
     dateOfBirth
   );
 
-  // Step 4: Issue authentication tokens
   const tokens = issueAuthTokens(
     account.userId,
     account.authId,
     account.email,
-    "user" // Default role from AUTH_ROLES.USER
+    AUTH_ROLES.USER
   );
 
-  // Step 5: Store refresh token for session management
   await persistRefreshToken(account.authId, tokens.refreshToken);
 
-  // Step 6: Cleanup all signup session data (OTP, session, etc.)
   await cleanupSignupSession(email);
 
-  // Step 7: Build response
+  Logger.info("CompleteSignup finished - new user registered", {
+    email,
+    userId: account.userId.toString()
+  });
+
   return {
     message: t("signup:success.signupCompleted"),
     data: {
