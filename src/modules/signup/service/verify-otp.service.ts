@@ -24,6 +24,9 @@ import type {
 // errors
 import { BadRequestError } from "@/core/responses/error";
 
+// logger
+import { Logger } from "@/core/utils/logger";
+
 // store (Redis operations)
 import {
   verifyOtp as verifyOtpFromStore,
@@ -40,34 +43,30 @@ import { generateSessionId } from "@/modules/signup/utils/otp";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/shared/constants/modules/signup";
 import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
 
+const TIME_MAX_FAILED_ATTEMPTS = OTP_CONFIG.MAX_FAILED_ATTEMPTS;
+const TIME_LOCKOUT_DURATION_MINUTES = OTP_CONFIG.LOCKOUT_DURATION_MINUTES;
+const TIME_EXPIRES_SESSION_MINUTES =
+  SESSION_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
+
 // =============================================================================
 // Business Rule Checks (Guard Functions)
 // =============================================================================
 
-/**
- * Ensure account is not locked due to too many failed attempts
- * @throws BadRequestError if account is locked
- */
 const ensureAccountNotLocked = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
-  const isLocked = await isOtpAccountLocked(
-    email,
-    OTP_CONFIG.MAX_FAILED_ATTEMPTS
-  );
+  const isLocked = await isOtpAccountLocked(email, TIME_MAX_FAILED_ATTEMPTS);
 
   if (isLocked) {
+    Logger.warn("OTP account locked due to too many failed attempts", {
+      email,
+      maxAttempts: TIME_MAX_FAILED_ATTEMPTS
+    });
     throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
   }
 };
 
-/**
- * Verify OTP matches stored hash
- * Handles failed attempts tracking and remaining attempts message
- *
- * @throws BadRequestError if OTP is invalid
- */
 const verifyOtpMatch = async (
   email: string,
   otp: string,
@@ -79,9 +78,16 @@ const verifyOtpMatch = async (
   if (!isValid) {
     const failedCount = await incrementFailedOtpAttempts(
       email,
-      OTP_CONFIG.LOCKOUT_DURATION_MINUTES
+      TIME_LOCKOUT_DURATION_MINUTES
     );
-    const remainingAttempts = OTP_CONFIG.MAX_FAILED_ATTEMPTS - failedCount;
+    const remainingAttempts = TIME_MAX_FAILED_ATTEMPTS - failedCount;
+
+    Logger.warn("Invalid OTP attempt", {
+      email,
+      failedCount,
+      remainingAttempts,
+      lockoutDurationMinutes: TIME_LOCKOUT_DURATION_MINUTES
+    });
 
     if (remainingAttempts > 0) {
       const errorMessage = i18next.t("signup:errors.invalidOtpWithRemaining", {
@@ -99,15 +105,15 @@ const verifyOtpMatch = async (
 // Business Operations
 // =============================================================================
 
-/**
- * Create signup session for verified email
- * Session allows user to proceed to complete signup step
- */
 const createSignupSession = async (email: string): Promise<string> => {
   const sessionToken = generateSessionId();
-  const expirySeconds = SESSION_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 
-  await storeSession(email, sessionToken, expirySeconds);
+  await storeSession(email, sessionToken, TIME_EXPIRES_SESSION_MINUTES);
+
+  Logger.debug("Signup session created", {
+    email,
+    expiresInSeconds: TIME_EXPIRES_SESSION_MINUTES
+  });
 
   return sessionToken;
 };
@@ -116,41 +122,33 @@ const createSignupSession = async (email: string): Promise<string> => {
 // Main Service
 // =============================================================================
 
-/**
- * Verify OTP code submitted by user
- *
- * @param req - Express request with VerifyOtpBody
- * @returns VerifyOtpResponse with session token for next step
- *
- * @throws BadRequestError - Account locked or invalid OTP
- */
 export const verifyOtp = async (
   req: VerifyOtpRequest
 ): Promise<Partial<ResponsePattern<VerifyOtpResponse>>> => {
   const { email, otp } = req.body;
   const { t, language } = req;
 
-  // Step 1: Check lockout status
+  Logger.info("VerifyOtp initiated", { email });
+
   await ensureAccountNotLocked(email, t);
 
-  // Step 2: Verify OTP (handles failed attempts internally)
   await verifyOtpMatch(email, otp, t, language);
 
-  // Step 3: Create session for next step
   const sessionToken = await createSignupSession(email);
 
-  // Step 4: Cleanup OTP data (success path)
   await cleanupOtpData(email);
 
-  // Step 5: Build response
-  const expiresInSeconds = SESSION_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
+  Logger.info("VerifyOtp completed successfully", {
+    email,
+    sessionExpiresIn: TIME_EXPIRES_SESSION_MINUTES
+  });
 
   return {
     message: t("signup:success.otpVerified"),
     data: {
       success: true,
       sessionToken,
-      expiresIn: expiresInSeconds
+      expiresIn: TIME_EXPIRES_SESSION_MINUTES
     }
   };
 };
