@@ -19,23 +19,23 @@ import type {
 // repository
 import { isEmailRegistered } from "@/modules/signup/repository";
 
+// logger
+import Logger from "@/core/utils/logger";
+
 // =============================================================================
 // Main Service
 // =============================================================================
 
-/**
- * Check if email is available for registration
- *
- * @param req - Express request with email param
- * @returns CheckEmailResponse with availability status
- */
 export const checkEmail = async (
   req: CheckEmailRequest
 ): Promise<Partial<ResponsePattern<CheckEmailResponse>>> => {
   const { email } = req.params;
 
-  // Simple check: is email registered?
+  Logger.info("CheckEmail initiated", { email });
+
   const exists = await isEmailRegistered(email);
+
+  Logger.info("CheckEmail completed", { email });
 
   return {
     data: {
