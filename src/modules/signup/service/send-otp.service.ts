@@ -23,6 +23,9 @@ import type {
 // errors
 import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
 
+// logger
+import { Logger } from "@/core/utils/logger";
+
 // repository
 import { isEmailRegistered } from "@/modules/signup/repository";
 
@@ -48,10 +51,9 @@ import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
 // Business Rule Checks (Guard Functions)
 // =============================================================================
 
-/**
- * Ensure cooldown period has expired before sending new OTP
- * @throws BadRequestError if cooldown is active
- */
+const TIME_OTP_EXPIRES = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
+const TIME_OTP_RESEND = OTP_CONFIG.RESEND_COOLDOWN_SECONDS;
+
 const ensureCooldownExpired = async (
   email: string,
   t: TFunction
@@ -59,14 +61,11 @@ const ensureCooldownExpired = async (
   const canSend = await checkOtpCoolDown(email);
 
   if (!canSend) {
+    Logger.warn("OTP cooldown not expired", { email });
     throw new BadRequestError(t("signup:errors.resendCoolDown"));
   }
 };
 
-/**
- * Ensure email is not already registered
- * @throws ConflictRequestError if email exists
- */
 const ensureEmailNotRegistered = async (
   email: string,
   t: TFunction
@@ -74,6 +73,7 @@ const ensureEmailNotRegistered = async (
   const exists = await isEmailRegistered(email);
 
   if (exists) {
+    Logger.warn("Signup attempt with existing email", { email });
     throw new ConflictRequestError(t("signup:errors.emailAlreadyExists"));
   }
 };
@@ -82,69 +82,63 @@ const ensureEmailNotRegistered = async (
 // Business Operations
 // =============================================================================
 
-/**
- * Create and store new OTP for email
- * Deletes any existing OTP first (idempotency)
- */
 const createNewOtp = async (email: string): Promise<string> => {
   const otp = generateOtp();
-  const expirySeconds = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 
   // Delete existing OTP first (idempotency - same request can be retried)
   await deleteOtp(email);
-  await createAndStoreOtp(email, otp, expirySeconds);
+  await createAndStoreOtp(email, otp, TIME_OTP_EXPIRES);
+
+  Logger.debug("OTP created and stored in Redis", {
+    email,
+    expiresInSeconds: TIME_OTP_EXPIRES
+  });
 
   return otp;
 };
 
-/**
- * Start cooldown period for resend
- */
 const startCooldown = async (email: string): Promise<void> => {
-  await setOtpCoolDown(email, OTP_CONFIG.RESEND_COOLDOWN_SECONDS);
+  await setOtpCoolDown(email, TIME_OTP_RESEND);
+
+  Logger.debug("OTP cooldown started", {
+    email,
+    cooldownSeconds: TIME_OTP_RESEND
+  });
 };
 
 // =============================================================================
 // Main Service
 // =============================================================================
 
-/**
- * Send OTP to user email for verification
- *
- * @param req - Express request with SendOtpBody
- * @returns SendOtpResponse with success status and timing info
- *
- * @throws BadRequestError - Cooldown period active
- * @throws ConflictRequestError - Email already registered
- */
 export const sendOtp = async (
   req: SendOtpRequest
 ): Promise<Partial<ResponsePattern<SendOtpResponse>>> => {
   const { email } = req.body;
   const { language, t } = req;
 
-  // Step 1: Business rule validations
+  Logger.info("SendOtp initiated", { email });
+
   await ensureCooldownExpired(email, t);
   await ensureEmailNotRegistered(email, t);
 
-  // Step 2: Generate and store OTP
   const otp = await createNewOtp(email);
 
-  // Step 3: Start cooldown for next resend
   await startCooldown(email);
 
-  // Step 4: Send email notification (async, controlled side effect)
   notifyOtpByEmail(email, otp, language as I18n.Locale);
 
-  // Step 5: Build response
-  const expiresInSeconds = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
+  Logger.info("SendOtp completed", {
+    email,
+    expiresIn: TIME_OTP_EXPIRES,
+    cooldownSeconds: TIME_OTP_RESEND
+  });
 
   return {
     message: t("signup:success.otpSent"),
     data: {
       success: true,
-      expiresIn: expiresInSeconds,
-      cooldownSeconds: OTP_CONFIG.RESEND_COOLDOWN_SECONDS
+      expiresIn: TIME_OTP_EXPIRES,
+      cooldownSeconds: TIME_OTP_RESEND
     }
   };
 };

@@ -24,7 +24,12 @@ addColors(COLORS);
 const consoleFormat = format.combine(
   format.timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSS" }),
   format.colorize({ all: true }),
-  format.printf((info) => `${info.timestamp} [${info.level}]: ${info.message}`)
+  format.printf((info) => {
+    const { timestamp, level, message, ...meta } = info;
+    const metaString =
+      Object.keys(meta).length > 0 ? ` ${JSON.stringify(meta)}` : "";
+    return `${timestamp} [${level}]: ${message}${metaString}`;
+  })
 );
 
 const fileFormat = format.combine(
