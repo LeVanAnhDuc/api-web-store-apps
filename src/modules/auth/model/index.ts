@@ -65,12 +65,6 @@ const AuthSchema = new Schema<AuthDocument>(
     lastLogin: {
       type: Date,
       default: Date.now
-    },
-    passwordResetToken: {
-      type: String
-    },
-    passwordResetTokenExpiresAt: {
-      type: Date
     }
   },
   {

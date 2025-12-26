@@ -14,8 +14,6 @@ export interface AuthDocument {
   refreshToken: string | null;
   isActive: boolean;
   lastLogin: Date;
-  passwordResetToken?: string;
-  passwordResetTokenExpiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
