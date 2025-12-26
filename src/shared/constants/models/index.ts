@@ -1,4 +1,6 @@
 export const MODEL_NAMES = {
   AUTHENTICATION: "Authentication",
-  USER: "User"
+  USER: "User",
+  SESSION: "Session",
+  LOGIN_HISTORY: "LoginHistory"
 } as const;
