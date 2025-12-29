@@ -16,6 +16,35 @@ export const LOGIN_RATE_LIMITS = {
 } as const;
 
 /**
+ * OTP login rate limits
+ * Separate from password login to allow different thresholds
+ */
+export const LOGIN_OTP_RATE_LIMITS = {
+  PER_IP: {
+    MAX_REQUESTS: 10,
+    WINDOW_SECONDS: 900 // 15 minutes
+  },
+  PER_EMAIL: {
+    MAX_REQUESTS: 5,
+    WINDOW_SECONDS: 900 // 15 minutes
+  }
+} as const;
+
+/**
+ * Magic link login rate limits
+ */
+export const MAGIC_LINK_RATE_LIMITS = {
+  PER_IP: {
+    MAX_REQUESTS: 10,
+    WINDOW_SECONDS: 900 // 15 minutes
+  },
+  PER_EMAIL: {
+    MAX_REQUESTS: 5,
+    WINDOW_SECONDS: 900 // 15 minutes
+  }
+} as const;
+
+/**
  * Progressive login lockout configuration
  * Implements exponential backoff for failed login attempts
  */
