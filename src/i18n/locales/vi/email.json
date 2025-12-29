@@ -1,6 +1,9 @@
 {
   "subjects": {
-    "otpVerification": "🔐 Xác thực Email"
+    "otpVerification": "🔐 Xác thực Email",
+    "loginOtp": "🔐 Mã xác thực đăng nhập",
+    "magicLink": "🔗 Đăng nhập Magic Link",
+    "accountUnlock": "🔓 Mở khóa tài khoản"
   },
   "otpVerification": {
     "headerTitle": "🔐 Xác thực Email",
@@ -11,6 +14,39 @@
     "resendText": "🔄 Bạn có thể yêu cầu mã mới nếu mã này hết hạn.",
     "warningText": "⚠️ Không chia sẻ mã này với bất kỳ ai!",
     "footerText": "Nếu bạn không yêu cầu đăng ký, vui lòng bỏ qua email này.",
+    "copyright": "© 2025 Your Company. All rights reserved."
+  },
+  "loginOtp": {
+    "headerTitle": "🔐 Xác thực đăng nhập",
+    "greeting": "Xin chào,",
+    "introText": "Bạn đã yêu cầu đăng nhập vào tài khoản. Vui lòng sử dụng mã OTP dưới đây để hoàn tất đăng nhập:",
+    "expiryText": "⏱️ Mã OTP này có hiệu lực trong",
+    "expiryMinutesLabel": "phút",
+    "resendText": "🔄 Bạn có thể yêu cầu mã mới nếu mã này hết hạn.",
+    "warningText": "⚠️ Không chia sẻ mã này với bất kỳ ai!",
+    "footerText": "Nếu bạn không yêu cầu đăng nhập này, vui lòng bảo mật tài khoản ngay lập tức.",
+    "copyright": "© 2025 Your Company. All rights reserved."
+  },
+  "magicLink": {
+    "headerTitle": "🔗 Đăng nhập Magic Link",
+    "greeting": "Xin chào,",
+    "introText": "Bạn đã yêu cầu đăng nhập bằng magic link. Nhấn nút bên dưới để hoàn tất đăng nhập:",
+    "buttonText": "Đăng nhập tài khoản",
+    "expiryText": "⏱️ Link này có hiệu lực trong",
+    "expiryMinutesLabel": "phút",
+    "alternativeText": "Hoặc sao chép và dán link này vào trình duyệt:",
+    "warningText": "⚠️ Không chia sẻ link này với bất kỳ ai!",
+    "footerText": "Nếu bạn không yêu cầu đăng nhập này, vui lòng bỏ qua email này.",
+    "copyright": "© 2025 Your Company. All rights reserved."
+  },
+  "accountUnlock": {
+    "headerTitle": "🔓 Mở khóa tài khoản",
+    "greeting": "Xin chào,",
+    "introText": "Tài khoản của bạn đã bị tạm khóa do nhiều lần đăng nhập thất bại. Nhấn nút bên dưới để mở khóa tài khoản:",
+    "buttonText": "Mở khóa tài khoản",
+    "alternativeText": "Hoặc sao chép và dán link này vào trình duyệt:",
+    "securityTip": "💡 Mẹo bảo mật: Nếu bạn không thực hiện các lần đăng nhập này, chúng tôi khuyến nghị đổi mật khẩu sau khi mở khóa.",
+    "footerText": "Nếu bạn không yêu cầu mở khóa này, vui lòng liên hệ đội ngũ hỗ trợ.",
     "copyright": "© 2025 Your Company. All rights reserved."
   }
 }

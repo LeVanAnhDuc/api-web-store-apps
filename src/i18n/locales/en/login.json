@@ -1,10 +1,44 @@
 {
+  "validation": {
+    "otpRequired": "OTP code is required",
+    "otpLength": "OTP code must be 6 digits",
+    "otpDigitsOnly": "OTP code must contain only digits",
+    "tokenRequired": "Token is required",
+    "tokenInvalid": "Token is invalid",
+    "sessionIdRequired": "Session ID is required",
+    "sessionIdInvalid": "Session ID is invalid"
+  },
   "errors": {
     "invalidCredentials": "Invalid email or password",
+    "invalidEmail": "Email address not found",
+    "accountInactive": "Your account has been deactivated. Please contact support",
+    "emailNotVerified": "Please verify your email address before logging in",
+    "noPasswordSet": "This account uses passwordless login. Please use OTP or Magic Link",
     "rateLimitExceeded": "Too many login attempts. Please try again later",
-    "accountLocked": "Account temporarily locked after {{attempts}} failed attempts. Please try again in {{time}}"
+    "accountLocked": "Account temporarily locked after {{attempts}} failed attempts. Please try again in {{time}}",
+    "otpCooldown": "Please wait {{seconds}} seconds before requesting a new OTP",
+    "otpLocked": "Too many failed OTP attempts. Please try again in {{minutes}} minutes",
+    "invalidOtp": "Invalid or expired OTP code",
+    "invalidOtpWithRemaining": "Invalid OTP code. {{remaining}} attempts remaining",
+    "otpResendLimitExceeded": "Maximum OTP requests reached. Please try again later",
+    "magicLinkCooldown": "Please wait {{seconds}} seconds before requesting a new magic link",
+    "invalidMagicLink": "Invalid or expired magic link",
+    "refreshTokenRequired": "Refresh token is required",
+    "invalidRefreshToken": "Invalid or expired refresh token",
+    "sessionNotFound": "Session not found",
+    "sessionRevoked": "Session has been revoked",
+    "sessionExpired": "Session has expired",
+    "useLogoutForCurrentSession": "Use logout to revoke current session"
   },
   "success": {
-    "loginSuccessful": "Login successful"
+    "loginSuccessful": "Login successful",
+    "otpSent": "OTP code has been sent to your email",
+    "magicLinkSent": "Magic link has been sent to your email",
+    "tokenRefreshed": "Access token refreshed successfully",
+    "sessionsRetrieved": "Sessions retrieved successfully",
+    "logoutSuccessful": "Logged out successfully",
+    "sessionRevoked": "Session revoked successfully",
+    "allOtherSessionsRevoked": "Revoked {{count}} other session(s)",
+    "allSessionsRevoked": "Revoked {{count}} session(s)"
   }
 }

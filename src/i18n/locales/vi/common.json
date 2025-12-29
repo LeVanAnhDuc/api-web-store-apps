@@ -6,7 +6,8 @@
     "tokenExpired": "Token đã hết hạn",
     "emailTemplateFailed": "Lỗi khi render email template: {{templateName}}",
     "emailSendFailed": "Không thể gửi email",
-    "validationFailed": "Dữ liệu không hợp lệ"
+    "validationFailed": "Dữ liệu không hợp lệ",
+    "unauthorized": "Không có quyền truy cập"
   },
   "validation": {
     "required": "{{field}} là bắt buộc",
