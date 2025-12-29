@@ -17,10 +17,22 @@ declare global {
     };
   }
 
+  /**
+   * User payload from JWT token, attached by auth middleware
+   */
+  interface JwtUserPayload {
+    userId: string;
+    authId: string;
+    email: string;
+    roles: string;
+    sessionId: string;
+  }
+
   namespace Express {
     interface Request {
       language: string;
       t: TFunction;
+      user?: JwtUserPayload;
     }
   }
 }

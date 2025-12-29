@@ -54,17 +54,9 @@ const AuthSchema = new Schema<AuthDocument>(
       enum: Object.values(AUTH_ROLES),
       default: AUTH_ROLES.USER
     },
-    refreshToken: {
-      type: String,
-      default: null
-    },
     isActive: {
       type: Boolean,
       default: true
-    },
-    lastLogin: {
-      type: Date,
-      default: Date.now
     }
   },
   {
@@ -77,7 +69,6 @@ const AuthSchema = new Schema<AuthDocument>(
  * Indexes for better query performance
  */
 AuthSchema.index({ email: 1 });
-AuthSchema.index({ refreshToken: 1 });
 
 const AuthModel: Model<AuthDocument> = model<AuthDocument>(
   AUTHENTICATION,

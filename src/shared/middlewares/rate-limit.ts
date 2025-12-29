@@ -2,7 +2,11 @@ import rateLimit, { type RateLimitRequestHandler } from "express-rate-limit";
 import type { Request, Response } from "express";
 import RedisStore from "rate-limit-redis";
 import instanceRedis from "@/database/redis/redis.database";
-import { LOGIN_RATE_LIMITS } from "@/shared/constants/modules/login";
+import {
+  LOGIN_RATE_LIMITS,
+  LOGIN_OTP_RATE_LIMITS,
+  MAGIC_LINK_RATE_LIMITS
+} from "@/shared/constants/modules/login";
 import { SIGNUP_RATE_LIMITS } from "@/shared/constants/modules/signup";
 import { TooManyRequestsError } from "@/core/responses/error";
 
@@ -128,4 +132,96 @@ export const getCheckEmailRateLimiter = (): RateLimitRequestHandler => {
   }
 
   return _checkEmailRateLimiter;
+};
+
+/*
+ * Login OTP Rate Limiters
+ * Two layers of protection:
+ * 1. IP-based: Prevents spam from single source
+ * 2. Email-based: Prevents abuse targeting specific email
+ */
+let _loginOtpIpRateLimiter: RateLimitRequestHandler | null = null;
+let _loginOtpEmailRateLimiter: RateLimitRequestHandler | null = null;
+
+/**
+ * IP-based rate limiter for login OTP send endpoint
+ */
+export const getLoginOtpIpRateLimiter = (): RateLimitRequestHandler => {
+  if (_loginOtpIpRateLimiter === null) {
+    _loginOtpIpRateLimiter = rateLimit({
+      windowMs: LOGIN_OTP_RATE_LIMITS.PER_IP.WINDOW_SECONDS * 1000,
+      max: LOGIN_OTP_RATE_LIMITS.PER_IP.MAX_REQUESTS,
+      store: createRedisStore("rate-limit:login-otp:ip:"),
+      standardHeaders: true,
+      legacyHeaders: false,
+      handler: createRateLimitHandler("login:errors.rateLimitExceeded")
+    });
+  }
+
+  return _loginOtpIpRateLimiter;
+};
+
+/**
+ * Email-based rate limiter for login OTP send endpoint
+ */
+export const getLoginOtpEmailRateLimiter = (): RateLimitRequestHandler => {
+  if (_loginOtpEmailRateLimiter === null) {
+    _loginOtpEmailRateLimiter = rateLimit({
+      windowMs: LOGIN_OTP_RATE_LIMITS.PER_EMAIL.WINDOW_SECONDS * 1000,
+      max: LOGIN_OTP_RATE_LIMITS.PER_EMAIL.MAX_REQUESTS,
+      store: createRedisStore("rate-limit:login-otp:email:"),
+      standardHeaders: true,
+      legacyHeaders: false,
+      keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
+      handler: createRateLimitHandler("login:errors.rateLimitExceeded")
+    });
+  }
+
+  return _loginOtpEmailRateLimiter;
+};
+
+/*
+ * Magic Link Rate Limiters
+ * Two layers of protection:
+ * 1. IP-based: Prevents spam from single source
+ * 2. Email-based: Prevents abuse targeting specific email
+ */
+let _magicLinkIpRateLimiter: RateLimitRequestHandler | null = null;
+let _magicLinkEmailRateLimiter: RateLimitRequestHandler | null = null;
+
+/**
+ * IP-based rate limiter for magic link send endpoint
+ */
+export const getMagicLinkIpRateLimiter = (): RateLimitRequestHandler => {
+  if (_magicLinkIpRateLimiter === null) {
+    _magicLinkIpRateLimiter = rateLimit({
+      windowMs: MAGIC_LINK_RATE_LIMITS.PER_IP.WINDOW_SECONDS * 1000,
+      max: MAGIC_LINK_RATE_LIMITS.PER_IP.MAX_REQUESTS,
+      store: createRedisStore("rate-limit:magic-link:ip:"),
+      standardHeaders: true,
+      legacyHeaders: false,
+      handler: createRateLimitHandler("login:errors.rateLimitExceeded")
+    });
+  }
+
+  return _magicLinkIpRateLimiter;
+};
+
+/**
+ * Email-based rate limiter for magic link send endpoint
+ */
+export const getMagicLinkEmailRateLimiter = (): RateLimitRequestHandler => {
+  if (_magicLinkEmailRateLimiter === null) {
+    _magicLinkEmailRateLimiter = rateLimit({
+      windowMs: MAGIC_LINK_RATE_LIMITS.PER_EMAIL.WINDOW_SECONDS * 1000,
+      max: MAGIC_LINK_RATE_LIMITS.PER_EMAIL.MAX_REQUESTS,
+      store: createRedisStore("rate-limit:magic-link:email:"),
+      standardHeaders: true,
+      legacyHeaders: false,
+      keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
+      handler: createRateLimitHandler("login:errors.rateLimitExceeded")
+    });
+  }
+
+  return _magicLinkEmailRateLimiter;
 };

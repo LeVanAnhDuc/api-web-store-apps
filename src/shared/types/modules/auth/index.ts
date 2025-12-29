@@ -11,9 +11,7 @@ export interface AuthDocument {
   password: string;
   verifiedEmail: boolean;
   roles: TAuthRole;
-  refreshToken: string | null;
   isActive: boolean;
-  lastLogin: Date;
   createdAt: Date;
   updatedAt: Date;
 }

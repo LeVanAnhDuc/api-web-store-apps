@@ -4,6 +4,7 @@ dotenv.config();
 
 const ENV = {
   APP_PORT: process.env.APP_PORT,
+  CLIENT_URL: process.env.CLIENT_URL || "http://localhost:3000",
 
   DB_URL: process.env.DB_URL,
   DB_NAME: process.env.DB_NAME,
