@@ -1,0 +1,19 @@
+{
+  "validation": {
+    "sessionIdRequired": "Session ID is required",
+    "sessionIdInvalid": "Session ID is invalid"
+  },
+  "errors": {
+    "sessionNotFound": "Session not found",
+    "sessionRevoked": "Session has been revoked",
+    "sessionExpired": "Session has expired",
+    "useLogoutForCurrentSession": "Use logout to revoke current session"
+  },
+  "success": {
+    "sessionsRetrieved": "Sessions retrieved successfully",
+    "logoutSuccessful": "Logged out successfully",
+    "sessionRevoked": "Session revoked successfully",
+    "allOtherSessionsRevoked": "Revoked {{count}} other session(s)",
+    "allSessionsRevoked": "Revoked {{count}} session(s)"
+  }
+}
