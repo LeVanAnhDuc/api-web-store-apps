@@ -1,19 +1,8 @@
-/**
- * Login OTP Utilities
- * Generates cryptographically secure OTP for login
- */
-
-// libs
 import crypto from "crypto";
-// constants
 import { LOGIN_OTP_CONFIG } from "@/shared/constants/modules/session";
 
 const RANDOM_BYTES_SIZE = 4;
 
-/**
- * Generate cryptographically secure OTP for login
- * Uses crypto.randomBytes for security
- */
 export const generateLoginOtp = (): string => {
   const min = Math.pow(10, LOGIN_OTP_CONFIG.LENGTH - 1);
   const max = Math.pow(10, LOGIN_OTP_CONFIG.LENGTH) - 1;

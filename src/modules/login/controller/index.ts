@@ -40,14 +40,6 @@ export const loginController = asyncHandler(
   }
 );
 
-// =============================================================================
-// OTP Login
-// =============================================================================
-
-/**
- * POST /auth/otp/send
- * Send OTP to email for passwordless login
- */
 export const sendOtpController = asyncHandler(
   async (req: OtpSendRequest, res: Response): Promise<void> => {
     const { data, message } = await sendLoginOtp(req);
@@ -55,15 +47,10 @@ export const sendOtpController = asyncHandler(
   }
 );
 
-/**
- * POST /auth/otp/verify
- * Verify OTP and authenticate user
- */
 export const verifyOtpController = asyncHandler(
   async (req: OtpVerifyRequest, res: Response): Promise<void> => {
     const { data, message } = await verifyLoginOtpService(req);
 
-    // Extract refresh token and set as httpOnly cookie
     const { refreshToken, ...responseData } = data!;
 
     if (refreshToken) {
@@ -78,14 +65,6 @@ export const verifyOtpController = asyncHandler(
   }
 );
 
-// =============================================================================
-// Magic Link Login
-// =============================================================================
-
-/**
- * POST /auth/magic-link/send
- * Send magic link to email for passwordless login
- */
 export const sendMagicLinkController = asyncHandler(
   async (req: MagicLinkSendRequest, res: Response): Promise<void> => {
     const { data, message } = await sendMagicLink(req);
@@ -93,15 +72,10 @@ export const sendMagicLinkController = asyncHandler(
   }
 );
 
-/**
- * POST /auth/magic-link/verify
- * Verify magic link and authenticate user
- */
 export const verifyMagicLinkController = asyncHandler(
   async (req: MagicLinkVerifyRequest, res: Response): Promise<void> => {
     const { data, message } = await verifyMagicLink(req);
 
-    // Extract refresh token and set as httpOnly cookie
     const { refreshToken, ...responseData } = data!;
 
     if (refreshToken) {
@@ -116,14 +90,6 @@ export const verifyMagicLinkController = asyncHandler(
   }
 );
 
-// =============================================================================
-// Token Refresh
-// =============================================================================
-
-/**
- * POST /auth/refresh
- * Refresh access token using refresh token from cookie
- */
 export const refreshTokenController = asyncHandler(
   async (req: RefreshTokenRequest, res: Response): Promise<void> => {
     const { data, message } = await refreshAccessToken(req);

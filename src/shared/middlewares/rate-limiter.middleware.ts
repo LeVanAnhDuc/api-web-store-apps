@@ -121,7 +121,6 @@ export class RateLimiterMiddleware {
     );
   }
 
-  // Prevent OTP spam from single IP
   get loginOtpByIp(): RateLimitRequestHandler {
     return this.getOrCreateLimiter("login-otp:ip", () =>
       rateLimit({
@@ -137,7 +136,6 @@ export class RateLimiterMiddleware {
     );
   }
 
-  // Prevent targeted email abuse
   get loginOtpByEmail(): RateLimitRequestHandler {
     return this.getOrCreateLimiter("login-otp:email", () =>
       rateLimit({

@@ -1,39 +1,12 @@
-/**
- * OTP Send Service
- * Use Case: User requests OTP for passwordless login
- *
- * Business Flow:
- * 1. Ensure cooldown period has expired
- * 2. Ensure email exists and account is active
- * 3. Check resend limit
- * 4. Generate and store new OTP (hashed)
- * 5. Start cooldown period
- * 6. Send OTP email (async, fire-and-forget)
- *
- * Rate Limiting: Handled by middleware (IP + Email)
- * Validation: Handled by schema layer
- */
-
-// libs
 import i18next from "@/i18n";
-
-// types
 import type { TFunction } from "i18next";
 import type {
   OtpSendRequest,
   OtpSendResponse
 } from "@/shared/types/modules/login";
-
-// errors
 import { BadRequestError, UnauthorizedError } from "@/core/responses/error";
-
-// utils
 import { Logger } from "@/core/utils/logger";
-
-// repository
 import { findAuthByEmail } from "@/modules/login/repository";
-
-// store
 import {
   checkLoginOtpCooldown,
   getLoginOtpCooldownRemaining,
@@ -43,27 +16,13 @@ import {
   incrementLoginOtpResendCount,
   hasExceededLoginOtpResendLimit
 } from "@/modules/login/utils/store";
-
-// notifier
 import { notifyLoginOtpByEmail } from "@/modules/login/notifier";
-
-// utils
 import { generateLoginOtp } from "@/modules/login/utils/otp";
-
-// constants
 import { LOGIN_OTP_CONFIG } from "@/shared/constants/modules/session";
 import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
 
-// =============================================================================
-// Configuration
-// =============================================================================
-
-const TIME_OTP_EXPIRES = LOGIN_OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
-const TIME_OTP_COOLDOWN = LOGIN_OTP_CONFIG.COOLDOWN_SECONDS;
-
-// =============================================================================
-// Business Rule Checks (Guard Functions)
-// =============================================================================
+const OTP_EXPIRY_SECONDS = LOGIN_OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
+const OTP_COOLDOWN_SECONDS = LOGIN_OTP_CONFIG.COOLDOWN_SECONDS;
 
 const ensureCooldownExpired = async (
   email: string,
@@ -117,37 +76,32 @@ const ensureResendLimitNotExceeded = async (
   }
 };
 
-// =============================================================================
-// Business Operations
-// =============================================================================
-
 const createNewOtp = async (email: string): Promise<string> => {
   const otp = generateLoginOtp();
 
-  // Delete existing OTP first (idempotency)
+  // Ensure idempotency by deleting existing OTP first
   await deleteLoginOtp(email);
-  await createAndStoreLoginOtp(email, otp, TIME_OTP_EXPIRES);
+  await createAndStoreLoginOtp(email, otp, OTP_EXPIRY_SECONDS);
 
   Logger.debug("Login OTP created and stored", {
     email,
-    expiresInSeconds: TIME_OTP_EXPIRES
+    expiresInSeconds: OTP_EXPIRY_SECONDS
   });
 
   return otp;
 };
 
-const startCooldown = async (email: string): Promise<void> => {
-  await setLoginOtpCooldown(email, TIME_OTP_COOLDOWN);
+const applyOtpRateLimits = async (email: string): Promise<void> => {
+  await Promise.all([
+    setLoginOtpCooldown(email, OTP_COOLDOWN_SECONDS),
+    incrementLoginOtpResendCount(email, OTP_EXPIRY_SECONDS)
+  ]);
 
-  Logger.debug("Login OTP cooldown started", {
+  Logger.debug("Login OTP rate limits applied", {
     email,
-    cooldownSeconds: TIME_OTP_COOLDOWN
+    cooldownSeconds: OTP_COOLDOWN_SECONDS
   });
 };
-
-// =============================================================================
-// Main Service
-// =============================================================================
 
 export const sendLoginOtp = async (
   req: OtpSendRequest
@@ -163,24 +117,22 @@ export const sendLoginOtp = async (
 
   const otp = await createNewOtp(email);
 
-  await startCooldown(email);
-
-  await incrementLoginOtpResendCount(email, TIME_OTP_EXPIRES);
+  await applyOtpRateLimits(email);
 
   notifyLoginOtpByEmail(email, otp, language as I18n.Locale);
 
   Logger.info("Login OTP send completed", {
     email,
-    expiresIn: TIME_OTP_EXPIRES,
-    cooldown: TIME_OTP_COOLDOWN
+    expiresIn: OTP_EXPIRY_SECONDS,
+    cooldown: OTP_COOLDOWN_SECONDS
   });
 
   return {
     message: t("login:success.otpSent"),
     data: {
       success: true,
-      expiresIn: TIME_OTP_EXPIRES,
-      cooldown: TIME_OTP_COOLDOWN
+      expiresIn: OTP_EXPIRY_SECONDS,
+      cooldown: OTP_COOLDOWN_SECONDS
     }
   };
 };

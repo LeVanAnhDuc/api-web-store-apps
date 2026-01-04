@@ -19,20 +19,12 @@ import {
 
 const loginRouter = Router();
 
-// =============================================================================
-// Password Login
-// =============================================================================
-
 loginRouter.post(
   "/",
   (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
   validate(loginSchema, "body"),
   loginController
 );
-
-// =============================================================================
-// OTP Login
-// =============================================================================
 
 loginRouter.post(
   "/otp/send",
@@ -50,10 +42,6 @@ loginRouter.post(
   verifyOtpController
 );
 
-// =============================================================================
-// Magic Link Login
-// =============================================================================
-
 loginRouter.post(
   "/magic-link/send",
   (req, res, next) => getRateLimiterMiddleware().magicLinkByIp(req, res, next),
@@ -69,10 +57,6 @@ loginRouter.post(
   validate(magicLinkVerifySchema, "body"),
   verifyMagicLinkController
 );
-
-// =============================================================================
-// Token Refresh
-// =============================================================================
 
 loginRouter.post("/refresh", refreshTokenController);
 

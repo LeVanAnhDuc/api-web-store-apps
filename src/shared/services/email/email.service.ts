@@ -2,7 +2,6 @@ import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 import fs from "fs/promises";
 import path from "path";
-
 import i18next from "@/i18n";
 import { Logger } from "@/core/utils/logger";
 import config from "@/core/configs/env";
