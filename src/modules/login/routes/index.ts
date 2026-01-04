@@ -1,14 +1,4 @@
-/**
- * Login Routes
- * RESTful API endpoints for user authentication
- *
- * Note: Session management routes (logout, revoke) moved to logout module
- */
-
-// libs
 import { Router } from "express";
-
-// controllers
 import {
   loginController,
   sendOtpController,
@@ -17,18 +7,8 @@ import {
   verifyMagicLinkController,
   refreshTokenController
 } from "@/modules/login/controller";
-
-// middleware
 import { validate } from "@/shared/middlewares/validation";
-import {
-  getLoginRateLimiter,
-  getLoginOtpIpRateLimiter,
-  getLoginOtpEmailRateLimiter,
-  getMagicLinkIpRateLimiter,
-  getMagicLinkEmailRateLimiter
-} from "@/shared/middlewares/rate-limit";
-
-// schemas
+import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   loginSchema,
   otpSendSchema,
@@ -38,10 +18,6 @@ import {
 } from "@/modules/login/schema";
 
 const loginRouter = Router();
-
-// =============================================================================
-// Password Login
-// =============================================================================
 
 /**
  * @swagger
@@ -80,14 +56,10 @@ const loginRouter = Router();
  */
 loginRouter.post(
   "/",
-  (req, res, next) => getLoginRateLimiter()(req, res, next),
+  (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
   validate(loginSchema, "body"),
   loginController
 );
-
-// =============================================================================
-// OTP Login
-// =============================================================================
 
 /**
  * @swagger
@@ -128,8 +100,9 @@ loginRouter.post(
  */
 loginRouter.post(
   "/otp/send",
-  (req, res, next) => getLoginOtpIpRateLimiter()(req, res, next),
-  (req, res, next) => getLoginOtpEmailRateLimiter()(req, res, next),
+  (req, res, next) => getRateLimiterMiddleware().loginOtpByIp(req, res, next),
+  (req, res, next) =>
+    getRateLimiterMiddleware().loginOtpByEmail(req, res, next),
   validate(otpSendSchema, "body"),
   sendOtpController
 );
@@ -173,14 +146,10 @@ loginRouter.post(
  */
 loginRouter.post(
   "/otp/verify",
-  (req, res, next) => getLoginRateLimiter()(req, res, next),
+  (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
   validate(otpVerifySchema, "body"),
   verifyOtpController
 );
-
-// =============================================================================
-// Magic Link Login
-// =============================================================================
 
 /**
  * @swagger
@@ -221,8 +190,9 @@ loginRouter.post(
  */
 loginRouter.post(
   "/magic-link/send",
-  (req, res, next) => getMagicLinkIpRateLimiter()(req, res, next),
-  (req, res, next) => getMagicLinkEmailRateLimiter()(req, res, next),
+  (req, res, next) => getRateLimiterMiddleware().magicLinkByIp(req, res, next),
+  (req, res, next) =>
+    getRateLimiterMiddleware().magicLinkByEmail(req, res, next),
   validate(magicLinkSendSchema, "body"),
   sendMagicLinkController
 );
@@ -260,14 +230,10 @@ loginRouter.post(
  */
 loginRouter.post(
   "/magic-link/verify",
-  (req, res, next) => getLoginRateLimiter()(req, res, next),
+  (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
   validate(magicLinkVerifySchema, "body"),
   verifyMagicLinkController
 );
-
-// =============================================================================
-// Token Refresh
-// =============================================================================
 
 /**
  * @swagger

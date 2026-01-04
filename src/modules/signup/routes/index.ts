@@ -1,11 +1,4 @@
-/**
- * Signup Routes
- * RESTful API endpoints for user registration flow
- */
-
 import { Router } from "express";
-
-// controllers
 import {
   sendOtpController,
   verifyOtpController,
@@ -13,16 +6,8 @@ import {
   completeSignupController,
   checkEmailController
 } from "@/modules/signup/controller";
-
-// middlewares
 import { validate } from "@/shared/middlewares/validation";
-import {
-  getSignupIpRateLimiter,
-  getSignupEmailRateLimiter,
-  getCheckEmailRateLimiter
-} from "@/shared/middlewares/rate-limit";
-
-// schemas
+import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   sendOtpSchema,
   resendOtpSchema,
@@ -76,8 +61,9 @@ const signupRouter = Router();
  */
 signupRouter.post(
   "/send-otp",
-  (req, res, next) => getSignupIpRateLimiter()(req, res, next),
-  (req, res, next) => getSignupEmailRateLimiter()(req, res, next),
+  (req, res, next) => getRateLimiterMiddleware().signupOtpByIp(req, res, next),
+  (req, res, next) =>
+    getRateLimiterMiddleware().signupOtpByEmail(req, res, next),
   validate(sendOtpSchema, "body"),
   sendOtpController
 );
@@ -190,8 +176,9 @@ signupRouter.post(
  */
 signupRouter.post(
   "/resend-otp",
-  (req, res, next) => getSignupIpRateLimiter()(req, res, next),
-  (req, res, next) => getSignupEmailRateLimiter()(req, res, next),
+  (req, res, next) => getRateLimiterMiddleware().signupOtpByIp(req, res, next),
+  (req, res, next) =>
+    getRateLimiterMiddleware().signupOtpByEmail(req, res, next),
   validate(resendOtpSchema, "body"),
   resendOtpController
 );
@@ -306,7 +293,7 @@ signupRouter.post(
  */
 signupRouter.get(
   "/check-email/:email",
-  (req, res, next) => getCheckEmailRateLimiter()(req, res, next),
+  (req, res, next) => getRateLimiterMiddleware().checkEmailByIp(req, res, next),
   validate(checkEmailSchema, "params"),
   checkEmailController
 );
