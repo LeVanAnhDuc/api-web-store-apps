@@ -1,63 +1,36 @@
-/**
- * Magic Link Verify Service
- * Use Case: User clicks magic link to complete passwordless login
- *
- * Business Flow:
- * 1. Verify magic link token
- * 2. On success: Generate tokens, cleanup data, record history
- * 3. On failure: Record failed attempt
- *
- * Rate Limiting: Handled by middleware
- * Validation: Handled by schema layer
- */
-
-// types
+import type { TFunction } from "i18next";
 import type {
   MagicLinkVerifyRequest,
   LoginResponse
 } from "@/shared/types/modules/login";
-
-// errors
+import type { AuthDocument } from "@/shared/types/modules/auth";
 import { UnauthorizedError } from "@/core/responses/error";
-
-// utils
 import { Logger } from "@/core/utils/logger";
-
-// repository
+import { withRetry } from "@/core/utils/retry";
 import { findAuthByEmail } from "@/modules/login/repository";
-
-// store
 import {
   verifyMagicLinkToken,
   cleanupMagicLinkData
 } from "@/modules/login/utils/store";
-
-// shared
 import {
   generateLoginTokens,
   updateLastLogin,
   recordSuccessfulLogin,
   recordFailedLogin
 } from "./shared";
-
-// constants
 import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS
 } from "@/shared/constants/modules/session";
 
 // =============================================================================
-// Main Service
+// Business Rule Checks (Guard Functions)
 // =============================================================================
 
-export const verifyMagicLink = async (
-  req: MagicLinkVerifyRequest
-): Promise<Partial<ResponsePattern<LoginResponse>>> => {
-  const { email, token } = req.body;
-  const { t } = req;
-
-  Logger.info("Magic link verification initiated", { email });
-
+const ensureAuthExists = async (
+  email: string,
+  t: TFunction
+): Promise<AuthDocument> => {
   const auth = await findAuthByEmail(email);
 
   if (!auth) {
@@ -65,24 +38,35 @@ export const verifyMagicLink = async (
     throw new UnauthorizedError(t("login:errors.invalidMagicLink"));
   }
 
-  const isValid = await verifyMagicLinkToken(email, token);
+  return auth;
+};
 
-  if (!isValid) {
-    recordFailedLogin({
-      userId: auth._id,
-      loginMethod: LOGIN_METHODS.MAGIC_LINK,
-      failReason: LOGIN_FAIL_REASONS.INVALID_MAGIC_LINK,
-      req
-    });
+// =============================================================================
+// Verification Handlers
+// =============================================================================
 
-    Logger.warn("Magic link verification failed - invalid token", { email });
-    throw new UnauthorizedError(t("login:errors.invalidMagicLink"));
-  }
+const handleInvalidToken = (
+  email: string,
+  auth: AuthDocument,
+  req: MagicLinkVerifyRequest,
+  t: TFunction
+): never => {
+  recordFailedLogin({
+    userId: auth._id,
+    loginMethod: LOGIN_METHODS.MAGIC_LINK,
+    failReason: LOGIN_FAIL_REASONS.INVALID_MAGIC_LINK,
+    req
+  });
 
-  await cleanupMagicLinkData(email);
+  Logger.warn("Magic link verification failed - invalid token", { email });
+  throw new UnauthorizedError(t("login:errors.invalidMagicLink"));
+};
 
-  const loginResponse = generateLoginTokens(auth);
-
+const completeSuccessfulLogin = (
+  email: string,
+  auth: AuthDocument,
+  req: MagicLinkVerifyRequest
+): LoginResponse => {
   updateLastLogin(auth._id.toString());
 
   recordSuccessfulLogin({
@@ -96,8 +80,34 @@ export const verifyMagicLink = async (
     userId: auth._id.toString()
   });
 
+  return generateLoginTokens(auth);
+};
+
+// =============================================================================
+// Main Service
+// =============================================================================
+
+export const verifyMagicLink = async (
+  req: MagicLinkVerifyRequest
+): Promise<Partial<ResponsePattern<LoginResponse>>> => {
+  const { email, token } = req.body;
+  const { t } = req;
+
+  Logger.info("Magic link verification initiated", { email });
+
+  const auth = await ensureAuthExists(email, t);
+
+  const isValid = await verifyMagicLinkToken(email, token);
+
+  if (!isValid) handleInvalidToken(email, auth, req, t);
+
+  withRetry(() => cleanupMagicLinkData(email), {
+    operationName: "cleanupMagicLinkData",
+    context: { email }
+  });
+
   return {
     message: t("login:success.loginSuccessful"),
-    data: loginResponse
+    data: completeSuccessfulLogin(email, auth, req)
   };
 };

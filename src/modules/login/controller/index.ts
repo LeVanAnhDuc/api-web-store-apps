@@ -51,7 +51,7 @@ export const verifyOtpController = asyncHandler(
   async (req: OtpVerifyRequest, res: Response): Promise<void> => {
     const { data, message } = await verifyLoginOtpService(req);
 
-    const { refreshToken, ...responseData } = data!;
+    const { refreshToken, ...responseData } = data;
 
     if (refreshToken) {
       res.cookie(
@@ -76,7 +76,7 @@ export const verifyMagicLinkController = asyncHandler(
   async (req: MagicLinkVerifyRequest, res: Response): Promise<void> => {
     const { data, message } = await verifyMagicLink(req);
 
-    const { refreshToken, ...responseData } = data!;
+    const { refreshToken, ...responseData } = data;
 
     if (refreshToken) {
       res.cookie(
