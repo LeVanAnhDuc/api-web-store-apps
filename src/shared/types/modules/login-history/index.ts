@@ -1,11 +1,7 @@
 // libs
 import type { Schema, Document } from "mongoose";
 // types
-import type {
-  DeviceInfo,
-  LocationInfo,
-  LoginMethod
-} from "@/shared/types/modules/session";
+import type { LoginMethod } from "@/shared/types/modules/session";
 // constants
 import type {
   LOGIN_STATUSES,
@@ -24,20 +20,17 @@ export type LoginFailReason =
   (typeof LOGIN_FAIL_REASONS)[keyof typeof LOGIN_FAIL_REASONS];
 
 /**
- * LoginHistory document interface for MongoDB
+ * LoginHistory document interface for MongoDB (Simplified)
  *
  * Design Decisions:
  * - userId: Reference to Auth collection for tracking
  * - method: How user attempted to login
  * - status: Success or failed
  * - failReason: Why login failed (for debugging/security)
- * - device: Captured device info at login time
- * - location: Captured location for security alerts
+ * - ip: Client IP address for security analysis
  * - TTL: 90 days auto-delete via MongoDB TTL index
  *
- * Note: State vs History separation
- * - Session: Current state (active sessions)
- * - LoginHistory: Historical record (audit log)
+ * Simplified: No device/location tracking
  */
 export interface LoginHistoryDocument extends Document {
   _id: Schema.Types.ObjectId;
@@ -45,38 +38,30 @@ export interface LoginHistoryDocument extends Document {
   method: LoginMethod;
   status: LoginStatus;
   failReason?: LoginFailReason;
-  device: DeviceInfo;
   ip: string;
-  location?: LocationInfo;
-  userAgent: string;
   createdAt: Date;
 }
 
 /**
- * Create login history input DTO
+ * Create login history input DTO (Simplified)
  */
 export interface CreateLoginHistoryInput {
   userId: Schema.Types.ObjectId | string;
   method: LoginMethod;
   status: LoginStatus;
   failReason?: LoginFailReason;
-  device: DeviceInfo;
   ip: string;
-  location?: LocationInfo;
-  userAgent: string;
 }
 
 /**
- * Login history response for API
+ * Login history response for API (Simplified)
  */
 export interface LoginHistoryResponse {
   id: string;
   method: LoginMethod;
   status: LoginStatus;
   failReason?: LoginFailReason;
-  device: DeviceInfo;
   ip: string;
-  location?: LocationInfo;
   createdAt: Date;
 }
 

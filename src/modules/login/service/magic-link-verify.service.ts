@@ -4,7 +4,7 @@
  *
  * Business Flow:
  * 1. Verify magic link token
- * 2. On success: Create session, cleanup data, record history
+ * 2. On success: Generate tokens, cleanup data, record history
  * 3. On failure: Record failed attempt
  *
  * Rate Limiting: Handled by middleware
@@ -14,7 +14,7 @@
 // types
 import type {
   MagicLinkVerifyRequest,
-  LoginWithSessionResponse
+  LoginResponse
 } from "@/shared/types/modules/login";
 
 // errors
@@ -34,7 +34,8 @@ import {
 
 // shared
 import {
-  createLoginSession,
+  generateLoginTokens,
+  updateLastLogin,
   recordSuccessfulLogin,
   recordFailedLogin
 } from "./shared";
@@ -51,7 +52,7 @@ import {
 
 export const verifyMagicLink = async (
   req: MagicLinkVerifyRequest
-): Promise<Partial<ResponsePattern<LoginWithSessionResponse>>> => {
+): Promise<Partial<ResponsePattern<LoginResponse>>> => {
   const { email, token } = req.body;
   const { t } = req;
 
@@ -67,7 +68,7 @@ export const verifyMagicLink = async (
   const isValid = await verifyMagicLinkToken(email, token);
 
   if (!isValid) {
-    await recordFailedLogin({
+    recordFailedLogin({
       userId: auth._id,
       loginMethod: LOGIN_METHODS.MAGIC_LINK,
       failReason: LOGIN_FAIL_REASONS.INVALID_MAGIC_LINK,
@@ -80,13 +81,11 @@ export const verifyMagicLink = async (
 
   await cleanupMagicLinkData(email);
 
-  const loginResponse = await createLoginSession({
-    auth,
-    loginMethod: LOGIN_METHODS.MAGIC_LINK,
-    req
-  });
+  const loginResponse = generateLoginTokens(auth);
 
-  await recordSuccessfulLogin({
+  updateLastLogin(auth._id.toString());
+
+  recordSuccessfulLogin({
     userId: auth._id,
     loginMethod: LOGIN_METHODS.MAGIC_LINK,
     req

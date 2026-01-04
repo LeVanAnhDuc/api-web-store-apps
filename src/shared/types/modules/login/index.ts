@@ -1,6 +1,4 @@
 import type { Request } from "express";
-// types
-import type { SessionResponse } from "@/shared/types/modules/session";
 
 /**
  * Login response with tokens
@@ -13,15 +11,6 @@ export interface LoginResponse {
   refreshToken: string;
   idToken: string;
   expiresIn: number;
-}
-
-/**
- * Extended login response with session info
- */
-export interface LoginWithSessionResponse extends LoginResponse {
-  session: SessionResponse;
-  isNewDevice?: boolean;
-  isNewLocation?: boolean;
 }
 
 // =============================================================================

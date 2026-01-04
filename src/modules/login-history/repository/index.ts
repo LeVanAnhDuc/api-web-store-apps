@@ -152,8 +152,6 @@ export const toLoginHistoryResponse = (
   method: history.method,
   status: history.status,
   failReason: history.failReason,
-  device: history.device,
   ip: history.ip,
-  location: history.location,
   createdAt: history.createdAt
 });

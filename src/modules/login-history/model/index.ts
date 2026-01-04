@@ -5,8 +5,6 @@ import type { LoginHistoryDocument } from "@/shared/types/modules/login-history"
 // constants
 import { MODEL_NAMES } from "@/shared/constants/models";
 import {
-  DEVICE_TYPES,
-  DEVICE_CONFIG,
   LOGIN_METHODS,
   LOGIN_STATUSES,
   LOGIN_FAIL_REASONS,
@@ -16,96 +14,13 @@ import {
 const { LOGIN_HISTORY, AUTHENTICATION } = MODEL_NAMES;
 
 /**
- * Device sub-schema for embedded device information
- * Reused structure from Session model
- */
-const DeviceSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: DEVICE_CONFIG.MAX_NAME_LENGTH,
-      default: DEVICE_CONFIG.DEFAULTS.NAME
-    },
-    type: {
-      type: String,
-      enum: Object.values(DEVICE_TYPES),
-      default: DEVICE_CONFIG.DEFAULTS.TYPE
-    },
-    browser: {
-      type: String,
-      trim: true,
-      maxlength: DEVICE_CONFIG.MAX_BROWSER_LENGTH,
-      default: DEVICE_CONFIG.DEFAULTS.BROWSER
-    },
-    browserVersion: {
-      type: String,
-      trim: true,
-      maxlength: 20
-    },
-    os: {
-      type: String,
-      trim: true,
-      maxlength: DEVICE_CONFIG.MAX_OS_LENGTH,
-      default: DEVICE_CONFIG.DEFAULTS.OS
-    },
-    osVersion: {
-      type: String,
-      trim: true,
-      maxlength: 20
-    }
-  },
-  { _id: false }
-);
-
-/**
- * Location sub-schema for embedded location information
- */
-const LocationSchema = new Schema(
-  {
-    country: {
-      type: String,
-      trim: true,
-      maxlength: 100
-    },
-    countryCode: {
-      type: String,
-      trim: true,
-      maxlength: 3
-    },
-    city: {
-      type: String,
-      trim: true,
-      maxlength: 100
-    },
-    region: {
-      type: String,
-      trim: true,
-      maxlength: 100
-    }
-  },
-  { _id: false }
-);
-
-/**
- * LoginHistory Schema
+ * LoginHistory Schema (Simplified)
  *
  * Design Decisions:
  * 1. Immutable audit log - no updates, only inserts
  * 2. TTL index auto-deletes after 90 days (compliance)
- * 3. Stores snapshot of device/location at login time
- * 4. Tracks both success and failed attempts for security
- *
- * Use Cases:
- * - Security: Detect suspicious login patterns
- * - Audit: Compliance with login attempt logging
- * - UX: Show recent login history to users
- * - Analytics: Login method usage statistics
- *
- * State vs History:
- * - Session: Current active state
- * - LoginHistory: Historical audit log
+ * 3. Tracks both success and failed attempts for security
+ * 4. Simplified - no device/location tracking
  */
 const LoginHistorySchema = new Schema<LoginHistoryDocument>(
   {
@@ -130,25 +45,11 @@ const LoginHistorySchema = new Schema<LoginHistoryDocument>(
       enum: Object.values(LOGIN_FAIL_REASONS),
       default: null
     },
-    device: {
-      type: DeviceSchema,
-      required: [true, "Device information is required"]
-    },
     ip: {
       type: String,
       required: [true, "IP address is required"],
       trim: true,
       maxlength: 45
-    },
-    location: {
-      type: LocationSchema,
-      required: false
-    },
-    userAgent: {
-      type: String,
-      required: [true, "User agent is required"],
-      trim: true,
-      maxlength: 500
     }
   },
   {
@@ -159,15 +60,6 @@ const LoginHistorySchema = new Schema<LoginHistoryDocument>(
 
 /**
  * Indexes for query optimization
- *
- * 1. Compound index for user history with date sorting
- *    Query: LoginHistoryModel.find({ userId }).sort({ createdAt: -1 })
- *
- * 2. TTL index for automatic cleanup after 90 days
- *    Compliant with data retention policies
- *
- * 3. Index for security analysis queries
- *    Query: Find failed attempts by IP, status patterns
  */
 LoginHistorySchema.index({ userId: 1, createdAt: -1 });
 LoginHistorySchema.index(
@@ -175,7 +67,6 @@ LoginHistorySchema.index(
   { expireAfterSeconds: LOGIN_HISTORY_CONFIG.TTL_SECONDS }
 );
 LoginHistorySchema.index({ ip: 1, status: 1, createdAt: -1 });
-LoginHistorySchema.index({ userId: 1, status: 1, createdAt: -1 });
 
 const LoginHistoryModel: Model<LoginHistoryDocument> =
   model<LoginHistoryDocument>(LOGIN_HISTORY, LoginHistorySchema);

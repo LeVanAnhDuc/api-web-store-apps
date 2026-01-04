@@ -7,27 +7,19 @@ import {
 } from "@/shared/constants/time";
 
 /**
- * Login session configuration
- * Based on System Design: Unlimited sessions + auto-cleanup after 30 days
- *
- * Note: Named LOGIN_SESSION_CONFIG to avoid conflict with
- * SESSION_CONFIG in signup module (for signup progress session)
+ * Token configuration
+ * Note: Actual expiry values are in core/configs/jwt.ts
+ * These are reference values for documentation
  */
-export const LOGIN_SESSION_CONFIG = {
+export const TOKEN_CONFIG = {
   // Refresh token expiry (7 days in seconds)
   REFRESH_TOKEN_EXPIRY_SECONDS: 7 * SECONDS_PER_DAY,
-
-  // Session inactivity threshold for cleanup (30 days in seconds)
-  INACTIVE_THRESHOLD_SECONDS: 30 * SECONDS_PER_DAY,
 
   // Access token expiry (15 minutes in seconds)
   ACCESS_TOKEN_EXPIRY_SECONDS: 15 * SECONDS_PER_MINUTE,
 
   // ID token expiry (same as access token)
-  ID_TOKEN_EXPIRY_SECONDS: 15 * SECONDS_PER_MINUTE,
-
-  // Warning threshold for too many sessions
-  MANY_SESSIONS_WARNING_THRESHOLD: 10
+  ID_TOKEN_EXPIRY_SECONDS: 15 * SECONDS_PER_MINUTE
 } as const;
 
 /**
@@ -95,38 +87,6 @@ export const LOGIN_HISTORY_CONFIG = {
 
   // TTL in seconds for MongoDB TTL index
   TTL_SECONDS: 90 * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE
-} as const;
-
-/**
- * Device detection configuration
- */
-export const DEVICE_CONFIG = {
-  // Maximum device name length
-  MAX_NAME_LENGTH: 100,
-
-  // Maximum browser name length
-  MAX_BROWSER_LENGTH: 50,
-
-  // Maximum OS name length
-  MAX_OS_LENGTH: 50,
-
-  // Default values
-  DEFAULTS: {
-    NAME: "Unknown Device",
-    TYPE: "desktop",
-    BROWSER: "Unknown",
-    OS: "Unknown"
-  }
-} as const;
-
-/**
- * Device types
- */
-export const DEVICE_TYPES = {
-  DESKTOP: "desktop",
-  MOBILE: "mobile",
-  TABLET: "tablet",
-  OTHER: "other"
 } as const;
 
 /**

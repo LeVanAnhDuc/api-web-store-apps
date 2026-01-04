@@ -1,11 +1,7 @@
-// libs
 import { Schema, model, type Model } from "mongoose";
-// types
 import type { AuthDocument } from "@/shared/types/modules/auth";
-// constants
 import {
   AUTH_ROLES,
-  PASSWORD_VALIDATION,
   EMAIL_FORMAT_PATTERN,
   SAFE_EMAIL_PATTERN
 } from "@/shared/constants/modules/auth";
@@ -23,11 +19,9 @@ const AuthSchema = new Schema<AuthDocument>(
       lowercase: true,
       validate: {
         validator: function (email: string) {
-          // Check basic email format
           if (!EMAIL_FORMAT_PATTERN.test(email)) {
             return false;
           }
-          // Check for dangerous Unicode characters
           if (!SAFE_EMAIL_PATTERN.test(email)) {
             return false;
           }
@@ -38,12 +32,7 @@ const AuthSchema = new Schema<AuthDocument>(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
-      trim: true,
-      minlength: [
-        PASSWORD_VALIDATION.MIN_LENGTH,
-        `Password must be at least ${PASSWORD_VALIDATION.MIN_LENGTH} characters`
-      ]
+      required: [true, "Password is required"]
     },
     verifiedEmail: {
       type: Boolean,
@@ -65,9 +54,6 @@ const AuthSchema = new Schema<AuthDocument>(
   }
 );
 
-/**
- * Indexes for better query performance
- */
 AuthSchema.index({ email: 1 });
 
 const AuthModel: Model<AuthDocument> = model<AuthDocument>(

@@ -5,7 +5,7 @@
  * Business Flow:
  * 1. Check if OTP verification is locked due to failed attempts
  * 2. Verify OTP
- * 3. On success: Create session, cleanup OTP data, record history
+ * 3. On success: Generate tokens, cleanup OTP data, record history
  * 4. On failure: Increment failed attempts, check for lockout
  *
  * Rate Limiting: Handled by middleware
@@ -18,7 +18,7 @@ import i18next from "@/i18n";
 // types
 import type {
   OtpVerifyRequest,
-  LoginWithSessionResponse
+  LoginResponse
 } from "@/shared/types/modules/login";
 
 // errors
@@ -41,7 +41,8 @@ import {
 
 // shared
 import {
-  createLoginSession,
+  generateLoginTokens,
+  updateLastLogin,
   recordSuccessfulLogin,
   recordFailedLogin
 } from "./shared";
@@ -81,7 +82,7 @@ const ensureNotLocked = async (
 
 export const verifyLoginOtpService = async (
   req: OtpVerifyRequest
-): Promise<Partial<ResponsePattern<LoginWithSessionResponse>>> => {
+): Promise<Partial<ResponsePattern<LoginResponse>>> => {
   const { email, otp } = req.body;
   const { t, language } = req;
 
@@ -101,7 +102,7 @@ export const verifyLoginOtpService = async (
   if (!isValid) {
     const attempts = await incrementFailedLoginOtpAttempts(email);
 
-    await recordFailedLogin({
+    recordFailedLogin({
       userId: auth._id,
       loginMethod: LOGIN_METHODS.OTP,
       failReason: LOGIN_FAIL_REASONS.INVALID_OTP,
@@ -134,13 +135,11 @@ export const verifyLoginOtpService = async (
 
   await cleanupLoginOtpData(email);
 
-  const loginResponse = await createLoginSession({
-    auth,
-    loginMethod: LOGIN_METHODS.OTP,
-    req
-  });
+  const loginResponse = generateLoginTokens(auth);
 
-  await recordSuccessfulLogin({
+  updateLastLogin(auth._id.toString());
+
+  recordSuccessfulLogin({
     userId: auth._id,
     loginMethod: LOGIN_METHODS.OTP,
     req

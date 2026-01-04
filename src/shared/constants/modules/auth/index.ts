@@ -4,14 +4,10 @@ export const AUTH_ROLES = {
 } as const;
 
 export const EMAIL_VALIDATION = {
-  MIN_LENGTH: 3, // Minimum valid email: a@b
+  MIN_LENGTH: 3,
   MAX_LENGTH: 254 // RFC 5321 standard
 } as const;
 
-/**
- * Basic email format validation regex
- * Validates: localpart@domain.tld structure
- */
 export const EMAIL_FORMAT_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
@@ -24,5 +20,10 @@ export const SAFE_EMAIL_PATTERN =
   /^[^\u0000-\u001F\u007F-\u009F\u200B-\u200D\u202A-\u202E\uFEFF]+$/;
 
 export const PASSWORD_VALIDATION = {
-  MIN_LENGTH: 8
+  MIN_LENGTH: 8,
+  MAX_LENGTH: 128
 } as const;
+
+// At least 1 lowercase, 1 uppercase, 1 digit, 1 special char (@$!%*?&)
+export const PASSWORD_PATTERN =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;

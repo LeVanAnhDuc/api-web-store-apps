@@ -117,7 +117,8 @@ export const mockUserProfile = {
  */
 export const mockTokens = {
   accessToken: "mock-access-token",
-  refreshToken: "mock-refresh-token"
+  refreshToken: "mock-refresh-token",
+  idToken: "mock-id-token"
 };
 
 // =============================================================================

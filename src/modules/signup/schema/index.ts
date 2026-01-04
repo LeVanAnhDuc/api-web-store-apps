@@ -1,12 +1,4 @@
-/**
- * Signup Validation Schemas
- * Joi schemas for signup endpoints
- * Validation layer - format checking happens here, NOT in service
- */
-
 import Joi from "joi";
-
-// constants
 import {
   GENDERS,
   FULLNAME_VALIDATION,
@@ -14,11 +6,7 @@ import {
   SAFE_FULLNAME_PATTERN
 } from "@/shared/constants/modules/user";
 import { OTP_PATTERN, SESSION_CONFIG } from "@/shared/constants/modules/signup";
-
-// schemas
-import { emailSchema, passwordSchema } from "@/shared/schemas/auth.schema";
-
-// types
+import { emailSchema, passwordSchema } from "@/shared/schemas";
 import type {
   SendOtpBody,
   VerifyOtpBody,
@@ -28,45 +16,28 @@ import type {
 
 const GENDER_VALUES = Object.values(GENDERS);
 
-/**
- * Calculate min/max date of birth based on age validation
- */
 const getDateOfBirthBounds = (): { minDate: Date; maxDate: Date } => {
   const now = new Date();
 
-  // Maximum date = today minus min age (must be at least MIN_AGE years old)
   const maxDate = new Date(now);
   maxDate.setFullYear(maxDate.getFullYear() - AGE_VALIDATION.MIN_AGE);
 
-  // Minimum date = today minus max age (can't be older than MAX_AGE)
   const minDate = new Date(now);
   minDate.setFullYear(minDate.getFullYear() - AGE_VALIDATION.MAX_AGE);
 
   return { minDate, maxDate };
 };
 
-/**
- * POST /signup/send-otp
- * Request body: { email }
- */
 export const sendOtpSchema: Joi.ObjectSchema<SendOtpBody> = Joi.object({
-  email: emailSchema
+  email: emailSchema.required()
 });
 
-/**
- * POST /signup/resend-otp
- * Request body: { email }
- * Same as sendOtpSchema but defined separately for clarity
- */
 export const resendOtpSchema: Joi.ObjectSchema<SendOtpBody> = Joi.object({
-  email: emailSchema
+  email: emailSchema.required()
 });
 
-/**
- * POST /signup/verify-otp
- */
 export const verifyOtpSchema: Joi.ObjectSchema<VerifyOtpBody> = Joi.object({
-  email: emailSchema,
+  email: emailSchema.required(),
   otp: Joi.string().pattern(OTP_PATTERN).required().messages({
     "string.empty": "signup:errors.otpRequired",
     "string.pattern.base": "signup:errors.otpInvalid",
@@ -74,13 +45,10 @@ export const verifyOtpSchema: Joi.ObjectSchema<VerifyOtpBody> = Joi.object({
   })
 });
 
-/**
- * POST /signup/complete
- */
 export const completeSignupSchema: Joi.ObjectSchema<CompleteSignupBody> =
   Joi.object({
-    email: emailSchema,
-    password: passwordSchema,
+    email: emailSchema.required(),
+    password: passwordSchema.required(),
     confirmPassword: Joi.string()
       .valid(Joi.ref("password"))
       .required()
@@ -90,7 +58,8 @@ export const completeSignupSchema: Joi.ObjectSchema<CompleteSignupBody> =
         "any.only": "signup:errors.passwordMismatch"
       }),
     sessionToken: Joi.string()
-      .length(SESSION_CONFIG.TOKEN_LENGTH * 2) // hex string is 2x length
+      // hex string is 2x the byte length
+      .length(SESSION_CONFIG.TOKEN_LENGTH * 2)
       .required()
       .messages({
         "string.empty": "signup:errors.sessionTokenRequired",
@@ -134,9 +103,6 @@ export const completeSignupSchema: Joi.ObjectSchema<CompleteSignupBody> =
       })
   });
 
-/**
- * GET /signup/check-email/:email
- */
 export const checkEmailSchema: Joi.ObjectSchema<CheckEmailParams> = Joi.object({
-  email: emailSchema
+  email: emailSchema.required()
 });

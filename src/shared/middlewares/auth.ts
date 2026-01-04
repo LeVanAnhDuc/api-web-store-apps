@@ -1,19 +1,17 @@
 /**
- * Authentication Middleware
+ * Authentication Middleware (Simplified)
  * Verifies JWT access tokens and attaches user payload to request
+ * No session validation - stateless JWT auth
  */
 
 // libs
 import type { Request, Response, NextFunction } from "express";
 
 // errors
-import { UnauthorizedError, ForbiddenError } from "@/core/responses/error";
+import { UnauthorizedError } from "@/core/responses/error";
 
 // helpers
 import { verifyAccessToken } from "@/core/helpers/jwt";
-
-// repository
-import { findSessionById } from "@/modules/session/repository";
 
 // utils
 import { asyncHandler } from "@/core/utils/async-handler";
@@ -26,7 +24,6 @@ interface JwtTokenPayload {
   authId: string;
   email: string;
   roles: string;
-  sessionId: string;
   iat?: number;
   exp?: number;
 }
@@ -60,7 +57,7 @@ export const authenticate = asyncHandler(
     // Verify token
     const payload = verifyAccessToken<JwtTokenPayload>(token);
 
-    if (!payload || !payload.userId || !payload.sessionId) {
+    if (!payload || !payload.userId) {
       throw new UnauthorizedError(t("common:errors.invalidToken"));
     }
 
@@ -69,66 +66,7 @@ export const authenticate = asyncHandler(
       userId: payload.userId,
       authId: payload.authId || payload.userId,
       email: payload.email || "",
-      roles: payload.roles || "user",
-      sessionId: payload.sessionId
-    };
-
-    next();
-  }
-);
-
-/**
- * Authentication middleware with session validation
- * Verifies token AND checks if session is still valid (not revoked)
- *
- * Use this for sensitive operations where session validity matters
- */
-export const authenticateWithSession = asyncHandler(
-  async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
-    const { t } = req;
-
-    // Extract token from Authorization header
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new UnauthorizedError(t("common:errors.unauthorized"));
-    }
-
-    const token = authHeader.substring(7);
-
-    if (!token) {
-      throw new UnauthorizedError(t("common:errors.unauthorized"));
-    }
-
-    // Verify token
-    const payload = verifyAccessToken<JwtTokenPayload>(token);
-
-    if (!payload || !payload.userId || !payload.sessionId) {
-      throw new UnauthorizedError(t("common:errors.invalidToken"));
-    }
-
-    // Verify session is still valid
-    const session = await findSessionById(payload.sessionId);
-
-    if (!session) {
-      throw new ForbiddenError(t("login:errors.sessionNotFound"));
-    }
-
-    if (session.isRevoked) {
-      throw new ForbiddenError(t("login:errors.sessionRevoked"));
-    }
-
-    if (session.expiresAt < new Date()) {
-      throw new ForbiddenError(t("login:errors.sessionExpired"));
-    }
-
-    // Attach user payload to request
-    req.user = {
-      userId: payload.userId,
-      authId: payload.authId || payload.userId,
-      email: payload.email || "",
-      roles: payload.roles || "user",
-      sessionId: payload.sessionId
+      roles: payload.roles || "user"
     };
 
     next();

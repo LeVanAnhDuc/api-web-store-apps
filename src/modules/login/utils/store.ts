@@ -33,10 +33,6 @@ const KEY_MAGIC_LINK_COOLDOWN = LOGIN.MAGIC_LINK_COOLDOWN;
 // Account unlock keys
 const KEY_UNLOCK_TOKEN = LOGIN.UNLOCK_TOKEN;
 
-/**
- * Check if account is currently locked due to failed login attempts
- * @returns Object with isLocked status and remaining lockout time in seconds
- */
 export const checkLoginLockout = async (
   email: string
 ): Promise<{ isLocked: boolean; remainingSeconds: number }> => {
@@ -129,9 +125,6 @@ export const incrementFailedLoginAttempts = async (
   }
 };
 
-/**
- * Reset failed login attempts counter (called after successful login)
- */
 export const resetFailedLoginAttempts = async (
   email: string
 ): Promise<void> => {

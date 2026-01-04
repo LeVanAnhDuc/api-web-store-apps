@@ -19,13 +19,13 @@ declare global {
 
   /**
    * User payload from JWT token, attached by auth middleware
+   * Simplified: No sessionId (stateless JWT auth)
    */
   interface JwtUserPayload {
     userId: string;
     authId: string;
     email: string;
     roles: string;
-    sessionId: string;
   }
 
   namespace Express {

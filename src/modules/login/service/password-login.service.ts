@@ -1,56 +1,26 @@
-/**
- * Password Login Service
- * Use Case: User logs in with email and password
- *
- * Business Flow:
- * 1. Check account lockout status
- * 2. Verify email exists and account is active
- * 3. Verify password
- * 4. Create session and generate tokens
- * 5. Record login history
- * 6. Reset failed attempts on success
- *
- * Rate Limiting: Handled by middleware (IP-based)
- * Validation: Handled by schema layer
- */
-
-// libs
 import i18next from "@/i18n";
-
-// types
+import type { AuthDocument } from "@/shared/types/modules/auth";
 import type {
   PasswordLoginRequest,
-  LoginWithSessionResponse
+  LoginResponse
 } from "@/shared/types/modules/login";
-
-// errors
 import { UnauthorizedError, BadRequestError } from "@/core/responses/error";
-
-// helpers
 import { isValidPassword } from "@/core/helpers/bcrypt";
-
-// utils
 import { Logger } from "@/core/utils/logger";
-
-// repository
+import { withRetry } from "@/core/utils/retry";
 import { findAuthByEmail } from "@/modules/login/repository";
-
-// store
 import {
   checkLoginLockout,
   getFailedLoginAttempts,
   incrementFailedLoginAttempts,
   resetFailedLoginAttempts
 } from "@/modules/login/utils/store";
-
-// shared
 import {
-  createLoginSession,
+  generateLoginTokens,
+  updateLastLogin,
   recordSuccessfulLogin,
   recordFailedLogin
 } from "./shared";
-
-// constants
 import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
 import {
   LOGIN_METHODS,
@@ -58,7 +28,7 @@ import {
 } from "@/shared/constants/modules/session";
 
 // =============================================================================
-// Business Rule Checks (Guard Functions)
+// Helper Functions
 // =============================================================================
 
 const formatTimeMessage = (seconds: number, language: string): string => {
@@ -74,22 +44,111 @@ const formatTimeMessage = (seconds: number, language: string): string => {
     : `${seconds} second${seconds > 1 ? "s" : ""}`;
 };
 
+// =============================================================================
+// Guard Functions
+// =============================================================================
+
 const ensureAccountNotLocked = async (
   email: string,
   language: string
 ): Promise<void> => {
   const { isLocked, remainingSeconds } = await checkLoginLockout(email);
 
-  if (isLocked) {
-    const attemptCount = await getFailedLoginAttempts(email);
-    const timeMessage = formatTimeMessage(remainingSeconds, language);
+  if (!isLocked) return;
 
-    Logger.warn("Login blocked - account locked", {
-      email,
-      attemptCount,
-      remainingSeconds
-    });
+  const attemptCount = await getFailedLoginAttempts(email);
+  const timeMessage = formatTimeMessage(remainingSeconds, language);
 
+  Logger.warn("Login blocked - account locked", {
+    email,
+    attemptCount,
+    remainingSeconds
+  });
+
+  throw new BadRequestError(
+    i18next.t("login:errors.accountLocked", {
+      attempts: attemptCount,
+      time: timeMessage,
+      lng: language
+    })
+  );
+};
+
+function ensureAccountExists(
+  auth: AuthDocument | null,
+  email: string,
+  t: PasswordLoginRequest["t"]
+): asserts auth is AuthDocument {
+  if (auth) return;
+
+  Logger.warn("Login failed - email not found", { email });
+  throw new UnauthorizedError(t("login:errors.invalidCredentials"));
+}
+
+const ensureAccountActive = (
+  auth: AuthDocument,
+  email: string,
+  req: PasswordLoginRequest,
+  t: PasswordLoginRequest["t"]
+) => {
+  if (auth.isActive) return;
+
+  recordFailedLogin({
+    userId: auth._id,
+    loginMethod: LOGIN_METHODS.PASSWORD,
+    failReason: LOGIN_FAIL_REASONS.ACCOUNT_INACTIVE,
+    req
+  });
+
+  Logger.warn("Login failed - account inactive", { email });
+  throw new UnauthorizedError(t("login:errors.accountInactive"));
+};
+
+const ensureEmailVerified = (
+  auth: AuthDocument,
+  email: string,
+  req: PasswordLoginRequest,
+  t: PasswordLoginRequest["t"]
+) => {
+  if (auth.verifiedEmail) return;
+
+  recordFailedLogin({
+    userId: auth._id,
+    loginMethod: LOGIN_METHODS.PASSWORD,
+    failReason: LOGIN_FAIL_REASONS.EMAIL_NOT_VERIFIED,
+    req
+  });
+
+  Logger.warn("Login failed - email not verified", { email });
+  throw new UnauthorizedError(t("login:errors.emailNotVerified"));
+};
+
+const verifyPasswordOrFail = async (
+  auth: AuthDocument,
+  password: string,
+  email: string,
+  language: string,
+  req: PasswordLoginRequest,
+  t: PasswordLoginRequest["t"]
+): Promise<void> => {
+  const passwordValid = isValidPassword(password, auth.password);
+
+  if (passwordValid) return;
+
+  const { attemptCount, lockoutSeconds } =
+    await incrementFailedLoginAttempts(email);
+
+  recordFailedLogin({
+    userId: auth._id,
+    loginMethod: LOGIN_METHODS.PASSWORD,
+    failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS,
+    req
+  });
+
+  Logger.warn("Login failed - invalid password", { email, attemptCount });
+
+  if (attemptCount >= 5 && lockoutSeconds > 0) {
+    const timeMessage = formatTimeMessage(lockoutSeconds, language);
     throw new BadRequestError(
       i18next.t("login:errors.accountLocked", {
         attempts: attemptCount,
@@ -98,15 +157,18 @@ const ensureAccountNotLocked = async (
       })
     );
   }
+
+  throw new UnauthorizedError(t("login:errors.invalidCredentials"));
 };
 
 // =============================================================================
 // Main Service
 // =============================================================================
 
+// fire-and-forget operations
 export const passwordLogin = async (
   req: PasswordLoginRequest
-): Promise<Partial<ResponsePattern<LoginWithSessionResponse>>> => {
+): Promise<Partial<ResponsePattern<LoginResponse>>> => {
   const { email, password } = req.body;
   const { language, t } = req;
 
@@ -116,76 +178,20 @@ export const passwordLogin = async (
 
   const auth = await findAuthByEmail(email);
 
-  if (!auth) {
-    Logger.warn("Login failed - email not found", { email });
-    throw new UnauthorizedError(t("login:errors.invalidCredentials"));
-  }
+  ensureAccountExists(auth, email, t);
+  ensureAccountActive(auth, email, req, t);
+  ensureEmailVerified(auth, email, req, t);
 
-  if (!auth.isActive) {
-    await recordFailedLogin({
-      userId: auth._id,
-      loginMethod: LOGIN_METHODS.PASSWORD,
-      failReason: LOGIN_FAIL_REASONS.ACCOUNT_INACTIVE,
-      req
-    });
+  await verifyPasswordOrFail(auth, password, email, language, req, t);
 
-    Logger.warn("Login failed - account inactive", { email });
-    throw new UnauthorizedError(t("login:errors.accountInactive"));
-  }
+  updateLastLogin(auth._id.toString());
 
-  if (!auth.verifiedEmail) {
-    await recordFailedLogin({
-      userId: auth._id,
-      loginMethod: LOGIN_METHODS.PASSWORD,
-      failReason: LOGIN_FAIL_REASONS.EMAIL_NOT_VERIFIED,
-      req
-    });
-
-    Logger.warn("Login failed - email not verified", { email });
-    throw new UnauthorizedError(t("login:errors.emailNotVerified"));
-  }
-
-  const passwordValid = isValidPassword(password, auth.password);
-
-  if (!passwordValid) {
-    const { attemptCount, lockoutSeconds } =
-      await incrementFailedLoginAttempts(email);
-
-    await recordFailedLogin({
-      userId: auth._id,
-      loginMethod: LOGIN_METHODS.PASSWORD,
-      failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS,
-      req
-    });
-
-    Logger.warn("Login failed - invalid password", {
-      email,
-      attemptCount
-    });
-
-    if (attemptCount >= 5 && lockoutSeconds > 0) {
-      const timeMessage = formatTimeMessage(lockoutSeconds, language);
-      throw new BadRequestError(
-        i18next.t("login:errors.accountLocked", {
-          attempts: attemptCount,
-          time: timeMessage,
-          lng: language
-        })
-      );
-    }
-
-    throw new UnauthorizedError(t("login:errors.invalidCredentials"));
-  }
-
-  await resetFailedLoginAttempts(email);
-
-  const loginResponse = await createLoginSession({
-    auth,
-    loginMethod: LOGIN_METHODS.PASSWORD,
-    req
+  withRetry(() => resetFailedLoginAttempts(email), {
+    operationName: "resetFailedLoginAttempts",
+    context: { email }
   });
 
-  await recordSuccessfulLogin({
+  recordSuccessfulLogin({
     userId: auth._id,
     loginMethod: LOGIN_METHODS.PASSWORD,
     req
@@ -193,13 +199,11 @@ export const passwordLogin = async (
 
   Logger.info("Password login successful", {
     email,
-    userId: auth._id.toString(),
-    isNewDevice: loginResponse.isNewDevice,
-    isNewLocation: loginResponse.isNewLocation
+    userId: auth._id.toString()
   });
 
   return {
     message: t("login:success.loginSuccessful"),
-    data: loginResponse
+    data: generateLoginTokens(auth)
   };
 };

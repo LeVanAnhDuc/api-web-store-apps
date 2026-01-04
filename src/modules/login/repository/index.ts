@@ -1,19 +1,6 @@
-/**
- * Login Repository
- * Encapsulates Auth model database operations for Login module
- * Service layer should NOT query DB directly - use this repository
- */
-
-// types
 import type { AuthDocument } from "@/shared/types/modules/auth";
-// models
 import AuthModel from "@/modules/auth/model";
 
-/**
- * Find auth record by email
- * @param email - User email
- * @returns Auth document or null
- */
 export const findAuthByEmail = async (
   email: string
 ): Promise<AuthDocument | null> => AuthModel.findOne({ email }).exec();
@@ -50,12 +37,8 @@ export const hasPassword = async (email: string): Promise<boolean> => {
   return auth !== null && auth.password !== null && auth.password !== "";
 };
 
-/**
- * Update last login timestamp
- * @param authId - Auth document ID
- */
 export const updateLastLogin = async (authId: string): Promise<void> => {
-  await AuthModel.findByIdAndUpdate(authId, { lastLogin: new Date() });
+  await AuthModel.findByIdAndUpdate(authId, { lastLogin: new Date() }).exec();
 };
 
 /**
