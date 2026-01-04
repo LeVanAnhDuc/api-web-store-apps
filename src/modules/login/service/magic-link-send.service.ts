@@ -1,38 +1,13 @@
-/**
- * Magic Link Send Service
- * Use Case: User requests magic link for passwordless login
- *
- * Business Flow:
- * 1. Ensure cooldown period has expired
- * 2. Ensure email exists and account is active
- * 3. Generate and store magic link token (hashed)
- * 4. Start cooldown period
- * 5. Send magic link email (async, fire-and-forget)
- *
- * Rate Limiting: Handled by middleware (IP + Email)
- * Validation: Handled by schema layer
- */
-
-// libs
 import i18next from "@/i18n";
-
-// types
 import type { TFunction } from "i18next";
 import type {
   MagicLinkSendRequest,
   MagicLinkSendResponse
 } from "@/shared/types/modules/login";
-
-// errors
 import { BadRequestError, UnauthorizedError } from "@/core/responses/error";
-
-// utils
 import { Logger } from "@/core/utils/logger";
-
-// repository
+import { withRetry } from "@/core/utils/retry";
 import { findAuthByEmail } from "@/modules/login/repository";
-
-// store
 import {
   checkMagicLinkCooldown,
   getMagicLinkCooldownRemaining,
@@ -41,11 +16,7 @@ import {
   deleteMagicLink,
   generateMagicLinkToken
 } from "@/modules/login/utils/store";
-
-// notifier
 import { notifyMagicLinkByEmail } from "@/modules/login/notifier";
-
-// constants
 import { MAGIC_LINK_CONFIG } from "@/shared/constants/modules/session";
 import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
 
@@ -53,9 +24,9 @@ import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
 // Configuration
 // =============================================================================
 
-const TIME_MAGIC_LINK_EXPIRES =
+const MAGIC_LINK_EXPIRY_SECONDS =
   MAGIC_LINK_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
-const TIME_MAGIC_LINK_COOLDOWN = MAGIC_LINK_CONFIG.COOLDOWN_SECONDS;
+const MAGIC_LINK_COOLDOWN_SECONDS = MAGIC_LINK_CONFIG.COOLDOWN_SECONDS;
 
 // =============================================================================
 // Business Rule Checks (Guard Functions)
@@ -109,24 +80,24 @@ const ensureEmailExists = async (
 const createNewMagicLink = async (email: string): Promise<string> => {
   const token = generateMagicLinkToken();
 
-  // Delete existing magic link first (idempotency)
+  // Ensure idempotency by deleting existing magic link first
   await deleteMagicLink(email);
-  await createAndStoreMagicLink(email, token, TIME_MAGIC_LINK_EXPIRES);
+  await createAndStoreMagicLink(email, token, MAGIC_LINK_EXPIRY_SECONDS);
 
   Logger.debug("Magic link created and stored", {
     email,
-    expiresInSeconds: TIME_MAGIC_LINK_EXPIRES
+    expiresInSeconds: MAGIC_LINK_EXPIRY_SECONDS
   });
 
   return token;
 };
 
-const startCooldown = async (email: string): Promise<void> => {
-  await setMagicLinkCooldown(email, TIME_MAGIC_LINK_COOLDOWN);
+const applyMagicLinkRateLimits = async (email: string): Promise<void> => {
+  await setMagicLinkCooldown(email, MAGIC_LINK_COOLDOWN_SECONDS);
 
-  Logger.debug("Magic link cooldown started", {
+  Logger.debug("Magic link rate limits applied", {
     email,
-    cooldownSeconds: TIME_MAGIC_LINK_COOLDOWN
+    cooldownSeconds: MAGIC_LINK_COOLDOWN_SECONDS
   });
 };
 
@@ -147,22 +118,25 @@ export const sendMagicLink = async (
 
   const token = await createNewMagicLink(email);
 
-  await startCooldown(email);
+  withRetry(() => applyMagicLinkRateLimits(email), {
+    operationName: "applyMagicLinkRateLimits",
+    context: { email }
+  });
 
   notifyMagicLinkByEmail(email, token, language as I18n.Locale);
 
   Logger.info("Magic link send completed", {
     email,
-    expiresIn: TIME_MAGIC_LINK_EXPIRES,
-    cooldown: TIME_MAGIC_LINK_COOLDOWN
+    expiresIn: MAGIC_LINK_EXPIRY_SECONDS,
+    cooldown: MAGIC_LINK_COOLDOWN_SECONDS
   });
 
   return {
     message: t("login:success.magicLinkSent"),
     data: {
       success: true,
-      expiresIn: TIME_MAGIC_LINK_EXPIRES,
-      cooldown: TIME_MAGIC_LINK_COOLDOWN
+      expiresIn: MAGIC_LINK_EXPIRY_SECONDS,
+      cooldown: MAGIC_LINK_COOLDOWN_SECONDS
     }
   };
 };

@@ -6,6 +6,7 @@ import type {
 } from "@/shared/types/modules/login";
 import { BadRequestError, UnauthorizedError } from "@/core/responses/error";
 import { Logger } from "@/core/utils/logger";
+import { withRetry } from "@/core/utils/retry";
 import { findAuthByEmail } from "@/modules/login/repository";
 import {
   checkLoginOtpCooldown,
@@ -133,7 +134,10 @@ export const sendLoginOtp = async (
 
   const otp = await createNewOtp(email);
 
-  await applyOtpRateLimits(email);
+  withRetry(() => applyOtpRateLimits(email), {
+    operationName: "applyOtpRateLimits",
+    context: { email }
+  });
 
   notifyLoginOtpByEmail(email, otp, language as I18n.Locale);
 
