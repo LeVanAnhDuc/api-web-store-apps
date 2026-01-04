@@ -400,44 +400,105 @@ All responses follow a consistent JSON structure.
             }
           }
         },
-        LoginSuccessData: {
+        LoginResponse: {
           type: "object",
           properties: {
-            success: {
-              type: "boolean",
-              example: true
+            accessToken: {
+              type: "string",
+              example: "eyJhbGciOiJIUzI1NiIs...",
+              description: "JWT access token"
             },
-            user: {
-              type: "object",
-              properties: {
-                id: {
-                  type: "string",
-                  example: "507f1f77bcf86cd799439011"
-                },
-                email: {
-                  type: "string",
-                  example: "user@example.com"
-                },
-                fullName: {
-                  type: "string",
-                  example: "John Doe"
-                }
-              }
+            refreshToken: {
+              type: "string",
+              example: "eyJhbGciOiJIUzI1NiIs...",
+              description: "JWT refresh token"
             },
-            tokens: {
-              type: "object",
-              properties: {
-                accessToken: {
-                  type: "string"
-                },
-                refreshToken: {
-                  type: "string"
-                },
-                expiresIn: {
-                  type: "integer",
-                  example: 900
-                }
-              }
+            idToken: {
+              type: "string",
+              example: "eyJhbGciOiJIUzI1NiIs...",
+              description: "JWT ID token containing user info"
+            },
+            expiresIn: {
+              type: "integer",
+              example: 900,
+              description: "Access token expiration in seconds"
+            }
+          }
+        },
+        OtpSendRequest: {
+          type: "object",
+          required: ["email"],
+          properties: {
+            email: {
+              type: "string",
+              format: "email",
+              example: "user@example.com",
+              description: "Email address to send OTP"
+            }
+          }
+        },
+        OtpVerifyRequest: {
+          type: "object",
+          required: ["email", "otp"],
+          properties: {
+            email: {
+              type: "string",
+              format: "email",
+              example: "user@example.com"
+            },
+            otp: {
+              type: "string",
+              pattern: "^\\d{6}$",
+              example: "123456",
+              description: "6-digit OTP code"
+            }
+          }
+        },
+        MagicLinkSendRequest: {
+          type: "object",
+          required: ["email"],
+          properties: {
+            email: {
+              type: "string",
+              format: "email",
+              example: "user@example.com",
+              description: "Email address to send magic link"
+            }
+          }
+        },
+        MagicLinkVerifyRequest: {
+          type: "object",
+          required: ["email", "token"],
+          properties: {
+            email: {
+              type: "string",
+              format: "email",
+              example: "user@example.com"
+            },
+            token: {
+              type: "string",
+              example: "abc123xyz...",
+              description: "Magic link token from email"
+            }
+          }
+        },
+        RefreshTokenResponse: {
+          type: "object",
+          properties: {
+            accessToken: {
+              type: "string",
+              example: "eyJhbGciOiJIUzI1NiIs...",
+              description: "New JWT access token"
+            },
+            idToken: {
+              type: "string",
+              example: "eyJhbGciOiJIUzI1NiIs...",
+              description: "New JWT ID token"
+            },
+            expiresIn: {
+              type: "integer",
+              example: 900,
+              description: "Access token expiration in seconds"
             }
           }
         }

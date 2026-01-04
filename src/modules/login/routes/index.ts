@@ -19,11 +19,15 @@ import {
 
 const loginRouter = Router();
 
+// =============================================================================
+// Password Login
+// =============================================================================
+
 /**
  * @swagger
  * /auth/login:
  *   post:
- *     summary: User login with password
+ *     summary: Login with email and password
  *     description: |
  *       Authenticate user with email and password.
  *
@@ -34,9 +38,10 @@ const loginRouter = Router();
  *       - Account locked after 5 failed attempts (progressive lockout)
  *       - Passwords are verified using bcrypt
  *
- *       **On Success:**
- *       - Returns access token (15 min expiry)
- *       - Sets refresh token in HTTP-only cookie (7 days expiry)
+ *       **Returns:**
+ *       - Access token (15 min expiry)
+ *       - Refresh token in HTTP-only cookie (7 days expiry)
+ *       - ID token
  *     tags: [Auth - Login]
  *     requestBody:
  *       required: true
@@ -47,10 +52,16 @@ const loginRouter = Router();
  *     responses:
  *       200:
  *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
  *       400:
- *         $ref: '#/components/responses/ValidationError'
+ *         description: Account locked due to too many failed attempts
  *       401:
- *         description: Invalid credentials or account locked
+ *         description: Invalid credentials
+ *       422:
+ *         $ref: '#/components/responses/ValidationError'
  *       429:
  *         $ref: '#/components/responses/TooManyRequests'
  */
@@ -61,9 +72,13 @@ loginRouter.post(
   loginController
 );
 
+// =============================================================================
+// OTP Login
+// =============================================================================
+
 /**
  * @swagger
- * /auth/otp/send:
+ * /auth/login/otp/send:
  *   post:
  *     summary: Send OTP for passwordless login
  *     description: |
@@ -73,12 +88,10 @@ loginRouter.post(
  *       - 10 requests per IP per 15 minutes
  *       - 5 requests per email per 15 minutes
  *
- *       **Cooldown:**
- *       - 60 seconds between OTP requests
+ *       **Cooldown:** 60 seconds between requests
  *
- *       **OTP Expiry:**
- *       - 5 minutes
- *     tags: [Auth - OTP Login]
+ *       **OTP Expiry:** 5 minutes
+ *     tags: [Auth - Login]
  *     requestBody:
  *       required: true
  *       content:
@@ -94,7 +107,9 @@ loginRouter.post(
  *       200:
  *         description: OTP sent successfully
  *       400:
- *         description: Cooldown not expired or validation error
+ *         description: Cooldown not expired
+ *       422:
+ *         $ref: '#/components/responses/ValidationError'
  *       429:
  *         $ref: '#/components/responses/TooManyRequests'
  */
@@ -109,7 +124,7 @@ loginRouter.post(
 
 /**
  * @swagger
- * /auth/otp/verify:
+ * /auth/login/otp/verify:
  *   post:
  *     summary: Verify OTP and login
  *     description: |
@@ -118,31 +133,32 @@ loginRouter.post(
  *       **Security:**
  *       - 5 failed attempts before lockout (15 minutes)
  *
- *       **On Success:**
- *       - Returns access token (15 min expiry)
- *       - Sets refresh token in HTTP-only cookie (7 days expiry)
- *     tags: [Auth - OTP Login]
+ *       **Returns:**
+ *       - Access token (15 min expiry)
+ *       - Refresh token in HTTP-only cookie (7 days expiry)
+ *       - ID token
+ *     tags: [Auth - Login]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required: [email, otp]
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *               otp:
- *                 type: string
- *                 pattern: '^\d{6}$'
+ *             $ref: '#/components/schemas/OtpVerifyRequest'
  *     responses:
  *       200:
  *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
  *       400:
+ *         description: OTP verification locked
+ *       401:
  *         description: Invalid or expired OTP
+ *       422:
+ *         $ref: '#/components/responses/ValidationError'
  *       429:
- *         description: Too many failed attempts
+ *         $ref: '#/components/responses/TooManyRequests'
  */
 loginRouter.post(
   "/otp/verify",
@@ -151,9 +167,13 @@ loginRouter.post(
   verifyOtpController
 );
 
+// =============================================================================
+// Magic Link Login
+// =============================================================================
+
 /**
  * @swagger
- * /auth/magic-link/send:
+ * /auth/login/magic-link/send:
  *   post:
  *     summary: Send magic link for passwordless login
  *     description: |
@@ -163,28 +183,23 @@ loginRouter.post(
  *       - 10 requests per IP per 15 minutes
  *       - 5 requests per email per 15 minutes
  *
- *       **Cooldown:**
- *       - 60 seconds between requests
+ *       **Cooldown:** 60 seconds between requests
  *
- *       **Link Expiry:**
- *       - 15 minutes
- *     tags: [Auth - Magic Link Login]
+ *       **Link Expiry:** 15 minutes
+ *     tags: [Auth - Login]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required: [email]
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
+ *             $ref: '#/components/schemas/MagicLinkSendRequest'
  *     responses:
  *       200:
  *         description: Magic link sent successfully
  *       400:
- *         description: Cooldown not expired or validation error
+ *         description: Cooldown not expired
+ *       422:
+ *         $ref: '#/components/responses/ValidationError'
  *       429:
  *         $ref: '#/components/responses/TooManyRequests'
  */
@@ -199,34 +214,34 @@ loginRouter.post(
 
 /**
  * @swagger
- * /auth/magic-link/verify:
+ * /auth/login/magic-link/verify:
  *   post:
  *     summary: Verify magic link and login
  *     description: |
  *       Verify the magic link token and authenticate the user.
  *
- *       **On Success:**
- *       - Returns access token (15 min expiry)
- *       - Sets refresh token in HTTP-only cookie (7 days expiry)
- *     tags: [Auth - Magic Link Login]
+ *       **Returns:**
+ *       - Access token (15 min expiry)
+ *       - Refresh token in HTTP-only cookie (7 days expiry)
+ *       - ID token
+ *     tags: [Auth - Login]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required: [email, token]
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *               token:
- *                 type: string
+ *             $ref: '#/components/schemas/MagicLinkVerifyRequest'
  *     responses:
  *       200:
  *         description: Login successful
- *       400:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       401:
  *         description: Invalid or expired magic link
+ *       422:
+ *         $ref: '#/components/responses/ValidationError'
  */
 loginRouter.post(
   "/magic-link/verify",
@@ -235,27 +250,36 @@ loginRouter.post(
   verifyMagicLinkController
 );
 
+// =============================================================================
+// Token Refresh
+// =============================================================================
+
 /**
  * @swagger
  * /auth/login/refresh:
  *   post:
  *     summary: Refresh access token
  *     description: |
- *       Get a new access token using the refresh token from cookie.
+ *       Get a new access token using the refresh token from HTTP-only cookie.
  *
  *       **Authentication:**
  *       - Requires valid refresh token in HTTP-only cookie
  *
- *       **On Success:**
- *       - Returns new access token (15 min expiry)
- *     tags: [Auth - Token]
+ *       **Returns:**
+ *       - New access token (15 min expiry)
+ *       - New ID token
+ *     tags: [Auth - Login]
  *     responses:
  *       200:
  *         description: Token refreshed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/RefreshTokenResponse'
  *       401:
- *         description: Invalid or missing refresh token
+ *         description: Refresh token required
  *       403:
- *         description: Session revoked or expired
+ *         description: Invalid refresh token
  */
 loginRouter.post("/refresh", refreshTokenController);
 

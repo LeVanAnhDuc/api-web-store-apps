@@ -1,12 +1,3 @@
-/**
- * IP Address Utilities
- * Get client IP from request
- */
-
-/**
- * Get client IP from request
- * Handles proxies and load balancers
- */
 export const getClientIp = (req: {
   headers: Record<string, unknown>;
   ip?: string;
