@@ -1,21 +1,11 @@
 import type { Request } from "express";
 
-/**
- * Login response with tokens
- *
- * Note: refreshToken is included in response but controller
- * extracts it and sets as httpOnly cookie before sending to client
- */
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
   idToken: string;
   expiresIn: number;
 }
-
-// =============================================================================
-// Password Login
-// =============================================================================
 
 export interface PasswordLoginBody {
   email: string;
@@ -27,10 +17,6 @@ export type PasswordLoginRequest = Request<
   unknown,
   PasswordLoginBody
 >;
-
-// =============================================================================
-// OTP Login
-// =============================================================================
 
 export interface OtpSendBody {
   email: string;
@@ -59,10 +45,6 @@ export type OtpVerifyRequest = Request<
   OtpVerifyBody
 >;
 
-// =============================================================================
-// Magic Link Login
-// =============================================================================
-
 export interface MagicLinkSendBody {
   email: string;
 }
@@ -90,26 +72,6 @@ export type MagicLinkVerifyRequest = Request<
   MagicLinkVerifyBody
 >;
 
-// =============================================================================
-// Token Refresh
-// =============================================================================
-
-export interface RefreshTokenResponse {
-  accessToken: string;
-  idToken: string;
-  expiresIn: number;
-}
-
-export type RefreshTokenRequest = Request<
-  Record<string, never>,
-  unknown,
-  Record<string, never>
->;
-
-// =============================================================================
-// Account Unlock
-// =============================================================================
-
 export interface UnlockRequestBody {
   email: string;
 }
@@ -131,16 +93,8 @@ export type UnlockVerifyRequest = Request<
   UnlockVerifyBody
 >;
 
-// =============================================================================
-// Backward Compatibility (deprecated)
-// =============================================================================
-
-/**
- * @deprecated Use PasswordLoginBody instead
- */
+/** @deprecated Use PasswordLoginBody instead */
 export type LoginBody = PasswordLoginBody;
 
-/**
- * @deprecated Use PasswordLoginRequest instead
- */
+/** @deprecated Use PasswordLoginRequest instead */
 export type LoginRequest = PasswordLoginRequest;

@@ -4,6 +4,7 @@ import { commonSchemas, commonResponses } from "./common.schemas";
 import { loginSwaggerSchemas, loginPaths } from "@/modules/login/swagger";
 import { signupSwaggerSchemas, signupPaths } from "@/modules/signup/swagger";
 import { logoutSwaggerSchemas, logoutPaths } from "@/modules/logout/swagger";
+import { tokenSwaggerSchemas, tokenPaths } from "@/modules/token/swagger";
 
 const PORT = ENV.APP_PORT || 3000;
 
@@ -11,13 +12,15 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...commonSchemas,
   ...loginSwaggerSchemas,
   ...signupSwaggerSchemas,
-  ...logoutSwaggerSchemas
+  ...logoutSwaggerSchemas,
+  ...tokenSwaggerSchemas
 };
 
 const allPaths: OpenAPIV3.PathsObject = {
   ...loginPaths,
   ...signupPaths,
-  ...logoutPaths
+  ...logoutPaths,
+  ...tokenPaths
 };
 
 export const openApiSpec: OpenAPIV3.Document = {
@@ -43,8 +46,8 @@ export const openApiSpec: OpenAPIV3.Document = {
       description: "User authentication endpoints"
     },
     {
-      name: "Auth",
-      description: "General authentication endpoints"
+      name: "Auth - Session",
+      description: "Session management endpoints (logout, token refresh)"
     }
   ],
   paths: allPaths,

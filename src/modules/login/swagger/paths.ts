@@ -195,37 +195,5 @@ Verify the magic link token and authenticate the user.
         "422": responses.validationError
       }
     }
-  },
-
-  // ===========================================================================
-  // Token Refresh
-  // ===========================================================================
-  "/auth/login/refresh": {
-    post: {
-      summary: "Refresh access token",
-      description: `
-Get a new access token using the refresh token from HTTP-only cookie.
-
-**Authentication:**
-- Requires valid refresh token in HTTP-only cookie
-
-**Returns:**
-- New access token (\`15 min\` expiry)
-- New ID token
-      `.trim(),
-      tags: ["Auth - Login"],
-      responses: {
-        "200": {
-          description: "Token refreshed successfully",
-          content: {
-            "application/json": {
-              schema: { $ref: "#/components/schemas/RefreshTokenResponse" }
-            }
-          }
-        },
-        "401": { description: "Refresh token required" },
-        "403": { description: "Invalid refresh token" }
-      }
-    }
   }
 };

@@ -4,16 +4,14 @@ import type {
   OtpSendRequest,
   OtpVerifyRequest,
   MagicLinkSendRequest,
-  MagicLinkVerifyRequest,
-  RefreshTokenRequest
+  MagicLinkVerifyRequest
 } from "@/shared/types/modules/login";
 import {
   passwordLoginService,
   sendLoginOtpService,
   verifyLoginOtpService,
   sendMagicLinkService,
-  verifyMagicLinkService,
-  refreshAccessTokenService
+  verifyMagicLinkService
 } from "@/modules/login/service";
 import { OkSuccess } from "@/core/responses/success";
 import { asyncHandler } from "@/core/utils/async-handler";
@@ -87,12 +85,5 @@ export const verifyMagicLinkController = asyncHandler(
     }
 
     new OkSuccess({ data: responseData, message }).send(req, res);
-  }
-);
-
-export const refreshTokenController = asyncHandler(
-  async (req: RefreshTokenRequest, res: Response): Promise<void> => {
-    const { data, message } = await refreshAccessTokenService(req);
-    new OkSuccess({ data, message }).send(req, res);
   }
 );

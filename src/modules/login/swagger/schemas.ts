@@ -48,33 +48,11 @@ const LoginResponseSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-const RefreshTokenResponseSchema: OpenAPIV3.SchemaObject = {
-  type: "object",
-  properties: {
-    accessToken: {
-      type: "string",
-      example: "eyJhbGciOiJIUzI1NiIs...",
-      description: "New JWT access token"
-    },
-    idToken: {
-      type: "string",
-      example: "eyJhbGciOiJIUzI1NiIs...",
-      description: "New JWT ID token"
-    },
-    expiresIn: {
-      type: "integer",
-      example: 900,
-      description: "Access token expiration in seconds"
-    }
-  }
-};
-
 // =============================================================================
 // Export all schemas
 // =============================================================================
 
 export const loginSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
-  // Request schemas (from Joi)
   LoginRequest: LoginRequestSchema as OpenAPIV3.SchemaObject,
   LoginOtpSendRequest: OtpSendRequestSchema as OpenAPIV3.SchemaObject,
   LoginOtpVerifyRequest: OtpVerifyRequestSchema as OpenAPIV3.SchemaObject,
@@ -82,8 +60,5 @@ export const loginSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
     MagicLinkSendRequestSchema as OpenAPIV3.SchemaObject,
   LoginMagicLinkVerifyRequest:
     MagicLinkVerifyRequestSchema as OpenAPIV3.SchemaObject,
-
-  // Response schemas
-  LoginResponse: LoginResponseSchema,
-  RefreshTokenResponse: RefreshTokenResponseSchema
+  LoginResponse: LoginResponseSchema
 };

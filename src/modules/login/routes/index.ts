@@ -4,8 +4,7 @@ import {
   sendOtpController,
   verifyOtpController,
   sendMagicLinkController,
-  verifyMagicLinkController,
-  refreshTokenController
+  verifyMagicLinkController
 } from "@/modules/login/controller";
 import { validate } from "@/shared/middlewares/validation";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
@@ -57,7 +56,5 @@ loginRouter.post(
   validate(magicLinkVerifySchema, "body"),
   verifyMagicLinkController
 );
-
-loginRouter.post("/refresh", refreshTokenController);
 
 export default loginRouter;
