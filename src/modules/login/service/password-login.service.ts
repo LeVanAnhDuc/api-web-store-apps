@@ -166,7 +166,7 @@ const verifyPasswordOrFail = async (
 // =============================================================================
 
 // Fire-and-Forget Pattern
-export const passwordLogin = async (
+export const passwordLoginService = async (
   req: PasswordLoginRequest
 ): Promise<Partial<ResponsePattern<LoginResponse>>> => {
   const { email, password } = req.body;

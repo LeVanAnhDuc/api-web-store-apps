@@ -105,7 +105,7 @@ const applyMagicLinkRateLimits = async (email: string): Promise<void> => {
 // Main Service
 // =============================================================================
 
-export const sendMagicLink = async (
+export const sendMagicLinkService = async (
   req: MagicLinkSendRequest
 ): Promise<Partial<ResponsePattern<MagicLinkSendResponse>>> => {
   const { email } = req.body;

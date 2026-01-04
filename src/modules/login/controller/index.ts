@@ -8,12 +8,12 @@ import type {
   RefreshTokenRequest
 } from "@/shared/types/modules/login";
 import {
-  passwordLogin,
-  sendLoginOtp,
+  passwordLoginService,
+  sendLoginOtpService,
   verifyLoginOtpService,
-  sendMagicLink,
-  verifyMagicLink,
-  refreshAccessToken
+  sendMagicLinkService,
+  verifyMagicLinkService,
+  refreshAccessTokenService
 } from "@/modules/login/service";
 import { OkSuccess } from "@/core/responses/success";
 import { asyncHandler } from "@/core/utils/async-handler";
@@ -24,7 +24,7 @@ import {
 
 export const loginController = asyncHandler(
   async (req: PasswordLoginRequest, res: Response): Promise<void> => {
-    const { data, message } = await passwordLogin(req);
+    const { data, message } = await passwordLoginService(req);
 
     const { refreshToken, ...responseData } = data;
 
@@ -42,7 +42,7 @@ export const loginController = asyncHandler(
 
 export const sendOtpController = asyncHandler(
   async (req: OtpSendRequest, res: Response): Promise<void> => {
-    const { data, message } = await sendLoginOtp(req);
+    const { data, message } = await sendLoginOtpService(req);
     new OkSuccess({ data, message }).send(req, res);
   }
 );
@@ -67,14 +67,14 @@ export const verifyOtpController = asyncHandler(
 
 export const sendMagicLinkController = asyncHandler(
   async (req: MagicLinkSendRequest, res: Response): Promise<void> => {
-    const { data, message } = await sendMagicLink(req);
+    const { data, message } = await sendMagicLinkService(req);
     new OkSuccess({ data, message }).send(req, res);
   }
 );
 
 export const verifyMagicLinkController = asyncHandler(
   async (req: MagicLinkVerifyRequest, res: Response): Promise<void> => {
-    const { data, message } = await verifyMagicLink(req);
+    const { data, message } = await verifyMagicLinkService(req);
 
     const { refreshToken, ...responseData } = data;
 
@@ -92,7 +92,7 @@ export const verifyMagicLinkController = asyncHandler(
 
 export const refreshTokenController = asyncHandler(
   async (req: RefreshTokenRequest, res: Response): Promise<void> => {
-    const { data, message } = await refreshAccessToken(req);
+    const { data, message } = await refreshAccessTokenService(req);
     new OkSuccess({ data, message }).send(req, res);
   }
 );

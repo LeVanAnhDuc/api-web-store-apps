@@ -120,7 +120,7 @@ const applyOtpRateLimits = async (email: string): Promise<void> => {
 // Main Service
 // =============================================================================
 
-export const sendLoginOtp = async (
+export const sendLoginOtpService = async (
   req: OtpSendRequest
 ): Promise<Partial<ResponsePattern<OtpSendResponse>>> => {
   const { email } = req.body;

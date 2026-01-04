@@ -39,7 +39,7 @@ import { TOKEN_EXPIRY } from "@/core/configs/jwt";
 // Main Service
 // =============================================================================
 
-export const refreshAccessToken = async (
+export const refreshAccessTokenService = async (
   req: RefreshTokenRequest
 ): Promise<Partial<ResponsePattern<RefreshTokenResponse>>> => {
   const { t } = req;

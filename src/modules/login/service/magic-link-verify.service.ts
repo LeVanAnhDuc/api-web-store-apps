@@ -87,7 +87,7 @@ const completeSuccessfulLogin = (
 // Main Service
 // =============================================================================
 
-export const verifyMagicLink = async (
+export const verifyMagicLinkService = async (
   req: MagicLinkVerifyRequest
 ): Promise<Partial<ResponsePattern<LoginResponse>>> => {
   const { email, token } = req.body;
