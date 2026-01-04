@@ -1,8 +1,5 @@
 {
   "validation": {
-    "otpRequired": "Mã OTP là bắt buộc",
-    "otpLength": "Mã OTP phải có 6 chữ số",
-    "otpDigitsOnly": "Mã OTP chỉ được chứa chữ số",
     "tokenRequired": "Token là bắt buộc",
     "tokenInvalid": "Token không hợp lệ",
     "sessionIdRequired": "ID phiên là bắt buộc",

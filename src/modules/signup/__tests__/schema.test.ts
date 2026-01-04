@@ -137,7 +137,7 @@ describe("Signup Validation Schemas", () => {
         });
         expect(result.error).toBeDefined();
         expect(result.error?.details[0].message).toBe(
-          "signup:errors.otpRequired"
+          "auth:validation.otpRequired"
         );
       });
 
@@ -147,7 +147,7 @@ describe("Signup Validation Schemas", () => {
         });
         expect(result.error).toBeDefined();
         expect(result.error?.details[0].message).toBe(
-          "signup:errors.otpRequired"
+          "auth:validation.otpRequired"
         );
       });
 
@@ -161,23 +161,23 @@ describe("Signup Validation Schemas", () => {
           });
           expect(result.error).toBeDefined();
           expect(result.error?.details[0].message).toBe(
-            "signup:errors.otpInvalid"
+            "auth:validation.otpDigitsOnly"
           );
         }
       });
 
-      it("should accept OTP with different lengths (pattern only checks digits)", () => {
-        // OTP_PATTERN is /^\d+$/ - accepts any digit string
-        // Length validation might be handled at business logic level
-        const digitOnlyOtps = ["12345", "1234567", "1234"];
+      it("should reject OTP with incorrect length", () => {
+        const invalidLengthOtps = ["12345", "1234567", "1234"];
 
-        for (const otp of digitOnlyOtps) {
+        for (const otp of invalidLengthOtps) {
           const result = verifyOtpSchema.validate({
             email: "test@example.com",
             otp
           });
-          // Pattern accepts digits of any length
-          expect(result.error).toBeUndefined();
+          expect(result.error).toBeDefined();
+          expect(result.error?.details[0].message).toBe(
+            "auth:validation.otpLength"
+          );
         }
       });
     });

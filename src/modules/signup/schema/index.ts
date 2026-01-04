@@ -5,8 +5,8 @@ import {
   AGE_VALIDATION,
   SAFE_FULLNAME_PATTERN
 } from "@/shared/constants/modules/user";
-import { OTP_PATTERN, SESSION_CONFIG } from "@/shared/constants/modules/signup";
-import { emailSchema, passwordSchema } from "@/shared/schemas";
+import { SESSION_CONFIG } from "@/shared/constants/modules/signup";
+import { emailSchema, passwordSchema, otpSchema } from "@/shared/schemas";
 import type {
   SendOtpBody,
   VerifyOtpBody,
@@ -38,11 +38,7 @@ export const resendOtpSchema: Joi.ObjectSchema<SendOtpBody> = Joi.object({
 
 export const verifyOtpSchema: Joi.ObjectSchema<VerifyOtpBody> = Joi.object({
   email: emailSchema.required(),
-  otp: Joi.string().pattern(OTP_PATTERN).required().messages({
-    "string.empty": "signup:errors.otpRequired",
-    "string.pattern.base": "signup:errors.otpInvalid",
-    "any.required": "signup:errors.otpRequired"
-  })
+  otp: otpSchema.required()
 });
 
 export const completeSignupSchema: Joi.ObjectSchema<CompleteSignupBody> =

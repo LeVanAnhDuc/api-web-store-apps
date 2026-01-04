@@ -6,8 +6,6 @@
     "resendLimitExceeded": "You have exceeded the maximum number of OTP resends",
     "invalidOtp": "Invalid OTP",
     "invalidOtpWithRemaining": "Invalid OTP. You have {{remaining}} attempt(s) remaining",
-    "otpRequired": "OTP is required",
-    "otpInvalid": "OTP must contain only digits",
     "otpAttemptsExceeded": "Too many failed attempts. Please try again later",
     "sessionTokenRequired": "Session token is required",
     "sessionTokenInvalid": "Invalid session token format",

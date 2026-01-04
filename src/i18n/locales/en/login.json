@@ -1,8 +1,5 @@
 {
   "validation": {
-    "otpRequired": "OTP code is required",
-    "otpLength": "OTP code must be 6 digits",
-    "otpDigitsOnly": "OTP code must contain only digits",
     "tokenRequired": "Token is required",
     "tokenInvalid": "Token is invalid",
     "sessionIdRequired": "Session ID is required",

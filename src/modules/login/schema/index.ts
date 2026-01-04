@@ -1,9 +1,6 @@
 import Joi from "joi";
-import { emailSchema } from "@/shared/schemas";
-import {
-  LOGIN_OTP_CONFIG,
-  MAGIC_LINK_CONFIG
-} from "@/shared/constants/modules/session";
+import { emailSchema, otpSchema } from "@/shared/schemas";
+import { MAGIC_LINK_CONFIG } from "@/shared/constants/modules/session";
 
 export const loginSchema = Joi.object({
   email: emailSchema.required(),
@@ -19,16 +16,7 @@ export const otpSendSchema = Joi.object({
 
 export const otpVerifySchema = Joi.object({
   email: emailSchema.required(),
-  otp: Joi.string()
-    .length(LOGIN_OTP_CONFIG.LENGTH)
-    .pattern(/^\d+$/)
-    .required()
-    .messages({
-      "string.empty": "login:validation.otpRequired",
-      "string.length": "login:validation.otpLength",
-      "string.pattern.base": "login:validation.otpDigitsOnly",
-      "any.required": "login:validation.otpRequired"
-    })
+  otp: otpSchema.required()
 });
 
 export const magicLinkSendSchema = Joi.object({

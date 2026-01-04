@@ -1,7 +1,3 @@
-/**
- * OTP Configuration for Signup
- * Based on System Design v1.1 specifications
- */
 export const OTP_CONFIG = {
   LENGTH: 6,
   EXPIRY_MINUTES: 5,
@@ -13,25 +9,11 @@ export const OTP_CONFIG = {
   HASH_ROUNDS: 10
 } as const;
 
-/**
- * OTP validation pattern
- * Only allows numeric digits to prevent XSS and injection attacks
- */
-export const OTP_PATTERN = /^\d+$/;
-
-/**
- * Signup Session Configuration
- * Random token-based session for tracking signup progress
- */
 export const SESSION_CONFIG = {
   EXPIRY_MINUTES: 30,
   TOKEN_LENGTH: 32
 } as const;
 
-/**
- * Rate limiting configuration for signup endpoints
- * Implements sliding window algorithm with Redis sorted sets
- */
 export const SIGNUP_RATE_LIMITS = {
   SEND_OTP: {
     PER_IP: {

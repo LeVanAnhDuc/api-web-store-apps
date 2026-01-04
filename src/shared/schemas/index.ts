@@ -3,13 +3,10 @@ import {
   EMAIL_VALIDATION,
   PASSWORD_VALIDATION,
   PASSWORD_PATTERN,
-  SAFE_EMAIL_PATTERN
+  SAFE_EMAIL_PATTERN,
+  OTP_VALIDATION,
+  OTP_PATTERN
 } from "@/shared/constants/modules/auth";
-
-/**
- *  Validates:
- * - Email format (RFC 5322)
- */
 
 export const emailSchema = Joi.string()
   .email()
@@ -35,4 +32,14 @@ export const passwordSchema = Joi.string()
     "string.max": "auth:validation.passwordMaxLength",
     "string.pattern.base": "auth:validation.passwordPattern",
     "any.required": "auth:validation.passwordRequired"
+  });
+
+export const otpSchema = Joi.string()
+  .length(OTP_VALIDATION.LENGTH)
+  .pattern(OTP_PATTERN)
+  .messages({
+    "string.empty": "auth:validation.otpRequired",
+    "string.length": "auth:validation.otpLength",
+    "string.pattern.base": "auth:validation.otpDigitsOnly",
+    "any.required": "auth:validation.otpRequired"
   });

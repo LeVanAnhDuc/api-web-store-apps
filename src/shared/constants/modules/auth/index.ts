@@ -27,3 +27,10 @@ export const PASSWORD_VALIDATION = {
 // At least 1 lowercase, 1 uppercase, 1 digit, 1 special char (@$!%*?&)
 export const PASSWORD_PATTERN =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+
+export const OTP_VALIDATION = {
+  LENGTH: 6
+} as const;
+
+// Only allows numeric digits to prevent XSS and injection attacks
+export const OTP_PATTERN = /^\d+$/;
