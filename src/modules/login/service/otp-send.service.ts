@@ -21,8 +21,16 @@ import { generateLoginOtp } from "@/modules/login/utils/otp";
 import { LOGIN_OTP_CONFIG } from "@/shared/constants/modules/session";
 import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
 
+// =============================================================================
+// Configuration
+// =============================================================================
+
 const OTP_EXPIRY_SECONDS = LOGIN_OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const OTP_COOLDOWN_SECONDS = LOGIN_OTP_CONFIG.COOLDOWN_SECONDS;
+
+// =============================================================================
+// Business Rule Checks (Guard Functions)
+// =============================================================================
 
 const ensureCooldownExpired = async (
   email: string,
@@ -76,6 +84,10 @@ const ensureResendLimitNotExceeded = async (
   }
 };
 
+// =============================================================================
+// OTP Operations
+// =============================================================================
+
 const createNewOtp = async (email: string): Promise<string> => {
   const otp = generateLoginOtp();
 
@@ -102,6 +114,10 @@ const applyOtpRateLimits = async (email: string): Promise<void> => {
     cooldownSeconds: OTP_COOLDOWN_SECONDS
   });
 };
+
+// =============================================================================
+// Main Service
+// =============================================================================
 
 export const sendLoginOtp = async (
   req: OtpSendRequest
