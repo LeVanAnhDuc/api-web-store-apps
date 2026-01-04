@@ -7,6 +7,7 @@ import type {
 import type { AuthDocument } from "@/shared/types/modules/auth";
 import { UnauthorizedError, BadRequestError } from "@/core/responses/error";
 import { Logger } from "@/core/utils/logger";
+import { withRetry } from "@/core/utils/retry";
 import { findAuthByEmail } from "@/modules/login/repository";
 import {
   verifyLoginOtp,
@@ -107,13 +108,11 @@ const handleInvalidOtp = async (
   );
 };
 
-const completeSuccessfulLogin = async (
+const completeSuccessfulLogin = (
   email: string,
   auth: AuthDocument,
   req: OtpVerifyRequest
-): Promise<LoginResponse> => {
-  await cleanupLoginOtpData(email);
-
+): LoginResponse => {
   updateLastLogin(auth._id.toString());
 
   recordSuccessfulLogin({
@@ -148,14 +147,15 @@ export const verifyLoginOtpService = async (
 
   const isValid = await verifyLoginOtp(email, otp);
 
-  if (!isValid) {
-    await handleInvalidOtp(email, auth, language, req);
-  }
+  if (!isValid) await handleInvalidOtp(email, auth, language, req);
 
-  const loginResponse = await completeSuccessfulLogin(email, auth, req);
+  withRetry(() => cleanupLoginOtpData(email), {
+    operationName: "cleanupLoginOtpData",
+    context: { email }
+  });
 
   return {
     message: t("login:success.loginSuccessful"),
-    data: loginResponse
+    data: completeSuccessfulLogin(email, auth, req)
   };
 };
