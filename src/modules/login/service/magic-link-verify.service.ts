@@ -2,11 +2,11 @@ import type { TFunction } from "i18next";
 import type {
   MagicLinkVerifyRequest,
   LoginResponse
-} from "@/shared/types/modules/login";
-import type { AuthDocument } from "@/shared/types/modules/auth";
-import { UnauthorizedError } from "@/core/responses/error";
-import { Logger } from "@/core/utils/logger";
-import { withRetry } from "@/core/utils/retry";
+} from "@/modules/login/types";
+import type { AuthDocument } from "@/modules/auth/types";
+import { UnauthorizedError } from "@/infra/responses/error";
+import { Logger } from "@/infra/utils/logger";
+import { withRetry } from "@/infra/utils/retry";
 import { findAuthByEmail } from "@/modules/login/repository";
 import {
   verifyMagicLinkToken,
@@ -18,15 +18,7 @@ import {
   recordSuccessfulLogin,
   recordFailedLogin
 } from "./shared";
-import {
-  LOGIN_METHODS,
-  LOGIN_FAIL_REASONS
-} from "@/shared/constants/modules/session";
-
-// =============================================================================
-// Business Rule Checks (Guard Functions)
-// =============================================================================
-
+import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
 const ensureAuthExists = async (
   email: string,
   t: TFunction
@@ -40,11 +32,6 @@ const ensureAuthExists = async (
 
   return auth;
 };
-
-// =============================================================================
-// Verification Handlers
-// =============================================================================
-
 const handleInvalidToken = (
   email: string,
   auth: AuthDocument,
@@ -82,11 +69,6 @@ const completeSuccessfulLogin = (
 
   return generateLoginTokens(auth);
 };
-
-// =============================================================================
-// Main Service
-// =============================================================================
-
 export const verifyMagicLinkService = async (
   req: MagicLinkVerifyRequest
 ): Promise<Partial<ResponsePattern<LoginResponse>>> => {

@@ -1,9 +1,6 @@
-// libs
 import type { ConnectOptions } from "mongoose";
-// types
-import type { MongoConfig } from "@/shared/types/databases/mongodb";
-// configs
-import config from "@/core/configs/env";
+import type { MongoConfig } from "@/app/types/databases/mongodb";
+import config from "@/infra/configs/env";
 
 export const MAX_RECONNECT_ATTEMPTS = 10;
 

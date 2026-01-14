@@ -1,12 +1,9 @@
 import i18next from "@/i18n";
 import type { TFunction } from "i18next";
-import type {
-  OtpSendRequest,
-  OtpSendResponse
-} from "@/shared/types/modules/login";
-import { BadRequestError, UnauthorizedError } from "@/core/responses/error";
-import { Logger } from "@/core/utils/logger";
-import { withRetry } from "@/core/utils/retry";
+import type { OtpSendRequest, OtpSendResponse } from "@/modules/login/types";
+import { BadRequestError, UnauthorizedError } from "@/infra/responses/error";
+import { Logger } from "@/infra/utils/logger";
+import { withRetry } from "@/infra/utils/retry";
 import { findAuthByEmail } from "@/modules/login/repository";
 import {
   checkLoginOtpCooldown,
@@ -19,20 +16,10 @@ import {
 } from "@/modules/login/utils/store";
 import { notifyLoginOtpByEmail } from "@/modules/login/notifier";
 import { generateLoginOtp } from "@/modules/login/utils/otp";
-import { LOGIN_OTP_CONFIG } from "@/shared/constants/modules/session";
-import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
-
-// =============================================================================
-// Configuration
-// =============================================================================
-
+import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
+import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 const OTP_EXPIRY_SECONDS = LOGIN_OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const OTP_COOLDOWN_SECONDS = LOGIN_OTP_CONFIG.COOLDOWN_SECONDS;
-
-// =============================================================================
-// Business Rule Checks (Guard Functions)
-// =============================================================================
-
 const ensureCooldownExpired = async (
   email: string,
   language: string
@@ -84,11 +71,6 @@ const ensureResendLimitNotExceeded = async (
     throw new BadRequestError(t("login:errors.otpResendLimitExceeded"));
   }
 };
-
-// =============================================================================
-// OTP Operations
-// =============================================================================
-
 const createNewOtp = async (email: string): Promise<string> => {
   const otp = generateLoginOtp();
 
@@ -115,11 +97,6 @@ const applyOtpRateLimits = async (email: string): Promise<void> => {
     cooldownSeconds: OTP_COOLDOWN_SECONDS
   });
 };
-
-// =============================================================================
-// Main Service
-// =============================================================================
-
 export const sendLoginOtpService = async (
   req: OtpSendRequest
 ): Promise<Partial<ResponsePattern<OtpSendResponse>>> => {

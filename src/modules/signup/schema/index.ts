@@ -4,15 +4,15 @@ import {
   FULLNAME_VALIDATION,
   AGE_VALIDATION,
   SAFE_FULLNAME_PATTERN
-} from "@/shared/constants/modules/user";
-import { SESSION_CONFIG } from "@/shared/constants/modules/signup";
-import { emailSchema, passwordSchema, otpSchema } from "@/shared/schemas";
+} from "@/modules/user/constants";
+import { SESSION_CONFIG } from "@/modules/signup/constants";
+import { emailSchema, passwordSchema, otpSchema } from "@/app/schemas";
 import type {
   SendOtpBody,
   VerifyOtpBody,
   CompleteSignupBody,
   CheckEmailParams
-} from "@/shared/types/modules/signup";
+} from "@/modules/signup/types";
 
 const GENDER_VALUES = Object.values(GENDERS);
 

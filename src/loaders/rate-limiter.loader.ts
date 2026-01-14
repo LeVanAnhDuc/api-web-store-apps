@@ -1,6 +1,6 @@
 import instanceRedis from "@/database/redis";
-import { RateLimiterMiddleware } from "@/shared/middlewares/rate-limiter.middleware";
-import { Logger } from "@/core/utils/logger";
+import { RateLimiterMiddleware } from "@/app/middlewares/rate-limiter.middleware";
+import { Logger } from "@/infra/utils/logger";
 
 // Using `let` because instance is created at runtime after Redis connects
 let rateLimiterMiddleware: RateLimiterMiddleware;

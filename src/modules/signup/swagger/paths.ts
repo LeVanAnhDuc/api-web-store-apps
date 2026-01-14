@@ -1,9 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
 
 export const signupPaths: OpenAPIV3.PathsObject = {
-  // ===========================================================================
-  // Send OTP
-  // ===========================================================================
   "/auth/signup/send-otp": {
     post: {
       summary: "Send OTP to email",
@@ -61,9 +58,6 @@ Step 1 of signup flow. Sends a 6-digit OTP to the provided email address.
     }
   },
 
-  // ===========================================================================
-  // Verify OTP
-  // ===========================================================================
   "/auth/signup/verify-otp": {
     post: {
       summary: "Verify OTP code",
@@ -146,9 +140,6 @@ Step 2 of signup flow. Verifies the OTP code submitted by user.
     }
   },
 
-  // ===========================================================================
-  // Resend OTP
-  // ===========================================================================
   "/auth/signup/resend-otp": {
     post: {
       summary: "Resend OTP code",
@@ -210,9 +201,6 @@ Request a new OTP code. Tracks resend count.
     }
   },
 
-  // ===========================================================================
-  // Complete Signup
-  // ===========================================================================
   "/auth/signup/complete": {
     post: {
       summary: "Complete signup",
@@ -283,9 +271,6 @@ Step 3 (final) of signup flow. Completes registration with user profile data.
     }
   },
 
-  // ===========================================================================
-  // Check Email
-  // ===========================================================================
   "/auth/signup/check-email/{email}": {
     get: {
       summary: "Check email availability",

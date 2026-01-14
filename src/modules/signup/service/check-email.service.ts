@@ -10,22 +10,14 @@
  * Rate Limiting: Handled by middleware (per IP)
  */
 
-// types
 import type {
   CheckEmailRequest,
   CheckEmailResponse
-} from "@/shared/types/modules/signup";
+} from "@/modules/signup/types";
 
-// repository
 import { isEmailRegistered } from "@/modules/signup/repository";
 
-// logger
-import Logger from "@/core/utils/logger";
-
-// =============================================================================
-// Main Service
-// =============================================================================
-
+import Logger from "@/infra/utils/logger";
 export const checkEmail = async (
   req: CheckEmailRequest
 ): Promise<Partial<ResponsePattern<CheckEmailResponse>>> => {

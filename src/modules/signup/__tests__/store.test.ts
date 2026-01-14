@@ -14,13 +14,12 @@ import * as signupStore from "../utils/store";
 import instanceRedis from "@/database/redis/redis.database";
 import * as bcrypt from "bcrypt";
 
-// Mock Redis client
 jest.mock("@/database/redis/redis.database", () => ({
   getClient: jest.fn()
 }));
 
 jest.mock("bcrypt");
-jest.mock("@/core/utils/logger");
+jest.mock("@/infra/utils/logger");
 
 const mockRedis = {
   exists: jest.fn(),
@@ -39,9 +38,7 @@ describe("Signup Store (Redis Operations)", () => {
     (instanceRedis.getClient as jest.Mock).mockReturnValue(mockRedis);
   });
 
-  // ===========================================================================
   // OTP Cooldown Operations
-  // ===========================================================================
   describe("OTP Cooldown Operations", () => {
     describe("checkOtpCoolDown", () => {
       it("should return true when no cooldown exists", async () => {
@@ -108,9 +105,7 @@ describe("Signup Store (Redis Operations)", () => {
     });
   });
 
-  // ===========================================================================
   // OTP Operations
-  // ===========================================================================
   describe("OTP Operations", () => {
     describe("createAndStoreOtp", () => {
       it("should hash OTP and store with TTL", async () => {
@@ -207,9 +202,7 @@ describe("Signup Store (Redis Operations)", () => {
     });
   });
 
-  // ===========================================================================
   // Session Operations
-  // ===========================================================================
   describe("Session Operations", () => {
     describe("storeSession", () => {
       it("should store session token with TTL", async () => {
@@ -288,9 +281,7 @@ describe("Signup Store (Redis Operations)", () => {
     });
   });
 
-  // ===========================================================================
   // Failed Attempts Operations
-  // ===========================================================================
   describe("Failed Attempts Operations", () => {
     describe("incrementFailedOtpAttempts", () => {
       it("should increment and return count", async () => {
@@ -409,9 +400,7 @@ describe("Signup Store (Redis Operations)", () => {
     });
   });
 
-  // ===========================================================================
   // Resend Count Operations
-  // ===========================================================================
   describe("Resend Count Operations", () => {
     describe("incrementResendCount", () => {
       it("should increment and return count", async () => {
@@ -494,9 +483,7 @@ describe("Signup Store (Redis Operations)", () => {
     });
   });
 
-  // ===========================================================================
   // Cleanup Operations
-  // ===========================================================================
   describe("Cleanup Operations", () => {
     describe("cleanupOtpData", () => {
       it("should call all cleanup functions in parallel", async () => {
@@ -521,9 +508,7 @@ describe("Signup Store (Redis Operations)", () => {
     });
   });
 
-  // ===========================================================================
   // Edge Cases
-  // ===========================================================================
   describe("Edge Cases", () => {
     it("should handle empty email gracefully", async () => {
       mockRedis.exists.mockResolvedValue(0);

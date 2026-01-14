@@ -5,7 +5,7 @@ import type {
   OtpVerifyRequest,
   MagicLinkSendRequest,
   MagicLinkVerifyRequest
-} from "@/shared/types/modules/login";
+} from "@/modules/login/types";
 import {
   passwordLoginService,
   sendLoginOtpService,
@@ -13,12 +13,12 @@ import {
   sendMagicLinkService,
   verifyMagicLinkService
 } from "@/modules/login/service";
-import { OkSuccess } from "@/core/responses/success";
-import { asyncHandler } from "@/core/utils/async-handler";
+import { OkSuccess } from "@/infra/responses/success";
+import { asyncHandler } from "@/infra/utils/async-handler";
 import {
   COOKIE_NAMES,
   REFRESH_TOKEN_COOKIE_OPTIONS
-} from "@/core/configs/cookie";
+} from "@/infra/configs/cookie";
 
 export const loginController = asyncHandler(
   async (req: PasswordLoginRequest, res: Response): Promise<void> => {

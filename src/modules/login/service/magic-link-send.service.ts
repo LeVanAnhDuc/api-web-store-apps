@@ -3,10 +3,10 @@ import type { TFunction } from "i18next";
 import type {
   MagicLinkSendRequest,
   MagicLinkSendResponse
-} from "@/shared/types/modules/login";
-import { BadRequestError, UnauthorizedError } from "@/core/responses/error";
-import { Logger } from "@/core/utils/logger";
-import { withRetry } from "@/core/utils/retry";
+} from "@/modules/login/types";
+import { BadRequestError, UnauthorizedError } from "@/infra/responses/error";
+import { Logger } from "@/infra/utils/logger";
+import { withRetry } from "@/infra/utils/retry";
 import { findAuthByEmail } from "@/modules/login/repository";
 import {
   checkMagicLinkCooldown,
@@ -17,21 +17,11 @@ import {
   generateMagicLinkToken
 } from "@/modules/login/utils/store";
 import { notifyMagicLinkByEmail } from "@/modules/login/notifier";
-import { MAGIC_LINK_CONFIG } from "@/shared/constants/modules/session";
-import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
-
-// =============================================================================
-// Configuration
-// =============================================================================
-
+import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
+import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 const MAGIC_LINK_EXPIRY_SECONDS =
   MAGIC_LINK_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const MAGIC_LINK_COOLDOWN_SECONDS = MAGIC_LINK_CONFIG.COOLDOWN_SECONDS;
-
-// =============================================================================
-// Business Rule Checks (Guard Functions)
-// =============================================================================
-
 const ensureCooldownExpired = async (
   email: string,
   language: string
@@ -72,11 +62,6 @@ const ensureEmailExists = async (
     throw new UnauthorizedError(t("login:errors.emailNotVerified"));
   }
 };
-
-// =============================================================================
-// Business Operations
-// =============================================================================
-
 const createNewMagicLink = async (email: string): Promise<string> => {
   const token = generateMagicLinkToken();
 
@@ -100,11 +85,6 @@ const applyMagicLinkRateLimits = async (email: string): Promise<void> => {
     cooldownSeconds: MAGIC_LINK_COOLDOWN_SECONDS
   });
 };
-
-// =============================================================================
-// Main Service
-// =============================================================================
-
 export const sendMagicLinkService = async (
   req: MagicLinkSendRequest
 ): Promise<Partial<ResponsePattern<MagicLinkSendResponse>>> => {

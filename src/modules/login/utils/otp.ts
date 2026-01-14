@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { LOGIN_OTP_CONFIG } from "@/shared/constants/modules/session";
+import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
 
 const RANDOM_BYTES_SIZE = 4;
 

@@ -1,15 +1,12 @@
-// libs
 import { Schema, model, type Model } from "mongoose";
-// types
-import type { UserDocument } from "@/shared/types/modules/user";
-// constants
+import type { UserDocument } from "@/modules/user/types";
 import {
   GENDERS,
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN,
   SAFE_ADDRESS_PATTERN
-} from "@/shared/constants/modules/user";
-import { MODEL_NAMES } from "@/shared/constants/models";
+} from "@/modules/user/constants";
+import { MODEL_NAMES } from "@/app/constants/models";
 
 const { USER, AUTHENTICATION } = MODEL_NAMES;
 

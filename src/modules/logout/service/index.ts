@@ -7,11 +7,9 @@
  * 2. Client deletes access token from memory
  */
 
-// types
-import type { LogoutRequest } from "@/shared/types/modules/logout";
+import type { LogoutRequest } from "@/modules/logout/types";
 
-// utils
-import { Logger } from "@/core/utils/logger";
+import { Logger } from "@/infra/utils/logger";
 
 /**
  * Logout - Clear refresh token cookie

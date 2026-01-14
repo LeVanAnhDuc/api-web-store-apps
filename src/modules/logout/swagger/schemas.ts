@@ -1,9 +1,4 @@
 import type { OpenAPIV3 } from "openapi-types";
-
-// =============================================================================
-// Response Schemas
-// =============================================================================
-
 const LogoutResponseSchema: OpenAPIV3.SchemaObject = {
   type: "object",
   properties: {
@@ -14,11 +9,6 @@ const LogoutResponseSchema: OpenAPIV3.SchemaObject = {
     }
   }
 };
-
-// =============================================================================
-// Export all schemas
-// =============================================================================
-
 export const logoutSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   LogoutResponse: LogoutResponseSchema
 };

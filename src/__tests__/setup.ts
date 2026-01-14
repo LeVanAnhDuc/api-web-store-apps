@@ -1,6 +1,3 @@
-// Global test setup
-
-// Mock Redis database
 jest.mock("@/database/redis/redis.database", () => ({
   default: {
     getClient: jest.fn()
@@ -8,8 +5,7 @@ jest.mock("@/database/redis/redis.database", () => ({
   __esModule: true
 }));
 
-// Mock Logger
-jest.mock("@/core/utils/logger", () => ({
+jest.mock("@/infra/utils/logger", () => ({
   Logger: {
     info: jest.fn(),
     error: jest.fn(),
@@ -18,7 +14,6 @@ jest.mock("@/core/utils/logger", () => ({
   }
 }));
 
-// Mock i18next
 jest.mock("@/i18n", () => ({
   default: {
     t: jest.fn((key: string) => key),
@@ -27,7 +22,6 @@ jest.mock("@/i18n", () => ({
   __esModule: true
 }));
 
-// Clear all mocks after each test
 afterEach(() => {
   jest.clearAllMocks();
 });

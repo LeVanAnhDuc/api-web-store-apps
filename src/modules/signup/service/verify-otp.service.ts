@@ -11,23 +11,18 @@
  * Security: Implements brute force protection with lockout
  */
 
-// libs
 import i18next from "@/i18n";
 
-// types
 import type { TFunction } from "i18next";
 import type {
   VerifyOtpRequest,
   VerifyOtpResponse
-} from "@/shared/types/modules/signup";
+} from "@/modules/signup/types";
 
-// errors
-import { BadRequestError } from "@/core/responses/error";
+import { BadRequestError } from "@/infra/responses/error";
 
-// logger
-import { Logger } from "@/core/utils/logger";
+import { Logger } from "@/infra/utils/logger";
 
-// store (Redis operations)
 import {
   verifyOtp as verifyOtpFromStore,
   isOtpAccountLocked,
@@ -36,22 +31,15 @@ import {
   cleanupOtpData
 } from "@/modules/signup/utils/store";
 
-// utils
 import { generateSessionId } from "@/modules/signup/utils/otp";
 
-// constants
-import { OTP_CONFIG, SESSION_CONFIG } from "@/shared/constants/modules/signup";
-import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
+import { OTP_CONFIG, SESSION_CONFIG } from "@/modules/signup/constants";
+import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 
 const TIME_MAX_FAILED_ATTEMPTS = OTP_CONFIG.MAX_FAILED_ATTEMPTS;
 const TIME_LOCKOUT_DURATION_MINUTES = OTP_CONFIG.LOCKOUT_DURATION_MINUTES;
 const TIME_EXPIRES_SESSION_MINUTES =
   SESSION_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
-
-// =============================================================================
-// Business Rule Checks (Guard Functions)
-// =============================================================================
-
 const ensureAccountNotLocked = async (
   email: string,
   t: TFunction
@@ -100,11 +88,6 @@ const verifyOtpMatch = async (
     throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
   }
 };
-
-// =============================================================================
-// Business Operations
-// =============================================================================
-
 const createSignupSession = async (email: string): Promise<string> => {
   const sessionToken = generateSessionId();
 
@@ -117,11 +100,6 @@ const createSignupSession = async (email: string): Promise<string> => {
 
   return sessionToken;
 };
-
-// =============================================================================
-// Main Service
-// =============================================================================
-
 export const verifyOtp = async (
   req: VerifyOtpRequest
 ): Promise<Partial<ResponsePattern<VerifyOtpResponse>>> => {

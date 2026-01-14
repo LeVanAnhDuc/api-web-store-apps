@@ -10,7 +10,7 @@
 import { verifyOtp } from "../service/verify-otp.service";
 import * as signupStore from "../utils/store";
 import * as otpUtils from "../utils/otp";
-import { BadRequestError } from "@/core/responses/error";
+import { BadRequestError } from "@/infra/responses/error";
 import {
   createVerifyOtpRequest,
   mockOtp,
@@ -18,10 +18,9 @@ import {
   TEST_EMAIL
 } from "./helpers";
 
-// Mock dependencies
 jest.mock("../utils/store");
 jest.mock("../utils/otp");
-jest.mock("@/core/utils/logger");
+jest.mock("@/infra/utils/logger");
 jest.mock("@/i18n", () => ({
   t: jest.fn((key: string, opts?: Record<string, unknown>) => {
     if (opts?.remaining !== undefined) {
@@ -46,9 +45,7 @@ describe("VerifyOtp Service", () => {
     mockStore.cleanupOtpData.mockResolvedValue(undefined);
   });
 
-  // ===========================================================================
   // Happy Case Tests
-  // ===========================================================================
   describe("Happy Case - OTP Verified Successfully", () => {
     it("should return success response with session token when OTP is valid", async () => {
       const req = createVerifyOtpRequest(TEST_EMAIL, mockOtp);
@@ -149,9 +146,7 @@ describe("VerifyOtp Service", () => {
     });
   });
 
-  // ===========================================================================
   // Failure Case Tests
-  // ===========================================================================
   describe("Failure Cases", () => {
     describe("Account Locked", () => {
       it("should throw BadRequestError when account is locked", async () => {
@@ -272,9 +267,7 @@ describe("VerifyOtp Service", () => {
     });
   });
 
-  // ===========================================================================
   // Edge Case Tests
-  // ===========================================================================
   describe("Edge Cases", () => {
     it("should handle first failed attempt correctly", async () => {
       mockStore.verifyOtp.mockResolvedValue(false);
@@ -358,9 +351,7 @@ describe("VerifyOtp Service", () => {
     });
   });
 
-  // ===========================================================================
   // Security Tests
-  // ===========================================================================
   describe("Security - Brute Force Protection", () => {
     it("should check account lockout status before any processing", async () => {
       const req = createVerifyOtpRequest(TEST_EMAIL, mockOtp);

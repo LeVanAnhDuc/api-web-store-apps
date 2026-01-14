@@ -1,19 +1,19 @@
 import type { Schema } from "mongoose";
 import type { Request } from "express";
-import type { AuthDocument } from "@/shared/types/modules/auth";
-import type { LoginMethod } from "@/shared/types/modules/session";
+import type { AuthDocument } from "@/modules/auth/types";
+import type { LoginMethod } from "@/modules/login/types";
 import type {
   CreateLoginHistoryInput,
   LoginStatus,
   LoginFailReason
-} from "@/shared/types/modules/login-history";
-import type { LoginResponse } from "@/shared/types/modules/login";
-import { generatePairToken } from "@/core/helpers/jwt";
-import { withRetry } from "@/core/utils/retry";
+} from "@/modules/login-history/types";
+import type { LoginResponse } from "@/modules/login/types";
+import { generatePairToken } from "@/app/services/auth/jwt.service";
+import { withRetry } from "@/infra/utils/retry";
 import { getClientIp } from "@/modules/login/utils/device";
 import { createLoginHistory } from "@/modules/login-history/repository";
 import { updateLastLogin as updateLastLoginRepo } from "@/modules/login/repository";
-import { TOKEN_EXPIRY } from "@/core/configs/jwt";
+import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
 
 export const generateLoginTokens = (auth: AuthDocument): LoginResponse => {
   const tokenPayload = {

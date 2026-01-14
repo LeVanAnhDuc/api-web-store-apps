@@ -17,9 +17,7 @@ import {
 } from "../schema";
 
 describe("Signup Validation Schemas", () => {
-  // ===========================================================================
   // sendOtpSchema Tests
-  // ===========================================================================
   describe("sendOtpSchema", () => {
     describe("Happy Cases", () => {
       it("should accept valid email", () => {
@@ -94,9 +92,7 @@ describe("Signup Validation Schemas", () => {
     });
   });
 
-  // ===========================================================================
   // resendOtpSchema Tests
-  // ===========================================================================
   describe("resendOtpSchema", () => {
     it("should have same validation as sendOtpSchema", () => {
       const validEmail = { email: "test@example.com" };
@@ -107,9 +103,7 @@ describe("Signup Validation Schemas", () => {
     });
   });
 
-  // ===========================================================================
   // verifyOtpSchema Tests
-  // ===========================================================================
   describe("verifyOtpSchema", () => {
     describe("Happy Cases", () => {
       it("should accept valid email and OTP", () => {
@@ -193,9 +187,7 @@ describe("Signup Validation Schemas", () => {
     });
   });
 
-  // ===========================================================================
   // completeSignupSchema Tests
-  // ===========================================================================
   describe("completeSignupSchema", () => {
     const validData = {
       email: "test@example.com",
@@ -463,9 +455,7 @@ describe("Signup Validation Schemas", () => {
     });
   });
 
-  // ===========================================================================
   // checkEmailSchema Tests
-  // ===========================================================================
   describe("checkEmailSchema", () => {
     it("should accept valid email", () => {
       const result = checkEmailSchema.validate({ email: "test@example.com" });
@@ -478,9 +468,7 @@ describe("Signup Validation Schemas", () => {
     });
   });
 
-  // ===========================================================================
   // Security Tests
-  // ===========================================================================
   describe("Security - XSS Prevention", () => {
     it("should reject email with script tags", () => {
       const result = sendOtpSchema.validate({

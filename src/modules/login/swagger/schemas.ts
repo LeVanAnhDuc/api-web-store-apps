@@ -7,21 +7,11 @@ import {
   magicLinkSendSchema,
   magicLinkVerifySchema
 } from "@/modules/login/schema";
-
-// =============================================================================
-// Request Schemas (Generated from Joi)
-// =============================================================================
-
 const { swagger: LoginRequestSchema } = j2s(loginSchema);
 const { swagger: OtpSendRequestSchema } = j2s(otpSendSchema);
 const { swagger: OtpVerifyRequestSchema } = j2s(otpVerifySchema);
 const { swagger: MagicLinkSendRequestSchema } = j2s(magicLinkSendSchema);
 const { swagger: MagicLinkVerifyRequestSchema } = j2s(magicLinkVerifySchema);
-
-// =============================================================================
-// Response Schemas (Manual - not derived from Joi)
-// =============================================================================
-
 const LoginResponseSchema: OpenAPIV3.SchemaObject = {
   type: "object",
   properties: {
@@ -47,11 +37,6 @@ const LoginResponseSchema: OpenAPIV3.SchemaObject = {
     }
   }
 };
-
-// =============================================================================
-// Export all schemas
-// =============================================================================
-
 export const loginSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   LoginRequest: LoginRequestSchema as OpenAPIV3.SchemaObject,
   LoginOtpSendRequest: OtpSendRequestSchema as OpenAPIV3.SchemaObject,

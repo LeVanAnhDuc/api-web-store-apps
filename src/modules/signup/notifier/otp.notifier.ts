@@ -5,7 +5,7 @@
  */
 
 import { sendOtpEmail } from "@/modules/signup/email/send-otp-email";
-import { Logger } from "@/core/utils/logger";
+import { Logger } from "@/infra/utils/logger";
 
 /**
  * Send OTP verification email asynchronously

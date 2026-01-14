@@ -13,23 +13,15 @@
  * Validation: Handled by schema layer
  */
 
-// types
 import type { TFunction } from "i18next";
-import type {
-  SendOtpRequest,
-  SendOtpResponse
-} from "@/shared/types/modules/signup";
+import type { SendOtpRequest, SendOtpResponse } from "@/modules/signup/types";
 
-// errors
-import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
+import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
 
-// logger
-import { Logger } from "@/core/utils/logger";
+import { Logger } from "@/infra/utils/logger";
 
-// repository
 import { isEmailRegistered } from "@/modules/signup/repository";
 
-// store (Redis operations)
 import {
   checkOtpCoolDown,
   setOtpCoolDown,
@@ -37,20 +29,12 @@ import {
   deleteOtp
 } from "@/modules/signup/utils/store";
 
-// notifier
 import { notifyOtpByEmail } from "@/modules/signup/notifier";
 
-// utils
 import { generateOtp } from "@/modules/signup/utils/otp";
 
-// constants
-import { OTP_CONFIG } from "@/shared/constants/modules/signup";
-import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
-
-// =============================================================================
-// Business Rule Checks (Guard Functions)
-// =============================================================================
-
+import { OTP_CONFIG } from "@/modules/signup/constants";
+import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 const TIME_OTP_EXPIRES = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const TIME_OTP_RESEND = OTP_CONFIG.RESEND_COOLDOWN_SECONDS;
 
@@ -77,11 +61,6 @@ const ensureEmailNotRegistered = async (
     throw new ConflictRequestError(t("signup:errors.emailAlreadyExists"));
   }
 };
-
-// =============================================================================
-// Business Operations
-// =============================================================================
-
 const createNewOtp = async (email: string): Promise<string> => {
   const otp = generateOtp();
 
@@ -105,11 +84,6 @@ const startCooldown = async (email: string): Promise<void> => {
     cooldownSeconds: TIME_OTP_RESEND
   });
 };
-
-// =============================================================================
-// Main Service
-// =============================================================================
-
 export const sendOtp = async (
   req: SendOtpRequest
 ): Promise<Partial<ResponsePattern<SendOtpResponse>>> => {

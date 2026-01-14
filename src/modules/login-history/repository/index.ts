@@ -4,20 +4,17 @@
  * This is an append-only audit log - no updates allowed
  */
 
-// types
 import type { Schema } from "mongoose";
 import type {
   LoginHistoryDocument,
   CreateLoginHistoryInput,
   LoginHistoryResponse,
   LoginHistoryFilter
-} from "@/shared/types/modules/login-history";
+} from "@/modules/login-history/types";
 
-// models
 import LoginHistoryModel from "@/modules/login-history/model";
 
-// constants
-import { LOGIN_STATUSES } from "@/shared/constants/modules/session";
+import { LOGIN_STATUSES } from "@/modules/login/constants";
 
 /**
  * Create a new login history entry

@@ -5,8 +5,8 @@
  */
 
 import { sendUnlockEmail } from "@/modules/login/email/send-unlock-email";
-import { Logger } from "@/core/utils/logger";
-import ENV from "@/core/configs/env";
+import { Logger } from "@/infra/utils/logger";
+import ENV from "@/infra/configs/env";
 
 /**
  * Send account unlock email asynchronously

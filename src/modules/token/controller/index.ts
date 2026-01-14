@@ -1,8 +1,8 @@
 import type { Response } from "express";
-import type { RefreshTokenRequest } from "@/shared/types/modules/token";
+import type { RefreshTokenRequest } from "@/modules/token/types";
 import { refreshAccessTokenService } from "@/modules/token/service";
-import { OkSuccess } from "@/core/responses/success";
-import { asyncHandler } from "@/core/utils/async-handler";
+import { OkSuccess } from "@/infra/responses/success";
+import { asyncHandler } from "@/infra/utils/async-handler";
 
 export const refreshTokenController = asyncHandler(
   async (req: RefreshTokenRequest, res: Response): Promise<void> => {

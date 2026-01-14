@@ -1,8 +1,8 @@
 import i18next from "@/i18n";
-import { NodemailerTransport } from "@/shared/services/implements/NodemailerTransport";
-import { renderEmailTemplate } from "@/shared/utils/email";
-import { Logger } from "@/core/utils/logger";
-import { ACCOUNT_UNLOCK_CONFIG } from "@/shared/constants/modules/session";
+import { NodemailerTransport } from "@/app/services/implements/NodemailerTransport";
+import { renderEmailTemplate } from "@/app/utils/email";
+import { Logger } from "@/infra/utils/logger";
+import { ACCOUNT_UNLOCK_CONFIG } from "@/modules/login/constants";
 
 export const sendUnlockEmail = async (
   email: string,

@@ -1,13 +1,10 @@
 import i18next from "@/i18n";
 import type { TFunction } from "i18next";
-import type {
-  OtpVerifyRequest,
-  LoginResponse
-} from "@/shared/types/modules/login";
-import type { AuthDocument } from "@/shared/types/modules/auth";
-import { UnauthorizedError, BadRequestError } from "@/core/responses/error";
-import { Logger } from "@/core/utils/logger";
-import { withRetry } from "@/core/utils/retry";
+import type { OtpVerifyRequest, LoginResponse } from "@/modules/login/types";
+import type { AuthDocument } from "@/modules/auth/types";
+import { UnauthorizedError, BadRequestError } from "@/infra/responses/error";
+import { Logger } from "@/infra/utils/logger";
+import { withRetry } from "@/infra/utils/retry";
 import { findAuthByEmail } from "@/modules/login/repository";
 import {
   verifyLoginOtp,
@@ -26,12 +23,7 @@ import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS,
   LOGIN_OTP_CONFIG
-} from "@/shared/constants/modules/session";
-
-// =============================================================================
-// Business Rule Checks (Guard Functions)
-// =============================================================================
-
+} from "@/modules/login/constants";
 const ensureNotLocked = async (
   email: string,
   language: string
@@ -64,11 +56,6 @@ const ensureAuthExists = async (
 
   return auth;
 };
-
-// =============================================================================
-// OTP Verification Handlers
-// =============================================================================
-
 const handleInvalidOtp = async (
   email: string,
   auth: AuthDocument,
@@ -128,11 +115,6 @@ const completeSuccessfulLogin = (
 
   return generateLoginTokens(auth);
 };
-
-// =============================================================================
-// Main Service
-// =============================================================================
-
 export const verifyLoginOtpService = async (
   req: OtpVerifyRequest
 ): Promise<Partial<ResponsePattern<LoginResponse>>> => {

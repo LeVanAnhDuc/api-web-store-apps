@@ -2,19 +2,15 @@ import type { TFunction } from "i18next";
 import type {
   RefreshTokenRequest,
   RefreshTokenResponse
-} from "@/shared/types/modules/token";
-import { UnauthorizedError, ForbiddenError } from "@/core/responses/error";
+} from "@/modules/token/types";
+import { UnauthorizedError, ForbiddenError } from "@/infra/responses/error";
 import {
   verifyRefreshToken,
   generateAccessToken,
   generateResetIdToken
-} from "@/core/helpers/jwt";
-import { Logger } from "@/core/utils/logger";
-import { TOKEN_EXPIRY } from "@/core/configs/jwt";
-
-// =============================================================================
-// Token Extraction & Validation
-// =============================================================================
+} from "@/app/services/auth/jwt.service";
+import { Logger } from "@/infra/utils/logger";
+import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
 
 const extractRefreshTokenFromCookie = (
   req: RefreshTokenRequest,
@@ -44,10 +40,6 @@ const verifyAndExtractPayload = (
   }
 };
 
-// =============================================================================
-// Token Generation
-// =============================================================================
-
 const generateNewTokens = (
   payload: JwtUserPayload
 ): { accessToken: string; idToken: string } => {
@@ -63,11 +55,6 @@ const generateNewTokens = (
     idToken: generateResetIdToken(tokenPayload)
   };
 };
-
-// =============================================================================
-// Main Service
-// =============================================================================
-
 export const refreshAccessTokenService = (
   req: RefreshTokenRequest
 ): Partial<ResponsePattern<RefreshTokenResponse>> => {

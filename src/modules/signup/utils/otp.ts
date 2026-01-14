@@ -1,7 +1,5 @@
-// libs
 import crypto from "crypto";
-// constants
-import { OTP_CONFIG } from "@/shared/constants/modules/signup";
+import { OTP_CONFIG } from "@/modules/signup/constants";
 
 const RANDOM_BYTES_SIZE = 4;
 const SESSION_ID_BYTES_SIZE = 32;

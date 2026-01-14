@@ -1,9 +1,4 @@
 import type { OpenAPIV3 } from "openapi-types";
-
-// =============================================================================
-// Shared Response References
-// =============================================================================
-
 const responses = {
   loginSuccess: {
     description: "Login successful",
@@ -18,15 +13,7 @@ const responses = {
   unauthorized: { $ref: "#/components/responses/Unauthorized" },
   tooManyRequests: { $ref: "#/components/responses/TooManyRequests" }
 } as const;
-
-// =============================================================================
-// Login Paths
-// =============================================================================
-
 export const loginPaths: OpenAPIV3.PathsObject = {
-  // ===========================================================================
-  // Password Login
-  // ===========================================================================
   "/auth/login": {
     post: {
       summary: "Login with email and password",
@@ -66,9 +53,6 @@ Authenticate user with email and password.
     }
   },
 
-  // ===========================================================================
-  // OTP Login
-  // ===========================================================================
   "/auth/login/otp/send": {
     post: {
       summary: "Send OTP for passwordless login",
@@ -134,9 +118,6 @@ Verify the OTP code and authenticate the user.
     }
   },
 
-  // ===========================================================================
-  // Magic Link Login
-  // ===========================================================================
   "/auth/login/magic-link/send": {
     post: {
       summary: "Send magic link for passwordless login",

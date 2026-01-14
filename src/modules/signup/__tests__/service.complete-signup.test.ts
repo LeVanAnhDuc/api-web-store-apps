@@ -10,9 +10,9 @@
 import { completeSignup } from "../service/complete-signup.service";
 import * as repository from "../repository";
 import * as signupStore from "../utils/store";
-import * as bcryptHelper from "@/core/helpers/bcrypt";
-import * as jwtHelper from "@/core/helpers/jwt";
-import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
+import * as bcryptHelper from "@/app/utils/crypto/bcrypt";
+import * as jwtHelper from "@/app/services/auth/jwt.service";
+import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
 import {
   createCompleteSignupRequest,
   createValidSignupData,
@@ -23,12 +23,11 @@ import {
   TEST_EMAIL
 } from "./helpers";
 
-// Mock dependencies
 jest.mock("../repository");
 jest.mock("../utils/store");
-jest.mock("@/core/helpers/bcrypt");
-jest.mock("@/core/helpers/jwt");
-jest.mock("@/core/utils/logger");
+jest.mock("@/app/utils/crypto/bcrypt");
+jest.mock("@/app/services/auth/jwt.service");
+jest.mock("@/infra/utils/logger");
 
 const mockRepository = repository as jest.Mocked<typeof repository>;
 const mockStore = signupStore as jest.Mocked<typeof signupStore>;
@@ -50,9 +49,7 @@ describe("CompleteSignup Service", () => {
     mockStore.cleanupSignupSession.mockResolvedValue(undefined);
   });
 
-  // ===========================================================================
   // Happy Case Tests
-  // ===========================================================================
   describe("Happy Case - Account Created Successfully", () => {
     it("should return success response with user data and tokens", async () => {
       const req = createCompleteSignupRequest(createValidSignupData());
@@ -161,9 +158,7 @@ describe("CompleteSignup Service", () => {
     });
   });
 
-  // ===========================================================================
   // Failure Case Tests
-  // ===========================================================================
   describe("Failure Cases", () => {
     describe("Invalid Session Token", () => {
       it("should throw BadRequestError when session is invalid", async () => {
@@ -264,9 +259,7 @@ describe("CompleteSignup Service", () => {
     });
   });
 
-  // ===========================================================================
   // Edge Case Tests
-  // ===========================================================================
   describe("Edge Cases", () => {
     it("should handle different gender values", async () => {
       const genders: Array<"male" | "female" | "other"> = [
@@ -420,9 +413,7 @@ describe("CompleteSignup Service", () => {
     });
   });
 
-  // ===========================================================================
   // Security Tests
-  // ===========================================================================
   describe("Security - Session Token Handling", () => {
     it("should verify session is single-use (deleted after completion)", async () => {
       const req = createCompleteSignupRequest(createValidSignupData());
@@ -468,9 +459,7 @@ describe("CompleteSignup Service", () => {
     });
   });
 
-  // ===========================================================================
   // Idempotency Tests
-  // ===========================================================================
   describe("Idempotency - Session Token Single-Use", () => {
     it("should reject request if session already used", async () => {
       // First call succeeds

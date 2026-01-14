@@ -9,17 +9,12 @@
  * - Side effects are controlled through notifier layer
  */
 
-// Use Case: Send OTP for first time
 export { sendOtp } from "./send-otp.service";
 
-// Use Case: Verify OTP code
 export { verifyOtp } from "./verify-otp.service";
 
-// Use Case: Resend OTP (tracks resend count)
 export { resendOtp } from "./resend-otp.service";
 
-// Use Case: Complete signup with profile
 export { completeSignup } from "./complete-signup.service";
 
-// Use Case: Check email availability
 export { checkEmail } from "./check-email.service";

@@ -1,12 +1,8 @@
-// libs
 import * as bcrypt from "bcrypt";
-// database
 import instanceRedis from "@/database/redis/redis.database";
-// utils
-import { Logger } from "@/core/utils/logger";
-// constants
-import { REDIS_KEYS } from "@/shared/constants/redis";
-import { OTP_CONFIG } from "@/shared/constants/modules/signup";
+import { Logger } from "@/infra/utils/logger";
+import { REDIS_KEYS } from "@/app/constants/redis";
+import { OTP_CONFIG } from "@/modules/signup/constants";
 
 const { SIGNUP } = REDIS_KEYS;
 const KEY_OTP_SIGNUP = SIGNUP.OTP;

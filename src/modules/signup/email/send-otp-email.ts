@@ -1,8 +1,8 @@
 import i18next from "@/i18n";
-import { NodemailerTransport } from "@/shared/services/implements/NodemailerTransport";
-import { renderEmailTemplate } from "@/shared/utils/email";
-import { Logger } from "@/core/utils/logger";
-import { OTP_CONFIG } from "@/shared/constants/modules/signup";
+import { NodemailerTransport } from "@/app/services/implements/NodemailerTransport";
+import { renderEmailTemplate } from "@/app/utils/email";
+import { Logger } from "@/infra/utils/logger";
+import { OTP_CONFIG } from "@/modules/signup/constants";
 
 export const sendOtpEmail = async (
   email: string,

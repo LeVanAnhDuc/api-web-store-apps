@@ -4,19 +4,16 @@
  * Delegates business logic to service layer
  */
 
-// libs
 import type { Response } from "express";
 
-// types
 import type {
   SendOtpRequest,
   VerifyOtpRequest,
   ResendOtpRequest,
   CompleteSignupRequest,
   CheckEmailRequest
-} from "@/shared/types/modules/signup";
+} from "@/modules/signup/types";
 
-// services
 import {
   sendOtp,
   verifyOtp,
@@ -25,11 +22,9 @@ import {
   checkEmail
 } from "@/modules/signup/service";
 
-// responses
-import { OkSuccess } from "@/core/responses/success";
+import { OkSuccess } from "@/infra/responses/success";
 
-// utils
-import { asyncHandler } from "@/core/utils/async-handler";
+import { asyncHandler } from "@/infra/utils/async-handler";
 
 /**
  * POST /signup/send-otp

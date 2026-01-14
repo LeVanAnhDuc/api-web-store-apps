@@ -6,10 +6,6 @@
 
 import type { Schema } from "mongoose";
 
-// =============================================================================
-// Mock Request Creators
-// =============================================================================
-
 /**
  * Create a mock Express request object for SendOtp tests
  */
@@ -72,10 +68,6 @@ export const createResendOtpRequest = (email: string, language = "en"): any => {
   };
 };
 
-// =============================================================================
-// Mock Data
-// =============================================================================
-
 /**
  * Mock OTP data
  */
@@ -121,10 +113,6 @@ export const mockTokens = {
   idToken: "mock-id-token"
 };
 
-// =============================================================================
-// Test Constants
-// =============================================================================
-
 export const TEST_EMAIL = "test@example.com";
 export const TEST_PASSWORD = "SecureP@ss123";
 export const TEST_FULL_NAME = "Test User";
@@ -159,10 +147,6 @@ export const INVALID_PASSWORDS = [
   "NoNumbers!", // No numbers
   "NoSpecial123" // No special characters
 ];
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
 
 /**
  * Create a valid signup request with default test data

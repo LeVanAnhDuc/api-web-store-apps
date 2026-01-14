@@ -14,22 +14,18 @@
  * Idempotency: Session token is single-use (deleted after completion)
  */
 
-// types
 import type { TFunction } from "i18next";
 import type { Schema } from "mongoose";
-import type { Gender } from "@/shared/types/modules/user";
+import type { Gender } from "@/modules/user/types";
 import type {
   CompleteSignupRequest,
   CompleteSignupResponse
-} from "@/shared/types/modules/signup";
+} from "@/modules/signup/types";
 
-// errors
-import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
+import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
 
-// logger
-import { Logger } from "@/core/utils/logger";
+import { Logger } from "@/infra/utils/logger";
 
-// repository
 import {
   isEmailRegistered,
   createAuthRecord,
@@ -37,24 +33,16 @@ import {
   storeRefreshToken
 } from "@/modules/signup/repository";
 
-// store (Redis operations)
 import {
   verifySession,
   cleanupSignupSession
 } from "@/modules/signup/utils/store";
 
-// helpers
-import { hashPassword } from "@/core/helpers/bcrypt";
-import { generatePairToken } from "@/core/helpers/jwt";
+import { hashPassword } from "@/app/utils/crypto/bcrypt";
+import { generatePairToken } from "@/app/services/auth/jwt.service";
 
-// constants
-import { TOKEN_EXPIRY } from "@/core/configs/jwt";
-import { AUTH_ROLES } from "@/shared/constants";
-
-// =============================================================================
-// Business Rule Checks (Guard Functions)
-// =============================================================================
-
+import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
+import { AUTH_ROLES } from "@/modules/auth/constants";
 const ensureSessionValid = async (
   email: string,
   sessionToken: string,
@@ -81,11 +69,6 @@ const ensureEmailNotRegistered = async (
     throw new ConflictRequestError(t("signup:errors.emailAlreadyExists"));
   }
 };
-
-// =============================================================================
-// Business Operations
-// =============================================================================
-
 interface CreateAccountResult {
   authId: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
@@ -141,6 +124,7 @@ const issueAuthTokens = (
 ): {
   accessToken: string;
   refreshToken: string;
+  idToken: string;
 } =>
   generatePairToken({
     userId: userId.toString(),
@@ -155,11 +139,6 @@ const persistRefreshToken = async (
 ): Promise<void> => {
   await storeRefreshToken(authId, refreshToken);
 };
-
-// =============================================================================
-// Main Service
-// =============================================================================
-
 export const completeSignup = async (
   req: CompleteSignupRequest
 ): Promise<Partial<ResponsePattern<CompleteSignupResponse>>> => {
@@ -209,6 +188,7 @@ export const completeSignup = async (
       tokens: {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
+        idToken: tokens.idToken,
         expiresIn: TOKEN_EXPIRY.NUMBER_ACCESS_TOKEN
       }
     }

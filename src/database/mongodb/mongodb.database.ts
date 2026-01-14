@@ -1,16 +1,11 @@
-// libs
 import mongoose from "mongoose";
-// types
 import type {
   ConnectionStateValue,
   MongoConfig,
   ConnectionMetrics
-} from "@/shared/types/databases/mongodb";
-// utils
-import { Logger } from "@/core/utils/logger";
-// constants
+} from "@/app/types/databases/mongodb";
+import { Logger } from "@/infra/utils/logger";
 import { CONNECTION_STATES } from "./constants";
-// local
 import { buildMongoConfig, MAX_RECONNECT_ATTEMPTS } from "./mongodb.config";
 import { setupEventHandlers, updateConnectionState } from "./mongodb.events";
 import { isHealthy, getStats } from "./mongodb.health";

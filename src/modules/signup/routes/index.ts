@@ -13,7 +13,7 @@ import {
   completeSignupController,
   checkEmailController
 } from "@/modules/signup/controller";
-import { validate } from "@/shared/middlewares/validation";
+import { validate } from "@/app/middlewares/validation";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   sendOtpSchema,
@@ -25,10 +25,6 @@ import {
 
 const signupRouter = Router();
 
-// =============================================================================
-// Send OTP (Step 1)
-// =============================================================================
-
 signupRouter.post(
   "/send-otp",
   (req, res, next) => getRateLimiterMiddleware().signupOtpByIp(req, res, next),
@@ -38,19 +34,11 @@ signupRouter.post(
   sendOtpController
 );
 
-// =============================================================================
-// Verify OTP (Step 2)
-// =============================================================================
-
 signupRouter.post(
   "/verify-otp",
   validate(verifyOtpSchema, "body"),
   verifyOtpController
 );
-
-// =============================================================================
-// Resend OTP
-// =============================================================================
 
 signupRouter.post(
   "/resend-otp",
@@ -61,19 +49,11 @@ signupRouter.post(
   resendOtpController
 );
 
-// =============================================================================
-// Complete Signup (Step 3)
-// =============================================================================
-
 signupRouter.post(
   "/complete",
   validate(completeSignupSchema, "body"),
   completeSignupController
 );
-
-// =============================================================================
-// Check Email Availability
-// =============================================================================
 
 signupRouter.get(
   "/check-email/:email",

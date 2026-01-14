@@ -7,21 +7,11 @@ import {
   completeSignupSchema,
   checkEmailSchema
 } from "@/modules/signup/schema";
-
-// =============================================================================
-// Request Schemas (Generated from Joi)
-// =============================================================================
-
 const { swagger: SendOtpRequestSchema } = j2s(sendOtpSchema);
 const { swagger: ResendOtpRequestSchema } = j2s(resendOtpSchema);
 const { swagger: VerifyOtpRequestSchema } = j2s(verifyOtpSchema);
 const { swagger: CompleteSignupRequestSchema } = j2s(completeSignupSchema);
 const { swagger: CheckEmailRequestSchema } = j2s(checkEmailSchema);
-
-// =============================================================================
-// Response Schemas
-// =============================================================================
-
 const SendOtpResponseSchema: OpenAPIV3.SchemaObject = {
   type: "object",
   properties: {
@@ -128,20 +118,13 @@ const CheckEmailResponseSchema: OpenAPIV3.SchemaObject = {
     }
   }
 };
-
-// =============================================================================
-// Export all schemas
-// =============================================================================
-
 export const signupSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
-  // Request schemas (from Joi)
   SendOtpRequest: SendOtpRequestSchema as OpenAPIV3.SchemaObject,
   ResendOtpRequest: ResendOtpRequestSchema as OpenAPIV3.SchemaObject,
   VerifyOtpRequest: VerifyOtpRequestSchema as OpenAPIV3.SchemaObject,
   CompleteSignupRequest: CompleteSignupRequestSchema as OpenAPIV3.SchemaObject,
   CheckEmailRequest: CheckEmailRequestSchema as OpenAPIV3.SchemaObject,
 
-  // Response schemas
   SendOtpResponse: SendOtpResponseSchema,
   VerifyOtpResponse: VerifyOtpResponseSchema,
   ResendOtpResponse: ResendOtpResponseSchema,

@@ -1,13 +1,13 @@
 import i18next from "@/i18n";
-import type { AuthDocument } from "@/shared/types/modules/auth";
+import type { AuthDocument } from "@/modules/auth/types";
 import type {
   PasswordLoginRequest,
   LoginResponse
-} from "@/shared/types/modules/login";
-import { UnauthorizedError, BadRequestError } from "@/core/responses/error";
-import { isValidPassword } from "@/core/helpers/bcrypt";
-import { Logger } from "@/core/utils/logger";
-import { withRetry } from "@/core/utils/retry";
+} from "@/modules/login/types";
+import { UnauthorizedError, BadRequestError } from "@/infra/responses/error";
+import { isValidPassword } from "@/app/utils/crypto/bcrypt";
+import { Logger } from "@/infra/utils/logger";
+import { withRetry } from "@/infra/utils/retry";
 import { findAuthByEmail } from "@/modules/login/repository";
 import {
   checkLoginLockout,
@@ -21,16 +21,8 @@ import {
   recordSuccessfulLogin,
   recordFailedLogin
 } from "./shared";
-import { SECONDS_PER_MINUTE } from "@/shared/constants/time";
-import {
-  LOGIN_METHODS,
-  LOGIN_FAIL_REASONS
-} from "@/shared/constants/modules/session";
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
+import { SECONDS_PER_MINUTE } from "@/app/constants/time";
+import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
 const formatTimeMessage = (seconds: number, language: string): string => {
   if (seconds >= SECONDS_PER_MINUTE) {
     const minutes = Math.ceil(seconds / SECONDS_PER_MINUTE);
@@ -43,11 +35,6 @@ const formatTimeMessage = (seconds: number, language: string): string => {
     ? `${seconds} giây`
     : `${seconds} second${seconds > 1 ? "s" : ""}`;
 };
-
-// =============================================================================
-// Guard Functions
-// =============================================================================
-
 const ensureAccountNotLocked = async (
   email: string,
   language: string
@@ -160,12 +147,6 @@ const verifyPasswordOrFail = async (
 
   throw new UnauthorizedError(t("login:errors.invalidCredentials"));
 };
-
-// =============================================================================
-// Main Service
-// =============================================================================
-
-// Fire-and-Forget Pattern
 export const passwordLoginService = async (
   req: PasswordLoginRequest
 ): Promise<Partial<ResponsePattern<LoginResponse>>> => {

@@ -1,14 +1,14 @@
 import * as bcrypt from "bcrypt";
 import * as crypto from "crypto";
 import instanceRedis from "@/database/redis/redis.database";
-import { Logger } from "@/core/utils/logger";
-import { REDIS_KEYS } from "@/shared/constants/redis";
-import { LOGIN_LOCKOUT } from "@/shared/constants/modules/login";
+import { Logger } from "@/infra/utils/logger";
+import { REDIS_KEYS } from "@/app/constants/redis";
+import { LOGIN_LOCKOUT } from "@/modules/login/constants";
 import {
   LOGIN_OTP_CONFIG,
   MAGIC_LINK_CONFIG,
   ACCOUNT_UNLOCK_CONFIG
-} from "@/shared/constants/modules/session";
+} from "@/modules/login/constants";
 
 const { LOGIN } = REDIS_KEYS;
 

@@ -6,7 +6,7 @@ import {
   sendMagicLinkController,
   verifyMagicLinkController
 } from "@/modules/login/controller";
-import { validate } from "@/shared/middlewares/validation";
+import { validate } from "@/app/middlewares/validation";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   loginSchema,

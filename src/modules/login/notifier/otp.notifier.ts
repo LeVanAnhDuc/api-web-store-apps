@@ -1,6 +1,6 @@
 import { sendLoginOtpEmail } from "@/modules/login/email/send-login-otp-email";
-import { Logger } from "@/core/utils/logger";
-import { withRetry } from "@/core/utils/retry";
+import { Logger } from "@/infra/utils/logger";
+import { withRetry } from "@/infra/utils/retry";
 
 export const notifyLoginOtpByEmail = (
   email: string,

@@ -4,11 +4,9 @@
  * Service layer should NOT query DB directly - use this repository
  */
 
-// types
 import type { Schema } from "mongoose";
-import type { Gender } from "@/shared/types/modules/user";
+import type { Gender } from "@/modules/user/types";
 
-// models
 import UserModel from "@/modules/user/model";
 
 interface CreateUserData {

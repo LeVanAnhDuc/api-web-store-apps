@@ -3,23 +3,17 @@
  * Handles logout endpoint - clears refresh token cookie
  */
 
-// libs
 import type { Response } from "express";
 
-// types
-import type { LogoutRequest } from "@/shared/types/modules/logout";
+import type { LogoutRequest } from "@/modules/logout/types";
 
-// services
 import { logout } from "@/modules/logout/service";
 
-// responses
-import { OkSuccess } from "@/core/responses/success";
+import { OkSuccess } from "@/infra/responses/success";
 
-// utils
-import { asyncHandler } from "@/core/utils/async-handler";
+import { asyncHandler } from "@/infra/utils/async-handler";
 
-// configs
-import { COOKIE_NAMES } from "@/core/configs/cookie";
+import { COOKIE_NAMES } from "@/infra/configs/cookie";
 
 /**
  * POST /auth/logout

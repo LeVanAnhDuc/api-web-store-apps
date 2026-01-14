@@ -1,4 +1,4 @@
-import type { AuthDocument } from "@/shared/types/modules/auth";
+import type { AuthDocument } from "@/modules/auth/types";
 import AuthModel from "@/modules/auth/model";
 
 export const findAuthByEmail = async (

@@ -12,15 +12,14 @@ import * as repository from "../repository";
 import * as signupStore from "../utils/store";
 import * as otpUtils from "../utils/otp";
 import * as notifier from "../notifier";
-import { BadRequestError, ConflictRequestError } from "@/core/responses/error";
+import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
 import { createSendOtpRequest, mockOtp, TEST_EMAIL } from "./helpers";
 
-// Mock dependencies
 jest.mock("../repository");
 jest.mock("../utils/store");
 jest.mock("../utils/otp");
 jest.mock("../notifier");
-jest.mock("@/core/utils/logger");
+jest.mock("@/infra/utils/logger");
 
 const mockRepository = repository as jest.Mocked<typeof repository>;
 const mockStore = signupStore as jest.Mocked<typeof signupStore>;
@@ -41,9 +40,7 @@ describe("SendOtp Service", () => {
     mockNotifier.notifyOtpByEmail.mockImplementation(() => {});
   });
 
-  // ===========================================================================
   // Happy Case Tests
-  // ===========================================================================
   describe("Happy Case - OTP Sent Successfully", () => {
     it("should return success response when OTP is sent", async () => {
       const req = createSendOtpRequest(TEST_EMAIL);
@@ -145,9 +142,7 @@ describe("SendOtp Service", () => {
     });
   });
 
-  // ===========================================================================
   // Failure Case Tests
-  // ===========================================================================
   describe("Failure Cases", () => {
     describe("Cooldown Not Expired", () => {
       it("should throw BadRequestError when cooldown is active", async () => {
@@ -235,9 +230,7 @@ describe("SendOtp Service", () => {
     });
   });
 
-  // ===========================================================================
   // Edge Case Tests
-  // ===========================================================================
   describe("Edge Cases", () => {
     it("should handle email with different cases consistently", async () => {
       const emails = [
@@ -327,9 +320,7 @@ describe("SendOtp Service", () => {
     });
   });
 
-  // ===========================================================================
   // Business Flow Order Verification
-  // ===========================================================================
   describe("Business Flow Verification", () => {
     it("should follow the correct business flow order", async () => {
       /**

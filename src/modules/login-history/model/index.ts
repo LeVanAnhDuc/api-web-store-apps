@@ -1,15 +1,12 @@
-// libs
 import { Schema, model, type Model } from "mongoose";
-// types
-import type { LoginHistoryDocument } from "@/shared/types/modules/login-history";
-// constants
-import { MODEL_NAMES } from "@/shared/constants/models";
+import type { LoginHistoryDocument } from "@/modules/login-history/types";
+import { MODEL_NAMES } from "@/app/constants/models";
 import {
   LOGIN_METHODS,
   LOGIN_STATUSES,
   LOGIN_FAIL_REASONS,
   LOGIN_HISTORY_CONFIG
-} from "@/shared/constants/modules/session";
+} from "@/modules/login/constants";
 
 const { LOGIN_HISTORY, AUTHENTICATION } = MODEL_NAMES;
 

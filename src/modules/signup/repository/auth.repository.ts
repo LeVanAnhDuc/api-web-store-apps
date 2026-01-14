@@ -4,14 +4,11 @@
  * Service layer should NOT query DB directly - use this repository
  */
 
-// types
 import type { Schema } from "mongoose";
 
-// models
 import AuthModel from "@/modules/auth/model";
 
-// constants
-import { AUTH_ROLES } from "@/shared/constants/modules/auth";
+import { AUTH_ROLES } from "@/modules/auth/constants";
 
 interface CreateAuthData {
   email: string;
