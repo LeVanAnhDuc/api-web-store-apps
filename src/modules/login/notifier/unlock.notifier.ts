@@ -4,14 +4,8 @@
  * Fire-and-forget with proper logging
  */
 
-// libs
-import i18next from "@/i18n";
-// services
-import { sendTemplatedEmail } from "@/shared/services/email/email.service";
-// utils
+import { sendUnlockEmail } from "@/modules/login/email/send-unlock-email";
 import { Logger } from "@/core/utils/logger";
-// constants
-import { ACCOUNT_UNLOCK_CONFIG } from "@/shared/constants/modules/session";
 import ENV from "@/core/configs/env";
 
 /**
@@ -27,26 +21,10 @@ export const notifyUnlockLinkByEmail = (
   token: string,
   locale: I18n.Locale
 ): void => {
-  const t = i18next.getFixedT(locale);
-  const subject = t("email:subjects.accountUnlock");
-
-  // Build unlock URL
   const unlockUrl = `${ENV.CLIENT_URL}/auth/unlock?token=${token}&email=${encodeURIComponent(email)}`;
 
-  sendTemplatedEmail(
-    email,
-    subject,
-    "account-unlock",
-    {
-      unlockUrl,
-      expiryHours: ACCOUNT_UNLOCK_CONFIG.UNLOCK_TOKEN_EXPIRY_HOURS
-    },
-    locale
-  )
-    .then(() => {
-      Logger.info("Account unlock email sent successfully", { email });
-      return;
-    })
+  sendUnlockEmail(email, unlockUrl, locale)
+    .then(() => undefined)
     .catch((error) => {
       Logger.error("Account unlock email delivery failed", {
         email,

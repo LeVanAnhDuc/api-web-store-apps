@@ -4,17 +4,8 @@
  * Fire-and-forget with proper logging for observability
  */
 
-// libs
-import i18next from "@/i18n";
-
-// services
-import { sendTemplatedEmail } from "@/shared/services/email/email.service";
-
-// utils
+import { sendOtpEmail } from "@/modules/signup/email/send-otp-email";
 import { Logger } from "@/core/utils/logger";
-
-// constants
-import { OTP_CONFIG } from "@/shared/constants/modules/signup";
 
 /**
  * Send OTP verification email asynchronously
@@ -30,23 +21,8 @@ export const notifyOtpByEmail = (
   otp: string,
   locale: I18n.Locale
 ): void => {
-  const t = i18next.getFixedT(locale);
-  const subject = t("email:subjects.otpVerification");
-
-  sendTemplatedEmail(
-    email,
-    subject,
-    "otp-verification",
-    {
-      otp,
-      expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES
-    },
-    locale
-  )
-    .then(() => {
-      Logger.info("OTP email sent successfully", { email });
-      return;
-    })
+  sendOtpEmail(email, otp, locale)
+    .then(() => undefined)
     .catch((error) => {
       Logger.error("OTP email delivery failed", {
         email,
