@@ -98,9 +98,3 @@ export type UnlockVerifyRequest = Request<
   unknown,
   UnlockVerifyBody
 >;
-
-/** @deprecated Use PasswordLoginBody instead */
-export type LoginBody = PasswordLoginBody;
-
-/** @deprecated Use PasswordLoginRequest instead */
-export type LoginRequest = PasswordLoginRequest;

@@ -1,5 +1,4 @@
 import {
-  SECONDS_PER_DAY,
   SECONDS_PER_MINUTE,
   MINUTES_PER_HOUR,
   HOURS_PER_DAY
@@ -62,17 +61,6 @@ export const LOGIN_LOCKOUT = {
 
   MAX_LOCKOUT_SECONDS: 1800,
   RESET_WINDOW_SECONDS: 1800
-} as const;
-
-/**
- * Token configuration
- * Note: Actual expiry values are in infra/configs/jwt.ts
- * These are reference values for documentation
- */
-export const TOKEN_CONFIG = {
-  REFRESH_TOKEN_EXPIRY_SECONDS: 7 * SECONDS_PER_DAY,
-  ACCESS_TOKEN_EXPIRY_SECONDS: 15 * SECONDS_PER_MINUTE,
-  ID_TOKEN_EXPIRY_SECONDS: 15 * SECONDS_PER_MINUTE
 } as const;
 
 export const LOGIN_OTP_CONFIG = {
