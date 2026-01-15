@@ -1,2 +1,2 @@
-export { logoutSwaggerSchemas } from "./schemas";
 export { logoutPaths } from "./paths";
+export { logoutSwaggerSchemas } from "./schemas";

@@ -1,2 +1,2 @@
-export { tokenSwaggerSchemas } from "./schemas";
 export { tokenPaths } from "./paths";
+export { tokenSwaggerSchemas } from "./schemas";

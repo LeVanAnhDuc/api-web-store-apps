@@ -17,7 +17,7 @@ import {
   updateLastLogin,
   recordSuccessfulLogin,
   recordFailedLogin
-} from "./shared";
+} from "../shared";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
 
 const ensureAuthExists = async (

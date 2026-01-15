@@ -20,7 +20,7 @@ import {
   updateLastLogin,
   recordSuccessfulLogin,
   recordFailedLogin
-} from "./shared";
+} from "../shared";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
 
