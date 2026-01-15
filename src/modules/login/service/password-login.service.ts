@@ -23,6 +23,7 @@ import {
 } from "./shared";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
+
 const formatTimeMessage = (seconds: number, language: string): string => {
   if (seconds >= SECONDS_PER_MINUTE) {
     const minutes = Math.ceil(seconds / SECONDS_PER_MINUTE);
@@ -35,6 +36,7 @@ const formatTimeMessage = (seconds: number, language: string): string => {
     ? `${seconds} giây`
     : `${seconds} second${seconds > 1 ? "s" : ""}`;
 };
+
 const ensureAccountNotLocked = async (
   email: string,
   language: string
@@ -147,6 +149,7 @@ const verifyPasswordOrFail = async (
 
   throw new UnauthorizedError(t("login:errors.invalidCredentials"));
 };
+
 export const passwordLoginService = async (
   req: PasswordLoginRequest
 ): Promise<Partial<ResponsePattern<LoginResponse>>> => {

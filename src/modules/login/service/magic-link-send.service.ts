@@ -16,12 +16,15 @@ import {
   deleteMagicLink,
   generateMagicLinkToken
 } from "@/modules/login/utils/store";
-import { notifyMagicLinkByEmail } from "@/modules/login/notifier";
+import { sendModuleEmail } from "@/app/utils/email/sender";
+import ENV from "@/infra/configs/env";
 import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
+
 const MAGIC_LINK_EXPIRY_SECONDS =
   MAGIC_LINK_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const MAGIC_LINK_COOLDOWN_SECONDS = MAGIC_LINK_CONFIG.COOLDOWN_SECONDS;
+
 const ensureCooldownExpired = async (
   email: string,
   language: string
@@ -62,6 +65,7 @@ const ensureEmailExists = async (
     throw new UnauthorizedError(t("login:errors.emailNotVerified"));
   }
 };
+
 const createNewMagicLink = async (email: string): Promise<string> => {
   const token = generateMagicLinkToken();
 
@@ -85,6 +89,31 @@ const applyMagicLinkRateLimits = async (email: string): Promise<void> => {
     cooldownSeconds: MAGIC_LINK_COOLDOWN_SECONDS
   });
 };
+
+const sendMagicLinkEmail = (
+  email: string,
+  token: string,
+  locale: I18n.Locale
+): void => {
+  const magicLinkUrl = `${ENV.CLIENT_URL}/auth/magic-link?token=${token}&email=${encodeURIComponent(email)}`;
+
+  sendModuleEmail("login", email, locale, {
+    templateName: "magic-link",
+    subject: "Magic Link Login",
+    variables: {
+      magicLinkUrl,
+      expiryMinutes: MAGIC_LINK_CONFIG.EXPIRY_MINUTES
+    }
+  })
+    .then(() => undefined)
+    .catch((error) => {
+      Logger.error("Magic link email delivery failed", {
+        email,
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    });
+};
+
 export const sendMagicLinkService = async (
   req: MagicLinkSendRequest
 ): Promise<Partial<ResponsePattern<MagicLinkSendResponse>>> => {
@@ -103,7 +132,7 @@ export const sendMagicLinkService = async (
     context: { email }
   });
 
-  notifyMagicLinkByEmail(email, token, language as I18n.Locale);
+  sendMagicLinkEmail(email, token, language as I18n.Locale);
 
   Logger.info("Magic link send completed", {
     email,

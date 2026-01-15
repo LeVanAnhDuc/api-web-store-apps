@@ -54,3 +54,18 @@ export const sendOtpEmail = async (
     throw error;
   }
 };
+
+export const sendOtpEmailAsync = (
+  email: string,
+  otp: string,
+  locale: I18n.Locale
+): void => {
+  sendOtpEmail(email, otp, locale)
+    .then(() => undefined)
+    .catch((error) => {
+      Logger.error("OTP email delivery failed (async)", {
+        email,
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    });
+};

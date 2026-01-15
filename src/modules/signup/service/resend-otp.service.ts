@@ -35,7 +35,7 @@ import {
   incrementResendCount
 } from "@/modules/signup/utils/store";
 
-import { notifyOtpByEmail } from "@/modules/signup/notifier";
+import { sendOtpEmailAsync } from "@/modules/signup/emails/send-otp-email";
 
 import { generateOtp } from "@/modules/signup/utils/otp";
 
@@ -139,7 +139,7 @@ export const resendOtp = async (
 
   const currentResendCount = await trackResendAttempt(email);
 
-  notifyOtpByEmail(email, otp, language as I18n.Locale);
+  sendOtpEmailAsync(email, otp, language as I18n.Locale);
 
   Logger.info("ResendOtp completed", {
     email,

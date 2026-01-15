@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Magic Link Login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 600;
+      }
+      .content {
+        padding: 40px 30px;
+      }
+      .content p {
+        margin: 0 0 15px 0;
+        font-size: 16px;
+      }
+      .cta-container {
+        text-align: center;
+        margin: 30px 0;
+      }
+      .cta-button {
+        display: inline-block;
+        padding: 16px 48px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 600;
+        transition: transform 0.2s;
+      }
+      .cta-button:hover {
+        transform: translateY(-2px);
+      }
+      .info-box {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .info-box p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #856404;
+      }
+      .warning {
+        background-color: #f8d7da;
+        border-left: 4px solid #dc3545;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .warning p {
+        margin: 0;
+        font-size: 14px;
+        color: #721c24;
+        font-weight: 600;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 12px;
+        color: #999;
+        background-color: #f8f9fa;
+      }
+      .highlight {
+        font-weight: 600;
+        color: #667eea;
+      }
+      .link-text {
+        font-size: 12px;
+        color: #666;
+        margin-top: 10px;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Magic Link Login</h1>
+      </div>
+      <div class="content">
+        <p>Hello,</p>
+        <p>
+          You requested to sign in to your account without a password. Click the
+          button below to complete your login instantly.
+        </p>
+
+        <div class="cta-container">
+          <a href="{{magicLinkUrl}}" class="cta-button">Sign In Now</a>
+          <p class="link-text">
+            Or copy this link:<br />
+            {{magicLinkUrl}}
+          </p>
+        </div>
+
+        <div class="info-box">
+          <p>
+            This link will expire in
+            <span class="highlight">{{expiryMinutes}} minutes</span>.
+          </p>
+          <p>
+            For your security, this is a one-time use link. After clicking, it
+            cannot be used again.
+          </p>
+        </div>
+
+        <div class="warning">
+          <p>
+            If you didn't request this link, please ignore this email and secure
+            your account.
+          </p>
+        </div>
+
+        <p style="margin-top: 30px; font-size: 14px; color: #666">
+          This is an automated email. Please do not reply.
+        </p>
+      </div>
+      <div class="footer">
+        <p>© 2025 Apartment Management System. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

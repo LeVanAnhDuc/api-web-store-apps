@@ -11,20 +11,20 @@ import { sendOtp } from "../service/send-otp.service";
 import * as repository from "../repository";
 import * as signupStore from "../utils/store";
 import * as otpUtils from "../utils/otp";
-import * as notifier from "../notifier";
+import * as emailSender from "../emails/send-otp-email";
 import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
 import { createSendOtpRequest, mockOtp, TEST_EMAIL } from "./helpers";
 
 jest.mock("../repository");
 jest.mock("../utils/store");
 jest.mock("../utils/otp");
-jest.mock("../notifier");
+jest.mock("../emails/send-otp-email");
 jest.mock("@/infra/utils/logger");
 
 const mockRepository = repository as jest.Mocked<typeof repository>;
 const mockStore = signupStore as jest.Mocked<typeof signupStore>;
 const mockOtpUtils = otpUtils as jest.Mocked<typeof otpUtils>;
-const mockNotifier = notifier as jest.Mocked<typeof notifier>;
+const mockEmailSender = emailSender as jest.Mocked<typeof emailSender>;
 
 describe("SendOtp Service", () => {
   beforeEach(() => {
@@ -37,7 +37,7 @@ describe("SendOtp Service", () => {
     mockStore.deleteOtp.mockResolvedValue(undefined);
     mockStore.createAndStoreOtp.mockResolvedValue(undefined);
     mockStore.setOtpCoolDown.mockResolvedValue(undefined);
-    mockNotifier.notifyOtpByEmail.mockImplementation(() => {});
+    mockEmailSender.sendOtpEmailAsync.mockImplementation(() => {});
   });
 
   // Happy Case Tests
@@ -122,7 +122,7 @@ describe("SendOtp Service", () => {
 
       await sendOtp(req);
 
-      expect(mockNotifier.notifyOtpByEmail).toHaveBeenCalledWith(
+      expect(mockEmailSender.sendOtpEmailAsync).toHaveBeenCalledWith(
         TEST_EMAIL,
         mockOtp,
         "en"
@@ -134,7 +134,7 @@ describe("SendOtp Service", () => {
 
       await sendOtp(req);
 
-      expect(mockNotifier.notifyOtpByEmail).toHaveBeenCalledWith(
+      expect(mockEmailSender.sendOtpEmailAsync).toHaveBeenCalledWith(
         TEST_EMAIL,
         mockOtp,
         "vi"
@@ -189,7 +189,7 @@ describe("SendOtp Service", () => {
           // Expected error
         }
 
-        expect(mockNotifier.notifyOtpByEmail).not.toHaveBeenCalled();
+        expect(mockEmailSender.sendOtpEmailAsync).not.toHaveBeenCalled();
       });
     });
 
@@ -225,7 +225,7 @@ describe("SendOtp Service", () => {
           // Expected error
         }
 
-        expect(mockNotifier.notifyOtpByEmail).not.toHaveBeenCalled();
+        expect(mockEmailSender.sendOtpEmailAsync).not.toHaveBeenCalled();
       });
     });
   });
@@ -306,10 +306,10 @@ describe("SendOtp Service", () => {
     });
 
     it("should send email notification asynchronously (fire-and-forget)", async () => {
-      // notifyOtpByEmail should be called without await
+      // sendOtpEmailAsync should be called without await
       // This test verifies the function completes even if email sending is slow
       let emailSendCalled = false;
-      mockNotifier.notifyOtpByEmail.mockImplementation(() => {
+      mockEmailSender.sendOtpEmailAsync.mockImplementation(() => {
         emailSendCalled = true;
       });
 
@@ -343,7 +343,7 @@ describe("SendOtp Service", () => {
       expect(mockStore.deleteOtp).toHaveBeenCalled();
       expect(mockStore.createAndStoreOtp).toHaveBeenCalled();
       expect(mockStore.setOtpCoolDown).toHaveBeenCalled();
-      expect(mockNotifier.notifyOtpByEmail).toHaveBeenCalled();
+      expect(mockEmailSender.sendOtpEmailAsync).toHaveBeenCalled();
     });
   });
 });

@@ -14,12 +14,14 @@ import {
   incrementLoginOtpResendCount,
   hasExceededLoginOtpResendLimit
 } from "@/modules/login/utils/store";
-import { notifyLoginOtpByEmail } from "@/modules/login/notifier";
+import { sendModuleEmail } from "@/app/utils/email/sender";
 import { generateLoginOtp } from "@/modules/login/utils/otp";
 import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
+
 const OTP_EXPIRY_SECONDS = LOGIN_OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const OTP_COOLDOWN_SECONDS = LOGIN_OTP_CONFIG.COOLDOWN_SECONDS;
+
 const ensureCooldownExpired = async (
   email: string,
   language: string
@@ -71,6 +73,7 @@ const ensureResendLimitNotExceeded = async (
     throw new BadRequestError(t("login:errors.otpResendLimitExceeded"));
   }
 };
+
 const createNewOtp = async (email: string): Promise<string> => {
   const otp = generateLoginOtp();
 
@@ -97,6 +100,29 @@ const applyOtpRateLimits = async (email: string): Promise<void> => {
     cooldownSeconds: OTP_COOLDOWN_SECONDS
   });
 };
+
+const sendLoginOtpEmail = (
+  email: string,
+  otp: string,
+  locale: I18n.Locale
+): void => {
+  sendModuleEmail("login", email, locale, {
+    templateName: "login-otp",
+    subject: "Login Verification Code",
+    variables: {
+      otp,
+      expiryMinutes: LOGIN_OTP_CONFIG.EXPIRY_MINUTES
+    }
+  })
+    .then(() => undefined)
+    .catch((error) => {
+      Logger.error("Login OTP email delivery failed", {
+        email,
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    });
+};
+
 export const sendLoginOtpService = async (
   req: OtpSendRequest
 ): Promise<Partial<ResponsePattern<OtpSendResponse>>> => {
@@ -116,7 +142,7 @@ export const sendLoginOtpService = async (
     context: { email }
   });
 
-  notifyLoginOtpByEmail(email, otp, language as I18n.Locale);
+  sendLoginOtpEmail(email, otp, language as I18n.Locale);
 
   Logger.info("Login OTP send completed", {
     email,

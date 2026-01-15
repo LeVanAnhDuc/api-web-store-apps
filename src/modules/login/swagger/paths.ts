@@ -1,4 +1,5 @@
 import type { OpenAPIV3 } from "openapi-types";
+
 const responses = {
   loginSuccess: {
     description: "Login successful",
@@ -13,6 +14,7 @@ const responses = {
   unauthorized: { $ref: "#/components/responses/Unauthorized" },
   tooManyRequests: { $ref: "#/components/responses/TooManyRequests" }
 } as const;
+
 export const loginPaths: OpenAPIV3.PathsObject = {
   "/auth/login": {
     post: {

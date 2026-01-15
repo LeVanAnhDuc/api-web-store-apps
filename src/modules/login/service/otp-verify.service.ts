@@ -24,6 +24,7 @@ import {
   LOGIN_FAIL_REASONS,
   LOGIN_OTP_CONFIG
 } from "@/modules/login/constants";
+
 const ensureNotLocked = async (
   email: string,
   language: string
@@ -56,6 +57,7 @@ const ensureAuthExists = async (
 
   return auth;
 };
+
 const handleInvalidOtp = async (
   email: string,
   auth: AuthDocument,
@@ -115,6 +117,7 @@ const completeSuccessfulLogin = (
 
   return generateLoginTokens(auth);
 };
+
 export const verifyLoginOtpService = async (
   req: OtpVerifyRequest
 ): Promise<Partial<ResponsePattern<LoginResponse>>> => {

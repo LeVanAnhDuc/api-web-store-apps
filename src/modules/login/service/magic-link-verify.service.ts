@@ -19,6 +19,7 @@ import {
   recordFailedLogin
 } from "./shared";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
+
 const ensureAuthExists = async (
   email: string,
   t: TFunction
@@ -32,6 +33,7 @@ const ensureAuthExists = async (
 
   return auth;
 };
+
 const handleInvalidToken = (
   email: string,
   auth: AuthDocument,
@@ -69,6 +71,7 @@ const completeSuccessfulLogin = (
 
   return generateLoginTokens(auth);
 };
+
 export const verifyMagicLinkService = async (
   req: MagicLinkVerifyRequest
 ): Promise<Partial<ResponsePattern<LoginResponse>>> => {

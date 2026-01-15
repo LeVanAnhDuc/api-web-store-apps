@@ -29,7 +29,7 @@ import {
   deleteOtp
 } from "@/modules/signup/utils/store";
 
-import { notifyOtpByEmail } from "@/modules/signup/notifier";
+import { sendOtpEmailAsync } from "@/modules/signup/emails/send-otp-email";
 
 import { generateOtp } from "@/modules/signup/utils/otp";
 
@@ -99,7 +99,7 @@ export const sendOtp = async (
 
   await startCooldown(email);
 
-  notifyOtpByEmail(email, otp, language as I18n.Locale);
+  sendOtpEmailAsync(email, otp, language as I18n.Locale);
 
   Logger.info("SendOtp completed", {
     email,
