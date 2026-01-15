@@ -8,7 +8,7 @@ import type {
   LoginFailReason
 } from "@/modules/login-history/types";
 import type { LoginResponse } from "@/modules/login/types";
-import { generatePairToken } from "@/app/services/auth/jwt.service";
+import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
 import { withRetry } from "@/infra/utils/retry";
 import { getClientIp } from "@/modules/login/utils/device";
 import { createLoginHistory } from "@/modules/login-history/repository";
@@ -24,7 +24,7 @@ export const generateLoginTokens = (auth: AuthDocument): LoginResponse => {
   };
 
   const { accessToken, refreshToken, idToken } =
-    generatePairToken(tokenPayload);
+    JsonWebTokenService.generateAuthTokens(tokenPayload);
 
   return {
     accessToken,

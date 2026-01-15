@@ -39,7 +39,7 @@ import {
 } from "@/modules/signup/utils/store";
 
 import { hashPassword } from "@/app/utils/crypto/bcrypt";
-import { generatePairToken } from "@/app/services/auth/jwt.service";
+import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
 
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
 import { AUTH_ROLES } from "@/modules/auth/constants";
@@ -126,7 +126,7 @@ const issueAuthTokens = (
   refreshToken: string;
   idToken: string;
 } =>
-  generatePairToken({
+  JsonWebTokenService.generateAuthTokens({
     userId: userId.toString(),
     authId: authId.toString(),
     email,

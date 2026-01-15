@@ -11,7 +11,7 @@ const RefreshTokenResponseSchema: OpenAPIV3.SchemaObject = {
     idToken: {
       type: "string",
       example: "eyJhbGciOiJIUzI1NiIs...",
-      description: "New JWT ID token"
+      description: "JWT ID token containing user info"
     },
     expiresIn: {
       type: "integer",

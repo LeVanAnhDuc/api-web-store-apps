@@ -4,11 +4,7 @@ import type {
   RefreshTokenResponse
 } from "@/modules/token/types";
 import { UnauthorizedError, ForbiddenError } from "@/infra/responses/error";
-import {
-  verifyRefreshToken,
-  generateAccessToken,
-  generateResetIdToken
-} from "@/app/services/auth/jwt.service";
+import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
 import { Logger } from "@/infra/utils/logger";
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
 
@@ -31,7 +27,7 @@ const verifyAndExtractPayload = (
   t: TFunction
 ): JwtUserPayload => {
   try {
-    return verifyRefreshToken(refreshToken);
+    return JsonWebTokenService.verifyRefreshToken(refreshToken);
   } catch (error) {
     Logger.warn("Token refresh failed - invalid refresh token", {
       error: error instanceof Error ? error.message : "Unknown error"
@@ -51,8 +47,8 @@ const generateNewTokens = (
   };
 
   return {
-    accessToken: generateAccessToken(tokenPayload),
-    idToken: generateResetIdToken(tokenPayload)
+    accessToken: JsonWebTokenService.generateAccessToken(tokenPayload),
+    idToken: JsonWebTokenService.generateIdToken(tokenPayload)
   };
 };
 export const refreshAccessTokenService = (
