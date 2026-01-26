@@ -1,5 +1,5 @@
 import i18next from "@/i18n";
-import type { AuthDocument } from "@/modules/auth/types";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type {
   PasswordLoginRequest,
   LoginResponse
@@ -8,7 +8,7 @@ import { UnauthorizedError, BadRequestError } from "@/infra/responses/error";
 import { isValidPassword } from "@/app/utils/crypto/bcrypt";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
-import { findAuthByEmail } from "@/modules/login/repository";
+import { findAuthenticationByEmail } from "@/modules/login/repository";
 import {
   checkLoginLockout,
   getFailedLoginAttempts,
@@ -64,10 +64,10 @@ const ensureAccountNotLocked = async (
 };
 
 function ensureAccountExists(
-  auth: AuthDocument | null,
+  auth: AuthenticationDocument | null,
   email: string,
   t: PasswordLoginRequest["t"]
-): asserts auth is AuthDocument {
+): asserts auth is AuthenticationDocument {
   if (auth) return;
 
   Logger.warn("Login failed - email not found", { email });
@@ -75,7 +75,7 @@ function ensureAccountExists(
 }
 
 const ensureAccountActive = (
-  auth: AuthDocument,
+  auth: AuthenticationDocument,
   email: string,
   req: PasswordLoginRequest,
   t: PasswordLoginRequest["t"]
@@ -94,7 +94,7 @@ const ensureAccountActive = (
 };
 
 const ensureEmailVerified = (
-  auth: AuthDocument,
+  auth: AuthenticationDocument,
   email: string,
   req: PasswordLoginRequest,
   t: PasswordLoginRequest["t"]
@@ -113,7 +113,7 @@ const ensureEmailVerified = (
 };
 
 const verifyPasswordOrFail = async (
-  auth: AuthDocument,
+  auth: AuthenticationDocument,
   password: string,
   email: string,
   language: string,
@@ -160,7 +160,7 @@ export const passwordLoginService = async (
 
   await ensureAccountNotLocked(email, language);
 
-  const auth = await findAuthByEmail(email);
+  const auth = await findAuthenticationByEmail(email);
 
   ensureAccountExists(auth, email, t);
   ensureAccountActive(auth, email, req, t);

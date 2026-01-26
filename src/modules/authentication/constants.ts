@@ -1,11 +1,11 @@
-export const AUTH_ROLES = {
+export const AUTHENTICATION_ROLES = {
   USER: "user",
   ADMIN: "admin"
 } as const;
 
 export const EMAIL_VALIDATION = {
   MIN_LENGTH: 3,
-  MAX_LENGTH: 254 // RFC 5321 standard
+  MAX_LENGTH: 254
 } as const;
 
 export const EMAIL_FORMAT_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

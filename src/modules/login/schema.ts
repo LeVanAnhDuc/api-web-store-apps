@@ -5,8 +5,8 @@ import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
 export const loginSchema = Joi.object({
   email: emailSchema.required(),
   password: Joi.string().required().messages({
-    "string.empty": "auth:validation.passwordRequired",
-    "any.required": "auth:validation.passwordRequired"
+    "string.empty": "authentication:validation.passwordRequired",
+    "any.required": "authentication:validation.passwordRequired"
   })
 });
 

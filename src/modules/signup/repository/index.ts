@@ -1,12 +1,7 @@
-/**
- * Signup Repository Layer
- * Barrel export for all repository modules
- */
-
 export {
   isEmailRegistered,
-  createAuthRecord,
+  createAuthenticationRecord,
   storeRefreshToken
-} from "./auth.repository";
+} from "./authentication.repository";
 
 export { createUserProfile } from "./user.repository";

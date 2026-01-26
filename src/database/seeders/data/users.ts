@@ -1,12 +1,12 @@
 import { GENDERS } from "@/modules/user/constants";
-import { AUTH_ROLES } from "@/modules/auth/constants";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 
 export const TEST_USERS = [
   {
-    auth: {
+    authentication: {
       email: "admin@test.com",
       password: "Admin@123",
-      roles: AUTH_ROLES.ADMIN,
+      roles: AUTHENTICATION_ROLES.ADMIN,
       verifiedEmail: true,
       isActive: true
     },
@@ -17,10 +17,10 @@ export const TEST_USERS = [
     }
   },
   {
-    auth: {
+    authentication: {
       email: "user@test.com",
       password: "User@123",
-      roles: AUTH_ROLES.USER,
+      roles: AUTHENTICATION_ROLES.USER,
       verifiedEmail: true,
       isActive: true
     },
@@ -31,10 +31,10 @@ export const TEST_USERS = [
     }
   },
   {
-    auth: {
+    authentication: {
       email: "user2@test.com",
       password: "User@123",
-      roles: AUTH_ROLES.USER,
+      roles: AUTHENTICATION_ROLES.USER,
       verifiedEmail: true,
       isActive: true
     },
@@ -45,10 +45,10 @@ export const TEST_USERS = [
     }
   },
   {
-    auth: {
+    authentication: {
       email: "inactive@test.com",
       password: "Inactive@123",
-      roles: AUTH_ROLES.USER,
+      roles: AUTHENTICATION_ROLES.USER,
       verifiedEmail: true,
       isActive: false
     },
@@ -59,10 +59,10 @@ export const TEST_USERS = [
     }
   },
   {
-    auth: {
+    authentication: {
       email: "unverified@test.com",
       password: "Unverified@123",
-      roles: AUTH_ROLES.USER,
+      roles: AUTHENTICATION_ROLES.USER,
       verifiedEmail: false,
       isActive: true
     },

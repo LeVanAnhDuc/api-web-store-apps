@@ -1,4 +1,4 @@
-import AuthModel from "@/modules/auth/model";
+import AuthenticationModel from "@/modules/authentication/model";
 import UserModel from "@/modules/user/model";
 import { hashPassword } from "@/app/utils/crypto/bcrypt";
 import { TEST_USERS } from "./data/users";
@@ -11,34 +11,36 @@ export const seedUsers = async (): Promise<void> => {
   let skippedCount = 0;
 
   for (const testUser of TEST_USERS) {
-    const existingAuth = await AuthModel.findOne({
-      email: testUser.auth.email
+    const existingAuthentication = await AuthenticationModel.findOne({
+      email: testUser.authentication.email
     });
 
-    if (existingAuth) {
-      Logger.warn(`User already exists: ${testUser.auth.email}, skipping...`);
+    if (existingAuthentication) {
+      Logger.warn(
+        `User already exists: ${testUser.authentication.email}, skipping...`
+      );
       skippedCount++;
       continue;
     }
 
-    const hashedPassword = hashPassword(testUser.auth.password);
+    const hashedPassword = hashPassword(testUser.authentication.password);
 
-    const auth = await AuthModel.create({
-      email: testUser.auth.email,
+    const authentication = await AuthenticationModel.create({
+      email: testUser.authentication.email,
       password: hashedPassword,
-      roles: testUser.auth.roles,
-      verifiedEmail: testUser.auth.verifiedEmail,
-      isActive: testUser.auth.isActive
+      roles: testUser.authentication.roles,
+      verifiedEmail: testUser.authentication.verifiedEmail,
+      isActive: testUser.authentication.isActive
     });
 
     await UserModel.create({
-      authId: auth._id,
+      authId: authentication._id,
       fullName: testUser.user.fullName,
       gender: testUser.user.gender,
       dateOfBirth: testUser.user.dateOfBirth
     });
 
-    Logger.info(`Created user: ${testUser.auth.email}`);
+    Logger.info(`Created user: ${testUser.authentication.email}`);
     createdCount++;
   }
 
@@ -50,13 +52,15 @@ export const seedUsers = async (): Promise<void> => {
 export const clearUsers = async (): Promise<void> => {
   Logger.info("Clearing all users...");
 
-  const testEmails = TEST_USERS.map((u) => u.auth.email);
+  const testEmails = TEST_USERS.map((u) => u.authentication.email);
 
-  const auths = await AuthModel.find({ email: { $in: testEmails } });
-  const authIds = auths.map((a) => a._id);
+  const authentications = await AuthenticationModel.find({
+    email: { $in: testEmails }
+  });
+  const authIds = authentications.map((a) => a._id);
 
   await UserModel.deleteMany({ authId: { $in: authIds } });
-  await AuthModel.deleteMany({ email: { $in: testEmails } });
+  await AuthenticationModel.deleteMany({ email: { $in: testEmails } });
 
-  Logger.info(`Cleared ${auths.length} test users`);
+  Logger.info(`Cleared ${authentications.length} test users`);
 };

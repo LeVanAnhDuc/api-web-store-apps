@@ -5,15 +5,16 @@ import { BadRequestError } from "../responses/error";
 
 // Mapping of Mongoose validation paths to i18next translation keys
 const VALIDATION_KEY_MAP: Record<string, I18n.Key> = {
-  email: "auth:validation.emailRequired",
-  password: "auth:validation.passwordRequired",
+  email: "authentication:validation.emailRequired",
+  password: "authentication:validation.passwordRequired",
   authId: "user:validation.authIdRequired",
   fullName: "user:validation.fullNameRequired",
   phone: "user:validation.phoneRequired"
 };
 
-const EMAIL_INVALID_KEY: I18n.Key = "auth:validation.emailInvalid";
-const PASSWORD_MIN_LENGTH_KEY: I18n.Key = "auth:validation.passwordMinLength";
+const EMAIL_INVALID_KEY: I18n.Key = "authentication:validation.emailInvalid";
+const PASSWORD_MIN_LENGTH_KEY: I18n.Key =
+  "authentication:validation.passwordMinLength";
 const FULL_NAME_MIN_LENGTH_KEY: I18n.Key = "user:validation.fullNameMinLength";
 const FULL_NAME_MAX_LENGTH_KEY: I18n.Key = "user:validation.fullNameMaxLength";
 const PHONE_INVALID_KEY: I18n.Key = "user:validation.phoneInvalid";

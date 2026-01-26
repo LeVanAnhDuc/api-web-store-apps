@@ -1,6 +1,6 @@
 import type { Schema } from "mongoose";
 import type { Request } from "express";
-import type { AuthDocument } from "@/modules/auth/types";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginMethod } from "@/modules/login/types";
 import type {
   CreateLoginHistoryInput,
@@ -15,12 +15,14 @@ import { createLoginHistory } from "@/modules/login-history/repository";
 import { updateLastLogin as updateLastLoginRepo } from "@/modules/login/repository";
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
 
-export const generateLoginTokens = (auth: AuthDocument): LoginResponse => {
+export const generateLoginTokens = (
+  authentication: AuthenticationDocument
+): LoginResponse => {
   const tokenPayload = {
-    userId: auth._id.toString(),
-    authId: auth._id.toString(),
-    email: auth.email,
-    roles: auth.roles
+    userId: authentication._id.toString(),
+    authId: authentication._id.toString(),
+    email: authentication.email,
+    roles: authentication.roles
   };
 
   const { accessToken, refreshToken, idToken } =

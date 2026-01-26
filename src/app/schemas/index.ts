@@ -6,7 +6,7 @@ import {
   SAFE_EMAIL_PATTERN,
   OTP_VALIDATION,
   NUMERIC_OTP_PATTERN
-} from "@/modules/auth/constants";
+} from "@/modules/authentication/constants";
 
 export const emailSchema = Joi.string()
   .email()
@@ -14,12 +14,12 @@ export const emailSchema = Joi.string()
   .max(EMAIL_VALIDATION.MAX_LENGTH)
   .pattern(SAFE_EMAIL_PATTERN)
   .messages({
-    "string.email": "auth:validation.emailInvalid",
-    "string.empty": "auth:validation.emailRequired",
-    "string.min": "auth:validation.emailMinLength",
-    "string.max": "auth:validation.emailMaxLength",
-    "string.pattern.base": "auth:validation.emailInvalid",
-    "any.required": "auth:validation.emailRequired"
+    "string.email": "authentication:validation.emailInvalid",
+    "string.empty": "authentication:validation.emailRequired",
+    "string.min": "authentication:validation.emailMinLength",
+    "string.max": "authentication:validation.emailMaxLength",
+    "string.pattern.base": "authentication:validation.emailInvalid",
+    "any.required": "authentication:validation.emailRequired"
   });
 
 export const passwordSchema = Joi.string()
@@ -27,19 +27,19 @@ export const passwordSchema = Joi.string()
   .max(PASSWORD_VALIDATION.MAX_LENGTH)
   .pattern(PASSWORD_STRENGTH_PATTERN)
   .messages({
-    "string.empty": "auth:validation.passwordRequired",
-    "string.min": "auth:validation.passwordMinLength",
-    "string.max": "auth:validation.passwordMaxLength",
-    "string.pattern.base": "auth:validation.passwordPattern",
-    "any.required": "auth:validation.passwordRequired"
+    "string.empty": "authentication:validation.passwordRequired",
+    "string.min": "authentication:validation.passwordMinLength",
+    "string.max": "authentication:validation.passwordMaxLength",
+    "string.pattern.base": "authentication:validation.passwordPattern",
+    "any.required": "authentication:validation.passwordRequired"
   });
 
 export const otpSchema = Joi.string()
   .length(OTP_VALIDATION.LENGTH)
   .pattern(NUMERIC_OTP_PATTERN)
   .messages({
-    "string.empty": "auth:validation.otpRequired",
-    "string.length": "auth:validation.otpLength",
-    "string.pattern.base": "auth:validation.otpDigitsOnly",
-    "any.required": "auth:validation.otpRequired"
+    "string.empty": "authentication:validation.otpRequired",
+    "string.length": "authentication:validation.otpLength",
+    "string.pattern.base": "authentication:validation.otpDigitsOnly",
+    "any.required": "authentication:validation.otpRequired"
   });

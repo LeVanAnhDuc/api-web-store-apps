@@ -1,11 +1,11 @@
 import i18next from "@/i18n";
 import type { TFunction } from "i18next";
 import type { OtpVerifyRequest, LoginResponse } from "@/modules/login/types";
-import type { AuthDocument } from "@/modules/auth/types";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
 import { UnauthorizedError, BadRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
-import { findAuthByEmail } from "@/modules/login/repository";
+import { findAuthenticationByEmail } from "@/modules/login/repository";
 import {
   verifyLoginOtp,
   isLoginOtpLocked,
@@ -47,8 +47,8 @@ const ensureNotLocked = async (
 const ensureAuthExists = async (
   email: string,
   t: TFunction
-): Promise<AuthDocument> => {
-  const auth = await findAuthByEmail(email);
+): Promise<AuthenticationDocument> => {
+  const auth = await findAuthenticationByEmail(email);
 
   if (!auth) {
     Logger.warn("OTP verification failed - email not found", { email });
@@ -60,7 +60,7 @@ const ensureAuthExists = async (
 
 const handleInvalidOtp = async (
   email: string,
-  auth: AuthDocument,
+  auth: AuthenticationDocument,
   language: string,
   req: OtpVerifyRequest
 ): Promise<never> => {
@@ -99,7 +99,7 @@ const handleInvalidOtp = async (
 
 const completeSuccessfulLogin = (
   email: string,
-  auth: AuthDocument,
+  auth: AuthenticationDocument,
   req: OtpVerifyRequest
 ): LoginResponse => {
   updateLastLogin(auth._id.toString());

@@ -28,7 +28,7 @@ import { Logger } from "@/infra/utils/logger";
 
 import {
   isEmailRegistered,
-  createAuthRecord,
+  createAuthenticationRecord,
   createUserProfile,
   storeRefreshToken
 } from "@/modules/signup/repository";
@@ -42,7 +42,7 @@ import { hashPassword } from "@/app/utils/crypto/bcrypt";
 import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
 
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
-import { AUTH_ROLES } from "@/modules/auth/constants";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 const ensureSessionValid = async (
   email: string,
   sessionToken: string,
@@ -85,7 +85,7 @@ const createUserAccount = async (
 ): Promise<CreateAccountResult> => {
   const hashedPassword = hashPassword(password);
 
-  const auth = await createAuthRecord({
+  const auth = await createAuthenticationRecord({
     email,
     hashedPassword
   });
@@ -164,7 +164,7 @@ export const completeSignup = async (
     account.userId,
     account.authId,
     account.email,
-    AUTH_ROLES.USER
+    AUTHENTICATION_ROLES.USER
   );
 
   await persistRefreshToken(account.authId, tokens.refreshToken);

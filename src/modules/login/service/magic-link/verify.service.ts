@@ -3,11 +3,11 @@ import type {
   MagicLinkVerifyRequest,
   LoginResponse
 } from "@/modules/login/types";
-import type { AuthDocument } from "@/modules/auth/types";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
 import { UnauthorizedError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
-import { findAuthByEmail } from "@/modules/login/repository";
+import { findAuthenticationByEmail } from "@/modules/login/repository";
 import {
   verifyMagicLinkToken,
   cleanupMagicLinkData
@@ -23,8 +23,8 @@ import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
 const ensureAuthExists = async (
   email: string,
   t: TFunction
-): Promise<AuthDocument> => {
-  const auth = await findAuthByEmail(email);
+): Promise<AuthenticationDocument> => {
+  const auth = await findAuthenticationByEmail(email);
 
   if (!auth) {
     Logger.warn("Magic link verification failed - email not found", { email });
@@ -36,7 +36,7 @@ const ensureAuthExists = async (
 
 const handleInvalidToken = (
   email: string,
-  auth: AuthDocument,
+  auth: AuthenticationDocument,
   req: MagicLinkVerifyRequest,
   t: TFunction
 ): never => {
@@ -53,7 +53,7 @@ const handleInvalidToken = (
 
 const completeSuccessfulLogin = (
   email: string,
-  auth: AuthDocument,
+  auth: AuthenticationDocument,
   req: MagicLinkVerifyRequest
 ): LoginResponse => {
   updateLastLogin(auth._id.toString());

@@ -1,15 +1,15 @@
 import { Schema, model, type Model } from "mongoose";
-import type { AuthDocument } from "@/modules/auth/types";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
 import {
-  AUTH_ROLES,
+  AUTHENTICATION_ROLES,
   EMAIL_FORMAT_PATTERN,
   SAFE_EMAIL_PATTERN
-} from "@/modules/auth/constants";
+} from "@/modules/authentication/constants";
 import { MODEL_NAMES } from "@/app/constants/models";
 
 const { AUTHENTICATION } = MODEL_NAMES;
 
-const AuthSchema = new Schema<AuthDocument>(
+const AuthenticationSchema = new Schema<AuthenticationDocument>(
   {
     email: {
       type: String,
@@ -40,8 +40,8 @@ const AuthSchema = new Schema<AuthDocument>(
     },
     roles: {
       type: String,
-      enum: Object.values(AUTH_ROLES),
-      default: AUTH_ROLES.USER
+      enum: Object.values(AUTHENTICATION_ROLES),
+      default: AUTHENTICATION_ROLES.USER
     },
     isActive: {
       type: Boolean,
@@ -54,11 +54,9 @@ const AuthSchema = new Schema<AuthDocument>(
   }
 );
 
-AuthSchema.index({ email: 1 });
+AuthenticationSchema.index({ email: 1 });
 
-const AuthModel: Model<AuthDocument> = model<AuthDocument>(
-  AUTHENTICATION,
-  AuthSchema
-);
+const AuthenticationModel: Model<AuthenticationDocument> =
+  model<AuthenticationDocument>(AUTHENTICATION, AuthenticationSchema);
 
-export default AuthModel;
+export default AuthenticationModel;
