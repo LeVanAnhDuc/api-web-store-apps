@@ -9,7 +9,7 @@ import {
   createAndStoreOtp,
   deleteOtp
 } from "@/modules/signup/utils/store";
-import { sendOtpEmailAsync } from "@/modules/signup/emails/send-otp-email";
+import { sendModuleEmail } from "@/app/utils/email/sender";
 import { generateOtp } from "@/modules/signup/utils/otp";
 import { OTP_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
@@ -65,6 +65,28 @@ const startCooldown = async (email: string): Promise<void> => {
   });
 };
 
+const sendSignupOtpEmail = (
+  email: string,
+  otp: string,
+  locale: I18n.Locale
+): void => {
+  sendModuleEmail("signup", email, locale, {
+    templateName: "signup-otp",
+    subject: "Signup Verification Code",
+    variables: {
+      otp,
+      expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES
+    }
+  })
+    .then(() => undefined)
+    .catch((error) => {
+      Logger.error("Signup OTP email delivery failed", {
+        email,
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    });
+};
+
 export const sendOtpService = async (
   req: SendOtpRequest
 ): Promise<Partial<ResponsePattern<SendOtpResponse>>> => {
@@ -80,7 +102,7 @@ export const sendOtpService = async (
 
   await startCooldown(email);
 
-  sendOtpEmailAsync(email, otp, language as I18n.Locale);
+  sendSignupOtpEmail(email, otp, language as I18n.Locale);
 
   Logger.info("SendOtp completed", {
     email,

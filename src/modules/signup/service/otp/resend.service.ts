@@ -14,7 +14,7 @@ import {
   hasExceededResendLimit,
   incrementResendCount
 } from "@/modules/signup/utils/store";
-import { sendOtpEmailAsync } from "@/modules/signup/emails/send-otp-email";
+import { sendModuleEmail } from "@/app/utils/email/sender";
 import { generateOtp } from "@/modules/signup/utils/otp";
 import { OTP_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/app/constants/time";
@@ -88,7 +88,6 @@ const startCooldown = async (email: string): Promise<void> => {
 };
 
 const trackResendAttempt = async (email: string): Promise<number> => {
-  // Window: 1 hour for resend count tracking
   const count = await incrementResendCount(email, TIME_RESEND_OTP_PER_HOUR);
 
   Logger.debug("Resend attempt tracked", {
@@ -99,6 +98,28 @@ const trackResendAttempt = async (email: string): Promise<number> => {
   });
 
   return count;
+};
+
+const sendSignupOtpEmail = (
+  email: string,
+  otp: string,
+  locale: I18n.Locale
+): void => {
+  sendModuleEmail("signup", email, locale, {
+    templateName: "signup-otp",
+    subject: "Signup Verification Code",
+    variables: {
+      otp,
+      expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES
+    }
+  })
+    .then(() => undefined)
+    .catch((error) => {
+      Logger.error("Signup OTP email delivery failed", {
+        email,
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    });
 };
 
 export const resendOtpService = async (
@@ -119,7 +140,7 @@ export const resendOtpService = async (
 
   const currentResendCount = await trackResendAttempt(email);
 
-  sendOtpEmailAsync(email, otp, language as I18n.Locale);
+  sendSignupOtpEmail(email, otp, language as I18n.Locale);
 
   Logger.info("ResendOtp completed", {
     email,
