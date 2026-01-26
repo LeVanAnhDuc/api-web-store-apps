@@ -2,10 +2,9 @@ import type {
   CheckEmailRequest,
   CheckEmailResponse
 } from "@/modules/signup/types";
-
 import { isEmailRegistered } from "@/modules/signup/repository";
-
 import Logger from "@/infra/utils/logger";
+
 export const checkEmailService = async (
   req: CheckEmailRequest
 ): Promise<Partial<ResponsePattern<CheckEmailResponse>>> => {

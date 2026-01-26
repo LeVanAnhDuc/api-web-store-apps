@@ -16,7 +16,10 @@
     "phoneRequired": "Số điện thoại là bắt buộc",
     "phoneInvalid": "Số điện thoại không hợp lệ",
     "addressMaxLength": "Địa chỉ không được vượt quá 500 ký tự",
+    "genderRequired": "Giới tính là bắt buộc",
     "genderInvalid": "Giới tính phải là nam, nữ, khác hoặc không muốn nói",
+    "dateOfBirthRequired": "Ngày sinh là bắt buộc",
+    "dateOfBirthInvalid": "Ngày sinh không hợp lệ",
     "dateOfBirthTooYoung": "Bạn phải từ 13 tuổi trở lên",
     "dateOfBirthTooOld": "Ngày sinh không thể quá 120 năm trước"
   }

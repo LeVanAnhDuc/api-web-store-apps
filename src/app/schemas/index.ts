@@ -7,6 +7,14 @@ import {
   OTP_VALIDATION,
   NUMERIC_OTP_PATTERN
 } from "@/modules/authentication/constants";
+import {
+  GENDERS,
+  FULLNAME_VALIDATION,
+  SAFE_FULLNAME_PATTERN
+} from "@/modules/user/constants";
+import { getDateOfBirthBounds } from "@/app/utils/date";
+
+const GENDER_VALUES = Object.values(GENDERS);
 
 export const emailSchema = Joi.string()
   .email()
@@ -42,4 +50,34 @@ export const otpSchema = Joi.string()
     "string.length": "authentication:validation.otpLength",
     "string.pattern.base": "authentication:validation.otpDigitsOnly",
     "any.required": "authentication:validation.otpRequired"
+  });
+
+export const fullNameSchema = Joi.string()
+  .min(FULLNAME_VALIDATION.MIN_LENGTH)
+  .max(FULLNAME_VALIDATION.MAX_LENGTH)
+  .pattern(SAFE_FULLNAME_PATTERN)
+  .messages({
+    "string.empty": "user:validation.fullNameRequired",
+    "string.min": "user:validation.fullNameMinLength",
+    "string.max": "user:validation.fullNameMaxLength",
+    "string.pattern.base": "user:validation.fullNameInvalid",
+    "any.required": "user:validation.fullNameRequired"
+  });
+
+export const genderSchema = Joi.string()
+  .valid(...GENDER_VALUES)
+  .messages({
+    "string.empty": "user:validation.genderRequired",
+    "any.required": "user:validation.genderRequired",
+    "any.only": "user:validation.genderInvalid"
+  });
+
+export const dateOfBirthSchema = Joi.date()
+  .min(getDateOfBirthBounds().minDate)
+  .max(getDateOfBirthBounds().maxDate)
+  .messages({
+    "date.base": "user:validation.dateOfBirthInvalid",
+    "date.min": "user:validation.dateOfBirthTooOld",
+    "date.max": "user:validation.dateOfBirthTooYoung",
+    "any.required": "user:validation.dateOfBirthRequired"
   });
