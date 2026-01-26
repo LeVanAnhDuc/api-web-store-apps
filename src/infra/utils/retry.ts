@@ -6,13 +6,9 @@
 import { Logger } from "./logger";
 
 interface RetryOptions {
-  /** Maximum number of retry attempts (default: 3) */
   maxAttempts?: number;
-  /** Initial delay in milliseconds (default: 1000) */
   initialDelayMs?: number;
-  /** Operation name for logging */
   operationName?: string;
-  /** Context data for logging */
   context?: Record<string, unknown>;
 }
 
@@ -25,10 +21,6 @@ const DEFAULT_OPTIONS: Required<Omit<RetryOptions, "context">> = {
 const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-/**
- * Execute async function with retry and exponential backoff
- * Fire-and-forget: errors are logged, not thrown
- */
 export const withRetry = (
   fn: () => Promise<unknown>,
   options: RetryOptions = {}
