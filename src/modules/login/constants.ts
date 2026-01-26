@@ -4,16 +4,6 @@ import {
   HOURS_PER_DAY
 } from "@/app/constants/time";
 
-/**
- * Login rate limits configuration
- * IP-based rate limiting to prevent distributed brute force attacks
- * Per-email protection is handled by LOGIN_LOCKOUT (progressive blocking)
- *
- * Note: IP limit is higher than per-email because:
- * - Multiple users may share same IP (office, public WiFi, NAT)
- * - Progressive lockout already protects individual accounts
- * - This only catches extreme distributed attacks
- */
 export const LOGIN_RATE_LIMITS = {
   PER_IP: {
     MAX_REQUESTS: 30,
@@ -43,10 +33,6 @@ export const MAGIC_LINK_RATE_LIMITS = {
   }
 } as const;
 
-/**
- * Progressive login lockout configuration
- * Implements exponential backoff for failed login attempts
- */
 export const LOGIN_LOCKOUT = {
   FREE_ATTEMPTS: 4,
 
