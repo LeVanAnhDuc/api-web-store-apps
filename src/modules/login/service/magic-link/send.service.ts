@@ -7,7 +7,7 @@ import type {
 import { BadRequestError, UnauthorizedError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
-import { findAuthByEmail } from "@/modules/login/repository";
+import { findAuthenticationByEmail } from "@/modules/login/repository";
 import {
   checkMagicLinkCooldown,
   getMagicLinkCooldownRemaining,
@@ -47,7 +47,7 @@ const ensureEmailExists = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
-  const auth = await findAuthByEmail(email);
+  const auth = await findAuthenticationByEmail(email);
 
   if (!auth) {
     // Don't reveal if email exists - generic error

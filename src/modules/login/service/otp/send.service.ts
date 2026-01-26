@@ -4,7 +4,7 @@ import type { OtpSendRequest, OtpSendResponse } from "@/modules/login/types";
 import { BadRequestError, UnauthorizedError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
-import { findAuthByEmail } from "@/modules/login/repository";
+import { findAuthenticationByEmail } from "@/modules/login/repository";
 import {
   checkLoginOtpCooldown,
   getLoginOtpCooldownRemaining,
@@ -44,7 +44,7 @@ const ensureEmailExists = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
-  const auth = await findAuthByEmail(email);
+  const auth = await findAuthenticationByEmail(email);
 
   if (!auth) {
     Logger.warn("Login OTP requested for non-existent email", { email });
