@@ -13,7 +13,7 @@ import {
   storeSession,
   cleanupOtpData
 } from "@/modules/signup/utils/store";
-import { generateSessionId } from "@/modules/signup/utils/otp";
+import { generateSessionToken } from "@/app/utils/crypto/otp";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 
@@ -72,7 +72,7 @@ const verifyOtpMatch = async (
 };
 
 const createSignupSession = async (email: string): Promise<string> => {
-  const sessionToken = generateSessionId();
+  const sessionToken = generateSessionToken();
 
   await storeSession(email, sessionToken, TIME_EXPIRES_SESSION_MINUTES);
 

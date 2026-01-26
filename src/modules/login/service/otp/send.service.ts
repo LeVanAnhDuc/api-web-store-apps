@@ -15,7 +15,7 @@ import {
   hasExceededLoginOtpResendLimit
 } from "@/modules/login/utils/store";
 import { sendModuleEmail } from "@/app/utils/email/sender";
-import { generateLoginOtp } from "@/modules/login/utils/otp";
+import { generateOtp } from "@/app/utils/crypto/otp";
 import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 
@@ -75,7 +75,7 @@ const ensureResendLimitNotExceeded = async (
 };
 
 const createNewOtp = async (email: string): Promise<string> => {
-  const otp = generateLoginOtp();
+  const otp = generateOtp(LOGIN_OTP_CONFIG.LENGTH);
 
   // Ensure idempotency by deleting existing OTP first
   await deleteLoginOtp(email);

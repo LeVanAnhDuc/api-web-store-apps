@@ -10,7 +10,7 @@ import {
   deleteOtp
 } from "@/modules/signup/utils/store";
 import { sendModuleEmail } from "@/app/utils/email/sender";
-import { generateOtp } from "@/modules/signup/utils/otp";
+import { generateOtp } from "@/app/utils/crypto/otp";
 import { OTP_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 
@@ -42,7 +42,7 @@ const ensureEmailNotRegistered = async (
 };
 
 const createNewOtp = async (email: string): Promise<string> => {
-  const otp = generateOtp();
+  const otp = generateOtp(OTP_CONFIG.LENGTH);
 
   // Delete existing OTP first (idempotency - same request can be retried)
   await deleteOtp(email);
