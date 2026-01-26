@@ -6,13 +6,7 @@ import { UnauthorizedError, BadRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
-import {
-  verifyLoginOtp,
-  isLoginOtpLocked,
-  getFailedLoginOtpAttempts,
-  incrementFailedLoginOtpAttempts,
-  cleanupLoginOtpData
-} from "@/modules/login/utils/store";
+import loginCacheStore from "@/modules/login/store/LoginCacheStore";
 import {
   generateLoginTokens,
   updateLastLogin,
@@ -29,11 +23,11 @@ const ensureNotLocked = async (
   email: string,
   language: string
 ): Promise<void> => {
-  const isLocked = await isLoginOtpLocked(email);
+  const isLocked = await loginCacheStore.isLoginOtpLocked(email);
 
   if (!isLocked) return;
 
-  const attempts = await getFailedLoginOtpAttempts(email);
+  const attempts = await loginCacheStore.getFailedLoginOtpAttempts(email);
   Logger.warn("Login OTP verification locked", { email, attempts });
 
   throw new BadRequestError(
@@ -64,7 +58,7 @@ const handleInvalidOtp = async (
   language: string,
   req: OtpVerifyRequest
 ): Promise<never> => {
-  const attempts = await incrementFailedLoginOtpAttempts(email);
+  const attempts = await loginCacheStore.incrementFailedLoginOtpAttempts(email);
 
   recordFailedLogin({
     userId: auth._id,
@@ -130,11 +124,11 @@ export const verifyLoginOtpService = async (
 
   const auth = await ensureAuthExists(email, t);
 
-  const isValid = await verifyLoginOtp(email, otp);
+  const isValid = await loginCacheStore.verifyLoginOtp(email, otp);
 
   if (!isValid) await handleInvalidOtp(email, auth, language, req);
 
-  withRetry(() => cleanupLoginOtpData(email), {
+  withRetry(() => loginCacheStore.cleanupLoginOtpData(email), {
     operationName: "cleanupLoginOtpData",
     context: { email }
   });

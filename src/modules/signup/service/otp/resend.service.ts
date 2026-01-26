@@ -6,14 +6,7 @@ import type {
 import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { isEmailRegistered } from "@/modules/signup/repository";
-import {
-  checkOtpCoolDown,
-  setOtpCoolDown,
-  createAndStoreOtp,
-  deleteOtp,
-  hasExceededResendLimit,
-  incrementResendCount
-} from "@/modules/signup/utils/store";
+import signupCacheStore from "@/modules/signup/store/SignupCacheStore";
 import { sendModuleEmail } from "@/app/utils/email/sender";
 import { generateOtp } from "@/app/utils/crypto/otp";
 import { OTP_CONFIG } from "@/modules/signup/constants";
@@ -28,7 +21,7 @@ const ensureCooldownExpired = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
-  const canSend = await checkOtpCoolDown(email);
+  const canSend = await signupCacheStore.checkOtpCoolDown(email);
 
   if (!canSend) {
     Logger.warn("Resend OTP cooldown not expired", { email });
@@ -40,7 +33,10 @@ const ensureResendLimitNotExceeded = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
-  const exceeded = await hasExceededResendLimit(email, MAX_RESEND_COUNT);
+  const exceeded = await signupCacheStore.hasExceededResendLimit(
+    email,
+    MAX_RESEND_COUNT
+  );
 
   if (exceeded) {
     Logger.warn("Resend OTP limit exceeded", {
@@ -67,8 +63,8 @@ const createNewOtp = async (email: string): Promise<string> => {
   const otp = generateOtp(OTP_CONFIG.LENGTH);
 
   // Delete existing OTP first (idempotency)
-  await deleteOtp(email);
-  await createAndStoreOtp(email, otp, TIME_OTP_EXPIRES);
+  await signupCacheStore.deleteOtp(email);
+  await signupCacheStore.createAndStoreOtp(email, otp, TIME_OTP_EXPIRES);
 
   Logger.debug("New OTP created for resend", {
     email,
@@ -79,7 +75,7 @@ const createNewOtp = async (email: string): Promise<string> => {
 };
 
 const startCooldown = async (email: string): Promise<void> => {
-  await setOtpCoolDown(email, TIME_OTP_RESEND);
+  await signupCacheStore.setOtpCoolDown(email, TIME_OTP_RESEND);
 
   Logger.debug("Resend cooldown started", {
     email,
@@ -88,7 +84,10 @@ const startCooldown = async (email: string): Promise<void> => {
 };
 
 const trackResendAttempt = async (email: string): Promise<number> => {
-  const count = await incrementResendCount(email, TIME_RESEND_OTP_PER_HOUR);
+  const count = await signupCacheStore.incrementResendCount(
+    email,
+    TIME_RESEND_OTP_PER_HOUR
+  );
 
   Logger.debug("Resend attempt tracked", {
     email,

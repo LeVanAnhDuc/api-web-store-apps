@@ -8,10 +8,7 @@ import { UnauthorizedError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
-import {
-  verifyMagicLinkToken,
-  cleanupMagicLinkData
-} from "@/modules/login/utils/store";
+import loginCacheStore from "@/modules/login/store/LoginCacheStore";
 import {
   generateLoginTokens,
   updateLastLogin,
@@ -82,11 +79,11 @@ export const verifyMagicLinkService = async (
 
   const auth = await ensureAuthExists(email, t);
 
-  const isValid = await verifyMagicLinkToken(email, token);
+  const isValid = await loginCacheStore.verifyMagicLinkToken(email, token);
 
   if (!isValid) handleInvalidToken(email, auth, req, t);
 
-  withRetry(() => cleanupMagicLinkData(email), {
+  withRetry(() => loginCacheStore.cleanupMagicLinkData(email), {
     operationName: "cleanupMagicLinkData",
     context: { email }
   });

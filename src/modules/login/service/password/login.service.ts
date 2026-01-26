@@ -9,12 +9,7 @@ import { isValidPassword } from "@/app/utils/crypto/bcrypt";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
-import {
-  checkLoginLockout,
-  getFailedLoginAttempts,
-  incrementFailedLoginAttempts,
-  resetFailedLoginAttempts
-} from "@/modules/login/utils/store";
+import loginCacheStore from "@/modules/login/store/LoginCacheStore";
 import {
   generateLoginTokens,
   updateLastLogin,
@@ -41,11 +36,12 @@ const ensureAccountNotLocked = async (
   email: string,
   language: string
 ): Promise<void> => {
-  const { isLocked, remainingSeconds } = await checkLoginLockout(email);
+  const { isLocked, remainingSeconds } =
+    await loginCacheStore.checkLoginLockout(email);
 
   if (!isLocked) return;
 
-  const attemptCount = await getFailedLoginAttempts(email);
+  const attemptCount = await loginCacheStore.getFailedLoginAttempts(email);
   const timeMessage = formatTimeMessage(remainingSeconds, language);
 
   Logger.warn("Login blocked - account locked", {
@@ -125,7 +121,7 @@ const verifyPasswordOrFail = async (
   if (passwordValid) return;
 
   const { attemptCount, lockoutSeconds } =
-    await incrementFailedLoginAttempts(email);
+    await loginCacheStore.incrementFailedLoginAttempts(email);
 
   recordFailedLogin({
     userId: auth._id,
@@ -170,7 +166,7 @@ export const passwordLoginService = async (
 
   updateLastLogin(auth._id.toString());
 
-  withRetry(() => resetFailedLoginAttempts(email), {
+  withRetry(() => loginCacheStore.resetFailedLoginAttempts(email), {
     operationName: "resetFailedLoginAttempts",
     context: { email }
   });

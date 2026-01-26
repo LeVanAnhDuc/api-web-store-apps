@@ -13,10 +13,7 @@ import {
   createUserProfile,
   storeRefreshToken
 } from "@/modules/signup/repository";
-import {
-  verifySession,
-  cleanupSignupSession
-} from "@/modules/signup/utils/store";
+import signupCacheStore from "@/modules/signup/store/SignupCacheStore";
 import { hashPassword } from "@/app/utils/crypto/bcrypt";
 import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
@@ -27,7 +24,7 @@ const ensureSessionValid = async (
   sessionToken: string,
   t: TFunction
 ): Promise<void> => {
-  const isValid = await verifySession(email, sessionToken);
+  const isValid = await signupCacheStore.verifySession(email, sessionToken);
 
   if (!isValid) {
     Logger.warn("Invalid or expired signup session", { email });
@@ -147,7 +144,7 @@ export const completeSignupService = async (
 
   await persistRefreshToken(account.authId, tokens.refreshToken);
 
-  await cleanupSignupSession(email);
+  await signupCacheStore.cleanupSignupSession(email);
 
   Logger.info("CompleteSignup finished - new user registered", {
     email,

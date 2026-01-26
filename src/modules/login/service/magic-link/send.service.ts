@@ -8,14 +8,7 @@ import { BadRequestError, UnauthorizedError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
-import {
-  checkMagicLinkCooldown,
-  getMagicLinkCooldownRemaining,
-  setMagicLinkCooldown,
-  createAndStoreMagicLink,
-  deleteMagicLink,
-  generateMagicLinkToken
-} from "@/modules/login/utils/store";
+import loginCacheStore from "@/modules/login/store/LoginCacheStore";
 import { sendModuleEmail } from "@/app/utils/email/sender";
 import ENV from "@/infra/configs/env";
 import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
@@ -29,10 +22,11 @@ const ensureCooldownExpired = async (
   email: string,
   language: string
 ): Promise<void> => {
-  const canSend = await checkMagicLinkCooldown(email);
+  const canSend = await loginCacheStore.checkMagicLinkCooldown(email);
 
   if (!canSend) {
-    const remaining = await getMagicLinkCooldownRemaining(email);
+    const remaining =
+      await loginCacheStore.getMagicLinkCooldownRemaining(email);
     Logger.warn("Magic link cooldown not expired", { email, remaining });
     throw new BadRequestError(
       i18next.t("login:errors.magicLinkCooldown", {
@@ -67,11 +61,15 @@ const ensureEmailExists = async (
 };
 
 const createNewMagicLink = async (email: string): Promise<string> => {
-  const token = generateMagicLinkToken();
+  const token = loginCacheStore.generateMagicLinkToken();
 
   // Ensure idempotency by deleting existing magic link first
-  await deleteMagicLink(email);
-  await createAndStoreMagicLink(email, token, MAGIC_LINK_EXPIRY_SECONDS);
+  await loginCacheStore.deleteMagicLink(email);
+  await loginCacheStore.createAndStoreMagicLink(
+    email,
+    token,
+    MAGIC_LINK_EXPIRY_SECONDS
+  );
 
   Logger.debug("Magic link created and stored", {
     email,
@@ -82,7 +80,10 @@ const createNewMagicLink = async (email: string): Promise<string> => {
 };
 
 const applyMagicLinkRateLimits = async (email: string): Promise<void> => {
-  await setMagicLinkCooldown(email, MAGIC_LINK_COOLDOWN_SECONDS);
+  await loginCacheStore.setMagicLinkCooldown(
+    email,
+    MAGIC_LINK_COOLDOWN_SECONDS
+  );
 
   Logger.debug("Magic link rate limits applied", {
     email,

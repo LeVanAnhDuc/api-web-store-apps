@@ -5,15 +5,7 @@ import { BadRequestError, UnauthorizedError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
-import {
-  checkLoginOtpCooldown,
-  getLoginOtpCooldownRemaining,
-  setLoginOtpCooldown,
-  createAndStoreLoginOtp,
-  deleteLoginOtp,
-  incrementLoginOtpResendCount,
-  hasExceededLoginOtpResendLimit
-} from "@/modules/login/utils/store";
+import loginCacheStore from "@/modules/login/store/LoginCacheStore";
 import { sendModuleEmail } from "@/app/utils/email/sender";
 import { generateOtp } from "@/app/utils/crypto/otp";
 import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
@@ -26,10 +18,10 @@ const ensureCooldownExpired = async (
   email: string,
   language: string
 ): Promise<void> => {
-  const canSend = await checkLoginOtpCooldown(email);
+  const canSend = await loginCacheStore.checkLoginOtpCooldown(email);
 
   if (!canSend) {
-    const remaining = await getLoginOtpCooldownRemaining(email);
+    const remaining = await loginCacheStore.getLoginOtpCooldownRemaining(email);
     Logger.warn("Login OTP cooldown not expired", { email, remaining });
     throw new BadRequestError(
       i18next.t("login:errors.otpCooldown", {
@@ -66,7 +58,7 @@ const ensureResendLimitNotExceeded = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
-  const exceeded = await hasExceededLoginOtpResendLimit(email);
+  const exceeded = await loginCacheStore.hasExceededLoginOtpResendLimit(email);
 
   if (exceeded) {
     Logger.warn("Login OTP resend limit exceeded", { email });
@@ -78,8 +70,8 @@ const createNewOtp = async (email: string): Promise<string> => {
   const otp = generateOtp(LOGIN_OTP_CONFIG.LENGTH);
 
   // Ensure idempotency by deleting existing OTP first
-  await deleteLoginOtp(email);
-  await createAndStoreLoginOtp(email, otp, OTP_EXPIRY_SECONDS);
+  await loginCacheStore.deleteLoginOtp(email);
+  await loginCacheStore.createAndStoreLoginOtp(email, otp, OTP_EXPIRY_SECONDS);
 
   Logger.debug("Login OTP created and stored", {
     email,
@@ -91,8 +83,8 @@ const createNewOtp = async (email: string): Promise<string> => {
 
 const applyOtpRateLimits = async (email: string): Promise<void> => {
   await Promise.all([
-    setLoginOtpCooldown(email, OTP_COOLDOWN_SECONDS),
-    incrementLoginOtpResendCount(email, OTP_EXPIRY_SECONDS)
+    loginCacheStore.setLoginOtpCooldown(email, OTP_COOLDOWN_SECONDS),
+    loginCacheStore.incrementLoginOtpResendCount(email, OTP_EXPIRY_SECONDS)
   ]);
 
   Logger.debug("Login OTP rate limits applied", {

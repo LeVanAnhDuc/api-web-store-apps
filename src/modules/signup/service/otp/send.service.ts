@@ -3,12 +3,7 @@ import type { SendOtpRequest, SendOtpResponse } from "@/modules/signup/types";
 import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { isEmailRegistered } from "@/modules/signup/repository";
-import {
-  checkOtpCoolDown,
-  setOtpCoolDown,
-  createAndStoreOtp,
-  deleteOtp
-} from "@/modules/signup/utils/store";
+import signupCacheStore from "@/modules/signup/store/SignupCacheStore";
 import { sendModuleEmail } from "@/app/utils/email/sender";
 import { generateOtp } from "@/app/utils/crypto/otp";
 import { OTP_CONFIG } from "@/modules/signup/constants";
@@ -21,7 +16,7 @@ const ensureCooldownExpired = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
-  const canSend = await checkOtpCoolDown(email);
+  const canSend = await signupCacheStore.checkOtpCoolDown(email);
 
   if (!canSend) {
     Logger.warn("OTP cooldown not expired", { email });
@@ -45,8 +40,8 @@ const createNewOtp = async (email: string): Promise<string> => {
   const otp = generateOtp(OTP_CONFIG.LENGTH);
 
   // Delete existing OTP first (idempotency - same request can be retried)
-  await deleteOtp(email);
-  await createAndStoreOtp(email, otp, TIME_OTP_EXPIRES);
+  await signupCacheStore.deleteOtp(email);
+  await signupCacheStore.createAndStoreOtp(email, otp, TIME_OTP_EXPIRES);
 
   Logger.debug("OTP created and stored in Redis", {
     email,
@@ -57,7 +52,7 @@ const createNewOtp = async (email: string): Promise<string> => {
 };
 
 const startCooldown = async (email: string): Promise<void> => {
-  await setOtpCoolDown(email, TIME_OTP_RESEND);
+  await signupCacheStore.setOtpCoolDown(email, TIME_OTP_RESEND);
 
   Logger.debug("OTP cooldown started", {
     email,

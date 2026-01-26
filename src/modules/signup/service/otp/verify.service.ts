@@ -6,13 +6,7 @@ import type {
 } from "@/modules/signup/types";
 import { BadRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
-import {
-  verifyOtp as verifyOtpFromStore,
-  isOtpAccountLocked,
-  incrementFailedOtpAttempts,
-  storeSession,
-  cleanupOtpData
-} from "@/modules/signup/utils/store";
+import signupCacheStore from "@/modules/signup/store/SignupCacheStore";
 import { generateSessionToken } from "@/app/utils/crypto/otp";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
@@ -26,7 +20,10 @@ const ensureAccountNotLocked = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
-  const isLocked = await isOtpAccountLocked(email, TIME_MAX_FAILED_ATTEMPTS);
+  const isLocked = await signupCacheStore.isOtpAccountLocked(
+    email,
+    TIME_MAX_FAILED_ATTEMPTS
+  );
 
   if (isLocked) {
     Logger.warn("OTP account locked due to too many failed attempts", {
@@ -43,10 +40,10 @@ const verifyOtpMatch = async (
   t: TFunction,
   language: string
 ): Promise<void> => {
-  const isValid = await verifyOtpFromStore(email, otp);
+  const isValid = await signupCacheStore.verifyOtp(email, otp);
 
   if (!isValid) {
-    const failedCount = await incrementFailedOtpAttempts(
+    const failedCount = await signupCacheStore.incrementFailedOtpAttempts(
       email,
       TIME_LOCKOUT_DURATION_MINUTES
     );
@@ -74,7 +71,11 @@ const verifyOtpMatch = async (
 const createSignupSession = async (email: string): Promise<string> => {
   const sessionToken = generateSessionToken();
 
-  await storeSession(email, sessionToken, TIME_EXPIRES_SESSION_MINUTES);
+  await signupCacheStore.storeSession(
+    email,
+    sessionToken,
+    TIME_EXPIRES_SESSION_MINUTES
+  );
 
   Logger.debug("Signup session created", {
     email,
@@ -98,7 +99,7 @@ export const verifyOtpService = async (
 
   const sessionToken = await createSignupSession(email);
 
-  await cleanupOtpData(email);
+  await signupCacheStore.cleanupOtpData(email);
 
   Logger.info("VerifyOtp completed successfully", {
     email,
