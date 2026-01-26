@@ -1,20 +1,14 @@
 import fs from "fs/promises";
-import path from "path";
 import { Logger } from "@/infra/utils/logger";
-import { EMAIL_PATHS } from "@/app/constants/email";
 
 export const renderEmailTemplate = async (
   templateName: string,
   variables: Record<string, string | number>,
   locale: I18n.Locale = "en",
-  customTemplatePath?: string
+  templatePath: string
 ): Promise<string> => {
   try {
-    const finalTemplatePath =
-      customTemplatePath ??
-      path.join(EMAIL_PATHS.TEMPLATES_DIR, `${templateName}.html`);
-
-    let template = await fs.readFile(finalTemplatePath, "utf-8");
+    let template = await fs.readFile(templatePath, "utf-8");
 
     Object.entries(variables).forEach(([key, value]) => {
       const placeholder = `{{${key}}}`;
@@ -26,7 +20,7 @@ export const renderEmailTemplate = async (
     Logger.error("Failed to render email template", {
       templateName,
       locale,
-      customTemplatePath: customTemplatePath ?? "default",
+      templatePath,
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined
     });
