@@ -1,5 +1,5 @@
-export { sendOtp } from "./otp/send.service";
-export { verifyOtp } from "./otp/verify.service";
-export { resendOtp } from "./otp/resend.service";
-export { checkEmail } from "./signup/check-email.service";
-export { completeSignup } from "./signup/complete.service";
+export { sendOtpService } from "./otp/send.service";
+export { verifyOtpService } from "./otp/verify.service";
+export { resendOtpService } from "./otp/resend.service";
+export { checkEmailService } from "./signup/check-email.service";
+export { completeSignupService } from "./signup/complete.service";

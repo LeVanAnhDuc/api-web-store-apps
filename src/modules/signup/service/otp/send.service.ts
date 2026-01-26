@@ -84,7 +84,7 @@ const startCooldown = async (email: string): Promise<void> => {
     cooldownSeconds: TIME_OTP_RESEND
   });
 };
-export const sendOtp = async (
+export const sendOtpService = async (
   req: SendOtpRequest
 ): Promise<Partial<ResponsePattern<SendOtpResponse>>> => {
   const { email } = req.body;

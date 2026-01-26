@@ -100,7 +100,7 @@ const createSignupSession = async (email: string): Promise<string> => {
 
   return sessionToken;
 };
-export const verifyOtp = async (
+export const verifyOtpService = async (
   req: VerifyOtpRequest
 ): Promise<Partial<ResponsePattern<VerifyOtpResponse>>> => {
   const { email, otp } = req.body;

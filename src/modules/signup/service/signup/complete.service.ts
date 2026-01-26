@@ -139,7 +139,7 @@ const persistRefreshToken = async (
 ): Promise<void> => {
   await storeRefreshToken(authId, refreshToken);
 };
-export const completeSignup = async (
+export const completeSignupService = async (
   req: CompleteSignupRequest
 ): Promise<Partial<ResponsePattern<CompleteSignupResponse>>> => {
   const { email, password, fullName, gender, dateOfBirth, sessionToken } =

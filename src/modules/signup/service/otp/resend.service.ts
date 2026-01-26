@@ -121,7 +121,7 @@ const trackResendAttempt = async (email: string): Promise<number> => {
 
   return count;
 };
-export const resendOtp = async (
+export const resendOtpService = async (
   req: ResendOtpRequest
 ): Promise<Partial<ResponsePattern<ResendOtpResponse>>> => {
   const { email } = req.body;

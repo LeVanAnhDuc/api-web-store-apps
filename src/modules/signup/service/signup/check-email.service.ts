@@ -18,7 +18,7 @@ import type {
 import { isEmailRegistered } from "@/modules/signup/repository";
 
 import Logger from "@/infra/utils/logger";
-export const checkEmail = async (
+export const checkEmailService = async (
   req: CheckEmailRequest
 ): Promise<Partial<ResponsePattern<CheckEmailResponse>>> => {
   const { email } = req.params;
