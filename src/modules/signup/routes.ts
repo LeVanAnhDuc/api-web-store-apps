@@ -1,10 +1,3 @@
-/**
- * Signup Routes
- *
- * API documentation is defined in: modules/signup/swagger/paths.ts
- * Request schemas are generated from: modules/signup/schema/index.ts
- */
-
 import { Router } from "express";
 import {
   sendOtpController,

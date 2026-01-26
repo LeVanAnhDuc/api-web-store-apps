@@ -1,28 +1,11 @@
-/**
- * Verify OTP Service
- * Use Case: User submits OTP code for verification
- *
- * Business Flow:
- * 1. Ensure account is not locked (too many failed attempts)
- * 2. Verify OTP matches stored hash
- * 3. Create signup session token on success
- * 4. Cleanup OTP data
- *
- * Security: Implements brute force protection with lockout
- */
-
 import i18next from "@/i18n";
-
 import type { TFunction } from "i18next";
 import type {
   VerifyOtpRequest,
   VerifyOtpResponse
 } from "@/modules/signup/types";
-
 import { BadRequestError } from "@/infra/responses/error";
-
 import { Logger } from "@/infra/utils/logger";
-
 import {
   verifyOtp as verifyOtpFromStore,
   isOtpAccountLocked,
@@ -30,9 +13,7 @@ import {
   storeSession,
   cleanupOtpData
 } from "@/modules/signup/utils/store";
-
 import { generateSessionId } from "@/modules/signup/utils/otp";
-
 import { OTP_CONFIG, SESSION_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 
@@ -40,6 +21,7 @@ const TIME_MAX_FAILED_ATTEMPTS = OTP_CONFIG.MAX_FAILED_ATTEMPTS;
 const TIME_LOCKOUT_DURATION_MINUTES = OTP_CONFIG.LOCKOUT_DURATION_MINUTES;
 const TIME_EXPIRES_SESSION_MINUTES =
   SESSION_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
+
 const ensureAccountNotLocked = async (
   email: string,
   t: TFunction
@@ -88,6 +70,7 @@ const verifyOtpMatch = async (
     throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
   }
 };
+
 const createSignupSession = async (email: string): Promise<string> => {
   const sessionToken = generateSessionId();
 
@@ -100,6 +83,7 @@ const createSignupSession = async (email: string): Promise<string> => {
 
   return sessionToken;
 };
+
 export const verifyOtpService = async (
   req: VerifyOtpRequest
 ): Promise<Partial<ResponsePattern<VerifyOtpResponse>>> => {

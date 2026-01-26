@@ -1,7 +1,5 @@
 import type { Schema } from "mongoose";
-
 import AuthenticationModel from "@/modules/authentication/model";
-
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 
 interface CreateAuthenticationData {

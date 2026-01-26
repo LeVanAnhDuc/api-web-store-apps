@@ -1,31 +1,11 @@
-/**
- * Resend OTP Service
- * Use Case: User requests new OTP (already in signup flow)
- *
- * Business Flow:
- * 1. Ensure cooldown period has expired
- * 2. Ensure resend limit not exceeded
- * 3. Ensure email is not already registered
- * 4. Generate and store new OTP (hashed)
- * 5. Start cooldown period
- * 6. Increment resend counter
- * 7. Send OTP email (async, fire-and-forget)
- *
- * Difference from sendOtp: Tracks resend count and enforces limit
- */
-
 import type { TFunction } from "i18next";
 import type {
   ResendOtpRequest,
   ResendOtpResponse
 } from "@/modules/signup/types";
-
 import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
-
 import { Logger } from "@/infra/utils/logger";
-
 import { isEmailRegistered } from "@/modules/signup/repository";
-
 import {
   checkOtpCoolDown,
   setOtpCoolDown,
@@ -34,11 +14,8 @@ import {
   hasExceededResendLimit,
   incrementResendCount
 } from "@/modules/signup/utils/store";
-
 import { sendOtpEmailAsync } from "@/modules/signup/emails/send-otp-email";
-
 import { generateOtp } from "@/modules/signup/utils/otp";
-
 import { OTP_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/app/constants/time";
 
@@ -46,6 +23,7 @@ const TIME_OTP_EXPIRES = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const TIME_OTP_RESEND = OTP_CONFIG.RESEND_COOLDOWN_SECONDS;
 const TIME_RESEND_OTP_PER_HOUR = MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
 const MAX_RESEND_COUNT = OTP_CONFIG.MAX_RESEND_COUNT;
+
 const ensureCooldownExpired = async (
   email: string,
   t: TFunction
@@ -84,6 +62,7 @@ const ensureEmailNotRegistered = async (
     throw new ConflictRequestError(t("signup:errors.emailAlreadyExists"));
   }
 };
+
 const createNewOtp = async (email: string): Promise<string> => {
   const otp = generateOtp();
 
@@ -121,6 +100,7 @@ const trackResendAttempt = async (email: string): Promise<number> => {
 
   return count;
 };
+
 export const resendOtpService = async (
   req: ResendOtpRequest
 ): Promise<Partial<ResponsePattern<ResendOtpResponse>>> => {

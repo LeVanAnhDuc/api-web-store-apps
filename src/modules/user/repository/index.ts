@@ -1,12 +1,5 @@
-/**
- * User Repository
- * Encapsulates User model database operations for Signup module
- * Service layer should NOT query DB directly - use this repository
- */
-
 import type { Schema } from "mongoose";
 import type { Gender } from "@/modules/user/types";
-
 import UserModel from "@/modules/user/model";
 
 interface CreateUserData {
@@ -21,11 +14,6 @@ interface UserRecord {
   fullName: string;
 }
 
-/**
- * Create new user profile for signup
- * @param data - User profile data
- * @returns Created user record with id and fullName
- */
 export const createUserProfile = async (
   data: CreateUserData
 ): Promise<UserRecord> => {

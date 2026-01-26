@@ -60,13 +60,6 @@ export const deleteOtp = async (email: string): Promise<void> => {
   }
 };
 
-/**
- * Hash and store OTP in Redis
- * Uses bcrypt with cost factor 10 for security while maintaining performance
- * @param email - User's email address
- * @param otp - Plain text OTP to hash and store
- * @param expireTime - TTL in seconds
- */
 export const createAndStoreOtp = async (
   email: string,
   otp: string,
@@ -76,8 +69,6 @@ export const createAndStoreOtp = async (
     const redis = instanceRedis.getClient();
     const key = `${KEY_OTP_SIGNUP}:${email}`;
 
-    // Hash OTP before storing for security
-    // If Redis is compromised, OTPs won't be exposed
     const hashedOtp = bcrypt.hashSync(otp, OTP_CONFIG.HASH_ROUNDS);
     await redis.setEx(key, expireTime, hashedOtp);
   } catch (error) {
@@ -85,13 +76,6 @@ export const createAndStoreOtp = async (
   }
 };
 
-/**
- * Verify OTP against stored hash
- * Uses bcrypt.compare for timing-safe comparison
- * @param email - User's email address
- * @param otp - Plain text OTP to verify
- * @returns true if OTP matches, false otherwise
- */
 export const verifyOtp = async (
   email: string,
   otp: string
@@ -104,7 +88,6 @@ export const verifyOtp = async (
 
     if (!hashedOtp) return false;
 
-    // Use bcrypt.compare for timing-safe comparison
     return bcrypt.compareSync(otp, hashedOtp);
   } catch (error) {
     Logger.error("Redis OTP verification failed", error);
@@ -154,12 +137,6 @@ export const deleteSession = async (email: string): Promise<void> => {
   }
 };
 
-/**
- * Increment failed OTP verification attempts for an email
- * @param email - User's email address
- * @param lockoutDurationMinutes - How long to lock the account after max attempts
- * @returns Current number of failed attempts
- */
 export const incrementFailedOtpAttempts = async (
   email: string,
   lockoutDurationMinutes: number
@@ -171,7 +148,6 @@ export const incrementFailedOtpAttempts = async (
     const count = await redis.incr(key);
 
     if (count === 1) {
-      // Set expiry on first failed attempt
       await redis.expire(key, lockoutDurationMinutes * 60);
     }
 
@@ -182,11 +158,6 @@ export const incrementFailedOtpAttempts = async (
   }
 };
 
-/**
- * Get number of failed OTP verification attempts for an email
- * @param email - User's email address
- * @returns Number of failed attempts
- */
 export const getFailedOtpAttempts = async (email: string): Promise<number> => {
   try {
     const redis = instanceRedis.getClient();
@@ -200,11 +171,6 @@ export const getFailedOtpAttempts = async (email: string): Promise<number> => {
   }
 };
 
-/**
- * Clear failed OTP verification attempts for an email
- * Called after successful OTP verification
- * @param email - User's email address
- */
 export const clearFailedOtpAttempts = async (email: string): Promise<void> => {
   try {
     const redis = instanceRedis.getClient();
@@ -215,13 +181,6 @@ export const clearFailedOtpAttempts = async (email: string): Promise<void> => {
     Logger.error("Redis failed OTP attempts clear failed", error);
   }
 };
-
-/**
- * Check if account is locked due to too many failed OTP attempts
- * @param email - User's email address
- * @param maxAttempts - Maximum allowed failed attempts
- * @returns true if account is locked, false otherwise
- */
 export const isOtpAccountLocked = async (
   email: string,
   maxAttempts: number
@@ -235,13 +194,6 @@ export const isOtpAccountLocked = async (
   }
 };
 
-/**
- * Increment OTP resend count for an email
- * Used to track and limit OTP resend requests
- * @param email - User's email address
- * @param windowSeconds - TTL for the resend count window
- * @returns Current resend count
- */
 export const incrementResendCount = async (
   email: string,
   windowSeconds: number
@@ -264,11 +216,6 @@ export const incrementResendCount = async (
   }
 };
 
-/**
- * Get current OTP resend count for an email
- * @param email - User's email address
- * @returns Number of OTP resends in current window
- */
 export const getResendCount = async (email: string): Promise<number> => {
   try {
     const redis = instanceRedis.getClient();
@@ -282,11 +229,6 @@ export const getResendCount = async (email: string): Promise<number> => {
   }
 };
 
-/**
- * Clear OTP resend count for an email
- * Called after successful signup completion
- * @param email - User's email address
- */
 export const clearResendCount = async (email: string): Promise<void> => {
   try {
     const redis = instanceRedis.getClient();
@@ -298,12 +240,6 @@ export const clearResendCount = async (email: string): Promise<void> => {
   }
 };
 
-/**
- * Check if user has exceeded max OTP resend attempts
- * @param email - User's email address
- * @param maxResends - Maximum allowed resends
- * @returns true if limit exceeded, false otherwise
- */
 export const hasExceededResendLimit = async (
   email: string,
   maxResends: number
@@ -317,12 +253,6 @@ export const hasExceededResendLimit = async (
   }
 };
 
-/**
- * Consolidated cleanup function for OTP verification data
- * Called after successful OTP verification
- * Clears: OTP, cooldown, and failed attempts
- * @param email - User's email address
- */
 export const cleanupOtpData = async (email: string): Promise<void> => {
   await Promise.all([
     clearFailedOtpAttempts(email),
@@ -331,12 +261,6 @@ export const cleanupOtpData = async (email: string): Promise<void> => {
   ]);
 };
 
-/**
- * Consolidated cleanup function for signup session
- * Called after signup completion
- * Clears: OTP, session, failed attempts, cooldown, and resend count
- * @param email - User's email address
- */
 export const cleanupSignupSession = async (email: string): Promise<void> => {
   await Promise.all([
     deleteOtp(email),

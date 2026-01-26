@@ -2,6 +2,6 @@ export {
   isEmailRegistered,
   createAuthenticationRecord,
   storeRefreshToken
-} from "./authentication.repository";
+} from "@/modules/authentication/repository";
 
-export { createUserProfile } from "./user.repository";
+export { createUserProfile } from "@/modules/user/repository";

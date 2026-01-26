@@ -36,9 +36,6 @@ export const generateLoginTokens = (
   };
 };
 
-/**
- * Update last login timestamp (fire-and-forget with retry)
- */
 export const updateLastLogin = (userId: string): void => {
   withRetry(() => updateLastLoginRepo(userId), {
     operationName: "updateLastLogin",
@@ -46,9 +43,6 @@ export const updateLastLogin = (userId: string): void => {
   });
 };
 
-/**
- * Record successful login in history (fire-and-forget with retry)
- */
 export const recordSuccessfulLogin = ({
   userId,
   loginMethod,
@@ -73,9 +67,6 @@ export const recordSuccessfulLogin = ({
   });
 };
 
-/**
- * Record failed login in history (fire-and-forget with retry)
- */
 export const recordFailedLogin = ({
   userId,
   loginMethod,

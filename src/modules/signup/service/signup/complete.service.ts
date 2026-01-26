@@ -1,19 +1,3 @@
-/**
- * Complete Signup Service
- * Use Case: User completes registration with profile data
- *
- * Business Flow:
- * 1. Verify session token is valid
- * 2. Ensure email is still not registered (double-check)
- * 3. Create auth record with hashed password
- * 4. Create user profile
- * 5. Issue authentication tokens
- * 6. Store refresh token
- * 7. Cleanup signup session data
- *
- * Idempotency: Session token is single-use (deleted after completion)
- */
-
 import type { TFunction } from "i18next";
 import type { Schema } from "mongoose";
 import type { Gender } from "@/modules/user/types";
@@ -21,28 +5,23 @@ import type {
   CompleteSignupRequest,
   CompleteSignupResponse
 } from "@/modules/signup/types";
-
 import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
-
 import { Logger } from "@/infra/utils/logger";
-
 import {
   isEmailRegistered,
   createAuthenticationRecord,
   createUserProfile,
   storeRefreshToken
 } from "@/modules/signup/repository";
-
 import {
   verifySession,
   cleanupSignupSession
 } from "@/modules/signup/utils/store";
-
 import { hashPassword } from "@/app/utils/crypto/bcrypt";
 import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
-
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+
 const ensureSessionValid = async (
   email: string,
   sessionToken: string,
@@ -69,12 +48,6 @@ const ensureEmailNotRegistered = async (
     throw new ConflictRequestError(t("signup:errors.emailAlreadyExists"));
   }
 };
-interface CreateAccountResult {
-  authId: Schema.Types.ObjectId;
-  userId: Schema.Types.ObjectId;
-  email: string;
-  fullName: string;
-}
 
 const createUserAccount = async (
   email: string,
@@ -82,7 +55,12 @@ const createUserAccount = async (
   fullName: string,
   gender: Gender,
   dateOfBirth: string
-): Promise<CreateAccountResult> => {
+): Promise<{
+  authId: Schema.Types.ObjectId;
+  userId: Schema.Types.ObjectId;
+  email: string;
+  fullName: string;
+}> => {
   const hashedPassword = hashPassword(password);
 
   const auth = await createAuthenticationRecord({
