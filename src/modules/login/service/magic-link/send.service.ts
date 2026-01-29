@@ -1,14 +1,12 @@
-import i18next from "@/i18n";
-import type { TFunction } from "i18next";
 import type {
   MagicLinkSendRequest,
   MagicLinkSendResponse
 } from "@/modules/login/types";
-import { BadRequestError, UnauthorizedError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
-import { findAuthenticationByEmail } from "@/modules/login/repository";
-import loginCacheStore from "@/modules/login/store/LoginCacheStore";
+import { magicLinkStore } from "@/modules/login/store";
+import { validateAuthenticationForLogin } from "../validators";
+import { ensureCooldownExpired } from "../helpers";
 import { sendModuleEmail } from "@/app/utils/email/sender";
 import ENV from "@/infra/configs/env";
 import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
@@ -18,58 +16,11 @@ const MAGIC_LINK_EXPIRY_SECONDS =
   MAGIC_LINK_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const MAGIC_LINK_COOLDOWN_SECONDS = MAGIC_LINK_CONFIG.COOLDOWN_SECONDS;
 
-const ensureCooldownExpired = async (
-  email: string,
-  language: string
-): Promise<void> => {
-  const canSend = await loginCacheStore.checkMagicLinkCooldown(email);
+const createAndStoreToken = async (email: string): Promise<string> => {
+  const token = magicLinkStore.createToken();
 
-  if (!canSend) {
-    const remaining =
-      await loginCacheStore.getMagicLinkCooldownRemaining(email);
-    Logger.warn("Magic link cooldown not expired", { email, remaining });
-    throw new BadRequestError(
-      i18next.t("login:errors.magicLinkCooldown", {
-        seconds: remaining,
-        lng: language
-      })
-    );
-  }
-};
-
-const ensureEmailExists = async (
-  email: string,
-  t: TFunction
-): Promise<void> => {
-  const auth = await findAuthenticationByEmail(email);
-
-  if (!auth) {
-    // Don't reveal if email exists - generic error
-    Logger.warn("Magic link requested for non-existent email", { email });
-    throw new UnauthorizedError(t("login:errors.invalidEmail"));
-  }
-
-  if (!auth.isActive) {
-    Logger.warn("Magic link requested for inactive account", { email });
-    throw new UnauthorizedError(t("login:errors.accountInactive"));
-  }
-
-  if (!auth.verifiedEmail) {
-    Logger.warn("Magic link requested for unverified email", { email });
-    throw new UnauthorizedError(t("login:errors.emailNotVerified"));
-  }
-};
-
-const createNewMagicLink = async (email: string): Promise<string> => {
-  const token = loginCacheStore.generateMagicLinkToken();
-
-  // Ensure idempotency by deleting existing magic link first
-  await loginCacheStore.deleteMagicLink(email);
-  await loginCacheStore.createAndStoreMagicLink(
-    email,
-    token,
-    MAGIC_LINK_EXPIRY_SECONDS
-  );
+  await magicLinkStore.clearToken(email);
+  await magicLinkStore.storeHashed(email, token, MAGIC_LINK_EXPIRY_SECONDS);
 
   Logger.debug("Magic link created and stored", {
     email,
@@ -79,13 +30,10 @@ const createNewMagicLink = async (email: string): Promise<string> => {
   return token;
 };
 
-const applyMagicLinkRateLimits = async (email: string): Promise<void> => {
-  await loginCacheStore.setMagicLinkCooldown(
-    email,
-    MAGIC_LINK_COOLDOWN_SECONDS
-  );
+const setMagicLinkCooldown = async (email: string): Promise<void> => {
+  await magicLinkStore.setCooldown(email, MAGIC_LINK_COOLDOWN_SECONDS);
 
-  Logger.debug("Magic link rate limits applied", {
+  Logger.debug("Magic link cooldown set", {
     email,
     cooldownSeconds: MAGIC_LINK_COOLDOWN_SECONDS
   });
@@ -123,13 +71,19 @@ export const sendMagicLinkService = async (
 
   Logger.info("Magic link send initiated", { email });
 
-  await ensureCooldownExpired(email, language);
-  await ensureEmailExists(email, t);
+  await ensureCooldownExpired(
+    magicLinkStore,
+    email,
+    language,
+    "Magic link cooldown not expired",
+    "login:errors.magicLinkCooldown"
+  );
+  await validateAuthenticationForLogin(email, t);
 
-  const token = await createNewMagicLink(email);
+  const token = await createAndStoreToken(email);
 
-  withRetry(() => applyMagicLinkRateLimits(email), {
-    operationName: "applyMagicLinkRateLimits",
+  withRetry(() => setMagicLinkCooldown(email), {
+    operationName: "setMagicLinkCooldown",
     context: { email }
   });
 

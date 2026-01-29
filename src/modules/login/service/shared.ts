@@ -9,11 +9,12 @@ import type {
 } from "@/modules/login-history/types";
 import type { LoginResponse } from "@/modules/login/types";
 import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
+import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
-import { getClientIp } from "@/modules/login/utils/device";
 import { createLoginHistory } from "@/modules/login-history/repository";
 import { updateLastLogin as updateLastLoginRepo } from "@/modules/login/repository";
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
+import { getClientIp } from "./helpers";
 
 export const generateLoginTokens = (
   authentication: AuthenticationDocument
@@ -94,4 +95,32 @@ export const recordFailedLogin = ({
     operationName: "recordFailedLogin",
     context: { userId: userId.toString(), loginMethod, failReason }
   });
+};
+
+export const completeSuccessfulLogin = ({
+  email,
+  auth,
+  loginMethod,
+  req
+}: {
+  email: string;
+  auth: AuthenticationDocument;
+  loginMethod: LoginMethod;
+  req: Request;
+}): LoginResponse => {
+  updateLastLogin(auth._id.toString());
+
+  recordSuccessfulLogin({
+    userId: auth._id,
+    loginMethod,
+    req
+  });
+
+  Logger.info("Login successful", {
+    email,
+    userId: auth._id.toString(),
+    method: loginMethod
+  });
+
+  return generateLoginTokens(auth);
 };

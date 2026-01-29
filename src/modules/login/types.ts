@@ -1,9 +1,6 @@
 import type { Request } from "express";
 import type { LOGIN_METHODS } from "./constants";
 
-/**
- * Login method type derived from LOGIN_METHODS constant
- */
 export type LoginMethod = (typeof LOGIN_METHODS)[keyof typeof LOGIN_METHODS];
 
 export interface LoginResponse {

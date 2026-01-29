@@ -1,64 +1,20 @@
-import i18next from "@/i18n";
 import type { TFunction } from "i18next";
 import type { OtpSendRequest, OtpSendResponse } from "@/modules/login/types";
-import { BadRequestError, UnauthorizedError } from "@/infra/responses/error";
+import { BadRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
-import { findAuthenticationByEmail } from "@/modules/login/repository";
-import loginCacheStore from "@/modules/login/store/LoginCacheStore";
+import { otpStore } from "@/modules/login/store";
+import { validateAuthenticationForLogin } from "../validators";
+import { ensureCooldownExpired } from "../helpers";
 import { sendModuleEmail } from "@/app/utils/email/sender";
-import { generateOtp } from "@/app/utils/crypto/otp";
 import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 
 const OTP_EXPIRY_SECONDS = LOGIN_OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const OTP_COOLDOWN_SECONDS = LOGIN_OTP_CONFIG.COOLDOWN_SECONDS;
 
-const ensureCooldownExpired = async (
-  email: string,
-  language: string
-): Promise<void> => {
-  const canSend = await loginCacheStore.checkLoginOtpCooldown(email);
-
-  if (!canSend) {
-    const remaining = await loginCacheStore.getLoginOtpCooldownRemaining(email);
-    Logger.warn("Login OTP cooldown not expired", { email, remaining });
-    throw new BadRequestError(
-      i18next.t("login:errors.otpCooldown", {
-        seconds: remaining,
-        lng: language
-      })
-    );
-  }
-};
-
-const ensureEmailExists = async (
-  email: string,
-  t: TFunction
-): Promise<void> => {
-  const auth = await findAuthenticationByEmail(email);
-
-  if (!auth) {
-    Logger.warn("Login OTP requested for non-existent email", { email });
-    throw new UnauthorizedError(t("login:errors.invalidEmail"));
-  }
-
-  if (!auth.isActive) {
-    Logger.warn("Login OTP requested for inactive account", { email });
-    throw new UnauthorizedError(t("login:errors.accountInactive"));
-  }
-
-  if (!auth.verifiedEmail) {
-    Logger.warn("Login OTP requested for unverified email", { email });
-    throw new UnauthorizedError(t("login:errors.emailNotVerified"));
-  }
-};
-
-const ensureResendLimitNotExceeded = async (
-  email: string,
-  t: TFunction
-): Promise<void> => {
-  const exceeded = await loginCacheStore.hasExceededLoginOtpResendLimit(email);
+const ensureCanResend = async (email: string, t: TFunction): Promise<void> => {
+  const exceeded = await otpStore.hasExceededResendLimit(email);
 
   if (exceeded) {
     Logger.warn("Login OTP resend limit exceeded", { email });
@@ -66,12 +22,11 @@ const ensureResendLimitNotExceeded = async (
   }
 };
 
-const createNewOtp = async (email: string): Promise<string> => {
-  const otp = generateOtp(LOGIN_OTP_CONFIG.LENGTH);
+const createAndStoreOtp = async (email: string): Promise<string> => {
+  const otp = otpStore.createOtp();
 
-  // Ensure idempotency by deleting existing OTP first
-  await loginCacheStore.deleteLoginOtp(email);
-  await loginCacheStore.createAndStoreLoginOtp(email, otp, OTP_EXPIRY_SECONDS);
+  await otpStore.clearOtp(email);
+  await otpStore.storeHashed(email, otp, OTP_EXPIRY_SECONDS);
 
   Logger.debug("Login OTP created and stored", {
     email,
@@ -81,10 +36,10 @@ const createNewOtp = async (email: string): Promise<string> => {
   return otp;
 };
 
-const applyOtpRateLimits = async (email: string): Promise<void> => {
+const setOtpRateLimits = async (email: string): Promise<void> => {
   await Promise.all([
-    loginCacheStore.setLoginOtpCooldown(email, OTP_COOLDOWN_SECONDS),
-    loginCacheStore.incrementLoginOtpResendCount(email, OTP_EXPIRY_SECONDS)
+    otpStore.setCooldown(email, OTP_COOLDOWN_SECONDS),
+    otpStore.incrementResendCount(email, OTP_EXPIRY_SECONDS)
   ]);
 
   Logger.debug("Login OTP rate limits applied", {
@@ -123,14 +78,20 @@ export const sendLoginOtpService = async (
 
   Logger.info("Login OTP send initiated", { email });
 
-  await ensureCooldownExpired(email, language);
-  await ensureEmailExists(email, t);
-  await ensureResendLimitNotExceeded(email, t);
+  await ensureCooldownExpired(
+    otpStore,
+    email,
+    language,
+    "Login OTP cooldown not expired",
+    "login:errors.otpCooldown"
+  );
+  await validateAuthenticationForLogin(email, t);
+  await ensureCanResend(email, t);
 
-  const otp = await createNewOtp(email);
+  const otp = await createAndStoreOtp(email);
 
-  withRetry(() => applyOtpRateLimits(email), {
-    operationName: "applyOtpRateLimits",
+  withRetry(() => setOtpRateLimits(email), {
+    operationName: "setOtpRateLimits",
     context: { email }
   });
 
