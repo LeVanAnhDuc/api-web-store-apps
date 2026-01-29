@@ -1,4 +1,3 @@
-import type { Schema } from "mongoose";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import AuthenticationModel from "@/modules/authentication/model";
 import UserModel from "@/modules/user/model";
@@ -32,13 +31,6 @@ export const createAuthenticationRecord = async (
     email: authentication.email,
     roles: authentication.roles
   };
-};
-
-export const storeRefreshToken = async (
-  authId: Schema.Types.ObjectId,
-  refreshToken: string
-): Promise<void> => {
-  await AuthenticationModel.findByIdAndUpdate(authId, { refreshToken });
 };
 
 export const createUserProfile = async (

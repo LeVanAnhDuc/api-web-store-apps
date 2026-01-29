@@ -7,8 +7,7 @@ import type {
 import { Logger } from "@/infra/utils/logger";
 import {
   createAuthenticationRecord,
-  createUserProfile,
-  storeRefreshToken
+  createUserProfile
 } from "@/modules/signup/repository";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { hashPassword } from "@/app/utils/crypto/bcrypt";
@@ -97,13 +96,6 @@ const issueAuthTokens = (
     roles
   });
 
-const persistRefreshToken = async (
-  authId: Schema.Types.ObjectId,
-  refreshToken: string
-): Promise<void> => {
-  await storeRefreshToken(authId, refreshToken);
-};
-
 const cleanupSignupData = async (email: string): Promise<void> => {
   await Promise.all([
     otpStore.cleanupOtpData(email),
@@ -123,7 +115,6 @@ export const completeSignupService = async (
   Logger.info("CompleteSignup initiated", { email });
 
   await ensureSessionValid(email, sessionToken, t);
-
   await ensureEmailAvailable(email, t);
 
   const account = await createUserAccount(
@@ -140,8 +131,6 @@ export const completeSignupService = async (
     account.email,
     AUTHENTICATION_ROLES.USER
   );
-
-  await persistRefreshToken(account.authId, tokens.refreshToken);
 
   await cleanupSignupData(email);
 
