@@ -1,13 +1,3 @@
-import type { Request } from "express";
+import type { AuthTokensResponse } from "@/app/types/auth";
 
-export interface RefreshTokenResponse {
-  accessToken: string;
-  idToken: string;
-  expiresIn: number;
-}
-
-export type RefreshTokenRequest = Request<
-  Record<string, never>,
-  unknown,
-  Record<string, never>
->;
+export type RefreshTokenResponse = AuthTokensResponse;

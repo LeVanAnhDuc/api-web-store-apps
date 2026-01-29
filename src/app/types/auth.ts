@@ -4,10 +4,3 @@ export interface AuthTokensResponse {
   idToken: string;
   expiresIn: number;
 }
-
-export interface TokenPayload {
-  userId: string;
-  authId: string;
-  email: string;
-  roles: string;
-}

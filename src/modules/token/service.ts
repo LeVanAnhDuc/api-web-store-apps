@@ -1,17 +1,12 @@
 import type { TFunction } from "i18next";
-import type {
-  RefreshTokenRequest,
-  RefreshTokenResponse
-} from "@/modules/token/types";
+import type { Request } from "express";
+import type { RefreshTokenResponse } from "@/modules/token/types";
 import { UnauthorizedError, ForbiddenError } from "@/infra/responses/error";
 import { JsonWebTokenService } from "@/app/services/JsonWebTokenService";
 import { Logger } from "@/infra/utils/logger";
-import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
+import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
 
-const extractRefreshTokenFromCookie = (
-  req: RefreshTokenRequest,
-  t: TFunction
-): string => {
+const extractRefreshTokenFromCookie = (req: Request, t: TFunction): string => {
   const refreshToken = req.cookies?.refreshToken;
 
   if (!refreshToken) {
@@ -36,38 +31,23 @@ const verifyAndExtractPayload = (
   }
 };
 
-const generateNewTokens = (
-  payload: JwtUserPayload
-): { accessToken: string; idToken: string } => {
-  const tokenPayload = {
-    userId: payload.userId,
-    authId: payload.authId,
-    email: payload.email,
-    roles: payload.roles
-  };
-
-  return {
-    accessToken: JsonWebTokenService.generateAccessToken(tokenPayload),
-    idToken: JsonWebTokenService.generateIdToken(tokenPayload)
-  };
-};
 export const refreshAccessTokenService = (
-  req: RefreshTokenRequest
+  req: Request
 ): Partial<ResponsePattern<RefreshTokenResponse>> => {
   const { t } = req;
 
   const refreshToken = extractRefreshTokenFromCookie(req, t);
   const tokenPayload = verifyAndExtractPayload(refreshToken, t);
-  const { accessToken, idToken } = generateNewTokens(tokenPayload);
 
   Logger.info("Token refresh successful", { userId: tokenPayload.userId });
 
   return {
     message: t("login:success.tokenRefreshed"),
-    data: {
-      accessToken,
-      idToken,
-      expiresIn: TOKEN_EXPIRY.NUMBER_ACCESS_TOKEN
-    }
+    data: generateAuthTokensResponse({
+      userId: tokenPayload.userId,
+      authId: tokenPayload.authId,
+      email: tokenPayload.email,
+      roles: tokenPayload.roles
+    })
   };
 };
