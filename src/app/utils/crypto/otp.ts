@@ -14,4 +14,4 @@ export const generateOtp = (length: number): string => {
 };
 
 export const generateSecureToken = (length: number): string =>
-  crypto.randomBytes(length / 2).toString("hex");
+  crypto.randomBytes(length).toString("hex");
