@@ -30,7 +30,7 @@ export const handleMongooseError = (
     const translationKey = getTranslationKey(firstError);
     const message = req.t(translationKey);
 
-    throw new BadRequestError(message);
+    return next(new BadRequestError(message));
   }
 
   next(err);

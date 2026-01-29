@@ -21,7 +21,8 @@ export const handleNotFound = (
 export const handleError = (
   err: ErrorResponse,
   req: Request,
-  res: Response
+  res: Response,
+  _next: NextFunction
 ) => {
   if (err instanceof ValidationError) {
     const {
