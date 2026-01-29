@@ -1,11 +1,3 @@
-/**
- * Redis key prefixes for different modules
- * Centralized to avoid magic strings and ensure consistency
- *
- * Key Pattern: {module}-{purpose}:{identifier}
- * Example: otp-signup:user@example.com
- */
-
 export const REDIS_KEYS = {
   SIGNUP: {
     OTP: "otp-signup",

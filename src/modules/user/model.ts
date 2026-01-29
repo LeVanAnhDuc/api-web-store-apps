@@ -65,9 +65,6 @@ const UserSchema = new Schema<UserDocument>(
   }
 );
 
-/**
- * Indexes for better query performance
- */
 UserSchema.index({ authId: 1 });
 UserSchema.index({ phone: 1 });
 

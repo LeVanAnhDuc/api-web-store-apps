@@ -6,7 +6,7 @@ import { JsonWebTokenService } from "@/app/services/JsonWebTokenService";
 import { Logger } from "@/infra/utils/logger";
 import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
 
-const extractRefreshTokenFromCookie = (req: Request, t: TFunction): string => {
+const ensureRefreshTokenFromCookie = (req: Request, t: TFunction): string => {
   const refreshToken = req.cookies?.refreshToken;
 
   if (!refreshToken) {
@@ -36,7 +36,7 @@ export const refreshAccessTokenService = (
 ): Partial<ResponsePattern<RefreshTokenResponse>> => {
   const { t } = req;
 
-  const refreshToken = extractRefreshTokenFromCookie(req, t);
+  const refreshToken = ensureRefreshTokenFromCookie(req, t);
   const tokenPayload = verifyAndExtractPayload(refreshToken, t);
 
   Logger.info("Token refresh successful", { userId: tokenPayload.userId });

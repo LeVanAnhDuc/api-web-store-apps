@@ -1,6 +1,8 @@
 import type { Request } from "express";
 import type { AuthTokensResponse } from "@/app/types/auth";
 import type { LOGIN_METHODS } from "./constants";
+import type { Schema } from "mongoose";
+import type { LoginFailReason, LoginStatus } from "../login-history/types";
 
 export type LoginMethod = (typeof LOGIN_METHODS)[keyof typeof LOGIN_METHODS];
 
@@ -91,3 +93,11 @@ export type UnlockVerifyRequest = Request<
   unknown,
   UnlockVerifyBody
 >;
+
+export interface CreateLoginHistoryInput {
+  userId: Schema.Types.ObjectId | string;
+  method: LoginMethod;
+  status: LoginStatus;
+  failReason?: LoginFailReason;
+  ip: string;
+}

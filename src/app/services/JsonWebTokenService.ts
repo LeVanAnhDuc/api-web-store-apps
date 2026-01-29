@@ -35,8 +35,8 @@ const TOKEN_CONFIGS: Record<TokenType, TokenConfig> = {
     expiresIn: TOKEN_EXPIRY.NUMBER_REFRESH_TOKEN
   },
   [TokenType.ID_TOKEN]: {
-    secret: ENV.JWT_RESET_PASS_SECRET,
-    expiresIn: TOKEN_EXPIRY.NUMBER_RESET_PASS_TOKEN
+    secret: ENV.JWT_ID_SECRET,
+    expiresIn: TOKEN_EXPIRY.NUMBER_ID_TOKEN
   }
 } as const;
 

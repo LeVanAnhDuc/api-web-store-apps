@@ -10,15 +10,6 @@ import {
 
 const { LOGIN_HISTORY, AUTHENTICATION } = MODEL_NAMES;
 
-/**
- * LoginHistory Schema (Simplified)
- *
- * Design Decisions:
- * 1. Immutable audit log - no updates, only inserts
- * 2. TTL index auto-deletes after 90 days (compliance)
- * 3. Tracks both success and failed attempts for security
- * 4. Simplified - no device/location tracking
- */
 const LoginHistorySchema = new Schema<LoginHistoryDocument>(
   {
     userId: {
@@ -55,9 +46,6 @@ const LoginHistorySchema = new Schema<LoginHistoryDocument>(
   }
 );
 
-/**
- * Indexes for query optimization
- */
 LoginHistorySchema.index({ userId: 1, createdAt: -1 });
 LoginHistorySchema.index(
   { createdAt: 1 },

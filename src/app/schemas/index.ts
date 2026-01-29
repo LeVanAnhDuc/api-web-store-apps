@@ -1,18 +1,18 @@
 import Joi from "joi";
 import {
-  EMAIL_VALIDATION,
-  PASSWORD_VALIDATION,
-  PASSWORD_STRENGTH_PATTERN,
-  SAFE_EMAIL_PATTERN,
-  OTP_VALIDATION,
-  NUMERIC_OTP_PATTERN
-} from "@/modules/authentication/constants";
-import {
   GENDERS,
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN
 } from "@/modules/user/constants";
 import { getDateOfBirthBounds } from "@/app/utils/date";
+import {
+  EMAIL_VALIDATION,
+  NUMERIC_OTP_PATTERN,
+  OTP_VALIDATION,
+  PASSWORD_STRENGTH_PATTERN,
+  PASSWORD_VALIDATION,
+  SAFE_EMAIL_PATTERN
+} from "@/modules/authentication/constants";
 
 const GENDER_VALUES = Object.values(GENDERS);
 

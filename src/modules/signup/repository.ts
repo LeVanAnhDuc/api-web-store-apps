@@ -1,4 +1,3 @@
-import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import AuthenticationModel from "@/modules/authentication/model";
 import UserModel from "@/modules/user/model";
 import type {
@@ -7,6 +6,7 @@ import type {
   CreateUserData,
   UserRecord
 } from "./types";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 
 export const isEmailRegistered = async (email: string): Promise<boolean> => {
   const existingAuthentication = await AuthenticationModel.findOne({

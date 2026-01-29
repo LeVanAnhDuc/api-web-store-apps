@@ -8,7 +8,7 @@ const router = Router();
 
 router.use("/auth/signup", signupRouter);
 router.use("/auth/login", loginRouter);
-router.use("/auth", logoutRouter);
+router.use("/auth/logout", logoutRouter);
 router.use("/auth/token", tokenRouter);
 
 export default router;

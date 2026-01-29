@@ -10,11 +10,6 @@ export const EMAIL_VALIDATION = {
 
 export const EMAIL_FORMAT_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/**
- * Safe email pattern to block dangerous Unicode characters
- * Blocks: control chars, RTL/LTR overrides, zero-width chars, null bytes, etc.
- * Used in addition to format validation for security
- */
 export const SAFE_EMAIL_PATTERN =
   // eslint-disable-next-line no-control-regex
   /^[^\u0000-\u001F\u007F-\u009F\u200B-\u200D\u202A-\u202E\uFEFF]+$/;

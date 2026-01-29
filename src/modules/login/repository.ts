@@ -1,5 +1,8 @@
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import AuthenticationModel from "@/modules/authentication/model";
+import type { LoginHistoryDocument } from "../login-history/types";
+import LoginHistoryModel from "../login-history/model";
+import type { CreateLoginHistoryInput } from "./types";
 
 export const findAuthenticationByEmail = async (
   email: string
@@ -51,3 +54,7 @@ export const isEmailVerified = async (email: string): Promise<boolean> => {
     .exec();
   return authentication?.verifiedEmail ?? false;
 };
+
+export const createLoginHistory = async (
+  data: CreateLoginHistoryInput
+): Promise<LoginHistoryDocument> => LoginHistoryModel.create(data);

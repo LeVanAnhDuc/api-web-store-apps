@@ -1,19 +1,21 @@
 import type { Schema } from "mongoose";
 import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
-import type { LoginMethod } from "@/modules/login/types";
 import type {
   CreateLoginHistoryInput,
-  LoginStatus,
-  LoginFailReason
-} from "@/modules/login-history/types";
+  LoginMethod
+} from "@/modules/login/types";
+import type { LoginFailReason } from "@/modules/login-history/types";
 import type { LoginResponse } from "@/modules/login/types";
 import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
-import { createLoginHistory } from "@/modules/login-history/repository";
-import { updateLastLogin as updateLastLoginRepo } from "@/modules/login/repository";
+import {
+  createLoginHistory,
+  updateLastLogin as updateLastLoginRepo
+} from "@/modules/login/repository";
 import { getClientIp } from "./helpers";
+import { LOGIN_STATUSES } from "../constants";
 
 export const updateLastLogin = (userId: string): void => {
   withRetry(() => updateLastLoginRepo(userId), {
@@ -36,7 +38,7 @@ export const recordSuccessfulLogin = ({
   const historyInput: CreateLoginHistoryInput = {
     userId,
     method: loginMethod,
-    status: "success" as LoginStatus,
+    status: LOGIN_STATUSES.SUCCESS,
     ip
   };
 
@@ -64,7 +66,7 @@ export const recordFailedLogin = ({
   const historyInput: CreateLoginHistoryInput = {
     userId,
     method: loginMethod,
-    status: "failed" as LoginStatus,
+    status: LOGIN_STATUSES.FAILED,
     failReason,
     ip
   };

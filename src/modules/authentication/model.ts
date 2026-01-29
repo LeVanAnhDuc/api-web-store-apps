@@ -1,11 +1,11 @@
 import { Schema, model, type Model } from "mongoose";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
+import { MODEL_NAMES } from "@/app/constants/models";
 import {
   AUTHENTICATION_ROLES,
   EMAIL_FORMAT_PATTERN,
   SAFE_EMAIL_PATTERN
 } from "@/modules/authentication/constants";
-import { MODEL_NAMES } from "@/app/constants/models";
 
 const { AUTHENTICATION } = MODEL_NAMES;
 

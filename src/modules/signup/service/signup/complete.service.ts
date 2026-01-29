@@ -12,8 +12,8 @@ import {
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { hashPassword } from "@/app/utils/crypto/bcrypt";
 import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
-import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { ensureEmailAvailable, ensureSessionValid } from "../validators";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 
 const createAuthentication = async (
   email: string,

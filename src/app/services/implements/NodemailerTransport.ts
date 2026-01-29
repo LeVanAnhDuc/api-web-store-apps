@@ -2,13 +2,22 @@ import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 import { Logger } from "@/infra/utils/logger";
 import config from "@/infra/configs/env";
-import {
-  EMAIL_SERVICE,
-  EMAIL_POOL,
-  EMAIL_RATE_LIMIT
-} from "@/app/constants/email";
 import type { EmailSendOptions } from "@/app/services/EmailTransport";
 import { EmailTransport } from "@/app/services/EmailTransport";
+
+const EMAIL_SERVICE = {
+  PROVIDER: "gmail"
+} as const;
+
+const EMAIL_POOL = {
+  MAX_CONNECTIONS: 5,
+  MAX_MESSAGES_PER_CONNECTION: 100
+} as const;
+
+const EMAIL_RATE_LIMIT = {
+  PER_SECOND: 5,
+  DELTA_MS: 1000
+} as const;
 
 export class NodemailerTransport extends EmailTransport {
   private static instance: NodemailerTransport | null = null;

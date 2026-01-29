@@ -1,6 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
-
 import { BadRequestError } from "../responses/error";
 
 // Mapping of Mongoose validation paths to i18next translation keys
@@ -29,7 +28,6 @@ export const handleMongooseError = (
   if (err instanceof mongoose.Error.ValidationError) {
     const firstError = Object.values(err.errors)[0];
     const translationKey = getTranslationKey(firstError);
-    // Using any for dynamic translation keys from validation errors
     const message = req.t(translationKey);
 
     throw new BadRequestError(message);
