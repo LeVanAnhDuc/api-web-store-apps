@@ -3,15 +3,6 @@ import { Logger } from "@/infra/utils/logger";
 
 const getRedisClient = () => instanceRedis.getClient();
 
-export const isRedisConnected = (): boolean => {
-  try {
-    const client = getRedisClient();
-    return client.isOpen;
-  } catch {
-    return false;
-  }
-};
-
 export const redisGet = async (key: string): Promise<string | null> => {
   try {
     const client = getRedisClient();
