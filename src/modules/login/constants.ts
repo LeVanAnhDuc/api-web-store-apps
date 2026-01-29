@@ -4,35 +4,6 @@ import {
   HOURS_PER_DAY
 } from "@/app/constants/time";
 
-export const LOGIN_RATE_LIMITS = {
-  PER_IP: {
-    MAX_REQUESTS: 30,
-    WINDOW_SECONDS: 900
-  }
-} as const;
-
-export const LOGIN_OTP_RATE_LIMITS = {
-  PER_IP: {
-    MAX_REQUESTS: 10,
-    WINDOW_SECONDS: 900
-  },
-  PER_EMAIL: {
-    MAX_REQUESTS: 5,
-    WINDOW_SECONDS: 900
-  }
-} as const;
-
-export const MAGIC_LINK_RATE_LIMITS = {
-  PER_IP: {
-    MAX_REQUESTS: 10,
-    WINDOW_SECONDS: 900
-  },
-  PER_EMAIL: {
-    MAX_REQUESTS: 5,
-    WINDOW_SECONDS: 900
-  }
-} as const;
-
 export const LOGIN_LOCKOUT = {
   FREE_ATTEMPTS: 4,
 

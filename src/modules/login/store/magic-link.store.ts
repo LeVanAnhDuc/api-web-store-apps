@@ -1,5 +1,4 @@
 import * as crypto from "crypto";
-import { buildKey } from "./helpers";
 import {
   redisGet,
   redisSetEx,
@@ -10,6 +9,7 @@ import {
 import { REDIS_KEYS } from "@/app/constants/redis";
 import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
 import { generateSecureToken } from "@/app/utils/crypto/otp";
+import { buildKey } from "@/app/utils/store";
 
 const KEYS = {
   MAGIC_LINK: REDIS_KEYS.LOGIN.MAGIC_LINK,

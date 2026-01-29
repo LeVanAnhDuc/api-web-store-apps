@@ -13,22 +13,3 @@ export const SESSION_CONFIG = {
   EXPIRY_MINUTES: 30,
   TOKEN_LENGTH: 32
 } as const;
-
-export const SIGNUP_RATE_LIMITS = {
-  SEND_OTP: {
-    PER_IP: {
-      MAX_REQUESTS: 5,
-      WINDOW_SECONDS: 900
-    },
-    PER_EMAIL: {
-      MAX_REQUESTS: 3,
-      WINDOW_SECONDS: 900
-    }
-  },
-  CHECK_EMAIL: {
-    PER_IP: {
-      MAX_REQUESTS: 10,
-      WINDOW_SECONDS: 60
-    }
-  }
-} as const;

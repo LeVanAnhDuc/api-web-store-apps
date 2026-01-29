@@ -1,5 +1,4 @@
 import * as bcrypt from "bcrypt";
-import { buildKey } from "./helpers";
 import {
   redisGet,
   redisSetEx,
@@ -12,6 +11,7 @@ import {
 import { generateOtp } from "@/app/utils/crypto/otp";
 import { REDIS_KEYS } from "@/app/constants/redis";
 import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
+import { buildKey } from "@/app/utils/store";
 
 const KEYS = {
   OTP: REDIS_KEYS.LOGIN.OTP,

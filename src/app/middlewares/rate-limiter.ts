@@ -2,13 +2,9 @@ import rateLimit, { type RateLimitRequestHandler } from "express-rate-limit";
 import type { Request, Response } from "express";
 import type { createClient } from "redis";
 import RedisStore from "rate-limit-redis";
-import {
-  LOGIN_RATE_LIMITS,
-  LOGIN_OTP_RATE_LIMITS,
-  MAGIC_LINK_RATE_LIMITS
-} from "@/modules/login/constants";
-import { SIGNUP_RATE_LIMITS } from "@/modules/signup/constants";
 import { TooManyRequestsError } from "@/infra/responses/error";
+import { REDIS_KEYS } from "@/app/constants/redis";
+import { RATE_LIMIT_CONFIG } from "../constants";
 
 type RedisClient = ReturnType<typeof createClient>;
 type RateLimitHandler = (req: Request, res: Response) => void;
@@ -60,9 +56,9 @@ export class RateLimiterMiddleware {
   get loginByIp(): RateLimitRequestHandler {
     return this.getOrCreateLimiter("login:ip", () =>
       rateLimit({
-        windowMs: LOGIN_RATE_LIMITS.PER_IP.WINDOW_SECONDS * 1000,
-        max: LOGIN_RATE_LIMITS.PER_IP.MAX_REQUESTS,
-        store: this.createRedisStore("rate-limit:login:ip:"),
+        windowMs: RATE_LIMIT_CONFIG.LOGIN.PASSWORD.PER_IP.WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.LOGIN.PASSWORD.PER_IP.MAX_REQUESTS,
+        store: this.createRedisStore(REDIS_KEYS.RATE_LIMIT.LOGIN.IP),
         standardHeaders: true,
         legacyHeaders: false,
         handler: this.createRateLimitExceededHandler(
@@ -76,9 +72,10 @@ export class RateLimiterMiddleware {
   get signupOtpByIp(): RateLimitRequestHandler {
     return this.getOrCreateLimiter("signup:ip", () =>
       rateLimit({
-        windowMs: SIGNUP_RATE_LIMITS.SEND_OTP.PER_IP.WINDOW_SECONDS * 1000,
-        max: SIGNUP_RATE_LIMITS.SEND_OTP.PER_IP.MAX_REQUESTS,
-        store: this.createRedisStore("rate-limit:signup:ip:"),
+        windowMs:
+          RATE_LIMIT_CONFIG.SIGNUP.SEND_OTP.PER_IP.WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.SIGNUP.SEND_OTP.PER_IP.MAX_REQUESTS,
+        store: this.createRedisStore(REDIS_KEYS.RATE_LIMIT.SIGNUP.IP),
         standardHeaders: true,
         legacyHeaders: false,
         handler: this.createRateLimitExceededHandler(
@@ -92,9 +89,10 @@ export class RateLimiterMiddleware {
   get signupOtpByEmail(): RateLimitRequestHandler {
     return this.getOrCreateLimiter("signup:email", () =>
       rateLimit({
-        windowMs: SIGNUP_RATE_LIMITS.SEND_OTP.PER_EMAIL.WINDOW_SECONDS * 1000,
-        max: SIGNUP_RATE_LIMITS.SEND_OTP.PER_EMAIL.MAX_REQUESTS,
-        store: this.createRedisStore("rate-limit:signup:email:"),
+        windowMs:
+          RATE_LIMIT_CONFIG.SIGNUP.SEND_OTP.PER_EMAIL.WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.SIGNUP.SEND_OTP.PER_EMAIL.MAX_REQUESTS,
+        store: this.createRedisStore(REDIS_KEYS.RATE_LIMIT.SIGNUP.EMAIL),
         standardHeaders: true,
         legacyHeaders: false,
         keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
@@ -109,9 +107,10 @@ export class RateLimiterMiddleware {
   get checkEmailByIp(): RateLimitRequestHandler {
     return this.getOrCreateLimiter("check-email:ip", () =>
       rateLimit({
-        windowMs: SIGNUP_RATE_LIMITS.CHECK_EMAIL.PER_IP.WINDOW_SECONDS * 1000,
-        max: SIGNUP_RATE_LIMITS.CHECK_EMAIL.PER_IP.MAX_REQUESTS,
-        store: this.createRedisStore("rate-limit:check-email:ip:"),
+        windowMs:
+          RATE_LIMIT_CONFIG.SIGNUP.CHECK_EMAIL.PER_IP.WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.SIGNUP.CHECK_EMAIL.PER_IP.MAX_REQUESTS,
+        store: this.createRedisStore(REDIS_KEYS.RATE_LIMIT.CHECK_EMAIL.IP),
         standardHeaders: true,
         legacyHeaders: false,
         handler: this.createRateLimitExceededHandler(
@@ -124,9 +123,9 @@ export class RateLimiterMiddleware {
   get loginOtpByIp(): RateLimitRequestHandler {
     return this.getOrCreateLimiter("login-otp:ip", () =>
       rateLimit({
-        windowMs: LOGIN_OTP_RATE_LIMITS.PER_IP.WINDOW_SECONDS * 1000,
-        max: LOGIN_OTP_RATE_LIMITS.PER_IP.MAX_REQUESTS,
-        store: this.createRedisStore("rate-limit:login-otp:ip:"),
+        windowMs: RATE_LIMIT_CONFIG.LOGIN.OTP.PER_IP.WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.LOGIN.OTP.PER_IP.MAX_REQUESTS,
+        store: this.createRedisStore(REDIS_KEYS.RATE_LIMIT.LOGIN_OTP.IP),
         standardHeaders: true,
         legacyHeaders: false,
         handler: this.createRateLimitExceededHandler(
@@ -139,9 +138,9 @@ export class RateLimiterMiddleware {
   get loginOtpByEmail(): RateLimitRequestHandler {
     return this.getOrCreateLimiter("login-otp:email", () =>
       rateLimit({
-        windowMs: LOGIN_OTP_RATE_LIMITS.PER_EMAIL.WINDOW_SECONDS * 1000,
-        max: LOGIN_OTP_RATE_LIMITS.PER_EMAIL.MAX_REQUESTS,
-        store: this.createRedisStore("rate-limit:login-otp:email:"),
+        windowMs: RATE_LIMIT_CONFIG.LOGIN.OTP.PER_EMAIL.WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.LOGIN.OTP.PER_EMAIL.MAX_REQUESTS,
+        store: this.createRedisStore(REDIS_KEYS.RATE_LIMIT.LOGIN_OTP.EMAIL),
         standardHeaders: true,
         legacyHeaders: false,
         keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
@@ -156,9 +155,10 @@ export class RateLimiterMiddleware {
   get magicLinkByIp(): RateLimitRequestHandler {
     return this.getOrCreateLimiter("magic-link:ip", () =>
       rateLimit({
-        windowMs: MAGIC_LINK_RATE_LIMITS.PER_IP.WINDOW_SECONDS * 1000,
-        max: MAGIC_LINK_RATE_LIMITS.PER_IP.MAX_REQUESTS,
-        store: this.createRedisStore("rate-limit:magic-link:ip:"),
+        windowMs:
+          RATE_LIMIT_CONFIG.LOGIN.MAGIC_LINK.PER_IP.WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.LOGIN.MAGIC_LINK.PER_IP.MAX_REQUESTS,
+        store: this.createRedisStore(REDIS_KEYS.RATE_LIMIT.MAGIC_LINK.IP),
         standardHeaders: true,
         legacyHeaders: false,
         handler: this.createRateLimitExceededHandler(
@@ -172,9 +172,10 @@ export class RateLimiterMiddleware {
   get magicLinkByEmail(): RateLimitRequestHandler {
     return this.getOrCreateLimiter("magic-link:email", () =>
       rateLimit({
-        windowMs: MAGIC_LINK_RATE_LIMITS.PER_EMAIL.WINDOW_SECONDS * 1000,
-        max: MAGIC_LINK_RATE_LIMITS.PER_EMAIL.MAX_REQUESTS,
-        store: this.createRedisStore("rate-limit:magic-link:email:"),
+        windowMs:
+          RATE_LIMIT_CONFIG.LOGIN.MAGIC_LINK.PER_EMAIL.WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.LOGIN.MAGIC_LINK.PER_EMAIL.MAX_REQUESTS,
+        store: this.createRedisStore(REDIS_KEYS.RATE_LIMIT.MAGIC_LINK.EMAIL),
         standardHeaders: true,
         legacyHeaders: false,
         keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",

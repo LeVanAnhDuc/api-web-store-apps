@@ -2,8 +2,8 @@ export const REDIS_KEYS = {
   SIGNUP: {
     OTP: "otp-signup",
     OTP_COOLDOWN: "otp-signup-cooldown",
-    OTP_FAILED_ATTEMPTS: "otp-failed-attempts",
-    OTP_RESEND_COUNT: "otp-resend-count",
+    OTP_FAILED_ATTEMPTS: "otp-signup-failed-attempts",
+    OTP_RESEND_COUNT: "otp-signup-resend-count",
     SESSION: "session-signup"
   },
 
@@ -20,10 +20,24 @@ export const REDIS_KEYS = {
   },
 
   RATE_LIMIT: {
-    IP: "rate-limit:ip",
-    EMAIL: "rate-limit:email",
-    CHECK_EMAIL: "rate-limit:check-email",
-    LOGIN_OTP_SEND: "rate-limit:login-otp-send",
-    LOGIN_MAGIC_LINK_SEND: "rate-limit:login-magic-link-send"
+    LOGIN: {
+      IP: "rate-limit:login:ip:",
+      EMAIL: "rate-limit:login:email:"
+    },
+    SIGNUP: {
+      IP: "rate-limit:signup:ip:",
+      EMAIL: "rate-limit:signup:email:"
+    },
+    CHECK_EMAIL: {
+      IP: "rate-limit:check-email:ip:"
+    },
+    LOGIN_OTP: {
+      IP: "rate-limit:login-otp:ip:",
+      EMAIL: "rate-limit:login-otp:email:"
+    },
+    MAGIC_LINK: {
+      IP: "rate-limit:magic-link:ip:",
+      EMAIL: "rate-limit:magic-link:email:"
+    }
   }
 } as const;

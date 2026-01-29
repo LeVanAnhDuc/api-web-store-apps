@@ -1,5 +1,4 @@
 import * as crypto from "crypto";
-import { buildKey } from "./helpers";
 import {
   redisGet,
   redisSetEx,
@@ -8,6 +7,7 @@ import {
 import { REDIS_KEYS } from "@/app/constants/redis";
 import { ACCOUNT_UNLOCK_CONFIG } from "@/modules/login/constants";
 import { generateSecureToken } from "@/app/utils/crypto/otp";
+import { buildKey } from "@/app/utils/store";
 
 const KEYS = {
   UNLOCK_TOKEN: REDIS_KEYS.LOGIN.UNLOCK_TOKEN
