@@ -4,7 +4,6 @@
     "rateLimitExceeded": "Bạn đã vượt quá số lần thử cho phép",
     "resendCoolDown": "Vui lòng đợi trước khi gửi lại OTP",
     "resendLimitExceeded": "Bạn đã vượt quá số lần gửi lại OTP tối đa",
-    "invalidOtp": "Mã OTP không hợp lệ",
     "invalidOtpWithRemaining": "Mã OTP không hợp lệ. Bạn còn {{remaining}} lần thử",
     "otpAttemptsExceeded": "Quá nhiều lần thử sai. Vui lòng thử lại sau",
     "sessionTokenRequired": "Session token là bắt buộc",
@@ -12,9 +11,6 @@
     "invalidSession": "Phiên đã hết hạn hoặc không hợp lệ. Vui lòng xác thực OTP lại",
     "acceptTermsRequired": "Bạn phải chấp nhận điều khoản và điều kiện",
     "acceptTermsInvalid": "Chấp nhận điều khoản phải là giá trị boolean",
-    "fullNameRequired": "Họ và tên là bắt buộc",
-    "genderRequired": "Giới tính là bắt buộc",
-    "dateOfBirthRequired": "Ngày sinh là bắt buộc",
     "confirmPasswordRequired": "Xác nhận mật khẩu là bắt buộc",
     "passwordMismatch": "Mật khẩu không khớp"
   },

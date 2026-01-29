@@ -4,7 +4,6 @@
     "rateLimitExceeded": "You have exceeded the allowed number of attempts",
     "resendCoolDown": "Please wait before resending OTP",
     "resendLimitExceeded": "You have exceeded the maximum number of OTP resends",
-    "invalidOtp": "Invalid OTP",
     "invalidOtpWithRemaining": "Invalid OTP. You have {{remaining}} attempt(s) remaining",
     "otpAttemptsExceeded": "Too many failed attempts. Please try again later",
     "sessionTokenRequired": "Session token is required",
@@ -12,9 +11,6 @@
     "invalidSession": "Session expired or invalid. Please verify OTP again",
     "acceptTermsRequired": "You must accept the terms and conditions",
     "acceptTermsInvalid": "Accept terms must be a boolean value",
-    "fullNameRequired": "Full name is required",
-    "genderRequired": "Gender is required",
-    "dateOfBirthRequired": "Date of birth is required",
     "confirmPasswordRequired": "Confirm password is required",
     "passwordMismatch": "Passwords do not match"
   },

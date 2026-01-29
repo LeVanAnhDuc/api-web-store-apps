@@ -1,9 +1,4 @@
 {
-  "fields": {
-    "email": "Email",
-    "password": "Mật khẩu",
-    "otp": "Mã OTP"
-  },
   "validation": {
     "emailRequired": "Email là bắt buộc",
     "emailInvalid": "Email không hợp lệ",

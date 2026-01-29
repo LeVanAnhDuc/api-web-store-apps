@@ -1,19 +1,5 @@
 {
-  "validation": {
-    "sessionIdRequired": "ID phiên là bắt buộc",
-    "sessionIdInvalid": "ID phiên không hợp lệ"
-  },
-  "errors": {
-    "sessionNotFound": "Không tìm thấy phiên đăng nhập",
-    "sessionRevoked": "Phiên đăng nhập đã bị thu hồi",
-    "sessionExpired": "Phiên đăng nhập đã hết hạn",
-    "useLogoutForCurrentSession": "Sử dụng đăng xuất để thu hồi phiên hiện tại"
-  },
   "success": {
-    "sessionsRetrieved": "Lấy danh sách phiên thành công",
-    "logoutSuccessful": "Đăng xuất thành công",
-    "sessionRevoked": "Thu hồi phiên thành công",
-    "allOtherSessionsRevoked": "Đã thu hồi {{count}} phiên khác",
-    "allSessionsRevoked": "Đã thu hồi {{count}} phiên"
+    "logoutSuccessful": "Đăng xuất thành công"
   }
 }

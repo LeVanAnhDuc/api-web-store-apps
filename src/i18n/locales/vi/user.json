@@ -1,12 +1,4 @@
 {
-  "fields": {
-    "authId": "Auth ID",
-    "fullName": "Họ và tên",
-    "phone": "Số điện thoại",
-    "address": "Địa chỉ",
-    "gender": "Giới tính",
-    "dateOfBirth": "Ngày sinh"
-  },
   "validation": {
     "authIdRequired": "Auth ID là bắt buộc",
     "fullNameRequired": "Họ và tên là bắt buộc",
