@@ -58,7 +58,7 @@ export const magicLinkStore = {
 
     if (!storedHash) return false;
 
-    return isValidHashedValue(storedHash, token);
+    return isValidHashedValue(token, storedHash);
   },
 
   clearToken: async (email: string): Promise<void> => {
