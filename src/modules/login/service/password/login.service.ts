@@ -9,7 +9,7 @@ import { isValidPassword } from "@/app/utils/crypto/bcrypt";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
-import { failedAttemptsStore, formatDuration } from "@/modules/login/store";
+import { failedAttemptsStore } from "@/modules/login/store";
 import { ensureAccountActive, ensureEmailVerified } from "../validators";
 import {
   generateLoginTokens,
@@ -18,6 +18,7 @@ import {
   recordFailedLogin
 } from "../shared";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
+import { formatDuration } from "@/app/utils/date";
 
 const ensureLoginNotLocked = async (
   email: string,

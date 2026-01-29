@@ -13,7 +13,7 @@ import {
   createUserProfile,
   storeRefreshToken
 } from "@/modules/signup/repository";
-import signupCacheStore from "@/modules/signup/store/SignupCacheStore";
+import { otpStore, sessionStore } from "@/modules/signup/store";
 import { hashPassword } from "@/app/utils/crypto/bcrypt";
 import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
@@ -24,7 +24,7 @@ const ensureSessionValid = async (
   sessionToken: string,
   t: TFunction
 ): Promise<void> => {
-  const isValid = await signupCacheStore.verifySession(email, sessionToken);
+  const isValid = await sessionStore.verify(email, sessionToken);
 
   if (!isValid) {
     Logger.warn("Invalid or expired signup session", { email });
@@ -32,7 +32,7 @@ const ensureSessionValid = async (
   }
 };
 
-const ensureEmailNotRegistered = async (
+const ensureEmailAvailable = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
@@ -125,7 +125,7 @@ export const completeSignupService = async (
 
   await ensureSessionValid(email, sessionToken, t);
 
-  await ensureEmailNotRegistered(email, t);
+  await ensureEmailAvailable(email, t);
 
   const account = await createUserAccount(
     email,
@@ -144,7 +144,10 @@ export const completeSignupService = async (
 
   await persistRefreshToken(account.authId, tokens.refreshToken);
 
-  await signupCacheStore.cleanupSignupSession(email);
+  await Promise.all([
+    otpStore.cleanupOtpData(email),
+    sessionStore.clear(email)
+  ]);
 
   Logger.info("CompleteSignup finished - new user registered", {
     email,

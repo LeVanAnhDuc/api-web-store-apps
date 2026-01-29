@@ -6,27 +6,24 @@ import type {
 } from "@/modules/signup/types";
 import { BadRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
-import signupCacheStore from "@/modules/signup/store/SignupCacheStore";
-import { generateSessionToken } from "@/app/utils/crypto/otp";
+import { otpStore, sessionStore } from "@/modules/signup/store";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
+import { generateSecureToken } from "@/app/utils/crypto/otp";
 
 const TIME_MAX_FAILED_ATTEMPTS = OTP_CONFIG.MAX_FAILED_ATTEMPTS;
 const TIME_LOCKOUT_DURATION_MINUTES = OTP_CONFIG.LOCKOUT_DURATION_MINUTES;
 const TIME_EXPIRES_SESSION_MINUTES =
   SESSION_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 
-const ensureAccountNotLocked = async (
+const ensureOtpNotLocked = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
-  const isLocked = await signupCacheStore.isOtpAccountLocked(
-    email,
-    TIME_MAX_FAILED_ATTEMPTS
-  );
+  const isLocked = await otpStore.isLocked(email, TIME_MAX_FAILED_ATTEMPTS);
 
   if (isLocked) {
-    Logger.warn("OTP account locked due to too many failed attempts", {
+    Logger.warn("OTP account locked", {
       email,
       maxAttempts: TIME_MAX_FAILED_ATTEMPTS
     });
@@ -34,48 +31,58 @@ const ensureAccountNotLocked = async (
   }
 };
 
-const verifyOtpMatch = async (
+const trackFailedOtpAttempt = async (email: string): Promise<number> => {
+  const failedCount = await otpStore.incrementFailedAttempts(
+    email,
+    TIME_LOCKOUT_DURATION_MINUTES
+  );
+
+  Logger.warn("Invalid OTP attempt", {
+    email,
+    failedCount,
+    lockoutDurationMinutes: TIME_LOCKOUT_DURATION_MINUTES
+  });
+
+  return failedCount;
+};
+
+const throwOtpError = (
+  attempts: number,
+  language: string,
+  t: TFunction
+): never => {
+  const remaining = TIME_MAX_FAILED_ATTEMPTS - attempts;
+
+  if (remaining > 0) {
+    throw new BadRequestError(
+      i18next.t("signup:errors.invalidOtpWithRemaining", {
+        remaining,
+        lng: language
+      })
+    );
+  }
+
+  throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
+};
+
+const verifyOtpOrFail = async (
   email: string,
   otp: string,
   t: TFunction,
   language: string
 ): Promise<void> => {
-  const isValid = await signupCacheStore.verifyOtp(email, otp);
+  const isValid = await otpStore.verify(email, otp);
 
   if (!isValid) {
-    const failedCount = await signupCacheStore.incrementFailedOtpAttempts(
-      email,
-      TIME_LOCKOUT_DURATION_MINUTES
-    );
-    const remainingAttempts = TIME_MAX_FAILED_ATTEMPTS - failedCount;
-
-    Logger.warn("Invalid OTP attempt", {
-      email,
-      failedCount,
-      remainingAttempts,
-      lockoutDurationMinutes: TIME_LOCKOUT_DURATION_MINUTES
-    });
-
-    if (remainingAttempts > 0) {
-      const errorMessage = i18next.t("signup:errors.invalidOtpWithRemaining", {
-        remaining: remainingAttempts,
-        lng: language
-      });
-      throw new BadRequestError(errorMessage);
-    }
-
-    throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
+    const attempts = await trackFailedOtpAttempt(email);
+    throwOtpError(attempts, language, t);
   }
 };
 
-const createSignupSession = async (email: string): Promise<string> => {
-  const sessionToken = generateSessionToken();
+const createAndStoreSession = async (email: string): Promise<string> => {
+  const sessionToken = generateSecureToken(SESSION_CONFIG.TOKEN_LENGTH);
 
-  await signupCacheStore.storeSession(
-    email,
-    sessionToken,
-    TIME_EXPIRES_SESSION_MINUTES
-  );
+  await sessionStore.store(email, sessionToken, TIME_EXPIRES_SESSION_MINUTES);
 
   Logger.debug("Signup session created", {
     email,
@@ -93,13 +100,13 @@ export const verifyOtpService = async (
 
   Logger.info("VerifyOtp initiated", { email });
 
-  await ensureAccountNotLocked(email, t);
+  await ensureOtpNotLocked(email, t);
 
-  await verifyOtpMatch(email, otp, t, language);
+  await verifyOtpOrFail(email, otp, t, language);
 
-  const sessionToken = await createSignupSession(email);
+  const sessionToken = await createAndStoreSession(email);
 
-  await signupCacheStore.cleanupOtpData(email);
+  await otpStore.cleanupOtpData(email);
 
   Logger.info("VerifyOtp completed successfully", {
     email,

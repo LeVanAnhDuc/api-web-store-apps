@@ -6,9 +6,8 @@ import type {
 import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { isEmailRegistered } from "@/modules/signup/repository";
-import signupCacheStore from "@/modules/signup/store/SignupCacheStore";
+import { otpStore } from "@/modules/signup/store";
 import { sendModuleEmail } from "@/app/utils/email/sender";
-import { generateOtp } from "@/app/utils/crypto/otp";
 import { OTP_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/app/constants/time";
 
@@ -17,23 +16,8 @@ const TIME_OTP_RESEND = OTP_CONFIG.RESEND_COOLDOWN_SECONDS;
 const TIME_RESEND_OTP_PER_HOUR = MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
 const MAX_RESEND_COUNT = OTP_CONFIG.MAX_RESEND_COUNT;
 
-const ensureCooldownExpired = async (
-  email: string,
-  t: TFunction
-): Promise<void> => {
-  const canSend = await signupCacheStore.checkOtpCoolDown(email);
-
-  if (!canSend) {
-    Logger.warn("Resend OTP cooldown not expired", { email });
-    throw new BadRequestError(t("signup:errors.resendCoolDown"));
-  }
-};
-
-const ensureResendLimitNotExceeded = async (
-  email: string,
-  t: TFunction
-): Promise<void> => {
-  const exceeded = await signupCacheStore.hasExceededResendLimit(
+const ensureCanResend = async (email: string, t: TFunction): Promise<void> => {
+  const exceeded = await otpStore.hasExceededResendLimit(
     email,
     MAX_RESEND_COUNT
   );
@@ -47,7 +31,7 @@ const ensureResendLimitNotExceeded = async (
   }
 };
 
-const ensureEmailNotRegistered = async (
+const ensureEmailAvailable = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
@@ -59,14 +43,13 @@ const ensureEmailNotRegistered = async (
   }
 };
 
-const createNewOtp = async (email: string): Promise<string> => {
-  const otp = generateOtp(OTP_CONFIG.LENGTH);
+const createAndStoreOtp = async (email: string): Promise<string> => {
+  const otp = otpStore.createOtp();
 
-  // Delete existing OTP first (idempotency)
-  await signupCacheStore.deleteOtp(email);
-  await signupCacheStore.createAndStoreOtp(email, otp, TIME_OTP_EXPIRES);
+  await otpStore.clearOtp(email);
+  await otpStore.storeHashed(email, otp, TIME_OTP_EXPIRES);
 
-  Logger.debug("New OTP created for resend", {
+  Logger.debug("OTP created for resend", {
     email,
     expiresInSeconds: TIME_OTP_EXPIRES
   });
@@ -74,17 +57,17 @@ const createNewOtp = async (email: string): Promise<string> => {
   return otp;
 };
 
-const startCooldown = async (email: string): Promise<void> => {
-  await signupCacheStore.setOtpCoolDown(email, TIME_OTP_RESEND);
+const setOtpCooldown = async (email: string): Promise<void> => {
+  await otpStore.setCooldown(email, TIME_OTP_RESEND);
 
-  Logger.debug("Resend cooldown started", {
+  Logger.debug("Resend cooldown set", {
     email,
     cooldownSeconds: TIME_OTP_RESEND
   });
 };
 
 const trackResendAttempt = async (email: string): Promise<number> => {
-  const count = await signupCacheStore.incrementResendCount(
+  const count = await otpStore.incrementResendCount(
     email,
     TIME_RESEND_OTP_PER_HOUR
   );
@@ -129,13 +112,18 @@ export const resendOtpService = async (
 
   Logger.info("ResendOtp initiated", { email });
 
-  await ensureCooldownExpired(email, t);
-  await ensureResendLimitNotExceeded(email, t);
-  await ensureEmailNotRegistered(email, t);
+  const canSend = await otpStore.checkCooldown(email);
+  if (!canSend) {
+    Logger.warn("Resend OTP cooldown not expired", { email });
+    throw new BadRequestError(t("signup:errors.resendCoolDown"));
+  }
 
-  const otp = await createNewOtp(email);
+  await ensureCanResend(email, t);
+  await ensureEmailAvailable(email, t);
 
-  await startCooldown(email);
+  const otp = await createAndStoreOtp(email);
+
+  await setOtpCooldown(email);
 
   const currentResendCount = await trackResendAttempt(email);
 

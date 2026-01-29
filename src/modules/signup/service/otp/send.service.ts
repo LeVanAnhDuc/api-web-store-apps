@@ -3,28 +3,15 @@ import type { SendOtpRequest, SendOtpResponse } from "@/modules/signup/types";
 import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { isEmailRegistered } from "@/modules/signup/repository";
-import signupCacheStore from "@/modules/signup/store/SignupCacheStore";
+import { otpStore } from "@/modules/signup/store";
 import { sendModuleEmail } from "@/app/utils/email/sender";
-import { generateOtp } from "@/app/utils/crypto/otp";
 import { OTP_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 
 const TIME_OTP_EXPIRES = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const TIME_OTP_RESEND = OTP_CONFIG.RESEND_COOLDOWN_SECONDS;
 
-const ensureCooldownExpired = async (
-  email: string,
-  t: TFunction
-): Promise<void> => {
-  const canSend = await signupCacheStore.checkOtpCoolDown(email);
-
-  if (!canSend) {
-    Logger.warn("OTP cooldown not expired", { email });
-    throw new BadRequestError(t("signup:errors.resendCoolDown"));
-  }
-};
-
-const ensureEmailNotRegistered = async (
+const ensureEmailAvailable = async (
   email: string,
   t: TFunction
 ): Promise<void> => {
@@ -36,14 +23,13 @@ const ensureEmailNotRegistered = async (
   }
 };
 
-const createNewOtp = async (email: string): Promise<string> => {
-  const otp = generateOtp(OTP_CONFIG.LENGTH);
+const createAndStoreOtp = async (email: string): Promise<string> => {
+  const otp = otpStore.createOtp();
 
-  // Delete existing OTP first (idempotency - same request can be retried)
-  await signupCacheStore.deleteOtp(email);
-  await signupCacheStore.createAndStoreOtp(email, otp, TIME_OTP_EXPIRES);
+  await otpStore.clearOtp(email);
+  await otpStore.storeHashed(email, otp, TIME_OTP_EXPIRES);
 
-  Logger.debug("OTP created and stored in Redis", {
+  Logger.debug("OTP created and stored", {
     email,
     expiresInSeconds: TIME_OTP_EXPIRES
   });
@@ -51,10 +37,10 @@ const createNewOtp = async (email: string): Promise<string> => {
   return otp;
 };
 
-const startCooldown = async (email: string): Promise<void> => {
-  await signupCacheStore.setOtpCoolDown(email, TIME_OTP_RESEND);
+const setOtpCooldown = async (email: string): Promise<void> => {
+  await otpStore.setCooldown(email, TIME_OTP_RESEND);
 
-  Logger.debug("OTP cooldown started", {
+  Logger.debug("OTP cooldown set", {
     email,
     cooldownSeconds: TIME_OTP_RESEND
   });
@@ -90,12 +76,17 @@ export const sendOtpService = async (
 
   Logger.info("SendOtp initiated", { email });
 
-  await ensureCooldownExpired(email, t);
-  await ensureEmailNotRegistered(email, t);
+  const canSend = await otpStore.checkCooldown(email);
+  if (!canSend) {
+    Logger.warn("OTP cooldown not expired", { email });
+    throw new BadRequestError(t("signup:errors.resendCoolDown"));
+  }
 
-  const otp = await createNewOtp(email);
+  await ensureEmailAvailable(email, t);
 
-  await startCooldown(email);
+  const otp = await createAndStoreOtp(email);
+
+  await setOtpCooldown(email);
 
   sendSignupOtpEmail(email, otp, language as I18n.Locale);
 

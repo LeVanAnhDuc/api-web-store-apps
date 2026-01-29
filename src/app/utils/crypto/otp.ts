@@ -16,3 +16,16 @@ export const generateOtp = (length: number): string => {
 
 export const generateSessionToken = (): string =>
   crypto.randomBytes(SESSION_ID_BYTES_SIZE).toString("hex");
+
+/**
+ * Generate cryptographically secure random token
+ * Pure function - uses crypto.randomBytes for security
+ *
+ * @param length - Length of token in characters (not bytes)
+ * @returns Hex string token
+ *
+ * @example
+ * generateSecureToken(64) // Returns 64-char hex string
+ */
+export const generateSecureToken = (length: number): string =>
+  crypto.randomBytes(length / 2).toString("hex");
