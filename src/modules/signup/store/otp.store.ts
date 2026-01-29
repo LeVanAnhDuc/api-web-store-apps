@@ -6,7 +6,8 @@ import {
   redisDel,
   redisIncr,
   redisExpire,
-  redisExists
+  redisExists,
+  redisTtl
 } from "@/app/utils/store/redis-operations";
 import { generateOtp } from "@/app/utils/crypto/otp";
 import { REDIS_KEYS } from "@/app/constants/redis";
@@ -36,6 +37,12 @@ export const otpStore = {
   clearCooldown: async (email: string): Promise<void> => {
     const key = buildKey(KEYS.COOLDOWN, email);
     await redisDel(key);
+  },
+
+  getCooldownRemaining: async (email: string): Promise<number> => {
+    const key = buildKey(KEYS.COOLDOWN, email);
+    const ttl = await redisTtl(key);
+    return ttl > 0 ? ttl : 0;
   },
 
   storeHashed: async (

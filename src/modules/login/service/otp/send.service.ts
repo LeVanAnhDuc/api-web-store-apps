@@ -4,8 +4,10 @@ import { BadRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
 import { otpStore } from "@/modules/login/store";
-import { validateAuthenticationForLogin } from "../validators";
-import { ensureCooldownExpired } from "../helpers";
+import {
+  ensureCooldownExpired,
+  validateAuthenticationForLogin
+} from "../validators";
 import { sendModuleEmail } from "@/app/utils/email/sender";
 import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";

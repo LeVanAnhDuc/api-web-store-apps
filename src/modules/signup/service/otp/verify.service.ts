@@ -9,49 +9,35 @@ import { Logger } from "@/infra/utils/logger";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE } from "@/app/constants/time";
-import { generateSecureToken } from "@/app/utils/crypto/otp";
+import { ensureOtpNotLocked } from "../validators";
 
-const TIME_MAX_FAILED_ATTEMPTS = OTP_CONFIG.MAX_FAILED_ATTEMPTS;
-const TIME_LOCKOUT_DURATION_MINUTES = OTP_CONFIG.LOCKOUT_DURATION_MINUTES;
-const TIME_EXPIRES_SESSION_MINUTES =
-  SESSION_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
-
-const ensureOtpNotLocked = async (
-  email: string,
-  t: TFunction
-): Promise<void> => {
-  const isLocked = await otpStore.isLocked(email, TIME_MAX_FAILED_ATTEMPTS);
-
-  if (isLocked) {
-    Logger.warn("OTP account locked", {
-      email,
-      maxAttempts: TIME_MAX_FAILED_ATTEMPTS
-    });
-    throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
-  }
+const CONFIG = {
+  MAX_FAILED_ATTEMPTS: OTP_CONFIG.MAX_FAILED_ATTEMPTS,
+  LOCKOUT_DURATION_MINUTES: OTP_CONFIG.LOCKOUT_DURATION_MINUTES,
+  SESSION_EXPIRY_SECONDS: SESSION_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE
 };
 
 const trackFailedOtpAttempt = async (email: string): Promise<number> => {
   const failedCount = await otpStore.incrementFailedAttempts(
     email,
-    TIME_LOCKOUT_DURATION_MINUTES
+    CONFIG.LOCKOUT_DURATION_MINUTES
   );
 
   Logger.warn("Invalid OTP attempt", {
     email,
     failedCount,
-    lockoutDurationMinutes: TIME_LOCKOUT_DURATION_MINUTES
+    lockoutDurationMinutes: CONFIG.LOCKOUT_DURATION_MINUTES
   });
 
   return failedCount;
 };
 
-const throwOtpError = (
+const throwInvalidOtpError = (
   attempts: number,
   language: string,
   t: TFunction
 ): never => {
-  const remaining = TIME_MAX_FAILED_ATTEMPTS - attempts;
+  const remaining = CONFIG.MAX_FAILED_ATTEMPTS - attempts;
 
   if (remaining > 0) {
     throw new BadRequestError(
@@ -65,7 +51,7 @@ const throwOtpError = (
   throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
 };
 
-const verifyOtpOrFail = async (
+const verifyOtp = async (
   email: string,
   otp: string,
   t: TFunction,
@@ -75,18 +61,18 @@ const verifyOtpOrFail = async (
 
   if (!isValid) {
     const attempts = await trackFailedOtpAttempt(email);
-    throwOtpError(attempts, language, t);
+    throwInvalidOtpError(attempts, language, t);
   }
 };
 
 const createAndStoreSession = async (email: string): Promise<string> => {
-  const sessionToken = generateSecureToken(SESSION_CONFIG.TOKEN_LENGTH);
+  const sessionToken = sessionStore.createToken();
 
-  await sessionStore.store(email, sessionToken, TIME_EXPIRES_SESSION_MINUTES);
+  await sessionStore.store(email, sessionToken, CONFIG.SESSION_EXPIRY_SECONDS);
 
   Logger.debug("Signup session created", {
     email,
-    expiresInSeconds: TIME_EXPIRES_SESSION_MINUTES
+    expiresInSeconds: CONFIG.SESSION_EXPIRY_SECONDS
   });
 
   return sessionToken;
@@ -100,9 +86,9 @@ export const verifyOtpService = async (
 
   Logger.info("VerifyOtp initiated", { email });
 
-  await ensureOtpNotLocked(email, t);
+  await ensureOtpNotLocked(email, CONFIG.MAX_FAILED_ATTEMPTS, t);
 
-  await verifyOtpOrFail(email, otp, t, language);
+  await verifyOtp(email, otp, t, language);
 
   const sessionToken = await createAndStoreSession(email);
 
@@ -110,7 +96,7 @@ export const verifyOtpService = async (
 
   Logger.info("VerifyOtp completed successfully", {
     email,
-    sessionExpiresIn: TIME_EXPIRES_SESSION_MINUTES
+    sessionExpiresIn: CONFIG.SESSION_EXPIRY_SECONDS
   });
 
   return {
@@ -118,7 +104,7 @@ export const verifyOtpService = async (
     data: {
       success: true,
       sessionToken,
-      expiresIn: TIME_EXPIRES_SESSION_MINUTES
+      expiresIn: CONFIG.SESSION_EXPIRY_SECONDS
     }
   };
 };

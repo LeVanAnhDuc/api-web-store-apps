@@ -1,14 +1,11 @@
-import type { TFunction } from "i18next";
 import type { Schema } from "mongoose";
 import type { Gender } from "@/modules/user/types";
 import type {
   CompleteSignupRequest,
   CompleteSignupResponse
 } from "@/modules/signup/types";
-import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import {
-  isEmailRegistered,
   createAuthenticationRecord,
   createUserProfile,
   storeRefreshToken
@@ -18,32 +15,46 @@ import { hashPassword } from "@/app/utils/crypto/bcrypt";
 import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+import { ensureEmailAvailable, ensureSessionValid } from "../validators";
 
-const ensureSessionValid = async (
+const createAuthentication = async (
   email: string,
-  sessionToken: string,
-  t: TFunction
-): Promise<void> => {
-  const isValid = await sessionStore.verify(email, sessionToken);
+  password: string
+): Promise<Schema.Types.ObjectId> => {
+  const hashedPassword = hashPassword(password);
 
-  if (!isValid) {
-    Logger.warn("Invalid or expired signup session", { email });
-    throw new BadRequestError(t("signup:errors.invalidSession"));
-  }
+  const auth = await createAuthenticationRecord({
+    email,
+    hashedPassword
+  });
+
+  Logger.debug("Auth record created", {
+    email,
+    authId: auth._id.toString()
+  });
+
+  return auth._id;
 };
 
-const ensureEmailAvailable = async (
-  email: string,
-  t: TFunction
-): Promise<void> => {
-  const exists = await isEmailRegistered(email);
+const createUser = async (
+  authId: Schema.Types.ObjectId,
+  fullName: string,
+  gender: Gender,
+  dateOfBirth: string
+): Promise<Schema.Types.ObjectId> => {
+  const user = await createUserProfile({
+    authId,
+    fullName,
+    gender,
+    dateOfBirth: new Date(dateOfBirth)
+  });
 
-  if (exists) {
-    Logger.warn("Complete signup blocked - email registered during flow", {
-      email
-    });
-    throw new ConflictRequestError(t("signup:errors.emailAlreadyExists"));
-  }
+  Logger.info("User profile created", {
+    userId: user._id.toString(),
+    authId: authId.toString()
+  });
+
+  return user._id;
 };
 
 const createUserAccount = async (
@@ -58,36 +69,14 @@ const createUserAccount = async (
   email: string;
   fullName: string;
 }> => {
-  const hashedPassword = hashPassword(password);
-
-  const auth = await createAuthenticationRecord({
-    email,
-    hashedPassword
-  });
-
-  Logger.debug("Auth record created", {
-    email,
-    authId: auth._id.toString()
-  });
-
-  const user = await createUserProfile({
-    authId: auth._id,
-    fullName,
-    gender,
-    dateOfBirth: new Date(dateOfBirth)
-  });
-
-  Logger.info("User account created successfully", {
-    email,
-    userId: user._id.toString(),
-    authId: auth._id.toString()
-  });
+  const authId = await createAuthentication(email, password);
+  const userId = await createUser(authId, fullName, gender, dateOfBirth);
 
   return {
-    authId: auth._id,
-    userId: user._id,
-    email: auth.email,
-    fullName: user.fullName
+    authId,
+    userId,
+    email,
+    fullName
   };
 };
 
@@ -114,6 +103,16 @@ const persistRefreshToken = async (
 ): Promise<void> => {
   await storeRefreshToken(authId, refreshToken);
 };
+
+const cleanupSignupData = async (email: string): Promise<void> => {
+  await Promise.all([
+    otpStore.cleanupOtpData(email),
+    sessionStore.clear(email)
+  ]);
+
+  Logger.debug("Signup data cleaned up", { email });
+};
+
 export const completeSignupService = async (
   req: CompleteSignupRequest
 ): Promise<Partial<ResponsePattern<CompleteSignupResponse>>> => {
@@ -144,10 +143,7 @@ export const completeSignupService = async (
 
   await persistRefreshToken(account.authId, tokens.refreshToken);
 
-  await Promise.all([
-    otpStore.cleanupOtpData(email),
-    sessionStore.clear(email)
-  ]);
+  await cleanupSignupData(email);
 
   Logger.info("CompleteSignup finished - new user registered", {
     email,

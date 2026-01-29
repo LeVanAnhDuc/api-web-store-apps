@@ -1,33 +1,3 @@
-import i18next from "@/i18n";
-import { BadRequestError } from "@/infra/responses/error";
-import { Logger } from "@/infra/utils/logger";
-
-export const ensureCooldownExpired = async <
-  T extends {
-    checkCooldown: (email: string) => Promise<boolean>;
-    getCooldownRemaining: (email: string) => Promise<number>;
-  }
->(
-  store: T,
-  email: string,
-  language: string,
-  logMessage: string,
-  errorKey: "login:errors.otpCooldown" | "login:errors.magicLinkCooldown"
-): Promise<void> => {
-  const canSend = await store.checkCooldown(email);
-
-  if (!canSend) {
-    const remaining = await store.getCooldownRemaining(email);
-    Logger.warn(logMessage, { email, remaining });
-    throw new BadRequestError(
-      i18next.t(errorKey, {
-        seconds: remaining,
-        lng: language
-      })
-    );
-  }
-};
-
 export const getClientIp = (req: {
   headers: Record<string, unknown>;
   ip?: string;

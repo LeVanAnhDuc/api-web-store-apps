@@ -5,12 +5,16 @@ import {
   redisDel
 } from "@/app/utils/store/redis-operations";
 import { REDIS_KEYS } from "@/app/constants/redis";
+import { generateSecureToken } from "@/app/utils/crypto/otp";
+import { SESSION_CONFIG } from "@/modules/signup/constants";
 
 const KEYS = {
   SESSION: REDIS_KEYS.SIGNUP.SESSION
 };
 
 export const sessionStore = {
+  createToken: (): string => generateSecureToken(SESSION_CONFIG.TOKEN_LENGTH),
+
   store: async (
     email: string,
     sessionId: string,

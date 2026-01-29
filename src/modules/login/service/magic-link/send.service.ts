@@ -5,8 +5,10 @@ import type {
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
 import { magicLinkStore } from "@/modules/login/store";
-import { validateAuthenticationForLogin } from "../validators";
-import { ensureCooldownExpired } from "../helpers";
+import {
+  ensureCooldownExpired,
+  validateAuthenticationForLogin
+} from "../validators";
 import { sendModuleEmail } from "@/app/utils/email/sender";
 import ENV from "@/infra/configs/env";
 import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
