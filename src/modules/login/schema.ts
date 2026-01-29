@@ -26,7 +26,7 @@ export const magicLinkSendSchema = Joi.object({
 export const magicLinkVerifySchema = Joi.object({
   email: emailSchema.required(),
   token: Joi.string()
-    .length(MAGIC_LINK_CONFIG.TOKEN_LENGTH)
+    .length(MAGIC_LINK_CONFIG.TOKEN_LENGTH * 2)
     .pattern(/^[a-f0-9]+$/)
     .required()
     .messages({
