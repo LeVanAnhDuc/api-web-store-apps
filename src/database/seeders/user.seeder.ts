@@ -1,6 +1,6 @@
 import AuthenticationModel from "@/modules/authentication/model";
 import UserModel from "@/modules/user/model";
-import { hashPassword } from "@/app/utils/crypto/bcrypt";
+import { hashValue } from "@/app/utils/crypto/bcrypt";
 import { TEST_USERS } from "./data/users";
 import { Logger } from "@/infra/utils/logger";
 
@@ -23,7 +23,7 @@ export const seedUsers = async (): Promise<void> => {
       continue;
     }
 
-    const hashedPassword = hashPassword(testUser.authentication.password);
+    const hashedPassword = hashValue(testUser.authentication.password);
 
     const authentication = await AuthenticationModel.create({
       email: testUser.authentication.email,

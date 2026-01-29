@@ -5,7 +5,7 @@ import type {
   LoginResponse
 } from "@/modules/login/types";
 import { UnauthorizedError, BadRequestError } from "@/infra/responses/error";
-import { isValidPassword } from "@/app/utils/crypto/bcrypt";
+import { isValidHashedValue } from "@/app/utils/crypto/bcrypt";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
@@ -141,7 +141,7 @@ const verifyPasswordOrFail = async (
   req: PasswordLoginRequest,
   t: PasswordLoginRequest["t"]
 ): Promise<void> => {
-  const passwordValid = isValidPassword(password, auth.password);
+  const passwordValid = isValidHashedValue(password, auth.password);
 
   if (passwordValid) return;
 

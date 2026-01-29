@@ -1,7 +1,6 @@
 import crypto from "crypto";
 
 const RANDOM_BYTES_SIZE = 4;
-const SESSION_ID_BYTES_SIZE = 32;
 
 export const generateOtp = (length: number): string => {
   const min = Math.pow(10, length - 1);
@@ -13,9 +12,6 @@ export const generateOtp = (length: number): string => {
 
   return otp.toString();
 };
-
-export const generateSessionToken = (): string =>
-  crypto.randomBytes(SESSION_ID_BYTES_SIZE).toString("hex");
 
 export const generateSecureToken = (length: number): string =>
   crypto.randomBytes(length / 2).toString("hex");

@@ -10,7 +10,7 @@ import {
   createUserProfile
 } from "@/modules/signup/repository";
 import { otpStore, sessionStore } from "@/modules/signup/store";
-import { hashPassword } from "@/app/utils/crypto/bcrypt";
+import { hashValue } from "@/app/utils/crypto/bcrypt";
 import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
 import { ensureEmailAvailable, ensureSessionValid } from "../validators";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
@@ -19,7 +19,7 @@ const createAuthentication = async (
   email: string,
   password: string
 ): Promise<Schema.Types.ObjectId> => {
-  const hashedPassword = hashPassword(password);
+  const hashedPassword = hashValue(password);
 
   const auth = await createAuthenticationRecord({
     email,

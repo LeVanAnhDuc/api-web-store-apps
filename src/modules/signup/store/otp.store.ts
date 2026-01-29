@@ -1,4 +1,3 @@
-import * as bcrypt from "bcrypt";
 import { buildKey } from "@/app/utils/store";
 import {
   redisGet,
@@ -12,6 +11,7 @@ import {
 import { generateOtp } from "@/app/utils/crypto/otp";
 import { REDIS_KEYS } from "@/app/constants/redis";
 import { OTP_CONFIG } from "@/modules/signup/constants";
+import { hashValue, isValidHashedValue } from "@/app/utils/crypto/bcrypt";
 
 const KEYS = {
   OTP: REDIS_KEYS.SIGNUP.OTP,
@@ -51,7 +51,7 @@ export const otpStore = {
     expiry: number
   ): Promise<void> => {
     const key = buildKey(KEYS.OTP, email);
-    const hashedOtp = bcrypt.hashSync(otp, OTP_CONFIG.HASH_ROUNDS);
+    const hashedOtp = hashValue(otp);
     await redisSetEx(key, expiry, hashedOtp);
   },
 
@@ -66,7 +66,7 @@ export const otpStore = {
 
     if (!hashedOtp) return false;
 
-    return bcrypt.compareSync(otp, hashedOtp);
+    return isValidHashedValue(otp, hashedOtp);
   },
 
   incrementFailedAttempts: async (
