@@ -1,14 +1,10 @@
 import type { Request } from "express";
+import type { AuthTokensResponse } from "@/app/types/auth";
 import type { LOGIN_METHODS } from "./constants";
 
 export type LoginMethod = (typeof LOGIN_METHODS)[keyof typeof LOGIN_METHODS];
 
-export interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
-  idToken: string;
-  expiresIn: number;
-}
+export type LoginResponse = AuthTokensResponse;
 
 export interface PasswordLoginBody {
   email: string;

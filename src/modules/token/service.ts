@@ -4,7 +4,7 @@ import type {
   RefreshTokenResponse
 } from "@/modules/token/types";
 import { UnauthorizedError, ForbiddenError } from "@/infra/responses/error";
-import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
+import { JsonWebTokenService } from "@/app/services/JsonWebTokenService";
 import { Logger } from "@/infra/utils/logger";
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
 

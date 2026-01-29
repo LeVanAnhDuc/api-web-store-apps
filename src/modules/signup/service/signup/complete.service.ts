@@ -11,8 +11,7 @@ import {
 } from "@/modules/signup/repository";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { hashPassword } from "@/app/utils/crypto/bcrypt";
-import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
-import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
+import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { ensureEmailAvailable, ensureSessionValid } from "../validators";
 
@@ -79,23 +78,6 @@ const createUserAccount = async (
   };
 };
 
-const issueAuthTokens = (
-  userId: Schema.Types.ObjectId,
-  authId: Schema.Types.ObjectId,
-  email: string,
-  roles: string
-): {
-  accessToken: string;
-  refreshToken: string;
-  idToken: string;
-} =>
-  JsonWebTokenService.generateAuthTokens({
-    userId: userId.toString(),
-    authId: authId.toString(),
-    email,
-    roles
-  });
-
 const cleanupSignupData = async (email: string): Promise<void> => {
   await Promise.all([
     otpStore.cleanupOtpData(email),
@@ -125,12 +107,12 @@ export const completeSignupService = async (
     dateOfBirth
   );
 
-  const tokens = issueAuthTokens(
-    account.userId,
-    account.authId,
-    account.email,
-    AUTHENTICATION_ROLES.USER
-  );
+  const tokens = generateAuthTokensResponse({
+    userId: account.userId.toString(),
+    authId: account.authId.toString(),
+    email: account.email,
+    roles: AUTHENTICATION_ROLES.USER
+  });
 
   await cleanupSignupData(email);
 
@@ -148,12 +130,7 @@ export const completeSignupService = async (
         email: account.email,
         fullName: account.fullName
       },
-      tokens: {
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-        idToken: tokens.idToken,
-        expiresIn: TOKEN_EXPIRY.NUMBER_ACCESS_TOKEN
-      }
+      tokens
     }
   };
 };

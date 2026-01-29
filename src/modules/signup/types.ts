@@ -1,6 +1,7 @@
 import type { Request } from "express";
 import type { Gender } from "@/modules/user/types";
 import type { Schema } from "mongoose";
+import type { AuthTokensResponse } from "@/app/types/auth";
 
 export interface SendOtpBody {
   email: string;
@@ -63,12 +64,7 @@ export interface CompleteSignupResponse {
     email: string;
     fullName: string;
   };
-  tokens: {
-    accessToken: string;
-    refreshToken: string;
-    idToken: string;
-    expiresIn: number;
-  };
+  tokens: AuthTokensResponse;
 }
 
 export interface CheckEmailResponse {

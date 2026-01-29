@@ -8,34 +8,12 @@ import type {
   LoginFailReason
 } from "@/modules/login-history/types";
 import type { LoginResponse } from "@/modules/login/types";
-import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
+import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
 import { createLoginHistory } from "@/modules/login-history/repository";
 import { updateLastLogin as updateLastLoginRepo } from "@/modules/login/repository";
-import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
 import { getClientIp } from "./helpers";
-
-export const generateLoginTokens = (
-  authentication: AuthenticationDocument
-): LoginResponse => {
-  const tokenPayload = {
-    userId: authentication._id.toString(),
-    authId: authentication._id.toString(),
-    email: authentication.email,
-    roles: authentication.roles
-  };
-
-  const { accessToken, refreshToken, idToken } =
-    JsonWebTokenService.generateAuthTokens(tokenPayload);
-
-  return {
-    accessToken,
-    refreshToken,
-    idToken,
-    expiresIn: TOKEN_EXPIRY.NUMBER_ACCESS_TOKEN
-  };
-};
 
 export const updateLastLogin = (userId: string): void => {
   withRetry(() => updateLastLoginRepo(userId), {
@@ -122,5 +100,10 @@ export const completeSuccessfulLogin = ({
     method: loginMethod
   });
 
-  return generateLoginTokens(auth);
+  return generateAuthTokensResponse({
+    userId: auth._id.toString(),
+    authId: auth._id.toString(),
+    email: auth.email,
+    roles: auth.roles
+  });
 };

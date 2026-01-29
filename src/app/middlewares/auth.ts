@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { UnauthorizedError } from "@/infra/responses/error";
-import { JsonWebTokenService } from "@/app/services/implements/JsonWebTokenService";
+import { JsonWebTokenService } from "@/app/services/JsonWebTokenService";
 import { asyncHandler } from "@/infra/utils/async-handler";
 
 export const authenticate = asyncHandler(

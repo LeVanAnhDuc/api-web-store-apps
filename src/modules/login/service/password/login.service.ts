@@ -12,13 +12,13 @@ import { findAuthenticationByEmail } from "@/modules/login/repository";
 import { failedAttemptsStore } from "@/modules/login/store";
 import { ensureAccountActive, ensureEmailVerified } from "../validators";
 import {
-  generateLoginTokens,
   updateLastLogin,
   recordSuccessfulLogin,
   recordFailedLogin
 } from "../shared";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
 import { formatDuration } from "@/app/utils/date";
+import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
 
 const ensureLoginNotLocked = async (
   email: string,
@@ -192,6 +192,11 @@ export const passwordLoginService = async (
 
   return {
     message: t("login:success.loginSuccessful"),
-    data: generateLoginTokens(auth)
+    data: generateAuthTokensResponse({
+      userId: auth._id.toString(),
+      authId: auth._id.toString(),
+      email: auth.email,
+      roles: auth.roles
+    })
   };
 };
