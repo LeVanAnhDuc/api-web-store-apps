@@ -7,8 +7,8 @@ import {
   EMAIL_POOL,
   EMAIL_RATE_LIMIT
 } from "@/app/constants/email";
-import type { EmailSendOptions } from "@/app/services/abstracts/EmailTransport";
-import { EmailTransport } from "@/app/services/abstracts/EmailTransport";
+import type { EmailSendOptions } from "@/app/services/EmailTransport";
+import { EmailTransport } from "@/app/services/EmailTransport";
 
 export class NodemailerTransport extends EmailTransport {
   private static instance: NodemailerTransport | null = null;

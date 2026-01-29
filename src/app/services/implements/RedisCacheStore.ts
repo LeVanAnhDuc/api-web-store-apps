@@ -1,5 +1,5 @@
 import instanceRedis from "@/database/redis/redis.database";
-import { CacheStore } from "@/app/services/abstracts/CacheStore";
+import { CacheStore } from "@/app/services/CacheStore";
 import { Logger } from "@/infra/utils/logger";
 
 export class RedisCacheStore extends CacheStore {
