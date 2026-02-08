@@ -68,9 +68,6 @@ const UserSchema = new Schema<UserDocument>(
 UserSchema.index({ authId: 1 });
 UserSchema.index({ phone: 1 });
 
-/**
- * Virtual populate for auth
- */
 UserSchema.virtual("auth", {
   ref: AUTHENTICATION,
   localField: "authId",
