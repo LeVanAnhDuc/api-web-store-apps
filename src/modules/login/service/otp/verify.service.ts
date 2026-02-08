@@ -41,6 +41,7 @@ const trackFailedOtpAttempt = async (
 
   recordFailedLogin({
     userId: auth._id,
+    usernameAttempted: email,
     loginMethod: LOGIN_METHODS.OTP,
     failReason: LOGIN_FAIL_REASONS.INVALID_OTP,
     req

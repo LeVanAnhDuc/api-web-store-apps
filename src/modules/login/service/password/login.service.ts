@@ -50,9 +50,18 @@ const ensureLoginNotLocked = async (
 function ensureAccountExists(
   auth: AuthenticationDocument | null,
   email: string,
+  req: PasswordLoginRequest,
   t: PasswordLoginRequest["t"]
 ): asserts auth is AuthenticationDocument {
   if (auth) return;
+
+  recordFailedLogin({
+    userId: null,
+    usernameAttempted: email,
+    loginMethod: LOGIN_METHODS.PASSWORD,
+    failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS,
+    req
+  });
 
   Logger.warn("Login failed - email not found", { email });
   throw new UnauthorizedError(t("login:errors.invalidCredentials"));
@@ -68,6 +77,7 @@ const ensureAccountActiveWithLogging = (
 
   recordFailedLogin({
     userId: auth._id,
+    usernameAttempted: email,
     loginMethod: LOGIN_METHODS.PASSWORD,
     failReason: LOGIN_FAIL_REASONS.ACCOUNT_INACTIVE,
     req
@@ -86,6 +96,7 @@ const ensureEmailVerifiedWithLogging = (
 
   recordFailedLogin({
     userId: auth._id,
+    usernameAttempted: email,
     loginMethod: LOGIN_METHODS.PASSWORD,
     failReason: LOGIN_FAIL_REASONS.EMAIL_NOT_VERIFIED,
     req
@@ -104,6 +115,7 @@ const trackFailedPasswordAttempt = async (
 
   recordFailedLogin({
     userId: auth._id,
+    usernameAttempted: email,
     loginMethod: LOGIN_METHODS.PASSWORD,
     failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS,
     req
@@ -166,7 +178,7 @@ export const passwordLoginService = async (
 
   const auth = await findAuthenticationByEmail(email);
 
-  ensureAccountExists(auth, email, t);
+  ensureAccountExists(auth, email, req, t);
   ensureAccountActiveWithLogging(auth, email, req, t);
   ensureEmailVerifiedWithLogging(auth, email, req, t);
 
@@ -181,6 +193,7 @@ export const passwordLoginService = async (
 
   recordSuccessfulLogin({
     userId: auth._id,
+    usernameAttempted: email,
     loginMethod: LOGIN_METHODS.PASSWORD,
     req
   });

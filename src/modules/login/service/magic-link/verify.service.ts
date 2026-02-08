@@ -20,6 +20,7 @@ const handleInvalidToken = (
 ): never => {
   recordFailedLogin({
     userId: auth._id,
+    usernameAttempted: email,
     loginMethod: LOGIN_METHODS.MAGIC_LINK,
     failReason: LOGIN_FAIL_REASONS.INVALID_MAGIC_LINK,
     req

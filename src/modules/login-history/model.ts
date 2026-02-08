@@ -7,6 +7,11 @@ import {
   LOGIN_FAIL_REASONS,
   LOGIN_HISTORY_CONFIG
 } from "@/modules/login/constants";
+import {
+  DEVICE_TYPES,
+  CLIENT_TYPES,
+  GEO_DEFAULTS
+} from "@/modules/login-history/constants";
 
 const { LOGIN_HISTORY, AUTHENTICATION } = MODEL_NAMES;
 
@@ -15,8 +20,14 @@ const LoginHistorySchema = new Schema<LoginHistoryDocument>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: AUTHENTICATION,
-      required: [true, "User ID is required"],
+      default: null,
       index: true
+    },
+    usernameAttempted: {
+      type: String,
+      required: [true, "Username attempted is required"],
+      trim: true,
+      lowercase: true
     },
     method: {
       type: String,
@@ -26,7 +37,8 @@ const LoginHistorySchema = new Schema<LoginHistoryDocument>(
     status: {
       type: String,
       enum: Object.values(LOGIN_STATUSES),
-      required: [true, "Login status is required"]
+      required: [true, "Login status is required"],
+      index: true
     },
     failReason: {
       type: String,
@@ -37,7 +49,50 @@ const LoginHistorySchema = new Schema<LoginHistoryDocument>(
       type: String,
       required: [true, "IP address is required"],
       trim: true,
-      maxlength: 45
+      maxlength: 45,
+      index: true
+    },
+    country: {
+      type: String,
+      default: GEO_DEFAULTS.UNKNOWN_COUNTRY
+    },
+    city: {
+      type: String,
+      default: GEO_DEFAULTS.UNKNOWN_CITY
+    },
+    deviceType: {
+      type: String,
+      enum: Object.values(DEVICE_TYPES),
+      default: DEVICE_TYPES.UNKNOWN
+    },
+    os: {
+      type: String,
+      default: GEO_DEFAULTS.UNKNOWN_COUNTRY
+    },
+    browser: {
+      type: String,
+      default: GEO_DEFAULTS.UNKNOWN_COUNTRY
+    },
+    userAgent: {
+      type: String,
+      default: ""
+    },
+    clientType: {
+      type: String,
+      enum: Object.values(CLIENT_TYPES),
+      default: CLIENT_TYPES.WEB
+    },
+    timezoneOffset: {
+      type: String,
+      default: null
+    },
+    isAnomaly: {
+      type: Boolean,
+      default: false
+    },
+    anomalyReasons: {
+      type: [String],
+      default: []
     }
   },
   {
@@ -47,11 +102,14 @@ const LoginHistorySchema = new Schema<LoginHistoryDocument>(
 );
 
 LoginHistorySchema.index({ userId: 1, createdAt: -1 });
+LoginHistorySchema.index({ userId: 1, status: 1, createdAt: -1 });
+LoginHistorySchema.index({ ip: 1, createdAt: -1 });
+LoginHistorySchema.index({ usernameAttempted: 1, createdAt: -1 });
+LoginHistorySchema.index({ createdAt: -1 });
 LoginHistorySchema.index(
   { createdAt: 1 },
   { expireAfterSeconds: LOGIN_HISTORY_CONFIG.TTL_SECONDS }
 );
-LoginHistorySchema.index({ ip: 1, status: 1, createdAt: -1 });
 
 const LoginHistoryModel: Model<LoginHistoryDocument> =
   model<LoginHistoryDocument>(LOGIN_HISTORY, LoginHistorySchema);

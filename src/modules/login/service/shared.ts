@@ -1,21 +1,15 @@
 import type { Schema } from "mongoose";
 import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
-import type {
-  CreateLoginHistoryInput,
-  LoginMethod
-} from "@/modules/login/types";
+import type { LoginMethod } from "@/modules/login/types";
 import type { LoginFailReason } from "@/modules/login-history/types";
 import type { LoginResponse } from "@/modules/login/types";
 import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
-import {
-  createLoginHistory,
-  updateLastLogin as updateLastLoginRepo
-} from "@/modules/login/repository";
-import { getClientIp } from "./helpers";
+import { updateLastLogin as updateLastLoginRepo } from "@/modules/login/repository";
 import { LOGIN_STATUSES } from "../constants";
+import { logLoginAttempt } from "@/modules/login-history/service";
 
 export const updateLastLogin = (userId: string): void => {
   withRetry(() => updateLastLoginRepo(userId), {
@@ -26,54 +20,44 @@ export const updateLastLogin = (userId: string): void => {
 
 export const recordSuccessfulLogin = ({
   userId,
+  usernameAttempted,
   loginMethod,
   req
 }: {
   userId: Schema.Types.ObjectId | string;
+  usernameAttempted: string;
   loginMethod: LoginMethod;
   req: Request;
 }): void => {
-  const ip = getClientIp(req);
-
-  const historyInput: CreateLoginHistoryInput = {
-    userId,
-    method: loginMethod,
+  logLoginAttempt({
+    userId: userId.toString(),
+    usernameAttempted,
     status: LOGIN_STATUSES.SUCCESS,
-    ip
-  };
-
-  withRetry(() => createLoginHistory(historyInput), {
-    operationName: "recordSuccessfulLogin",
-    context: { userId: userId.toString(), loginMethod }
+    loginMethod,
+    req
   });
 };
 
 export const recordFailedLogin = ({
   userId,
+  usernameAttempted,
   loginMethod,
   failReason,
   req
 }: {
-  userId?: Schema.Types.ObjectId | string;
+  userId?: Schema.Types.ObjectId | string | null;
+  usernameAttempted: string;
   loginMethod: LoginMethod;
   failReason: LoginFailReason;
   req: Request;
 }): void => {
-  if (!userId) return;
-
-  const ip = getClientIp(req);
-
-  const historyInput: CreateLoginHistoryInput = {
-    userId,
-    method: loginMethod,
+  logLoginAttempt({
+    userId: userId ? userId.toString() : null,
+    usernameAttempted,
     status: LOGIN_STATUSES.FAILED,
     failReason,
-    ip
-  };
-
-  withRetry(() => createLoginHistory(historyInput), {
-    operationName: "recordFailedLogin",
-    context: { userId: userId.toString(), loginMethod, failReason }
+    loginMethod,
+    req
   });
 };
 
@@ -92,6 +76,7 @@ export const completeSuccessfulLogin = ({
 
   recordSuccessfulLogin({
     userId: auth._id,
+    usernameAttempted: email,
     loginMethod,
     req
   });
