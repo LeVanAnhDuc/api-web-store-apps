@@ -6,7 +6,7 @@ import {
   completeSignupController,
   checkEmailController
 } from "@/modules/signup/controller";
-import { validate } from "@/app/middlewares/validation";
+import { validate } from "@/middlewares/validation";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   sendOtpSchema,

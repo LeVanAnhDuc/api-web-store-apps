@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { logoutController } from "@/modules/logout/controller";
-import { authenticate } from "@/app/middlewares/auth";
+import { authenticate } from "@/middlewares/auth";
 
 const logoutRouter = Router();
 

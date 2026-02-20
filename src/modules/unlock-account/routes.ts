@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { unlockRequestController, unlockVerifyController } from "./controller";
-import { validate } from "@/app/middlewares/validation";
+import { validate } from "@/middlewares/validation";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import { unlockRequestSchema, unlockVerifySchema } from "./schema";
 

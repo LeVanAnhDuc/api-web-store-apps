@@ -3,9 +3,9 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
 import apiV1Routes from "./routes/v1.routes";
-import { requestLogger } from "@/infra/middlewares/request-logger";
-import { handleError, handleNotFound } from "@/infra/middlewares/error-handler";
-import { handleMongooseError } from "@/infra/middlewares/mongoose-error-handler";
+import { requestLogger } from "@/middlewares/request-logger";
+import { handleError, handleNotFound } from "@/middlewares/error-handler";
+import { handleMongooseError } from "@/middlewares/mongoose-error-handler";
 import { i18nMiddleware } from "./i18n";
 import { setupSwagger } from "@/infra/configs/swagger.setup";
 
