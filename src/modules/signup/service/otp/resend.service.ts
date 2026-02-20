@@ -2,7 +2,7 @@ import type {
   ResendOtpRequest,
   ResendOtpResponse
 } from "@/modules/signup/types";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import { otpStore } from "@/modules/signup/store";
 import { OTP_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";

@@ -7,7 +7,7 @@ import type {
   LoginEventPayload,
   ClientType
 } from "@/modules/login-history/types";
-import Logger from "@/infra/utils/logger";
+import Logger from "@/utils/logger";
 
 const USER_AGENT_HEADER = "user-agent";
 const CLIENT_TYPE_HEADER = "x-client-type";

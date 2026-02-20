@@ -1,5 +1,5 @@
 import instanceRedis from "@/database/redis/redis.database";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 
 const getRedisClient = () => instanceRedis.getClient();
 

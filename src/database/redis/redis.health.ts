@@ -1,5 +1,5 @@
 import type { createClient } from "redis";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 
 export interface RedisHealthStatus {
   isConnected: boolean;

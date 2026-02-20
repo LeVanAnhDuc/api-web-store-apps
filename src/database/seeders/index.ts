@@ -1,5 +1,5 @@
 import instanceMongoDB from "@/database/mongodb";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import { seedUsers, clearUsers } from "./user.seeder";
 
 const runSeeders = async (): Promise<void> => {

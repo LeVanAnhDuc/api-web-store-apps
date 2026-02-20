@@ -1,7 +1,7 @@
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { UnlockVerifyRequest } from "../types";
 import type { LoginResponse } from "@/modules/login/types";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import { UnauthorizedError } from "@/infra/responses/error";
 import {
   findAuthenticationByEmail,
@@ -11,7 +11,7 @@ import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { failedAttemptsStore } from "@/modules/login/store";
 import { completeSuccessfulLogin } from "@/modules/login/service/shared";
 import { LOGIN_METHODS } from "@/modules/login/constants";
-import { withRetry } from "@/infra/utils/retry";
+import { withRetry } from "@/utils/retry";
 
 function ensureAccountExists(
   auth: AuthenticationDocument | null,

@@ -3,7 +3,7 @@ import type {
   VerifyOtpResponse
 } from "@/modules/signup/types";
 import { BadRequestError } from "@/infra/responses/error";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE } from "@/constants/time";

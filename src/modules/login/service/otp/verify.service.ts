@@ -1,8 +1,8 @@
 import type { OtpVerifyRequest, LoginResponse } from "@/modules/login/types";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import { UnauthorizedError, BadRequestError } from "@/infra/responses/error";
-import { Logger } from "@/infra/utils/logger";
-import { withRetry } from "@/infra/utils/retry";
+import { Logger } from "@/utils/logger";
+import { withRetry } from "@/utils/retry";
 import { otpStore } from "@/modules/login/store";
 import { ensureAuthenticationExists } from "../validators";
 import { recordFailedLogin, completeSuccessfulLogin } from "../shared";

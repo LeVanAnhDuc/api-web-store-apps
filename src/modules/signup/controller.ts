@@ -14,7 +14,7 @@ import {
   checkEmailService
 } from "@/modules/signup/service";
 import { OkSuccess } from "@/infra/responses/success";
-import { asyncHandler } from "@/infra/utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 
 export const sendOtpController = asyncHandler(
   async (req: SendOtpRequest, res: Response): Promise<void> => {

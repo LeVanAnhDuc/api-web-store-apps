@@ -1,6 +1,6 @@
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import { BadRequestError, UnauthorizedError } from "@/infra/responses/error";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
 
 export const ensureCooldownExpired = async <

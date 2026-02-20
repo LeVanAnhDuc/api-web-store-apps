@@ -1,6 +1,6 @@
 import type { RedisClientOptions } from "redis";
 import config from "@/infra/configs/env";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 
 export const REDIS_CONNECT_TIMEOUT = 10000;
 

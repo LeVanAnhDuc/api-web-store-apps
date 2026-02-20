@@ -1,5 +1,5 @@
 import type { SendOtpRequest, SendOtpResponse } from "@/modules/signup/types";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import { OTP_CONFIG } from "@/modules/signup/constants";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 import {

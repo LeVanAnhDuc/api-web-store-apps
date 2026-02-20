@@ -5,8 +5,8 @@ import type {
 } from "@/modules/login/types";
 import { UnauthorizedError, BadRequestError } from "@/infra/responses/error";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
-import { Logger } from "@/infra/utils/logger";
-import { withRetry } from "@/infra/utils/retry";
+import { Logger } from "@/utils/logger";
+import { withRetry } from "@/utils/retry";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
 import { failedAttemptsStore } from "@/modules/login/store";
 import { ensureAccountActive, ensureEmailVerified } from "../validators";

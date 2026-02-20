@@ -4,7 +4,7 @@ import type {
   CompleteSignupRequest,
   CompleteSignupResponse
 } from "@/modules/signup/types";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import {
   createAuthenticationRecord,
   createUserProfile

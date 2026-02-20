@@ -1,6 +1,6 @@
 import type { Response, Request } from "express";
 import { OkSuccess } from "@/infra/responses/success";
-import { asyncHandler } from "@/infra/utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 import { COOKIE_NAMES } from "@/infra/configs/cookie";
 import { logoutService } from "@/modules/logout/service";
 

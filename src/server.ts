@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import app from "./app";
 import { loadAll, closeAll } from "./loaders";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import config from "@/infra/configs/env";
 
 const startServer = async (): Promise<void> => {

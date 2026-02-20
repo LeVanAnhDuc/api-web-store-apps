@@ -1,5 +1,5 @@
 import instanceMongoDB from "@/database/mongodb";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 
 export const loadDatabase = async (): Promise<void> => {
   try {

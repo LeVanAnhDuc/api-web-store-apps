@@ -1,4 +1,4 @@
-import Logger from "@/infra/utils/logger";
+import Logger from "@/utils/logger";
 import geoip from "geoip-lite";
 import { GEO_DEFAULTS } from "@/modules/login-history/constants";
 

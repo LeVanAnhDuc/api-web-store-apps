@@ -1,7 +1,7 @@
 import type { OtpSendRequest, OtpSendResponse } from "@/modules/login/types";
 import { BadRequestError } from "@/infra/responses/error";
-import { Logger } from "@/infra/utils/logger";
-import { withRetry } from "@/infra/utils/retry";
+import { Logger } from "@/utils/logger";
+import { withRetry } from "@/utils/retry";
 import { otpStore } from "@/modules/login/store";
 import {
   ensureCooldownExpired,

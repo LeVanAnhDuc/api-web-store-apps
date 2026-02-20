@@ -1,7 +1,7 @@
 import path from "path";
 import { NodemailerTransport } from "@/app/services/implements/NodemailerTransport";
 import { renderEmailTemplate } from "./template-helper";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 
 interface EmailConfig {
   templateName: string;

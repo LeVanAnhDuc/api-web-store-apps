@@ -4,7 +4,7 @@ import type {
   MongoConfig,
   ConnectionMetrics
 } from "@/types/databases/mongodb";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import { CONNECTION_STATES } from "./constants";
 import { buildMongoConfig, MAX_RECONNECT_ATTEMPTS } from "./mongodb.config";
 import { setupEventHandlers, updateConnectionState } from "./mongodb.events";

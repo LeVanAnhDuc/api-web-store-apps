@@ -1,5 +1,5 @@
 import type { Request } from "express";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 
 export const logoutService = async (
   req: Request

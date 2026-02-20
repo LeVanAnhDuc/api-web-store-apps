@@ -3,7 +3,7 @@ import type {
   CheckEmailResponse
 } from "@/modules/signup/types";
 import { isEmailRegistered } from "@/modules/signup/repository";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 
 export const checkEmailService = async (
   req: CheckEmailRequest

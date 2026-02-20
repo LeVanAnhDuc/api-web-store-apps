@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 
 export const requestLogger = (
   req: Request,

@@ -1,7 +1,7 @@
 import { loadDatabase, closeDatabase } from "./database.loader";
 import { loadRedis, closeRedis } from "./redis.loader";
 import { loadRateLimiters } from "./rate-limiter.loader";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 
 export const loadAll = async (): Promise<void> => {
   try {

@@ -2,7 +2,7 @@ import AuthenticationModel from "@/modules/authentication/model";
 import UserModel from "@/modules/user/model";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { TEST_USERS } from "./data/users";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 
 export const seedUsers = async (): Promise<void> => {
   Logger.info("Starting user seeding...");

@@ -14,7 +14,7 @@ import {
   verifyMagicLinkService
 } from "@/modules/login/service";
 import { OkSuccess } from "@/infra/responses/success";
-import { asyncHandler } from "@/infra/utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 import {
   COOKIE_NAMES,
   REFRESH_TOKEN_COOKIE_OPTIONS

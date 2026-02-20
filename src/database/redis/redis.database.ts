@@ -1,6 +1,6 @@
 import { ConnectionTimeoutError, createClient } from "redis";
 import { RedisError } from "@/infra/responses/error";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import { buildRedisConfig } from "./redis.config";
 import { setupEventHandlers } from "./redis.events";
 import { checkRedisHealth, type RedisHealthStatus } from "./redis.health";

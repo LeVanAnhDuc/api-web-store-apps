@@ -2,8 +2,8 @@ import type {
   MagicLinkSendRequest,
   MagicLinkSendResponse
 } from "@/modules/login/types";
-import { Logger } from "@/infra/utils/logger";
-import { withRetry } from "@/infra/utils/retry";
+import { Logger } from "@/utils/logger";
+import { withRetry } from "@/utils/retry";
 import { magicLinkStore } from "@/modules/login/store";
 import {
   ensureCooldownExpired,

@@ -1,5 +1,5 @@
 import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import { isEmailRegistered } from "@/modules/signup/repository";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 

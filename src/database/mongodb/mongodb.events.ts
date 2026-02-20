@@ -1,6 +1,6 @@
 import type { Connection } from "mongoose";
 import type { ConnectionStateValue } from "@/types/databases/mongodb";
-import { Logger } from "@/infra/utils/logger";
+import { Logger } from "@/utils/logger";
 import { CONNECTION_STATES } from "./constants";
 
 interface EventHandlers {
