@@ -4,7 +4,7 @@ import type {
   ConnectionMetrics,
   DatabaseStats,
   MongoConfig
-} from "@/types/databases/mongodb";
+} from "@/types/mongodb";
 import { CONNECTION_STATES } from "./constants";
 
 export const isHealthy = (state: ConnectionStateValue): boolean =>

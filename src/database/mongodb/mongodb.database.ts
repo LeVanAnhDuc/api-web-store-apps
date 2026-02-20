@@ -3,7 +3,7 @@ import type {
   ConnectionStateValue,
   MongoConfig,
   ConnectionMetrics
-} from "@/types/databases/mongodb";
+} from "@/types/mongodb";
 import { Logger } from "@/utils/logger";
 import { CONNECTION_STATES } from "./constants";
 import { buildMongoConfig, MAX_RECONNECT_ATTEMPTS } from "./mongodb.config";
