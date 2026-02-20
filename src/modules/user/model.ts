@@ -6,7 +6,7 @@ import {
   SAFE_FULLNAME_PATTERN,
   SAFE_ADDRESS_PATTERN
 } from "@/modules/user/constants";
-import { MODEL_NAMES } from "@/app/constants/models";
+import { MODEL_NAMES } from "@/constants/models";
 
 const { USER, AUTHENTICATION } = MODEL_NAMES;
 

@@ -5,7 +5,7 @@ import type {
 import { Logger } from "@/infra/utils/logger";
 import { otpStore } from "@/modules/signup/store";
 import { OTP_CONFIG } from "@/modules/signup/constants";
-import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/app/constants/time";
+import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
 import {
   createAndStoreOtp,
   setOtpCooldown,

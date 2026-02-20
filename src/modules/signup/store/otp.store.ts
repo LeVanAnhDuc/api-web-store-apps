@@ -9,7 +9,7 @@ import {
   redisTtl
 } from "@/app/utils/store/redis-operations";
 import { generateOtp } from "@/app/utils/crypto/otp";
-import { REDIS_KEYS } from "@/app/constants/redis";
+import { REDIS_KEYS } from "@/constants/redis";
 import { OTP_CONFIG } from "@/modules/signup/constants";
 import { hashValue, isValidHashedValue } from "@/app/utils/crypto/bcrypt";
 

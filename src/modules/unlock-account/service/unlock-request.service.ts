@@ -7,7 +7,7 @@ import {
   redisExpire,
   redisSetEx
 } from "@/app/utils/store/redis-operations";
-import { REDIS_KEYS } from "@/app/constants/redis";
+import { REDIS_KEYS } from "@/constants/redis";
 import {
   findAuthenticationByEmail,
   storeTempPassword

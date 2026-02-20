@@ -6,7 +6,7 @@ import { BadRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/modules/signup/constants";
-import { SECONDS_PER_MINUTE } from "@/app/constants/time";
+import { SECONDS_PER_MINUTE } from "@/constants/time";
 import { ensureOtpNotLocked } from "../validators";
 
 const CONFIG = {

@@ -1,5 +1,5 @@
 import { AGE_VALIDATION } from "@/modules/user/constants";
-import { SECONDS_PER_MINUTE } from "@/app/constants/time";
+import { SECONDS_PER_MINUTE } from "@/constants/time";
 
 export const getDateOfBirthBounds = (): {
   minDate: Date;

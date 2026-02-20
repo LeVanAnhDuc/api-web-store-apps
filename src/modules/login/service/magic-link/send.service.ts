@@ -12,7 +12,7 @@ import {
 import { sendModuleEmail } from "@/app/utils/email/sender";
 import ENV from "@/infra/configs/env";
 import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
-import { SECONDS_PER_MINUTE } from "@/app/constants/time";
+import { SECONDS_PER_MINUTE } from "@/constants/time";
 
 const MAGIC_LINK_EXPIRY_SECONDS =
   MAGIC_LINK_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;

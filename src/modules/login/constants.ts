@@ -2,7 +2,7 @@ import {
   SECONDS_PER_MINUTE,
   MINUTES_PER_HOUR,
   HOURS_PER_DAY
-} from "@/app/constants/time";
+} from "@/constants/time";
 
 export const LOGIN_LOCKOUT = {
   FREE_ATTEMPTS: 4,
