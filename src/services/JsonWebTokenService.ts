@@ -5,7 +5,7 @@ import jwt, {
 } from "jsonwebtoken";
 import type { TExpiresIn, TPayload } from "@/types/jwt";
 import { ForbiddenError } from "@/configurations/responses/error";
-import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/configurations/jwt";
+import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/constants/jwt";
 import ENV from "@/configurations/env";
 
 export interface AuthTokens {

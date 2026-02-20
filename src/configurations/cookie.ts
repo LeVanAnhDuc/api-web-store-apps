@@ -1,5 +1,5 @@
 import type { CookieOptions } from "express";
-import { TOKEN_EXPIRY } from "@/configurations/jwt";
+import { TOKEN_EXPIRY } from "@/constants/jwt";
 
 export const COOKIE_NAMES = {
   REFRESH_TOKEN: "refreshToken"
