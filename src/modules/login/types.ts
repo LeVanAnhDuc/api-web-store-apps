@@ -73,27 +73,6 @@ export type MagicLinkVerifyRequest = Request<
   MagicLinkVerifyBody
 >;
 
-export interface UnlockRequestBody {
-  email: string;
-}
-
-export interface UnlockVerifyBody {
-  email: string;
-  token: string;
-}
-
-export type UnlockRequest = Request<
-  Record<string, never>,
-  unknown,
-  UnlockRequestBody
->;
-
-export type UnlockVerifyRequest = Request<
-  Record<string, never>,
-  unknown,
-  UnlockVerifyBody
->;
-
 export interface CreateLoginHistoryInput {
   userId: Schema.Types.ObjectId | string;
   method: LoginMethod;

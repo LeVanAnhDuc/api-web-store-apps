@@ -580,6 +580,373 @@
       "description": "Token management endpoints"
     },
     {
+      "name": "Unlock Account",
+      "item": [
+        {
+          "name": "Request Unlock - Success (Locked Account)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock for a locked account. Sends a temporary password via email. Returns success even for non-existent emails (prevents enumeration)."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Non-Existent Email (Still Returns Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nonexistent@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock for a non-existent email. Returns success to prevent email enumeration."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Account Not Locked (Should Fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock for an account that is NOT locked. Should return 400 - account not locked."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Disabled Account (Should Fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{inactiveEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock for a disabled/inactive account. Should return 400 - account disabled."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Cooldown Active (Should Fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock immediately after a previous request (within 60s cooldown). Should return 400 - cooldown active."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Rate Limit Exceeded (Should Fail 429)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock after exceeding 3 requests per hour. Should return 429 - rate limit exceeded."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Validation Error Missing Email (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock without providing email. Should return 422 - validation error."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Validation Error Invalid Email (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"invalid-email\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock with invalid email format. Should return 422 - validation error."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"tempPassword\": \"your-temp-password-here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock with valid temp password from email. Returns access token (auto-saved) and sets refresh token cookie. Replace 'your-temp-password-here' with the actual temp password received via email."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Account Not Found (Should Fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nonexistent@example.com\",\n  \"tempPassword\": \"someTempPassword1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock for a non-existent account. Should return 401 - invalid temp password."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Wrong Temp Password (Should Fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"tempPassword\": \"wrongTempPassword1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock with incorrect temp password. Should return 401 - invalid temp password."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Expired Temp Password (Should Fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"tempPassword\": \"expiredTempPass1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock with an expired temp password (after 15 minutes). Should return 401 - temp password expired."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Already Used Temp Password (Should Fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"tempPassword\": \"usedTempPasswrd1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock with a temp password that was already used. Should return 401 - invalid temp password."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Validation Error Missing Fields (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock without providing email and tempPassword. Should return 422 - validation error."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Validation Error Short Temp Password (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"tempPassword\": \"short\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock with temp password shorter than 12 characters. Should return 422 - validation error."
+          },
+          "response": []
+        }
+      ],
+      "description": "Unlock account flow for locked accounts:\n\n1. **Request Unlock**: POST /auth/unlock/request - Sends temp password to email\n2. **Verify Unlock**: POST /auth/unlock/verify - Verify temp password and login\n\nConstraints:\n- Cooldown: 60 seconds between requests\n- Rate limit: 3 requests per hour\n- Temp password expires after 15 minutes\n- Temp password can only be used once"
+    },
+    {
       "name": "Logout",
       "item": [
         {

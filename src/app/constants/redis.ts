@@ -16,7 +16,9 @@ export const REDIS_KEYS = {
     OTP_RESEND_COUNT: "otp-login-resend-count",
     MAGIC_LINK: "magic-link-login",
     MAGIC_LINK_COOLDOWN: "magic-link-login-cooldown",
-    UNLOCK_TOKEN: "login-unlock-token"
+    UNLOCK_TOKEN: "login-unlock-token",
+    UNLOCK_RATE: "unlock-rate",
+    UNLOCK_COOLDOWN: "unlock-cooldown"
   },
 
   RATE_LIMIT: {
