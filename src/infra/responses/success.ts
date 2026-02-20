@@ -1,5 +1,5 @@
 import type { Response, Request } from "express";
-import { STATUS_CODES } from "@/infra/http";
+import { STATUS_CODES } from "@/configurations/http";
 
 interface SuccessResponsePattern<T> extends ResponsePattern<T> {
   status: number;
