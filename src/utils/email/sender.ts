@@ -1,5 +1,5 @@
 import path from "path";
-import { NodemailerTransport } from "@/app/services/implements/NodemailerTransport";
+import { NodemailerTransport } from "@/services/implements/NodemailerTransport";
 import { renderEmailTemplate } from "./template-helper";
 import { Logger } from "@/utils/logger";
 

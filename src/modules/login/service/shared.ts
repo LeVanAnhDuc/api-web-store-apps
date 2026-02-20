@@ -4,7 +4,7 @@ import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginMethod } from "@/modules/login/types";
 import type { LoginFailReason } from "@/modules/login-history/types";
 import type { LoginResponse } from "@/modules/login/types";
-import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
+import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { updateLastLogin as updateLastLoginRepo } from "@/modules/login/repository";

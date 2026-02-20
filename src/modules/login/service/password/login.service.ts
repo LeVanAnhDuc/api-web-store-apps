@@ -17,7 +17,7 @@ import {
 } from "../shared";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
 import { formatDuration } from "@/utils/date";
-import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
+import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
 
 const ensureLoginNotLocked = async (
   email: string,

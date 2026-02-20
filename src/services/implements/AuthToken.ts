@@ -1,5 +1,5 @@
 import type { AuthTokensResponse } from "@/types/auth";
-import { JsonWebTokenService } from "@/app/services/JsonWebTokenService";
+import { JsonWebTokenService } from "@/services/JsonWebTokenService";
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
 
 export const generateAuthTokensResponse = (

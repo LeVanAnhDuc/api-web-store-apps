@@ -11,7 +11,7 @@ import {
 } from "@/modules/signup/repository";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { hashValue } from "@/utils/crypto/bcrypt";
-import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
+import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
 import { ensureEmailAvailable, ensureSessionValid } from "../validators";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 

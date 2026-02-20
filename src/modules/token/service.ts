@@ -1,9 +1,9 @@
 import type { Request } from "express";
 import type { RefreshTokenResponse } from "@/modules/token/types";
 import { UnauthorizedError, ForbiddenError } from "@/infra/responses/error";
-import { JsonWebTokenService } from "@/app/services/JsonWebTokenService";
+import { JsonWebTokenService } from "@/services/JsonWebTokenService";
 import { Logger } from "@/utils/logger";
-import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
+import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
 
 const ensureRefreshTokenFromCookie = (
   req: Request,
