@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 import { Logger } from "@/utils/logger";
-import config from "@/infra/configs/env";
+import config from "@/configurations/env";
 import type { EmailSendOptions } from "@/services/EmailTransport";
 import { EmailTransport } from "@/services/EmailTransport";
 

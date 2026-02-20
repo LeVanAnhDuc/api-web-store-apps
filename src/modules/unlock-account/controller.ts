@@ -5,7 +5,7 @@ import { asyncHandler } from "@/utils/async-handler";
 import {
   COOKIE_NAMES,
   REFRESH_TOKEN_COOKIE_OPTIONS
-} from "@/infra/configs/cookie";
+} from "@/configurations/cookie";
 import { handleUnlockRequest } from "./service/unlock-request.service";
 import { handleUnlockVerify } from "./service/unlock-verify.service";
 

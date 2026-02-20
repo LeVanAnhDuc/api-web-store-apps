@@ -16,7 +16,7 @@ import { generateTempPassword } from "@/utils/crypto/tempPassword";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { failedAttemptsStore } from "@/modules/login/store";
 import { sendModuleEmail } from "@/utils/email/sender";
-import ENV from "@/infra/configs/env";
+import ENV from "@/configurations/env";
 
 const COOLDOWN_SECONDS = 60;
 const RATE_LIMIT_WINDOW_SECONDS = 3600;

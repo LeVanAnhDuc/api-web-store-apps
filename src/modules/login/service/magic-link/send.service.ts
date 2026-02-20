@@ -10,7 +10,7 @@ import {
   validateAuthenticationForLogin
 } from "../validators";
 import { sendModuleEmail } from "@/utils/email/sender";
-import ENV from "@/infra/configs/env";
+import ENV from "@/configurations/env";
 import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 

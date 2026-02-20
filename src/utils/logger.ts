@@ -1,4 +1,4 @@
-import logger from "@/infra/configs/logger";
+import logger from "@/configurations/logger";
 
 export class Logger {
   static error(message: string, error?: Error | unknown): void {
