@@ -1,7 +1,7 @@
 import type { Request } from "express";
 import type { Gender } from "@/modules/user/types";
 import type { Schema } from "mongoose";
-import type { AuthTokensResponse } from "@/app/types/auth";
+import type { AuthTokensResponse } from "@/types/auth";
 
 export interface SendOtpBody {
   email: string;

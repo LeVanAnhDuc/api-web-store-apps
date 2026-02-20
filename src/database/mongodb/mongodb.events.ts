@@ -1,5 +1,5 @@
 import type { Connection } from "mongoose";
-import type { ConnectionStateValue } from "@/app/types/databases/mongodb";
+import type { ConnectionStateValue } from "@/types/databases/mongodb";
 import { Logger } from "@/infra/utils/logger";
 import { CONNECTION_STATES } from "./constants";
 

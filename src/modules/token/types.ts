@@ -1,3 +1,3 @@
-import type { AuthTokensResponse } from "@/app/types/auth";
+import type { AuthTokensResponse } from "@/types/auth";
 
 export type RefreshTokenResponse = AuthTokensResponse;

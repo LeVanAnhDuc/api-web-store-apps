@@ -3,7 +3,7 @@ import jwt, {
   type PrivateKey,
   type PublicKey
 } from "jsonwebtoken";
-import type { TExpiresIn, TPayload } from "@/app/types/databases/jwt";
+import type { TExpiresIn, TPayload } from "@/types/databases/jwt";
 import { ForbiddenError } from "@/infra/responses/error";
 import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/infra/configs/jwt";
 import ENV from "@/infra/configs/env";

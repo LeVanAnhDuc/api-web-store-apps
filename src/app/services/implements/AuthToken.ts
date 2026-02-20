@@ -1,4 +1,4 @@
-import type { AuthTokensResponse } from "@/app/types/auth";
+import type { AuthTokensResponse } from "@/types/auth";
 import { JsonWebTokenService } from "@/app/services/JsonWebTokenService";
 import { TOKEN_EXPIRY } from "@/infra/configs/jwt";
 
