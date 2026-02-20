@@ -1,4 +1,3 @@
-import type { TFunction } from "i18next";
 import type {
   MagicLinkVerifyRequest,
   LoginResponse
@@ -16,7 +15,7 @@ const handleInvalidToken = (
   email: string,
   auth: AuthenticationDocument,
   req: MagicLinkVerifyRequest,
-  t: TFunction
+  t: TranslateFunction
 ): never => {
   recordFailedLogin({
     userId: auth._id,

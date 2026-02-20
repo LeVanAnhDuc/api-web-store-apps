@@ -22,7 +22,7 @@ export const sendOtpService = async (
 
   Logger.info("SendOtp initiated", { email });
 
-  await ensureCooldownExpired(email, language);
+  await ensureCooldownExpired(email, t);
   await ensureEmailAvailable(email, t);
 
   const otp = await createAndStoreOtp(email, CONFIG.OTP_EXPIRY_SECONDS);

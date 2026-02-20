@@ -76,7 +76,7 @@ export const sendMagicLinkService = async (
   await ensureCooldownExpired(
     magicLinkStore,
     email,
-    language,
+    t,
     "Magic link cooldown not expired",
     "login:errors.magicLinkCooldown"
   );

@@ -55,6 +55,26 @@ export const isEmailVerified = async (email: string): Promise<boolean> => {
   return authentication?.verifiedEmail ?? false;
 };
 
+export const storeTempPassword = async (
+  authId: string,
+  tempPasswordHash: string,
+  tempPasswordExpAt: Date
+): Promise<void> => {
+  await AuthenticationModel.findByIdAndUpdate(authId, {
+    tempPasswordHash,
+    tempPasswordExpAt,
+    tempPasswordUsed: false,
+    mustChangePassword: true
+  }).exec();
+};
+
+export const markTempPasswordUsed = async (authId: string): Promise<void> => {
+  await AuthenticationModel.findByIdAndUpdate(authId, {
+    tempPasswordUsed: true,
+    mustChangePassword: true
+  }).exec();
+};
+
 export const createLoginHistory = async (
   data: CreateLoginHistoryInput
 ): Promise<LoginHistoryDocument> => LoginHistoryModel.create(data);

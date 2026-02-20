@@ -1,6 +1,4 @@
-import type { TFunction } from "i18next";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
-import i18next from "@/i18n";
 import { BadRequestError, UnauthorizedError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
@@ -13,7 +11,7 @@ export const ensureCooldownExpired = async <
 >(
   store: T,
   email: string,
-  language: string,
+  t: TranslateFunction,
   logMessage: string,
   errorKey: "login:errors.otpCooldown" | "login:errors.magicLinkCooldown"
 ): Promise<void> => {
@@ -22,18 +20,13 @@ export const ensureCooldownExpired = async <
   if (!canSend) {
     const remaining = await store.getCooldownRemaining(email);
     Logger.warn(logMessage, { email, remaining });
-    throw new BadRequestError(
-      i18next.t(errorKey, {
-        seconds: remaining,
-        lng: language
-      })
-    );
+    throw new BadRequestError(t(errorKey, { seconds: remaining }));
   }
 };
 
 export const ensureAuthenticationExists = async (
   email: string,
-  t: TFunction
+  t: TranslateFunction
 ): Promise<AuthenticationDocument> => {
   const auth = await findAuthenticationByEmail(email);
 
@@ -48,7 +41,7 @@ export const ensureAuthenticationExists = async (
 export const ensureAccountActive = (
   auth: AuthenticationDocument,
   email: string,
-  t: TFunction
+  t: TranslateFunction
 ): void => {
   if (!auth.isActive) {
     Logger.warn("Account inactive", { email });
@@ -59,7 +52,7 @@ export const ensureAccountActive = (
 export const ensureEmailVerified = (
   auth: AuthenticationDocument,
   email: string,
-  t: TFunction
+  t: TranslateFunction
 ): void => {
   if (!auth.verifiedEmail) {
     Logger.warn("Email not verified", { email });
@@ -69,7 +62,7 @@ export const ensureEmailVerified = (
 
 export const validateAuthenticationForLogin = async (
   email: string,
-  t: TFunction
+  t: TranslateFunction
 ): Promise<AuthenticationDocument> => {
   const auth = await ensureAuthenticationExists(email, t);
   ensureAccountActive(auth, email, t);

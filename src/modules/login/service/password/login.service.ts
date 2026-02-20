@@ -1,4 +1,3 @@
-import i18next from "@/i18n";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type {
   PasswordLoginRequest,
@@ -22,6 +21,7 @@ import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken"
 
 const ensureLoginNotLocked = async (
   email: string,
+  t: PasswordLoginRequest["t"],
   language: string
 ): Promise<void> => {
   const { isLocked, remainingSeconds } =
@@ -39,10 +39,9 @@ const ensureLoginNotLocked = async (
   });
 
   throw new BadRequestError(
-    i18next.t("login:errors.accountLocked", {
+    t("login:errors.accountLocked", {
       attempts: attemptCount,
-      time: timeMessage,
-      lng: language
+      time: timeMessage
     })
   );
 };
@@ -134,10 +133,9 @@ const throwPasswordError = (
   if (attemptCount >= 5 && lockoutSeconds > 0) {
     const timeMessage = formatDuration(lockoutSeconds, language);
     throw new BadRequestError(
-      i18next.t("login:errors.accountLocked", {
+      t("login:errors.accountLocked", {
         attempts: attemptCount,
-        time: timeMessage,
-        lng: language
+        time: timeMessage
       })
     );
   }
@@ -174,7 +172,7 @@ export const passwordLoginService = async (
 
   Logger.info("Password login initiated", { email });
 
-  await ensureLoginNotLocked(email, language);
+  await ensureLoginNotLocked(email, t, language);
 
   const auth = await findAuthenticationByEmail(email);
 

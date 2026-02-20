@@ -1,4 +1,3 @@
-import type { TFunction } from "i18next";
 import type { OtpSendRequest, OtpSendResponse } from "@/modules/login/types";
 import { BadRequestError } from "@/infra/responses/error";
 import { Logger } from "@/infra/utils/logger";
@@ -15,7 +14,10 @@ import { SECONDS_PER_MINUTE } from "@/app/constants/time";
 const OTP_EXPIRY_SECONDS = LOGIN_OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const OTP_COOLDOWN_SECONDS = LOGIN_OTP_CONFIG.COOLDOWN_SECONDS;
 
-const ensureCanResend = async (email: string, t: TFunction): Promise<void> => {
+const ensureCanResend = async (
+  email: string,
+  t: TranslateFunction
+): Promise<void> => {
   const exceeded = await otpStore.hasExceededResendLimit(email);
 
   if (exceeded) {
@@ -83,7 +85,7 @@ export const sendLoginOtpService = async (
   await ensureCooldownExpired(
     otpStore,
     email,
-    language,
+    t,
     "Login OTP cooldown not expired",
     "login:errors.otpCooldown"
   );

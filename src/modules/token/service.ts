@@ -1,4 +1,3 @@
-import type { TFunction } from "i18next";
 import type { Request } from "express";
 import type { RefreshTokenResponse } from "@/modules/token/types";
 import { UnauthorizedError, ForbiddenError } from "@/infra/responses/error";
@@ -6,7 +5,10 @@ import { JsonWebTokenService } from "@/app/services/JsonWebTokenService";
 import { Logger } from "@/infra/utils/logger";
 import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
 
-const ensureRefreshTokenFromCookie = (req: Request, t: TFunction): string => {
+const ensureRefreshTokenFromCookie = (
+  req: Request,
+  t: TranslateFunction
+): string => {
   const refreshToken = req.cookies?.refreshToken;
 
   if (!refreshToken) {
@@ -19,7 +21,7 @@ const ensureRefreshTokenFromCookie = (req: Request, t: TFunction): string => {
 
 const verifyAndExtractPayload = (
   refreshToken: string,
-  t: TFunction
+  t: TranslateFunction
 ): JwtUserPayload => {
   try {
     return JsonWebTokenService.verifyRefreshToken(refreshToken);

@@ -1,5 +1,3 @@
-import i18next from "@/i18n";
-import type { TFunction } from "i18next";
 import type {
   VerifyOtpRequest,
   VerifyOtpResponse
@@ -34,17 +32,13 @@ const trackFailedOtpAttempt = async (email: string): Promise<number> => {
 
 const throwInvalidOtpError = (
   attempts: number,
-  language: string,
-  t: TFunction
+  t: TranslateFunction
 ): never => {
   const remaining = CONFIG.MAX_FAILED_ATTEMPTS - attempts;
 
   if (remaining > 0) {
     throw new BadRequestError(
-      i18next.t("signup:errors.invalidOtpWithRemaining", {
-        remaining,
-        lng: language
-      })
+      t("signup:errors.invalidOtpWithRemaining", { remaining })
     );
   }
 
@@ -54,14 +48,13 @@ const throwInvalidOtpError = (
 const verifyOtp = async (
   email: string,
   otp: string,
-  t: TFunction,
-  language: string
+  t: TranslateFunction
 ): Promise<void> => {
   const isValid = await otpStore.verify(email, otp);
 
   if (!isValid) {
     const attempts = await trackFailedOtpAttempt(email);
-    throwInvalidOtpError(attempts, language, t);
+    throwInvalidOtpError(attempts, t);
   }
 };
 
@@ -82,13 +75,13 @@ export const verifyOtpService = async (
   req: VerifyOtpRequest
 ): Promise<Partial<ResponsePattern<VerifyOtpResponse>>> => {
   const { email, otp } = req.body;
-  const { t, language } = req;
+  const { t } = req;
 
   Logger.info("VerifyOtp initiated", { email });
 
   await ensureOtpNotLocked(email, CONFIG.MAX_FAILED_ATTEMPTS, t);
 
-  await verifyOtp(email, otp, t, language);
+  await verifyOtp(email, otp, t);
 
   const sessionToken = await createAndStoreSession(email);
 

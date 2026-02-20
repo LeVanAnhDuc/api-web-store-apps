@@ -1,4 +1,3 @@
-import i18next from "@/i18n";
 import type { OtpVerifyRequest, LoginResponse } from "@/modules/login/types";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import { UnauthorizedError, BadRequestError } from "@/infra/responses/error";
@@ -15,7 +14,7 @@ import {
 
 const ensureOtpNotLocked = async (
   email: string,
-  language: string
+  t: TranslateFunction
 ): Promise<void> => {
   const isLocked = await otpStore.isLocked(email);
 
@@ -25,9 +24,8 @@ const ensureOtpNotLocked = async (
   Logger.warn("Login OTP verification locked", { email, attempts });
 
   throw new BadRequestError(
-    i18next.t("login:errors.otpLocked", {
-      minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES,
-      lng: language
+    t("login:errors.otpLocked", {
+      minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
     })
   );
 };
@@ -51,51 +49,47 @@ const trackFailedOtpAttempt = async (
   return attempts;
 };
 
-const throwOtpError = (attempts: number, language: string): never => {
+const throwOtpError = (attempts: number, t: TranslateFunction): never => {
   const remaining = LOGIN_OTP_CONFIG.MAX_FAILED_ATTEMPTS - attempts;
 
   if (remaining <= 0) {
     throw new BadRequestError(
-      i18next.t("login:errors.otpLocked", {
-        minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES,
-        lng: language
+      t("login:errors.otpLocked", {
+        minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
       })
     );
   }
 
   throw new UnauthorizedError(
-    i18next.t("login:errors.invalidOtpWithRemaining", {
-      remaining,
-      lng: language
-    })
+    t("login:errors.invalidOtpWithRemaining", { remaining })
   );
 };
 
 const handleInvalidOtp = async (
   email: string,
   auth: AuthenticationDocument,
-  language: string,
+  t: TranslateFunction,
   req: OtpVerifyRequest
 ): Promise<never> => {
   const attempts = await trackFailedOtpAttempt(email, auth, req);
-  return throwOtpError(attempts, language);
+  return throwOtpError(attempts, t);
 };
 
 export const verifyLoginOtpService = async (
   req: OtpVerifyRequest
 ): Promise<Partial<ResponsePattern<LoginResponse>>> => {
   const { email, otp } = req.body;
-  const { t, language } = req;
+  const { t } = req;
 
   Logger.info("Login OTP verification initiated", { email });
 
-  await ensureOtpNotLocked(email, language);
+  await ensureOtpNotLocked(email, t);
 
   const auth = await ensureAuthenticationExists(email, t);
 
   const isValid = await otpStore.verify(email, otp);
 
-  if (!isValid) await handleInvalidOtp(email, auth, language, req);
+  if (!isValid) await handleInvalidOtp(email, auth, t, req);
 
   withRetry(() => otpStore.cleanupAll(email), {
     operationName: "cleanupLoginOtpData",

@@ -48,7 +48,7 @@ export const resendOtpService = async (
 
   Logger.info("ResendOtp initiated", { email });
 
-  await ensureCooldownExpired(email, language);
+  await ensureCooldownExpired(email, t);
   await ensureCanResend(email, CONFIG.MAX_RESEND_COUNT, t);
   await ensureEmailAvailable(email, t);
 
