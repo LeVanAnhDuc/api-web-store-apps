@@ -6,16 +6,16 @@ import {
   redisIncr,
   redisExpire,
   redisSetEx
-} from "@/app/utils/store/redis-operations";
+} from "@/utils/store/redis-operations";
 import { REDIS_KEYS } from "@/constants/redis";
 import {
   findAuthenticationByEmail,
   storeTempPassword
 } from "@/modules/login/repository";
-import { generateTempPassword } from "@/app/utils/crypto/tempPassword";
-import { hashValue } from "@/app/utils/crypto/bcrypt";
+import { generateTempPassword } from "@/utils/crypto/tempPassword";
+import { hashValue } from "@/utils/crypto/bcrypt";
 import { failedAttemptsStore } from "@/modules/login/store";
-import { sendModuleEmail } from "@/app/utils/email/sender";
+import { sendModuleEmail } from "@/utils/email/sender";
 import ENV from "@/infra/configs/env";
 
 const COOLDOWN_SECONDS = 60;

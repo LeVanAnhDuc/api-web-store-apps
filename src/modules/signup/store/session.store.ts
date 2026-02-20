@@ -1,11 +1,7 @@
-import { buildKey } from "@/app/utils/store";
-import {
-  redisGet,
-  redisSetEx,
-  redisDel
-} from "@/app/utils/store/redis-operations";
+import { buildKey } from "@/utils/store";
+import { redisGet, redisSetEx, redisDel } from "@/utils/store/redis-operations";
 import { REDIS_KEYS } from "@/constants/redis";
-import { generateSecureToken } from "@/app/utils/crypto/otp";
+import { generateSecureToken } from "@/utils/crypto/otp";
 import { SESSION_CONFIG } from "@/modules/signup/constants";
 
 const KEYS = {

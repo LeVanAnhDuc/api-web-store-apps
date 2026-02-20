@@ -7,7 +7,7 @@ import {
   ensureCooldownExpired,
   validateAuthenticationForLogin
 } from "../validators";
-import { sendModuleEmail } from "@/app/utils/email/sender";
+import { sendModuleEmail } from "@/utils/email/sender";
 import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 

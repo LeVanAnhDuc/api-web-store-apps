@@ -4,7 +4,7 @@ import {
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN
 } from "@/modules/user/constants";
-import { getDateOfBirthBounds } from "@/app/utils/date";
+import { getDateOfBirthBounds } from "@/utils/date";
 import {
   EMAIL_VALIDATION,
   NUMERIC_OTP_PATTERN,

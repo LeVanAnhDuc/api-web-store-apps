@@ -1,6 +1,6 @@
 import { Logger } from "@/infra/utils/logger";
 import { otpStore } from "@/modules/signup/store";
-import { sendModuleEmail } from "@/app/utils/email/sender";
+import { sendModuleEmail } from "@/utils/email/sender";
 import { OTP_CONFIG } from "@/modules/signup/constants";
 
 export const createAndStoreOtp = async (

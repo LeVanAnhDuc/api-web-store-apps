@@ -1,13 +1,9 @@
-import {
-  redisGet,
-  redisSetEx,
-  redisDel
-} from "@/app/utils/store/redis-operations";
+import { redisGet, redisSetEx, redisDel } from "@/utils/store/redis-operations";
 import { REDIS_KEYS } from "@/constants/redis";
 import { ACCOUNT_UNLOCK_CONFIG } from "@/modules/login/constants";
-import { generateSecureToken } from "@/app/utils/crypto/otp";
-import { buildKey } from "@/app/utils/store";
-import { hashValue, isValidHashedValue } from "@/app/utils/crypto/bcrypt";
+import { generateSecureToken } from "@/utils/crypto/otp";
+import { buildKey } from "@/utils/store";
+import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 
 const KEYS = {
   UNLOCK_TOKEN: REDIS_KEYS.LOGIN.UNLOCK_TOKEN

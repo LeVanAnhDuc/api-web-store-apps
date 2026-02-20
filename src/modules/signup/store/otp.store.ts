@@ -1,4 +1,4 @@
-import { buildKey } from "@/app/utils/store";
+import { buildKey } from "@/utils/store";
 import {
   redisGet,
   redisSetEx,
@@ -7,11 +7,11 @@ import {
   redisExpire,
   redisExists,
   redisTtl
-} from "@/app/utils/store/redis-operations";
-import { generateOtp } from "@/app/utils/crypto/otp";
+} from "@/utils/store/redis-operations";
+import { generateOtp } from "@/utils/crypto/otp";
 import { REDIS_KEYS } from "@/constants/redis";
 import { OTP_CONFIG } from "@/modules/signup/constants";
-import { hashValue, isValidHashedValue } from "@/app/utils/crypto/bcrypt";
+import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 
 const KEYS = {
   OTP: REDIS_KEYS.SIGNUP.OTP,

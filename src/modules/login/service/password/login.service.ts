@@ -4,7 +4,7 @@ import type {
   LoginResponse
 } from "@/modules/login/types";
 import { UnauthorizedError, BadRequestError } from "@/infra/responses/error";
-import { isValidHashedValue } from "@/app/utils/crypto/bcrypt";
+import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/infra/utils/logger";
 import { withRetry } from "@/infra/utils/retry";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
@@ -16,7 +16,7 @@ import {
   recordFailedLogin
 } from "../shared";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
-import { formatDuration } from "@/app/utils/date";
+import { formatDuration } from "@/utils/date";
 import { generateAuthTokensResponse } from "@/app/services/implements/AuthToken";
 
 const ensureLoginNotLocked = async (
