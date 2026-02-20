@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { emailSchema } from "@/app/schemas";
+import { emailSchema } from "@/validators/schemas";
 
 export const unlockRequestSchema = Joi.object({
   email: emailSchema.required()

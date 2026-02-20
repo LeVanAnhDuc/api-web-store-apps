@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { emailSchema, otpSchema } from "@/app/schemas";
+import { emailSchema, otpSchema } from "@/validators/schemas";
 import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
 
 export const loginSchema = Joi.object({
