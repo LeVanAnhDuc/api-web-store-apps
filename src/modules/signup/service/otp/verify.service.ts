@@ -2,7 +2,7 @@ import type {
   VerifyOtpRequest,
   VerifyOtpResponse
 } from "@/modules/signup/types";
-import { BadRequestError } from "@/infra/responses/error";
+import { BadRequestError } from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/modules/signup/constants";

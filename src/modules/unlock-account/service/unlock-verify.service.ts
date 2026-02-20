@@ -2,7 +2,7 @@ import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { UnlockVerifyRequest } from "../types";
 import type { LoginResponse } from "@/modules/login/types";
 import { Logger } from "@/utils/logger";
-import { UnauthorizedError } from "@/infra/responses/error";
+import { UnauthorizedError } from "@/configurations/responses/error";
 import {
   findAuthenticationByEmail,
   markTempPasswordUsed

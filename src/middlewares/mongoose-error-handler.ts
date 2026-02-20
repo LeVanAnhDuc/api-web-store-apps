@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
-import { BadRequestError } from "../infra/responses/error";
+import { BadRequestError } from "../configurations/responses/error";
 
 // Mapping of Mongoose validation paths to i18next translation keys
 const VALIDATION_KEY_MAP: Record<string, I18n.Key> = {

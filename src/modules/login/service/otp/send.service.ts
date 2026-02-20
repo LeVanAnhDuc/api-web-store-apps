@@ -1,5 +1,5 @@
 import type { OtpSendRequest, OtpSendResponse } from "@/modules/login/types";
-import { BadRequestError } from "@/infra/responses/error";
+import { BadRequestError } from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { otpStore } from "@/modules/login/store";

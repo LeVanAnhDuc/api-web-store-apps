@@ -4,7 +4,7 @@ import jwt, {
   type PublicKey
 } from "jsonwebtoken";
 import type { TExpiresIn, TPayload } from "@/types/databases/jwt";
-import { ForbiddenError } from "@/infra/responses/error";
+import { ForbiddenError } from "@/configurations/responses/error";
 import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/configurations/jwt";
 import ENV from "@/configurations/env";
 

@@ -13,7 +13,7 @@ import {
   sendMagicLinkService,
   verifyMagicLinkService
 } from "@/modules/login/service";
-import { OkSuccess } from "@/infra/responses/success";
+import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 import {
   COOKIE_NAMES,

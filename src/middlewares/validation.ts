@@ -1,7 +1,10 @@
 import type { Request } from "express";
 import type { Schema } from "joi";
 import { asyncMiddlewareHandler } from "@/utils/async-handler";
-import { ValidationError, type FieldError } from "@/infra/responses/error";
+import {
+  ValidationError,
+  type FieldError
+} from "@/configurations/responses/error";
 
 /**
  * Validation Middleware

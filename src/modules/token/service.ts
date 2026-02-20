@@ -1,6 +1,9 @@
 import type { Request } from "express";
 import type { RefreshTokenResponse } from "@/modules/token/types";
-import { UnauthorizedError, ForbiddenError } from "@/infra/responses/error";
+import {
+  UnauthorizedError,
+  ForbiddenError
+} from "@/configurations/responses/error";
 import { JsonWebTokenService } from "@/services/JsonWebTokenService";
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/services/implements/AuthToken";

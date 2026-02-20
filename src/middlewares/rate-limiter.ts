@@ -2,7 +2,7 @@ import rateLimit, { type RateLimitRequestHandler } from "express-rate-limit";
 import type { Request, Response } from "express";
 import type { createClient } from "redis";
 import RedisStore from "rate-limit-redis";
-import { TooManyRequestsError } from "@/infra/responses/error";
+import { TooManyRequestsError } from "@/configurations/responses/error";
 import { REDIS_KEYS } from "@/constants/redis";
 import { RATE_LIMIT_CONFIG } from "../constants";
 

@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { refreshAccessTokenService } from "@/modules/token/service";
-import { OkSuccess } from "@/infra/responses/success";
+import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const refreshTokenController = asyncHandler(

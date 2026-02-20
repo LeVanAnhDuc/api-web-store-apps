@@ -13,7 +13,7 @@ import {
   completeSignupService,
   checkEmailService
 } from "@/modules/signup/service";
-import { OkSuccess } from "@/infra/responses/success";
+import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const sendOtpController = asyncHandler(

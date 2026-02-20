@@ -1,6 +1,6 @@
 import type { Response } from "express";
 import type { UnlockRequest, UnlockVerifyRequest } from "./types";
-import { OkSuccess } from "@/infra/responses/success";
+import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 import {
   COOKIE_NAMES,

@@ -3,7 +3,10 @@ import type {
   PasswordLoginRequest,
   LoginResponse
 } from "@/modules/login/types";
-import { UnauthorizedError, BadRequestError } from "@/infra/responses/error";
+import {
+  UnauthorizedError,
+  BadRequestError
+} from "@/configurations/responses/error";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";

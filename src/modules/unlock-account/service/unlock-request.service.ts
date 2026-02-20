@@ -1,6 +1,9 @@
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import { Logger } from "@/utils/logger";
-import { BadRequestError, TooManyRequestsError } from "@/infra/responses/error";
+import {
+  BadRequestError,
+  TooManyRequestsError
+} from "@/configurations/responses/error";
 import {
   redisTtl,
   redisIncr,

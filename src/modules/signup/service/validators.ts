@@ -1,4 +1,7 @@
-import { BadRequestError, ConflictRequestError } from "@/infra/responses/error";
+import {
+  BadRequestError,
+  ConflictRequestError
+} from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
 import { isEmailRegistered } from "@/modules/signup/repository";
 import { otpStore, sessionStore } from "@/modules/signup/store";

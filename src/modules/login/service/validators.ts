@@ -1,5 +1,8 @@
 import type { AuthenticationDocument } from "@/modules/authentication/types";
-import { BadRequestError, UnauthorizedError } from "@/infra/responses/error";
+import {
+  BadRequestError,
+  UnauthorizedError
+} from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
 import { findAuthenticationByEmail } from "@/modules/login/repository";
 

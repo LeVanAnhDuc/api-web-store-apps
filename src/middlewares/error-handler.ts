@@ -1,5 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
-import { ErrorResponse, ValidationError } from "@/infra/responses/error";
+import {
+  ErrorResponse,
+  ValidationError
+} from "@/configurations/responses/error";
 import { STATUS_CODES } from "@/configurations/http";
 
 export const handleNotFound = (

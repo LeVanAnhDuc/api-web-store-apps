@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { UnauthorizedError } from "@/infra/responses/error";
+import { UnauthorizedError } from "@/configurations/responses/error";
 import { JsonWebTokenService } from "@/services/JsonWebTokenService";
 import { asyncHandler } from "@/utils/async-handler";
 

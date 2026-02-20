@@ -3,7 +3,7 @@ import type {
   LoginResponse
 } from "@/modules/login/types";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
-import { UnauthorizedError } from "@/infra/responses/error";
+import { UnauthorizedError } from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { magicLinkStore } from "@/modules/login/store";
