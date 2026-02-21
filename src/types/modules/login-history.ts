@@ -2,13 +2,11 @@ import type { Schema, Document } from "mongoose";
 import type { LoginMethod } from "@/types/modules/login";
 import type {
   LOGIN_STATUSES,
-  LOGIN_FAIL_REASONS
-} from "@/modules/login/constants";
-import type { Request } from "express";
-import type {
+  LOGIN_FAIL_REASONS,
   DEVICE_TYPES,
   CLIENT_TYPES
-} from "@/modules/login-history/constants";
+} from "@/constants/enums";
+import type { Request } from "express";
 
 export type LoginStatus = (typeof LOGIN_STATUSES)[keyof typeof LOGIN_STATUSES];
 

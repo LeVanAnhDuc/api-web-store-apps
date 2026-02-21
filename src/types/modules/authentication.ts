@@ -1,4 +1,4 @@
-import type { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+import type { AUTHENTICATION_ROLES } from "@/constants/enums";
 import type { Schema } from "mongoose";
 
 export type AuthenticationRole =

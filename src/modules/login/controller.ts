@@ -15,10 +15,8 @@ import {
 } from "@/modules/login/service";
 import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
-import {
-  COOKIE_NAMES,
-  REFRESH_TOKEN_COOKIE_OPTIONS
-} from "@/configurations/cookie";
+import { COOKIE_NAMES } from "@/constants/infrastructure";
+import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/configurations/cookie";
 
 export const loginController = asyncHandler(
   async (req: PasswordLoginRequest, res: Response): Promise<void> => {

@@ -9,8 +9,8 @@ import {
   redisTtl
 } from "@/utils/store/redis-operations";
 import { generateOtp } from "@/utils/crypto/otp";
-import { REDIS_KEYS } from "@/constants/redis";
-import { OTP_CONFIG } from "@/modules/signup/constants";
+import { REDIS_KEYS } from "@/constants/infrastructure";
+import { OTP_CONFIG } from "@/constants/config";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 
 const KEYS = {

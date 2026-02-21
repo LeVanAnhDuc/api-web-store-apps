@@ -6,7 +6,7 @@ import type { LoginFailReason } from "@/types/modules/login-history";
 import type { LoginResponse } from "@/types/modules/login";
 import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
 import { Logger } from "@/utils/logger";
-import { LOGIN_STATUSES } from "../constants";
+import { LOGIN_STATUSES } from "@/constants/enums";
 import { logLoginAttempt } from "@/modules/login-history/service";
 
 export const recordSuccessfulLogin = ({

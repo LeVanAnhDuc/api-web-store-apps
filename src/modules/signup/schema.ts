@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { SESSION_CONFIG } from "@/modules/signup/constants";
+import { SESSION_CONFIG } from "@/constants/config";
 import {
   emailSchema,
   passwordSchema,

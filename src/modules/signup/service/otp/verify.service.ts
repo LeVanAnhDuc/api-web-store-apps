@@ -5,8 +5,8 @@ import type {
 import { BadRequestError } from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
 import { otpStore, sessionStore } from "@/modules/signup/store";
-import { OTP_CONFIG, SESSION_CONFIG } from "@/modules/signup/constants";
-import { SECONDS_PER_MINUTE } from "@/constants/time";
+import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/config";
+import { SECONDS_PER_MINUTE } from "@/constants/infrastructure";
 import { ensureOtpNotLocked } from "../validators";
 
 const CONFIG = {

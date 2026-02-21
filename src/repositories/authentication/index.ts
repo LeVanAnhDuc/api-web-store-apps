@@ -3,7 +3,7 @@ import type {
   AuthenticationRecord,
   CreateAuthenticationData
 } from "@/types/modules/authentication";
-import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+import { AUTHENTICATION_ROLES } from "@/constants/enums";
 import AuthenticationModel from "@/modules/authentication/model";
 import type { RedisClientType } from "redis";
 import MongoDBRepository from "@/services/implements/MongoDBRepository";

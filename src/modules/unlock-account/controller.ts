@@ -5,10 +5,8 @@ import type {
 } from "@/types/modules/unlock-account";
 import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
-import {
-  COOKIE_NAMES,
-  REFRESH_TOKEN_COOKIE_OPTIONS
-} from "@/configurations/cookie";
+import { COOKIE_NAMES } from "@/constants/infrastructure";
+import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/configurations/cookie";
 import { handleUnlockRequest } from "./service/unlock-request.service";
 import { handleUnlockVerify } from "./service/unlock-verify.service";
 

@@ -1,9 +1,5 @@
 import type { CookieOptions } from "express";
-import { TOKEN_EXPIRY } from "@/constants/jwt";
-
-export const COOKIE_NAMES = {
-  REFRESH_TOKEN: "refreshToken"
-} as const;
+import { TOKEN_EXPIRY } from "@/constants/infrastructure";
 
 const allowCrossOrigin = process.env.ALLOW_CROSS_ORIGIN_COOKIES === "true";
 

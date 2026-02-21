@@ -4,8 +4,11 @@ import type {
 } from "@/types/modules/signup";
 import { Logger } from "@/utils/logger";
 import { otpStore } from "@/modules/signup/store";
-import { OTP_CONFIG } from "@/modules/signup/constants";
-import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
+import { OTP_CONFIG } from "@/constants/config";
+import {
+  SECONDS_PER_MINUTE,
+  MINUTES_PER_HOUR
+} from "@/constants/infrastructure";
 import {
   createAndStoreOtp,
   setOtpCooldown,

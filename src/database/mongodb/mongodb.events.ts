@@ -1,7 +1,7 @@
 import type { Connection } from "mongoose";
 import type { ConnectionStateValue } from "@/types/mongodb";
 import { Logger } from "@/utils/logger";
-import { CONNECTION_STATES } from "./constants";
+import { CONNECTION_STATES } from "@/constants/infrastructure";
 
 interface EventHandlers {
   onConnected: () => void;

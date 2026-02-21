@@ -14,7 +14,7 @@ import { getAuthenticationRepository } from "@/repositories/authentication";
 import { failedAttemptsStore } from "@/modules/login/store";
 import { ensureAccountActive, ensureEmailVerified } from "../validators";
 import { recordSuccessfulLogin, recordFailedLogin } from "../shared";
-import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
+import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/constants/enums";
 import { formatDuration } from "@/utils/date";
 import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
 

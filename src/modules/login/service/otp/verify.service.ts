@@ -9,11 +9,8 @@ import { withRetry } from "@/utils/retry";
 import { otpStore } from "@/modules/login/store";
 import { ensureAuthenticationExists } from "../validators";
 import { recordFailedLogin, completeSuccessfulLogin } from "../shared";
-import {
-  LOGIN_METHODS,
-  LOGIN_FAIL_REASONS,
-  LOGIN_OTP_CONFIG
-} from "@/modules/login/constants";
+import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/constants/enums";
+import { LOGIN_OTP_CONFIG } from "@/constants/config";
 
 const ensureOtpNotLocked = async (
   email: string,

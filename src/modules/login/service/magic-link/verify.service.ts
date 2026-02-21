@@ -9,7 +9,7 @@ import { withRetry } from "@/utils/retry";
 import { magicLinkStore } from "@/modules/login/store";
 import { ensureAuthenticationExists } from "../validators";
 import { recordFailedLogin, completeSuccessfulLogin } from "../shared";
-import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
+import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/constants/enums";
 
 const handleInvalidToken = (
   email: string,

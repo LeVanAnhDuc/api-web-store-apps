@@ -1,4 +1,4 @@
-import { LOGIN_LOCKOUT } from "@/modules/login/constants";
+import { LOGIN_LOCKOUT } from "@/constants/config";
 
 export const calculateLockoutDuration = (attemptCount: number): number => {
   const { LOCKOUT_DURATIONS, MAX_LOCKOUT_SECONDS } = LOGIN_LOCKOUT;

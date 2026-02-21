@@ -5,8 +5,8 @@ import {
   redisTtl,
   redisExists
 } from "@/utils/store/redis-operations";
-import { REDIS_KEYS } from "@/constants/redis";
-import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
+import { REDIS_KEYS } from "@/constants/infrastructure";
+import { MAGIC_LINK_CONFIG } from "@/constants/config";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { buildKey } from "@/utils/store";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";

@@ -7,7 +7,7 @@ import { getAuthenticationRepository } from "@/repositories/authentication";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { failedAttemptsStore } from "@/modules/login/store";
 import { completeSuccessfulLogin } from "@/modules/login/service/shared";
-import { LOGIN_METHODS } from "@/modules/login/constants";
+import { LOGIN_METHODS } from "@/constants/enums";
 import { withRetry } from "@/utils/retry";
 
 function ensureAccountExists(

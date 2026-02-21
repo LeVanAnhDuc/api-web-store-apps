@@ -8,8 +8,8 @@ import {
   validateAuthenticationForLogin
 } from "../validators";
 import { sendModuleEmail } from "@/utils/email/sender";
-import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
-import { SECONDS_PER_MINUTE } from "@/constants/time";
+import { LOGIN_OTP_CONFIG } from "@/constants/config";
+import { SECONDS_PER_MINUTE } from "@/constants/infrastructure";
 
 const OTP_EXPIRY_SECONDS = LOGIN_OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const OTP_COOLDOWN_SECONDS = LOGIN_OTP_CONFIG.COOLDOWN_SECONDS;

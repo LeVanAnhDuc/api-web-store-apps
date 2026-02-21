@@ -1,6 +1,6 @@
 import Logger from "@/utils/logger";
 import geoip from "geoip-lite";
-import { GEO_DEFAULTS } from "@/modules/login-history/constants";
+import { GEO_DEFAULTS } from "@/constants/enums";
 
 const LOCALHOST_VALUES = ["localhost", "0.0.0.0"] as const;
 

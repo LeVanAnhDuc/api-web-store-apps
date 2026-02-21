@@ -10,7 +10,7 @@ import {
   redisExpire,
   redisSetEx
 } from "@/utils/store/redis-operations";
-import { REDIS_KEYS } from "@/constants/redis";
+import { REDIS_KEYS } from "@/constants/infrastructure";
 import { getAuthenticationRepository } from "@/repositories/authentication";
 import { generateTempPassword } from "@/utils/crypto/tempPassword";
 import { hashValue } from "@/utils/crypto/bcrypt";

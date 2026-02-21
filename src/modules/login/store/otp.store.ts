@@ -8,8 +8,8 @@ import {
   redisExists
 } from "@/utils/store/redis-operations";
 import { generateOtp } from "@/utils/crypto/otp";
-import { REDIS_KEYS } from "@/constants/redis";
-import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
+import { REDIS_KEYS } from "@/constants/infrastructure";
+import { LOGIN_OTP_CONFIG } from "@/constants/config";
 import { buildKey } from "@/utils/store";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 

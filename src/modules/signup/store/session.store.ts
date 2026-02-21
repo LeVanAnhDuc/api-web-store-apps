@@ -1,8 +1,8 @@
 import { buildKey } from "@/utils/store";
 import { redisGet, redisSetEx, redisDel } from "@/utils/store/redis-operations";
-import { REDIS_KEYS } from "@/constants/redis";
+import { REDIS_KEYS } from "@/constants/infrastructure";
 import { generateSecureToken } from "@/utils/crypto/otp";
-import { SESSION_CONFIG } from "@/modules/signup/constants";
+import { SESSION_CONFIG } from "@/constants/config";
 
 const KEYS = {
   SESSION: REDIS_KEYS.SIGNUP.SESSION

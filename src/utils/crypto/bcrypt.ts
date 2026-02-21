@@ -1,5 +1,5 @@
 import * as bcrypt from "bcrypt";
-import { BCRYPT } from "@/configurations/security";
+import { BCRYPT } from "@/constants/config";
 
 export const hashValue = (value: string): string =>
   bcrypt.hashSync(value, BCRYPT.SALT_ROUNDS);

@@ -1,5 +1,4 @@
-import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
-import { GENDERS } from "@/modules/user/constants";
+import { AUTHENTICATION_ROLES, GENDERS } from "@/constants/enums";
 
 export const TEST_USERS = [
   {

@@ -1,6 +1,6 @@
 import { redisGet, redisSetEx, redisDel } from "@/utils/store/redis-operations";
-import { REDIS_KEYS } from "@/constants/redis";
-import { ACCOUNT_UNLOCK_CONFIG } from "@/modules/login/constants";
+import { REDIS_KEYS } from "@/constants/infrastructure";
+import { ACCOUNT_UNLOCK_CONFIG } from "@/constants/config";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { buildKey } from "@/utils/store";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";

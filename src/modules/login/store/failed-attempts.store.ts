@@ -7,8 +7,8 @@ import {
   redisExpire,
   redisTtl
 } from "@/utils/store/redis-operations";
-import { REDIS_KEYS } from "@/constants/redis";
-import { LOGIN_LOCKOUT } from "@/modules/login/constants";
+import { REDIS_KEYS } from "@/constants/infrastructure";
+import { LOGIN_LOCKOUT } from "@/constants/config";
 import { buildKey } from "@/utils/store";
 
 const KEYS = {

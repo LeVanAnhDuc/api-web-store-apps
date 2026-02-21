@@ -5,13 +5,11 @@ import {
   LOGIN_METHODS,
   LOGIN_STATUSES,
   LOGIN_FAIL_REASONS,
-  LOGIN_HISTORY_CONFIG
-} from "@/modules/login/constants";
-import {
   DEVICE_TYPES,
   CLIENT_TYPES,
   GEO_DEFAULTS
-} from "@/modules/login-history/constants";
+} from "@/constants/enums";
+import { LOGIN_HISTORY_CONFIG } from "@/constants/config";
 
 const { LOGIN_HISTORY, AUTHENTICATION } = MODEL_NAMES;
 

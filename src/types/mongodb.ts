@@ -1,5 +1,5 @@
 import type { ConnectOptions } from "mongoose";
-import type { CONNECTION_STATES } from "@/database/mongodb/constants";
+import type { CONNECTION_STATES } from "@/constants/infrastructure";
 
 export type ConnectionStateValue =
   (typeof CONNECTION_STATES)[keyof typeof CONNECTION_STATES];

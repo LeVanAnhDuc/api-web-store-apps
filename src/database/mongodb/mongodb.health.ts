@@ -5,7 +5,7 @@ import type {
   DatabaseStats,
   MongoConfig
 } from "@/types/mongodb";
-import { CONNECTION_STATES } from "./constants";
+import { CONNECTION_STATES } from "@/constants/infrastructure";
 
 export const isHealthy = (state: ConnectionStateValue): boolean =>
   state === CONNECTION_STATES.CONNECTED && mongoose.connection.readyState === 1;

@@ -2,15 +2,13 @@ import { getLoginHistoryRepository } from "@/repositories/login-history";
 import { extractIp } from "@/modules/login-history/utils/extractIp";
 import { parseUserAgent } from "@/modules/login-history/utils/parseUserAgent";
 import { geoipLookup } from "@/modules/login-history/utils/geoipLookup";
-import { CLIENT_TYPES } from "@/modules/login-history/constants";
+import { CLIENT_TYPES } from "@/constants/enums";
+import { HTTP_HEADERS } from "@/constants/infrastructure";
 import type {
   LoginEventPayload,
   ClientType
 } from "@/types/modules/login-history";
 import Logger from "@/utils/logger";
-
-const USER_AGENT_HEADER = "user-agent";
-const CLIENT_TYPE_HEADER = "x-client-type";
 
 export const logLoginAttempt = async (
   payload: LoginEventPayload
@@ -27,8 +25,8 @@ export const logLoginAttempt = async (
     } = payload;
 
     const ip = extractIp(req);
-    const userAgent = req.headers[USER_AGENT_HEADER] || "";
-    const clientTypeHeader = req.headers[CLIENT_TYPE_HEADER] as
+    const userAgent = req.headers[HTTP_HEADERS.USER_AGENT] || "";
+    const clientTypeHeader = req.headers[HTTP_HEADERS.CLIENT_TYPE] as
       | string
       | undefined;
 
