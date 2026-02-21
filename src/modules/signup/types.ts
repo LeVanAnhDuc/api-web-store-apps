@@ -124,17 +124,6 @@ export interface SessionCreationResult {
   expiresIn: number;
 }
 
-export interface CreateAuthenticationData {
-  email: string;
-  hashedPassword: string;
-}
-
-export interface AuthenticationRecord {
-  _id: Schema.Types.ObjectId;
-  email: string;
-  roles: string;
-}
-
 export interface CreateUserData {
   authId: Schema.Types.ObjectId;
   fullName: string;

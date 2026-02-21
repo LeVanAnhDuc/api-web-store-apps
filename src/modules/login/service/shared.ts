@@ -6,17 +6,8 @@ import type { LoginFailReason } from "@/modules/login-history/types";
 import type { LoginResponse } from "@/modules/login/types";
 import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
 import { Logger } from "@/utils/logger";
-import { withRetry } from "@/utils/retry";
-import { updateLastLogin as updateLastLoginRepo } from "@/modules/login/repository";
 import { LOGIN_STATUSES } from "../constants";
 import { logLoginAttempt } from "@/modules/login-history/service";
-
-export const updateLastLogin = (userId: string): void => {
-  withRetry(() => updateLastLoginRepo(userId), {
-    operationName: "updateLastLogin",
-    context: { userId }
-  });
-};
 
 export const recordSuccessfulLogin = ({
   userId,
@@ -72,8 +63,6 @@ export const completeSuccessfulLogin = ({
   loginMethod: LoginMethod;
   req: Request;
 }): LoginResponse => {
-  updateLastLogin(auth._id.toString());
-
   recordSuccessfulLogin({
     userId: auth._id,
     usernameAttempted: email,

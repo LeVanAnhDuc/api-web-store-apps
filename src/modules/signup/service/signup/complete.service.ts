@@ -5,10 +5,8 @@ import type {
   CompleteSignupResponse
 } from "@/modules/signup/types";
 import { Logger } from "@/utils/logger";
-import {
-  createAuthenticationRecord,
-  createUserProfile
-} from "@/modules/signup/repository";
+import { getAuthenticationRepository } from "@/repositories/authentication";
+import { createUserProfile } from "@/modules/signup/repository";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
@@ -21,7 +19,8 @@ const createAuthentication = async (
 ): Promise<Schema.Types.ObjectId> => {
   const hashedPassword = hashValue(password);
 
-  const auth = await createAuthenticationRecord({
+  const authRepo = getAuthenticationRepository();
+  const auth = await authRepo.create({
     email,
     hashedPassword
   });

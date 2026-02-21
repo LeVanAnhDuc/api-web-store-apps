@@ -3,10 +3,7 @@ import type { UnlockVerifyRequest } from "../types";
 import type { LoginResponse } from "@/modules/login/types";
 import { Logger } from "@/utils/logger";
 import { UnauthorizedError } from "@/configurations/responses/error";
-import {
-  findAuthenticationByEmail,
-  markTempPasswordUsed
-} from "@/modules/login/repository";
+import { getAuthenticationRepository } from "@/repositories/authentication";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { failedAttemptsStore } from "@/modules/login/store";
 import { completeSuccessfulLogin } from "@/modules/login/service/shared";
@@ -98,7 +95,8 @@ export const handleUnlockVerify = async (
 
   Logger.info("Processing unlock verify", { email });
 
-  const auth = await findAuthenticationByEmail(email);
+  const authRepo = getAuthenticationRepository();
+  const auth = await authRepo.findByEmail(email);
 
   ensureAccountExists(auth, email, t);
   ensureTempPasswordSet(auth, email, t);
@@ -116,7 +114,7 @@ export const handleUnlockVerify = async (
     context: { email }
   });
 
-  await markTempPasswordUsed(auth._id.toString());
+  await authRepo.markTempPasswordUsed(auth._id.toString());
 
   Logger.info("Temp password marked as used", {
     email,

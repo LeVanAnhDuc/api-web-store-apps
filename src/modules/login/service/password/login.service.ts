@@ -10,14 +10,10 @@ import {
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
-import { findAuthenticationByEmail } from "@/modules/login/repository";
+import { getAuthenticationRepository } from "@/repositories/authentication";
 import { failedAttemptsStore } from "@/modules/login/store";
 import { ensureAccountActive, ensureEmailVerified } from "../validators";
-import {
-  updateLastLogin,
-  recordSuccessfulLogin,
-  recordFailedLogin
-} from "../shared";
+import { recordSuccessfulLogin, recordFailedLogin } from "../shared";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/modules/login/constants";
 import { formatDuration } from "@/utils/date";
 import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
@@ -177,15 +173,14 @@ export const passwordLoginService = async (
 
   await ensureLoginNotLocked(email, t, language);
 
-  const auth = await findAuthenticationByEmail(email);
+  const authRepo = getAuthenticationRepository();
+  const auth = await authRepo.findByEmail(email);
 
   ensureAccountExists(auth, email, req, t);
   ensureAccountActiveWithLogging(auth, email, req, t);
   ensureEmailVerifiedWithLogging(auth, email, req, t);
 
   await verifyPasswordOrFail(auth, password, email, language, req, t);
-
-  updateLastLogin(auth._id.toString());
 
   withRetry(() => failedAttemptsStore.resetAll(email), {
     operationName: "resetFailedLoginAttempts",

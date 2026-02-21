@@ -11,10 +11,7 @@ import {
   redisSetEx
 } from "@/utils/store/redis-operations";
 import { REDIS_KEYS } from "@/constants/redis";
-import {
-  findAuthenticationByEmail,
-  storeTempPassword
-} from "@/modules/login/repository";
+import { getAuthenticationRepository } from "@/repositories/authentication";
 import { generateTempPassword } from "@/utils/crypto/tempPassword";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { failedAttemptsStore } from "@/modules/login/store";
@@ -157,7 +154,8 @@ export const handleUnlockRequest = async (
   await checkCooldown(email, t);
   await checkRateLimit(email, t);
 
-  const auth = await findAuthenticationByEmail(email);
+  const authRepo = getAuthenticationRepository();
+  const auth = await authRepo.findByEmail(email);
 
   if (!auth) {
     Logger.warn("Unlock request for non-existent email", { email });
@@ -174,7 +172,7 @@ export const handleUnlockRequest = async (
     Date.now() + TEMP_PASSWORD_EXPIRY_MINUTES * 60 * 1000
   );
 
-  await storeTempPassword(
+  await authRepo.storeTempPassword(
     auth._id.toString(),
     tempPasswordHash,
     tempPasswordExpAt

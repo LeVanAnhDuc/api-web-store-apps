@@ -2,7 +2,7 @@ import type {
   CheckEmailRequest,
   CheckEmailResponse
 } from "@/modules/signup/types";
-import { isEmailRegistered } from "@/modules/signup/repository";
+import { getAuthenticationRepository } from "@/repositories/authentication";
 import { Logger } from "@/utils/logger";
 
 export const checkEmailService = async (
@@ -12,7 +12,8 @@ export const checkEmailService = async (
 
   Logger.info("CheckEmail initiated", { email });
 
-  const exists = await isEmailRegistered(email);
+  const authRepo = getAuthenticationRepository();
+  const exists = await authRepo.emailExists(email);
 
   Logger.info("CheckEmail completed", { email });
 

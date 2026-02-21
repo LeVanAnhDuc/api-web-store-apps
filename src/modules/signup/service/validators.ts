@@ -3,14 +3,15 @@ import {
   ConflictRequestError
 } from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
-import { isEmailRegistered } from "@/modules/signup/repository";
+import { getAuthenticationRepository } from "@/repositories/authentication";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 
 export const ensureEmailAvailable = async (
   email: string,
   t: TranslateFunction
 ): Promise<void> => {
-  const exists = await isEmailRegistered(email);
+  const authRepo = getAuthenticationRepository();
+  const exists = await authRepo.emailExists(email);
 
   if (exists) {
     Logger.warn("Email already exists", { email });

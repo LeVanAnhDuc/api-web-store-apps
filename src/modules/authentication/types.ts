@@ -18,3 +18,14 @@ export interface AuthenticationDocument {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface CreateAuthenticationData {
+  email: string;
+  hashedPassword: string;
+}
+
+export interface AuthenticationRecord {
+  _id: Schema.Types.ObjectId;
+  email: string;
+  roles: string;
+}

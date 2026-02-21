@@ -4,7 +4,7 @@ import {
   UnauthorizedError
 } from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
-import { findAuthenticationByEmail } from "@/modules/login/repository";
+import { getAuthenticationRepository } from "@/repositories/authentication";
 
 export const ensureCooldownExpired = async <
   T extends {
@@ -31,7 +31,8 @@ export const ensureAuthenticationExists = async (
   email: string,
   t: TranslateFunction
 ): Promise<AuthenticationDocument> => {
-  const auth = await findAuthenticationByEmail(email);
+  const authRepo = getAuthenticationRepository();
+  const auth = await authRepo.findByEmail(email);
 
   if (!auth) {
     Logger.warn("Authentication not found", { email });
