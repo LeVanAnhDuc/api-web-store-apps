@@ -1,6 +1,5 @@
 import type { Request } from "express";
 import type { Gender } from "@/modules/user/types";
-import type { Schema } from "mongoose";
 import type { AuthTokensResponse } from "@/types/auth";
 
 export interface SendOtpBody {
@@ -122,16 +121,4 @@ export interface OtpVerificationResult {
 export interface SessionCreationResult {
   sessionToken: string;
   expiresIn: number;
-}
-
-export interface CreateUserData {
-  authId: Schema.Types.ObjectId;
-  fullName: string;
-  gender: Gender;
-  dateOfBirth: Date;
-}
-
-export interface UserRecord {
-  _id: Schema.Types.ObjectId;
-  fullName: string;
 }

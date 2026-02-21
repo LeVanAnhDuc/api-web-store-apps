@@ -1,4 +1,4 @@
-import LoginHistoryModel from "@/modules/login-history/model";
+import { getLoginHistoryRepository } from "@/repositories/login-history";
 import { extractIp } from "@/modules/login-history/utils/extractIp";
 import { parseUserAgent } from "@/modules/login-history/utils/parseUserAgent";
 import { geoipLookup } from "@/modules/login-history/utils/geoipLookup";
@@ -57,7 +57,7 @@ export const logLoginAttempt = async (
       anomalyReasons: []
     };
 
-    await LoginHistoryModel.create(loginHistoryData);
+    await getLoginHistoryRepository().create(loginHistoryData);
 
     Logger.info("Login history logged successfully", {
       userId,

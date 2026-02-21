@@ -1,0 +1,29 @@
+import type {
+  CreateLoginHistoryData,
+  LoginHistoryDocument
+} from "@/modules/login-history/types";
+import LoginHistoryModel from "@/modules/login-history/model";
+import MongoDBRepository from "@/services/implements/MongoDBRepository";
+
+class LoginHistoryRepository {
+  constructor(private readonly db: MongoDBRepository<LoginHistoryDocument>) {}
+
+  async create(data: CreateLoginHistoryData): Promise<LoginHistoryDocument> {
+    return this.db.create(data as Partial<LoginHistoryDocument>);
+  }
+}
+
+let instance: LoginHistoryRepository | null = null;
+
+export const getLoginHistoryRepository = (): LoginHistoryRepository => {
+  if (!instance) {
+    const db = new MongoDBRepository<LoginHistoryDocument>(
+      LoginHistoryModel,
+      "LoginHistoryRepository"
+    );
+    instance = new LoginHistoryRepository(db);
+  }
+  return instance;
+};
+
+export default LoginHistoryRepository;

@@ -37,6 +37,25 @@ export interface LoginHistoryDocument extends Document {
   createdAt: Date;
 }
 
+export interface CreateLoginHistoryData {
+  userId: Schema.Types.ObjectId | string | null;
+  usernameAttempted: string;
+  method: LoginMethod;
+  status: LoginStatus;
+  failReason?: LoginFailReason;
+  ip: string;
+  country: string;
+  city: string;
+  deviceType: DeviceType;
+  os: string;
+  browser: string;
+  userAgent: string;
+  clientType: ClientType;
+  timezoneOffset: string | null;
+  isAnomaly: boolean;
+  anomalyReasons: string[];
+}
+
 export interface LoginEventPayload {
   userId: string | null;
   usernameAttempted: string;

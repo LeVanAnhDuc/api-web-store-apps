@@ -6,7 +6,7 @@ import type {
 } from "@/modules/signup/types";
 import { Logger } from "@/utils/logger";
 import { getAuthenticationRepository } from "@/repositories/authentication";
-import { createUserProfile } from "@/modules/signup/repository";
+import { getUserRepository } from "@/repositories/user";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
@@ -39,7 +39,7 @@ const createUser = async (
   gender: Gender,
   dateOfBirth: string
 ): Promise<Schema.Types.ObjectId> => {
-  const user = await createUserProfile({
+  const user = await getUserRepository().createProfile({
     authId,
     fullName,
     gender,

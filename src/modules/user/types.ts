@@ -15,3 +15,15 @@ export interface UserDocument {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface CreateUserData {
+  authId: Schema.Types.ObjectId;
+  fullName: string;
+  gender: Gender;
+  dateOfBirth: Date;
+}
+
+export interface UserRecord {
+  _id: Schema.Types.ObjectId;
+  fullName: string;
+}
