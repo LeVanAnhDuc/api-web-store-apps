@@ -1,9 +1,9 @@
 import type { Schema } from "mongoose";
-import type { Gender } from "@/modules/user/types";
+import type { Gender } from "@/types/modules/user";
 import type {
   CompleteSignupRequest,
   CompleteSignupResponse
-} from "@/modules/signup/types";
+} from "@/types/modules/signup";
 import { Logger } from "@/utils/logger";
 import { getAuthenticationRepository } from "@/repositories/authentication";
 import { getUserRepository } from "@/repositories/user";

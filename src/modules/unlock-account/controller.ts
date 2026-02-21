@@ -1,5 +1,8 @@
 import type { Response } from "express";
-import type { UnlockRequest, UnlockVerifyRequest } from "./types";
+import type {
+  UnlockRequest,
+  UnlockVerifyRequest
+} from "@/types/modules/unlock-account";
 import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 import {

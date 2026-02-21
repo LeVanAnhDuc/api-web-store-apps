@@ -1,4 +1,4 @@
-import type { AuthenticationDocument } from "@/modules/authentication/types";
+import type { AuthenticationDocument } from "@/types/modules/authentication";
 import {
   BadRequestError,
   UnauthorizedError

@@ -1,7 +1,7 @@
 import type {
   MagicLinkSendRequest,
   MagicLinkSendResponse
-} from "@/modules/login/types";
+} from "@/types/modules/login";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { magicLinkStore } from "@/modules/login/store";

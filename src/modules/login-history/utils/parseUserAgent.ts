@@ -3,7 +3,7 @@ import {
   DEVICE_TYPES,
   USER_AGENT_DEFAULTS
 } from "@/modules/login-history/constants";
-import type { DeviceType } from "@/modules/login-history/types";
+import type { DeviceType } from "@/types/modules/login-history";
 
 export interface ParsedUserAgent {
   deviceType: DeviceType;

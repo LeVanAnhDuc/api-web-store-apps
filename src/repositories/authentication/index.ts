@@ -2,7 +2,7 @@ import type {
   AuthenticationDocument,
   AuthenticationRecord,
   CreateAuthenticationData
-} from "@/modules/authentication/types";
+} from "@/types/modules/authentication";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import AuthenticationModel from "@/modules/authentication/model";
 import type { RedisClientType } from "redis";

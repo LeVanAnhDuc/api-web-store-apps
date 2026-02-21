@@ -1,5 +1,5 @@
 import type { Schema } from "mongoose";
-import type { GENDERS } from "./constants";
+import type { GENDERS } from "@/modules/user/constants";
 
 export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
 

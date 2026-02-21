@@ -1,8 +1,8 @@
 import type {
   MagicLinkVerifyRequest,
   LoginResponse
-} from "@/modules/login/types";
-import type { AuthenticationDocument } from "@/modules/authentication/types";
+} from "@/types/modules/login";
+import type { AuthenticationDocument } from "@/types/modules/authentication";
 import { UnauthorizedError } from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";

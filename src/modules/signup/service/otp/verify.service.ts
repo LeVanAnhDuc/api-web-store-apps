@@ -1,7 +1,7 @@
 import type {
   VerifyOtpRequest,
   VerifyOtpResponse
-} from "@/modules/signup/types";
+} from "@/types/modules/signup";
 import { BadRequestError } from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
 import { otpStore, sessionStore } from "@/modules/signup/store";

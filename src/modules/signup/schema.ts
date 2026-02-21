@@ -13,7 +13,7 @@ import type {
   VerifyOtpBody,
   CompleteSignupBody,
   CheckEmailParams
-} from "@/modules/signup/types";
+} from "@/types/modules/signup";
 
 export const sendOtpSchema: Joi.ObjectSchema<SendOtpBody> = Joi.object({
   email: emailSchema.required()

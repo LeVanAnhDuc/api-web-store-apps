@@ -1,6 +1,6 @@
-import type { AuthenticationDocument } from "@/modules/authentication/types";
-import type { UnlockVerifyRequest } from "../types";
-import type { LoginResponse } from "@/modules/login/types";
+import type { AuthenticationDocument } from "@/types/modules/authentication";
+import type { UnlockVerifyRequest } from "@/types/modules/unlock-account";
+import type { LoginResponse } from "@/types/modules/login";
 import { Logger } from "@/utils/logger";
 import { UnauthorizedError } from "@/configurations/responses/error";
 import { getAuthenticationRepository } from "@/repositories/authentication";

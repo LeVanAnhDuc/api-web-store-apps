@@ -1,7 +1,7 @@
 import type {
   ResendOtpRequest,
   ResendOtpResponse
-} from "@/modules/signup/types";
+} from "@/types/modules/signup";
 import { Logger } from "@/utils/logger";
 import { otpStore } from "@/modules/signup/store";
 import { OTP_CONFIG } from "@/modules/signup/constants";

@@ -1,5 +1,5 @@
-import type { UserDocument } from "@/modules/user/types";
-import type { CreateUserData, UserRecord } from "@/modules/user/types";
+import type { UserDocument } from "@/types/modules/user";
+import type { CreateUserData, UserRecord } from "@/types/modules/user";
 import UserModel from "@/modules/user/model";
 import type { RedisClientType } from "redis";
 import MongoDBRepository from "@/services/implements/MongoDBRepository";

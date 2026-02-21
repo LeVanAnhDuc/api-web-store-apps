@@ -1,8 +1,8 @@
-import type { AuthenticationDocument } from "@/modules/authentication/types";
+import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type {
   PasswordLoginRequest,
   LoginResponse
-} from "@/modules/login/types";
+} from "@/types/modules/login";
 import {
   UnauthorizedError,
   BadRequestError

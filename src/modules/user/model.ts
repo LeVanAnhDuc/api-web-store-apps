@@ -1,5 +1,5 @@
 import { Schema, model, type Model } from "mongoose";
-import type { UserDocument } from "@/modules/user/types";
+import type { UserDocument } from "@/types/modules/user";
 import {
   GENDERS,
   FULLNAME_VALIDATION,

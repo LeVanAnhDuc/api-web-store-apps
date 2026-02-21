@@ -1,5 +1,5 @@
 import type { Request } from "express";
-import type { RefreshTokenResponse } from "@/modules/token/types";
+import type { RefreshTokenResponse } from "@/types/modules/token";
 import {
   UnauthorizedError,
   ForbiddenError

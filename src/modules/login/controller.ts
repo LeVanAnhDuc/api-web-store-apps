@@ -5,7 +5,7 @@ import type {
   OtpVerifyRequest,
   MagicLinkSendRequest,
   MagicLinkVerifyRequest
-} from "@/modules/login/types";
+} from "@/types/modules/login";
 import {
   passwordLoginService,
   sendLoginOtpService,

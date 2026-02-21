@@ -1,5 +1,5 @@
-import type { OtpVerifyRequest, LoginResponse } from "@/modules/login/types";
-import type { AuthenticationDocument } from "@/modules/authentication/types";
+import type { OtpVerifyRequest, LoginResponse } from "@/types/modules/login";
+import type { AuthenticationDocument } from "@/types/modules/authentication";
 import {
   UnauthorizedError,
   BadRequestError

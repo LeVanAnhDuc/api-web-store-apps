@@ -1,9 +1,9 @@
 import type { Schema } from "mongoose";
 import type { Request } from "express";
-import type { AuthenticationDocument } from "@/modules/authentication/types";
-import type { LoginMethod } from "@/modules/login/types";
-import type { LoginFailReason } from "@/modules/login-history/types";
-import type { LoginResponse } from "@/modules/login/types";
+import type { AuthenticationDocument } from "@/types/modules/authentication";
+import type { LoginMethod } from "@/types/modules/login";
+import type { LoginFailReason } from "@/types/modules/login-history";
+import type { LoginResponse } from "@/types/modules/login";
 import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
 import { Logger } from "@/utils/logger";
 import { LOGIN_STATUSES } from "../constants";

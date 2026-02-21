@@ -5,7 +5,7 @@ import type {
   ResendOtpRequest,
   CompleteSignupRequest,
   CheckEmailRequest
-} from "@/modules/signup/types";
+} from "@/types/modules/signup";
 import {
   sendOtpService,
   verifyOtpService,

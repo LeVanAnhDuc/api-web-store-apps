@@ -1,5 +1,5 @@
 import { Schema, model, type Model } from "mongoose";
-import type { AuthenticationDocument } from "@/modules/authentication/types";
+import type { AuthenticationDocument } from "@/types/modules/authentication";
 import { MODEL_NAMES } from "@/constants/models";
 import {
   AUTHENTICATION_ROLES,

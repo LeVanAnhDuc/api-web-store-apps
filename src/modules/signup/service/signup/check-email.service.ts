@@ -1,7 +1,7 @@
 import type {
   CheckEmailRequest,
   CheckEmailResponse
-} from "@/modules/signup/types";
+} from "@/types/modules/signup";
 import { getAuthenticationRepository } from "@/repositories/authentication";
 import { Logger } from "@/utils/logger";
 

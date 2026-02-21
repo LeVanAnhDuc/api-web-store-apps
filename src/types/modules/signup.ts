@@ -1,5 +1,5 @@
 import type { Request } from "express";
-import type { Gender } from "@/modules/user/types";
+import type { Gender } from "@/types/modules/user";
 import type { AuthTokensResponse } from "@/types/auth";
 
 export interface SendOtpBody {
