@@ -3,12 +3,12 @@ import {
   unlockRequestController,
   unlockVerifyController
 } from "@/modules/unlock-account/controller";
-import { validate } from "@/middlewares/validation";
+import { validate } from "@/validators/middleware";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   unlockRequestSchema,
   unlockVerifySchema
-} from "@/modules/unlock-account/schema";
+} from "@/validators/schemas/unlock-account";
 
 const unlockAccountRouter = Router();
 

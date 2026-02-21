@@ -6,7 +6,7 @@ import {
   verifyOtpSchema,
   completeSignupSchema,
   checkEmailSchema
-} from "@/modules/signup/schema";
+} from "@/validators/schemas/signup";
 const { swagger: SendOtpRequestSchema } = j2s(sendOtpSchema);
 const { swagger: ResendOtpRequestSchema } = j2s(resendOtpSchema);
 const { swagger: VerifyOtpRequestSchema } = j2s(verifyOtpSchema);

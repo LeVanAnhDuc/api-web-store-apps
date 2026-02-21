@@ -5,7 +5,7 @@ import {
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN,
   SAFE_ADDRESS_PATTERN
-} from "@/constants/validation";
+} from "@/validators/constants";
 import { MODEL_NAMES } from "@/constants/models";
 
 const { USER, AUTHENTICATION } = MODEL_NAMES;

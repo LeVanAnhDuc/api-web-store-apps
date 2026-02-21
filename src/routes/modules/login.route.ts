@@ -6,7 +6,7 @@ import {
   sendMagicLinkController,
   verifyMagicLinkController
 } from "@/modules/login/controller";
-import { validate } from "@/middlewares/validation";
+import { validate } from "@/validators/middleware";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   loginSchema,
@@ -14,7 +14,7 @@ import {
   otpVerifySchema,
   magicLinkSendSchema,
   magicLinkVerifySchema
-} from "@/modules/login/schema";
+} from "@/validators/schemas/login";
 
 const loginRouter = Router();
 

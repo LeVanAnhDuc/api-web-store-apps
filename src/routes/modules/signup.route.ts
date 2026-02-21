@@ -6,7 +6,7 @@ import {
   completeSignupController,
   checkEmailController
 } from "@/modules/signup/controller";
-import { validate } from "@/middlewares/validation";
+import { validate } from "@/validators/middleware";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   sendOtpSchema,
@@ -14,7 +14,7 @@ import {
   verifyOtpSchema,
   completeSignupSchema,
   checkEmailSchema
-} from "@/modules/signup/schema";
+} from "@/validators/schemas/signup";
 
 const signupRouter = Router();
 

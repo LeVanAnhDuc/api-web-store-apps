@@ -7,7 +7,7 @@ import {
   fullNameSchema,
   genderSchema,
   dateOfBirthSchema
-} from "@/validators/schemas";
+} from "./base";
 import type {
   SendOtpBody,
   VerifyOtpBody,

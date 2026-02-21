@@ -9,7 +9,7 @@ import {
   PASSWORD_STRENGTH_PATTERN,
   PASSWORD_VALIDATION,
   SAFE_EMAIL_PATTERN
-} from "@/constants/validation";
+} from "@/validators/constants";
 import { getDateOfBirthBounds } from "@/utils/date";
 
 const GENDER_VALUES = Object.values(GENDERS);

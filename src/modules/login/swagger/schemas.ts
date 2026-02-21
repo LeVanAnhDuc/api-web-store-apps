@@ -6,7 +6,7 @@ import {
   otpVerifySchema,
   magicLinkSendSchema,
   magicLinkVerifySchema
-} from "@/modules/login/schema";
+} from "@/validators/schemas/login";
 
 const { swagger: LoginRequestSchema } = j2s(loginSchema);
 const { swagger: OtpSendRequestSchema } = j2s(otpSendSchema);

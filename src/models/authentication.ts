@@ -5,7 +5,7 @@ import { AUTHENTICATION_ROLES } from "@/constants/enums";
 import {
   EMAIL_FORMAT_PATTERN,
   SAFE_EMAIL_PATTERN
-} from "@/constants/validation";
+} from "@/validators/constants";
 
 const { AUTHENTICATION } = MODEL_NAMES;
 

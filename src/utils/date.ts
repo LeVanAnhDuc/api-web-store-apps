@@ -1,4 +1,4 @@
-import { AGE_VALIDATION } from "@/constants/validation";
+import { AGE_VALIDATION } from "@/validators/constants";
 import { SECONDS_PER_MINUTE } from "@/constants/infrastructure";
 
 export const getDateOfBirthBounds = (): {
