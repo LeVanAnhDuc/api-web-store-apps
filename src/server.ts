@@ -11,7 +11,7 @@ const startServer = async (): Promise<void> => {
     const PORT = config.APP_PORT || 3000;
     const server = app.listen(PORT, () => {
       Logger.info(`Server is running at http://localhost:${PORT}`);
-      Logger.info(`Environment: ${process.env.NODE_ENV || "development"}`);
+      Logger.info(`Environment: ${config.NODE_ENV}`);
     });
 
     server.on("error", (error: NodeJS.ErrnoException) => {

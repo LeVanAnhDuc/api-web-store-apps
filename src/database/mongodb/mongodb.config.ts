@@ -19,7 +19,7 @@ export const buildMongoConfig = (): MongoConfig => {
     maxIdleTimeMS: 30000,
     serverSelectionTimeoutMS: 5000,
     socketTimeoutMS: 45000,
-    compressors: process.env.NODE_ENV === "development" ? [] : ["zlib"],
+    compressors: config.NODE_ENV === "development" ? [] : ["zlib"],
     retryWrites: true,
     w: "majority",
     autoCreate: true,

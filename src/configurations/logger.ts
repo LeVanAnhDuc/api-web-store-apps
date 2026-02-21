@@ -1,6 +1,7 @@
 import { format, addColors, createLogger, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import path from "path";
+import ENV from "@/configurations/env";
 
 const LEVELS = {
   error: 0,
@@ -56,13 +57,13 @@ const combinedFileRotateTransport = new DailyRotateFile({
 });
 
 const logger = createLogger({
-  level: process.env.LOG_LEVEL || "info",
+  level: ENV.LOG_LEVEL,
   levels: LEVELS,
   exitOnError: false,
   transports: [errorFileRotateTransport, combinedFileRotateTransport]
 });
 
-if (process.env.NODE_ENV !== "production") {
+if (ENV.NODE_ENV !== "production") {
   logger.add(new transports.Console({ format: consoleFormat }));
 }
 

@@ -3,8 +3,11 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const ENV = {
+  NODE_ENV: process.env.NODE_ENV || "development",
   APP_PORT: process.env.APP_PORT,
   CLIENT_URL: process.env.CLIENT_URL || "http://localhost:3000",
+  LOG_LEVEL: process.env.LOG_LEVEL || "info",
+  ALLOW_CROSS_ORIGIN_COOKIES: process.env.ALLOW_CROSS_ORIGIN_COOKIES,
 
   DB_URL: process.env.DB_URL,
   DB_NAME: process.env.DB_NAME,
