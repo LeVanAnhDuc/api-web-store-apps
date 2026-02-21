@@ -6,8 +6,5 @@
     "tokenExpired": "Token expired",
     "validationFailed": "Validation failed",
     "unauthorized": "Unauthorized access"
-  },
-  "validation": {
-    "required": "{{field}} is required"
   }
 }

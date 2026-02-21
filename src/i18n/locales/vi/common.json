@@ -6,8 +6,5 @@
     "tokenExpired": "Token đã hết hạn",
     "validationFailed": "Dữ liệu không hợp lệ",
     "unauthorized": "Không có quyền truy cập"
-  },
-  "validation": {
-    "required": "{{field}} là bắt buộc"
   }
 }

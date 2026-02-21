@@ -1,0 +1,46 @@
+{
+  "email": {
+    "required": "Email là bắt buộc",
+    "invalid": "Email không hợp lệ",
+    "minLength": "Email phải có ít nhất 3 ký tự",
+    "maxLength": "Email không được vượt quá 254 ký tự"
+  },
+  "password": {
+    "required": "Mật khẩu là bắt buộc",
+    "minLength": "Mật khẩu phải có ít nhất 8 ký tự",
+    "maxLength": "Mật khẩu không được vượt quá 128 ký tự",
+    "pattern": "Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt (@$!%*?&)"
+  },
+  "otp": {
+    "required": "Mã OTP là bắt buộc",
+    "length": "Mã OTP phải có 6 chữ số",
+    "digitsOnly": "Mã OTP chỉ được chứa số"
+  },
+  "fullName": {
+    "required": "Họ và tên là bắt buộc",
+    "minLength": "Họ và tên phải có ít nhất 2 ký tự",
+    "maxLength": "Họ và tên không được vượt quá 100 ký tự",
+    "invalid": "Họ và tên chỉ được chứa chữ cái, khoảng trắng, dấu gạch ngang, dấu nháy đơn và dấu chấm"
+  },
+  "phone": {
+    "required": "Số điện thoại là bắt buộc",
+    "invalid": "Số điện thoại không hợp lệ"
+  },
+  "address": {
+    "maxLength": "Địa chỉ không được vượt quá 500 ký tự"
+  },
+  "gender": {
+    "required": "Giới tính là bắt buộc",
+    "invalid": "Giới tính phải là nam, nữ, khác hoặc không muốn nói"
+  },
+  "dateOfBirth": {
+    "required": "Ngày sinh là bắt buộc",
+    "invalid": "Ngày sinh không hợp lệ",
+    "tooYoung": "Bạn phải từ 13 tuổi trở lên",
+    "tooOld": "Ngày sinh không thể quá 120 năm trước"
+  },
+  "authId": {
+    "required": "Auth ID là bắt buộc"
+  },
+  "required": "{{field}} là bắt buộc"
+}

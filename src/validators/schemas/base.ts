@@ -20,12 +20,12 @@ export const emailSchema = Joi.string()
   .max(EMAIL_VALIDATION.MAX_LENGTH)
   .pattern(SAFE_EMAIL_PATTERN)
   .messages({
-    "string.email": "authentication:validation.emailInvalid",
-    "string.empty": "authentication:validation.emailRequired",
-    "string.min": "authentication:validation.emailMinLength",
-    "string.max": "authentication:validation.emailMaxLength",
-    "string.pattern.base": "authentication:validation.emailInvalid",
-    "any.required": "authentication:validation.emailRequired"
+    "string.email": "validation:email.invalid",
+    "string.empty": "validation:email.required",
+    "string.min": "validation:email.minLength",
+    "string.max": "validation:email.maxLength",
+    "string.pattern.base": "validation:email.invalid",
+    "any.required": "validation:email.required"
   });
 
 export const passwordSchema = Joi.string()
@@ -33,21 +33,21 @@ export const passwordSchema = Joi.string()
   .max(PASSWORD_VALIDATION.MAX_LENGTH)
   .pattern(PASSWORD_STRENGTH_PATTERN)
   .messages({
-    "string.empty": "authentication:validation.passwordRequired",
-    "string.min": "authentication:validation.passwordMinLength",
-    "string.max": "authentication:validation.passwordMaxLength",
-    "string.pattern.base": "authentication:validation.passwordPattern",
-    "any.required": "authentication:validation.passwordRequired"
+    "string.empty": "validation:password.required",
+    "string.min": "validation:password.minLength",
+    "string.max": "validation:password.maxLength",
+    "string.pattern.base": "validation:password.pattern",
+    "any.required": "validation:password.required"
   });
 
 export const otpSchema = Joi.string()
   .length(OTP_VALIDATION.LENGTH)
   .pattern(NUMERIC_OTP_PATTERN)
   .messages({
-    "string.empty": "authentication:validation.otpRequired",
-    "string.length": "authentication:validation.otpLength",
-    "string.pattern.base": "authentication:validation.otpDigitsOnly",
-    "any.required": "authentication:validation.otpRequired"
+    "string.empty": "validation:otp.required",
+    "string.length": "validation:otp.length",
+    "string.pattern.base": "validation:otp.digitsOnly",
+    "any.required": "validation:otp.required"
   });
 
 export const fullNameSchema = Joi.string()
@@ -55,27 +55,27 @@ export const fullNameSchema = Joi.string()
   .max(FULLNAME_VALIDATION.MAX_LENGTH)
   .pattern(SAFE_FULLNAME_PATTERN)
   .messages({
-    "string.empty": "user:validation.fullNameRequired",
-    "string.min": "user:validation.fullNameMinLength",
-    "string.max": "user:validation.fullNameMaxLength",
-    "string.pattern.base": "user:validation.fullNameInvalid",
-    "any.required": "user:validation.fullNameRequired"
+    "string.empty": "validation:fullName.required",
+    "string.min": "validation:fullName.minLength",
+    "string.max": "validation:fullName.maxLength",
+    "string.pattern.base": "validation:fullName.invalid",
+    "any.required": "validation:fullName.required"
   });
 
 export const genderSchema = Joi.string()
   .valid(...GENDER_VALUES)
   .messages({
-    "string.empty": "user:validation.genderRequired",
-    "any.required": "user:validation.genderRequired",
-    "any.only": "user:validation.genderInvalid"
+    "string.empty": "validation:gender.required",
+    "any.required": "validation:gender.required",
+    "any.only": "validation:gender.invalid"
   });
 
 export const dateOfBirthSchema = Joi.date()
   .min(getDateOfBirthBounds().minDate)
   .max(getDateOfBirthBounds().maxDate)
   .messages({
-    "date.base": "user:validation.dateOfBirthInvalid",
-    "date.min": "user:validation.dateOfBirthTooOld",
-    "date.max": "user:validation.dateOfBirthTooYoung",
-    "any.required": "user:validation.dateOfBirthRequired"
+    "date.base": "validation:dateOfBirth.invalid",
+    "date.min": "validation:dateOfBirth.tooOld",
+    "date.max": "validation:dateOfBirth.tooYoung",
+    "any.required": "validation:dateOfBirth.required"
   });

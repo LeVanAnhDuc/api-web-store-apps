@@ -8,8 +8,8 @@ export const unlockRequestSchema = Joi.object({
 export const unlockVerifySchema = Joi.object({
   email: emailSchema.required(),
   tempPassword: Joi.string().min(12).required().messages({
-    "string.empty": "unlock-account:validation.tempPasswordRequired",
-    "string.min": "unlock-account:validation.tempPasswordTooShort",
-    "any.required": "unlock-account:validation.tempPasswordRequired"
+    "string.empty": "unlockAccount:validation.tempPasswordRequired",
+    "string.min": "unlockAccount:validation.tempPasswordTooShort",
+    "any.required": "unlockAccount:validation.tempPasswordRequired"
   })
 });

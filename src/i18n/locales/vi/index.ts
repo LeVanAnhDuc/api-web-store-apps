@@ -1,6 +1,5 @@
 export { default as common } from "./common.json";
-export { default as authentication } from "./authentication.json";
-export { default as user } from "./user.json";
+export { default as validation } from "./validation.json";
 export { default as signup } from "./signup.json";
 export { default as login } from "./login.json";
 export { default as logout } from "./logout.json";

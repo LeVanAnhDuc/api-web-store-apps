@@ -4,20 +4,19 @@ import { BadRequestError } from "../configurations/responses/error";
 
 // Mapping of Mongoose validation paths to i18next translation keys
 const VALIDATION_KEY_MAP: Record<string, I18n.Key> = {
-  email: "authentication:validation.emailRequired",
-  password: "authentication:validation.passwordRequired",
-  authId: "user:validation.authIdRequired",
-  fullName: "user:validation.fullNameRequired",
-  phone: "user:validation.phoneRequired"
+  email: "validation:email.required",
+  password: "validation:password.required",
+  authId: "validation:authId.required",
+  fullName: "validation:fullName.required",
+  phone: "validation:phone.required"
 };
 
-const EMAIL_INVALID_KEY: I18n.Key = "authentication:validation.emailInvalid";
-const PASSWORD_MIN_LENGTH_KEY: I18n.Key =
-  "authentication:validation.passwordMinLength";
-const FULL_NAME_MIN_LENGTH_KEY: I18n.Key = "user:validation.fullNameMinLength";
-const FULL_NAME_MAX_LENGTH_KEY: I18n.Key = "user:validation.fullNameMaxLength";
-const PHONE_INVALID_KEY: I18n.Key = "user:validation.phoneInvalid";
-const ADDRESS_MAX_LENGTH_KEY: I18n.Key = "user:validation.addressMaxLength";
+const EMAIL_INVALID_KEY: I18n.Key = "validation:email.invalid";
+const PASSWORD_MIN_LENGTH_KEY: I18n.Key = "validation:password.minLength";
+const FULL_NAME_MIN_LENGTH_KEY: I18n.Key = "validation:fullName.minLength";
+const FULL_NAME_MAX_LENGTH_KEY: I18n.Key = "validation:fullName.maxLength";
+const PHONE_INVALID_KEY: I18n.Key = "validation:phone.invalid";
+const ADDRESS_MAX_LENGTH_KEY: I18n.Key = "validation:address.maxLength";
 
 export const handleMongooseError = (
   err: Error,
@@ -43,7 +42,7 @@ const getTranslationKey = (
     const { path, kind } = error;
 
     if (kind === "required") {
-      return VALIDATION_KEY_MAP[path] || "common:validation.required";
+      return VALIDATION_KEY_MAP[path] || "validation:required";
     }
 
     if (kind === "minlength") {
