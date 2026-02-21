@@ -1,0 +1,15 @@
+{
+  "validation": {
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please provide a valid email address",
+    "emailMinLength": "Email must be at least 3 characters",
+    "emailMaxLength": "Email must not exceed 254 characters",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "passwordMaxLength": "Password must not exceed 128 characters",
+    "passwordPattern": "Password must contain at least one uppercase, one lowercase, one number, and one special character (@$!%*?&)",
+    "otpRequired": "OTP is required",
+    "otpLength": "OTP must be 6 digits",
+    "otpDigitsOnly": "OTP must contain only digits"
+  }
+}

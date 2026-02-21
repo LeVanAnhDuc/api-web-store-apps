@@ -43,8 +43,8 @@ i18next.use(Backend).init({
     escapeValue: false
   },
 
-  // Enable debug only in development to troubleshoot missing translations
-  debug: process.env.NODE_ENV === "development",
+  // Disable debug to prevent verbose i18n logging. Set to true only when troubleshooting
+  debug: false,
 
   // Explicitly return undefined for missing keys to catch translation errors early
   // Prevents silent failures where empty strings might be valid values

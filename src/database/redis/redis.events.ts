@@ -1,9 +1,6 @@
-// libs
 import { ConnectionTimeoutError } from "redis";
-// types
 import type { createClient } from "redis";
-// utils
-import { Logger } from "@/core/utils/logger";
+import { Logger } from "@/utils/logger";
 
 export const REDIS_STATUS = {
   CONNECT: "connect",

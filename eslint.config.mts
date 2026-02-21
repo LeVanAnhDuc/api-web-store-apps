@@ -72,6 +72,7 @@ export default tseslint.config(
       "dist",
       "build",
       "backup",
+      "coverage",
       ".husky",
       ".doc",
       "*.json",

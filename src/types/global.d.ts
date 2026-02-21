@@ -1,6 +1,8 @@
-import type { TFunction } from "i18next";
+import type { TFunction, FlatNamespace } from "i18next";
 
 declare global {
+  type TranslateFunction = TFunction<FlatNamespace>;
+
   interface ResponsePattern<T> {
     message: string;
     timestamp: string;
@@ -17,10 +19,23 @@ declare global {
     };
   }
 
+  interface JwtUserPayload {
+    userId: string;
+    authId: string;
+    email: string;
+    roles: string;
+  }
+
+  interface JwtTokenPayload extends JwtUserPayload {
+    iat?: number;
+    exp?: number;
+  }
+
   namespace Express {
     interface Request {
       language: string;
-      t: TFunction;
+      t: TranslateFunction;
+      user?: JwtUserPayload;
     }
   }
 }

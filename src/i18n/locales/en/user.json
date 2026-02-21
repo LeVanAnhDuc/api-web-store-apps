@@ -1,12 +1,4 @@
 {
-  "fields": {
-    "authId": "Auth ID",
-    "fullName": "Full name",
-    "phone": "Phone number",
-    "address": "Address",
-    "gender": "Gender",
-    "birthday": "Birthday"
-  },
   "validation": {
     "authIdRequired": "Auth ID is required",
     "fullNameRequired": "Full name is required",
@@ -16,8 +8,11 @@
     "phoneRequired": "Phone number is required",
     "phoneInvalid": "Please provide a valid phone number",
     "addressMaxLength": "Address must not exceed 500 characters",
-    "genderInvalid": "Gender must be male, female, or other",
-    "birthdayInvalid": "Birthday cannot be in the future",
-    "birthdayTooOld": "Birthday cannot be more than 120 years ago"
+    "genderRequired": "Gender is required",
+    "genderInvalid": "Gender must be male, female, other, or prefer not to say",
+    "dateOfBirthRequired": "Date of birth is required",
+    "dateOfBirthInvalid": "Please provide a valid date of birth",
+    "dateOfBirthTooYoung": "You must be at least 13 years old",
+    "dateOfBirthTooOld": "Date of birth cannot be more than 120 years ago"
   }
 }

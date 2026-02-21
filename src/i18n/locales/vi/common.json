@@ -4,14 +4,10 @@
     "internalServer": "Lỗi máy chủ nội bộ",
     "invalidToken": "Token không hợp lệ",
     "tokenExpired": "Token đã hết hạn",
-    "emailTemplateFailed": "Lỗi khi render email template: {{templateName}}",
-    "emailSendFailed": "Không thể gửi email"
+    "validationFailed": "Dữ liệu không hợp lệ",
+    "unauthorized": "Không có quyền truy cập"
   },
   "validation": {
-    "required": "{{field}} là bắt buộc",
-    "invalid": "{{field}} không hợp lệ",
-    "minLength": "{{field}} phải có ít nhất {{min}} ký tự",
-    "maxLength": "{{field}} không được vượt quá {{max}} ký tự",
-    "invalidFormat": "Định dạng {{field}} không hợp lệ"
+    "required": "{{field}} là bắt buộc"
   }
 }

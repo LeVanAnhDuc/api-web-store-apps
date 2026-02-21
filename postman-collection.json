@@ -1,0 +1,985 @@
+{
+  "info": {
+    "_postman_id": "apartment-web-server-api",
+    "name": "Apartment Web Server API",
+    "description": "API collection for Apartment Web Server - Authentication & User Management\n\n## Variables\n- **language**: Set to 'en' (English) or 'vi' (Vietnamese) to change response language",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Add Accept-Language header to all requests",
+          "const language = pm.collectionVariables.get('language') || 'en';",
+          "pm.request.headers.upsert({",
+          "    key: 'Accept-Language',",
+          "    value: language",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "apiVersion",
+      "value": "v1",
+      "type": "string"
+    },
+    {
+      "key": "language",
+      "value": "en",
+      "type": "string",
+      "description": "Language for API responses (en | vi)"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@test.com",
+      "type": "string"
+    },
+    {
+      "key": "adminPassword",
+      "value": "Admin@123",
+      "type": "string"
+    },
+    {
+      "key": "userEmail",
+      "value": "user@test.com",
+      "type": "string"
+    },
+    {
+      "key": "userPassword",
+      "value": "User@123",
+      "type": "string"
+    },
+    {
+      "key": "inactiveEmail",
+      "value": "inactive@test.com",
+      "type": "string"
+    },
+    {
+      "key": "inactivePassword",
+      "value": "Inactive@123",
+      "type": "string"
+    },
+    {
+      "key": "unverifiedEmail",
+      "value": "unverified@test.com",
+      "type": "string"
+    },
+    {
+      "key": "unverifiedPassword",
+      "value": "Unverified@123",
+      "type": "string"
+    },
+    {
+      "key": "signupEmail",
+      "value": "newuser@example.com",
+      "type": "string",
+      "description": "Email for signup flow"
+    },
+    {
+      "key": "signupPassword",
+      "value": "NewUser@123",
+      "type": "string",
+      "description": "Password for signup flow"
+    },
+    {
+      "key": "signupFullName",
+      "value": "New User",
+      "type": "string",
+      "description": "Full name for signup flow"
+    },
+    {
+      "key": "signupSessionToken",
+      "value": "",
+      "type": "string",
+      "description": "Session token from OTP verification (auto-filled)"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Check if the server is running"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Signup",
+      "item": [
+        {
+          "name": "Check Email Availability",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/signup/check-email/{{signupEmail}}",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "signup",
+                "check-email",
+                "{{signupEmail}}"
+              ]
+            },
+            "description": "Check if an email is available for registration"
+          },
+          "response": []
+        },
+        {
+          "name": "Send OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{signupEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/signup/send-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "signup", "send-otp"]
+            },
+            "description": "Send OTP to email for signup verification"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.sessionToken) {",
+                  "        pm.collectionVariables.set('signupSessionToken', response.data.sessionToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{signupEmail}}\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/signup/verify-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "signup", "verify-otp"]
+            },
+            "description": "Verify OTP code submitted by user. Returns session token on success (auto-saved to signupSessionToken variable)."
+          },
+          "response": []
+        },
+        {
+          "name": "Resend OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{signupEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/signup/resend-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "signup", "resend-otp"]
+            },
+            "description": "Resend OTP to email (tracks resend count)"
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{signupEmail}}\",\n  \"password\": \"{{signupPassword}}\",\n  \"confirmPassword\": \"{{signupPassword}}\",\n  \"sessionToken\": \"{{signupSessionToken}}\",\n  \"acceptTerms\": true,\n  \"fullName\": \"{{signupFullName}}\",\n  \"gender\": \"male\",\n  \"dateOfBirth\": \"1990-01-15\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/signup/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "signup", "complete"]
+            },
+            "description": "Complete signup with user profile data. Requires valid session token from OTP verification."
+          },
+          "response": []
+        }
+      ],
+      "description": "Signup flow endpoints: Check email → Send OTP → Verify OTP → Complete signup"
+    },
+    {
+      "name": "Login",
+      "item": [
+        {
+          "name": "Login as Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "login"]
+            },
+            "description": "Login as Admin user (admin@test.com / Admin@123)"
+          },
+          "response": []
+        },
+        {
+          "name": "Login as User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "login"]
+            },
+            "description": "Login as normal User (user@test.com / User@123)"
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Inactive User (Should Fail)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{inactiveEmail}}\",\n  \"password\": \"{{inactivePassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "login"]
+            },
+            "description": "Login as Inactive user - should return error (inactive@test.com / Inactive@123)"
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Unverified User (Should Fail)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{unverifiedEmail}}\",\n  \"password\": \"{{unverifiedPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "login"]
+            },
+            "description": "Login as Unverified user - should return error (unverified@test.com / Unverified@123)"
+          },
+          "response": []
+        },
+        {
+          "name": "Send Login OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/login/otp/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "login", "otp", "send"]
+            },
+            "description": "Send OTP to email for passwordless login"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Login OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/login/otp/verify",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "login",
+                "otp",
+                "verify"
+              ]
+            },
+            "description": "Verify OTP and login user. Returns access token and sets refresh token cookie."
+          },
+          "response": []
+        },
+        {
+          "name": "Send Magic Link",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/login/magic-link/send",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "login",
+                "magic-link",
+                "send"
+              ]
+            },
+            "description": "Send magic link to email for passwordless login"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Magic Link",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"token\": \"your-magic-link-token-here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/login/magic-link/verify",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "login",
+                "magic-link",
+                "verify"
+              ]
+            },
+            "description": "Verify magic link token and login user. Returns access token and sets refresh token cookie."
+          },
+          "response": []
+        }
+      ],
+      "description": "Login endpoints with seeded test users:\n\n- **Admin**: admin@test.com / Admin@123\n- **User**: user@test.com / User@123\n- **Inactive**: inactive@test.com (should fail)\n- **Unverified**: unverified@test.com (should fail)"
+    },
+    {
+      "name": "Token",
+      "item": [
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/token/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "token", "refresh"]
+            },
+            "description": "Refresh access token using refresh token from cookie. Make sure cookies are enabled in Postman settings."
+          },
+          "response": []
+        }
+      ],
+      "description": "Token management endpoints"
+    },
+    {
+      "name": "Unlock Account",
+      "item": [
+        {
+          "name": "Request Unlock - Success (Locked Account)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock for a locked account. Sends a temporary password via email. Returns success even for non-existent emails (prevents enumeration)."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Non-Existent Email (Still Returns Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nonexistent@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock for a non-existent email. Returns success to prevent email enumeration."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Account Not Locked (Should Fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock for an account that is NOT locked. Should return 400 - account not locked."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Disabled Account (Should Fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{inactiveEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock for a disabled/inactive account. Should return 400 - account disabled."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Cooldown Active (Should Fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock immediately after a previous request (within 60s cooldown). Should return 400 - cooldown active."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Rate Limit Exceeded (Should Fail 429)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock after exceeding 3 requests per hour. Should return 429 - rate limit exceeded."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Validation Error Missing Email (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock without providing email. Should return 422 - validation error."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Unlock - Validation Error Invalid Email (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"invalid-email\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "request"]
+            },
+            "description": "Request unlock with invalid email format. Should return 422 - validation error."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('accessToken', response.data.accessToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"tempPassword\": \"your-temp-password-here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock with valid temp password from email. Returns access token (auto-saved) and sets refresh token cookie. Replace 'your-temp-password-here' with the actual temp password received via email."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Account Not Found (Should Fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nonexistent@example.com\",\n  \"tempPassword\": \"someTempPassword1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock for a non-existent account. Should return 401 - invalid temp password."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Wrong Temp Password (Should Fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"tempPassword\": \"wrongTempPassword1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock with incorrect temp password. Should return 401 - invalid temp password."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Expired Temp Password (Should Fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"tempPassword\": \"expiredTempPass1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock with an expired temp password (after 15 minutes). Should return 401 - temp password expired."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Already Used Temp Password (Should Fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"tempPassword\": \"usedTempPasswrd1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock with a temp password that was already used. Should return 401 - invalid temp password."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Validation Error Missing Fields (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock without providing email and tempPassword. Should return 422 - validation error."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Unlock - Validation Error Short Temp Password (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"tempPassword\": \"short\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/unlock/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "unlock", "verify"]
+            },
+            "description": "Verify unlock with temp password shorter than 12 characters. Should return 422 - validation error."
+          },
+          "response": []
+        }
+      ],
+      "description": "Unlock account flow for locked accounts:\n\n1. **Request Unlock**: POST /auth/unlock/request - Sends temp password to email\n2. **Verify Unlock**: POST /auth/unlock/verify - Verify temp password and login\n\nConstraints:\n- Cooldown: 60 seconds between requests\n- Rate limit: 3 requests per hour\n- Temp password expires after 15 minutes\n- Temp password can only be used once"
+    },
+    {
+      "name": "Logout",
+      "item": [
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "logout"]
+            },
+            "description": "Logout user and clear session. Requires valid access token in Authorization header."
+          },
+          "response": []
+        }
+      ],
+      "description": "Logout endpoint (requires authentication)"
+    }
+  ]
+}
