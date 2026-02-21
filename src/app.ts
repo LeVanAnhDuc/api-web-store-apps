@@ -2,7 +2,7 @@ import express from "express";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
-import apiV1Routes from "./routes/v1.routes";
+import { mountRoutes } from "./routes";
 import { requestLogger } from "@/middlewares/request-logger";
 import { handleError, handleNotFound } from "@/middlewares/error-handler";
 import { handleMongooseError } from "@/middlewares/mongoose-error-handler";
@@ -39,7 +39,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-app.use("/api/v1", apiV1Routes);
+mountRoutes(app);
 
 /**
  * Error handlers (must be last)

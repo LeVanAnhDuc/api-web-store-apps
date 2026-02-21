@@ -1,8 +1,14 @@
 import { Router } from "express";
-import { unlockRequestController, unlockVerifyController } from "./controller";
+import {
+  unlockRequestController,
+  unlockVerifyController
+} from "@/modules/unlock-account/controller";
 import { validate } from "@/middlewares/validation";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
-import { unlockRequestSchema, unlockVerifySchema } from "./schema";
+import {
+  unlockRequestSchema,
+  unlockVerifySchema
+} from "@/modules/unlock-account/schema";
 
 const unlockAccountRouter = Router();
 
