@@ -11,27 +11,15 @@ import { setupSwagger } from "@/configurations/swagger.setup";
 
 const app = express();
 
-/**
- * Configure middleware
- */
 app.use(helmet());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
-
 app.use(requestLogger);
-
 app.use(i18nMiddleware);
 
-/**
- * Swagger Documentation
- * Available at /api-docs
- */
 setupSwagger(app);
 
-/**
- * Configure routes
- */
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "healthy",
@@ -41,9 +29,7 @@ app.get("/health", (req, res) => {
 
 mountRoutes(app);
 
-/**
- * Error handlers (must be last)
- */
+// Error handlers must be registered last
 app.use(handleNotFound);
 app.use(handleMongooseError);
 app.use(handleError);
