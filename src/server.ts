@@ -1,11 +1,8 @@
-// libs
 import "reflect-metadata";
 import app from "./app";
-// loaders
 import { loadAll, closeAll } from "./loaders";
-// cores
-import { Logger } from "./core/utils/logger";
-import config from "./core/configs/env";
+import { Logger } from "@/utils/logger";
+import config from "@/configurations/env";
 
 const startServer = async (): Promise<void> => {
   try {

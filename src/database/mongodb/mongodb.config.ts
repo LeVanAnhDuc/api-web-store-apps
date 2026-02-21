@@ -1,9 +1,6 @@
-// libs
 import type { ConnectOptions } from "mongoose";
-// types
-import type { MongoConfig } from "@/shared/types/databases/mongodb";
-// configs
-import config from "@/core/configs/env";
+import type { MongoConfig } from "@/types/mongodb";
+import config from "@/configurations/env";
 
 export const MAX_RECONNECT_ATTEMPTS = 10;
 
@@ -22,8 +19,7 @@ export const buildMongoConfig = (): MongoConfig => {
     maxIdleTimeMS: 30000,
     serverSelectionTimeoutMS: 5000,
     socketTimeoutMS: 45000,
-    compressors:
-      process.env.NODE_ENV === "development" ? [] : ["snappy", "zlib"],
+    compressors: process.env.NODE_ENV === "development" ? [] : ["zlib"],
     retryWrites: true,
     w: "majority",
     autoCreate: true,

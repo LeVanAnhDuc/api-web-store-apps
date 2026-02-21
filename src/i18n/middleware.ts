@@ -1,5 +1,4 @@
 import type { Request, Response, NextFunction } from "express";
-
 import i18next from "./config";
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "./locales.config";
 
