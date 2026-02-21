@@ -29,22 +29,22 @@ const sendUnlockEmail = (
   t: TranslateFunction,
   locale: I18n.Locale
 ): void => {
-  const subject = t("unlock-account:email.unlockSubject");
+  const subject = t("unlockAccount:email.unlockSubject");
 
   sendModuleEmail("unlock-account", email, locale, {
     templateName: "unlock-temp-password",
     subject,
     variables: {
       subject,
-      greeting: t("unlock-account:email.unlockGreeting"),
-      message: t("unlock-account:email.unlockMessage"),
-      passwordLabel: t("unlock-account:email.tempPasswordLabel"),
+      greeting: t("unlockAccount:email.unlockGreeting"),
+      message: t("unlockAccount:email.unlockMessage"),
+      passwordLabel: t("unlockAccount:email.tempPasswordLabel"),
       tempPassword,
-      passwordExpiry: t("unlock-account:email.tempPasswordExpiry"),
-      securityWarning: t("unlock-account:email.securityWarning"),
-      loginButton: t("unlock-account:email.loginButton"),
+      passwordExpiry: t("unlockAccount:email.tempPasswordExpiry"),
+      securityWarning: t("unlockAccount:email.securityWarning"),
+      loginButton: t("unlockAccount:email.loginButton"),
       loginUrl: ENV.CLIENT_URL || "http://localhost:3000/login",
-      footer: t("unlock-account:email.footer")
+      footer: t("unlockAccount:email.footer")
     }
   })
     .then(() => undefined)
@@ -70,7 +70,7 @@ const checkCooldown = async (
     });
 
     throw new BadRequestError(
-      t("unlock-account:errors.unlockCooldown", { seconds: ttl })
+      t("unlockAccount:errors.unlockCooldown", { seconds: ttl })
     );
   }
 };
@@ -92,7 +92,7 @@ const checkRateLimit = async (
       requestCount
     });
 
-    throw new TooManyRequestsError(t("unlock-account:errors.unlockRateLimit"));
+    throw new TooManyRequestsError(t("unlockAccount:errors.unlockRateLimit"));
   }
 
   Logger.info("Unlock rate limit check passed", {
@@ -124,7 +124,7 @@ const ensureAccountActive = (
     authId: auth._id
   });
 
-  throw new BadRequestError(t("unlock-account:errors.accountDisabled"));
+  throw new BadRequestError(t("unlockAccount:errors.accountDisabled"));
 };
 
 const ensureAccountLocked = async (
@@ -141,7 +141,7 @@ const ensureAccountLocked = async (
     authId: auth._id
   });
 
-  throw new BadRequestError(t("unlock-account:errors.accountNotLocked"));
+  throw new BadRequestError(t("unlockAccount:errors.accountNotLocked"));
 };
 
 export const handleUnlockRequest = async (

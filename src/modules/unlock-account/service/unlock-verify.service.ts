@@ -18,7 +18,7 @@ function ensureAccountExists(
   if (auth) return;
 
   Logger.warn("Unlock verify failed - account not found", { email });
-  throw new UnauthorizedError(t("unlock-account:errors.invalidTempPassword"));
+  throw new UnauthorizedError(t("unlockAccount:errors.invalidTempPassword"));
 }
 
 const ensureTempPasswordSet = (
@@ -33,7 +33,7 @@ const ensureTempPasswordSet = (
     authId: auth._id
   });
 
-  throw new UnauthorizedError(t("unlock-account:errors.invalidTempPassword"));
+  throw new UnauthorizedError(t("unlockAccount:errors.invalidTempPassword"));
 };
 
 const ensureTempPasswordNotExpired = (
@@ -49,7 +49,7 @@ const ensureTempPasswordNotExpired = (
     expiredAt: auth.tempPasswordExpAt
   });
 
-  throw new UnauthorizedError(t("unlock-account:errors.tempPasswordExpired"));
+  throw new UnauthorizedError(t("unlockAccount:errors.tempPasswordExpired"));
 };
 
 const ensureTempPasswordNotUsed = (
@@ -64,7 +64,7 @@ const ensureTempPasswordNotUsed = (
     authId: auth._id
   });
 
-  throw new UnauthorizedError(t("unlock-account:errors.invalidTempPassword"));
+  throw new UnauthorizedError(t("unlockAccount:errors.invalidTempPassword"));
 };
 
 const verifyTempPasswordOrFail = async (
@@ -84,7 +84,7 @@ const verifyTempPasswordOrFail = async (
     authId: auth._id
   });
 
-  throw new UnauthorizedError(t("unlock-account:errors.invalidTempPassword"));
+  throw new UnauthorizedError(t("unlockAccount:errors.invalidTempPassword"));
 };
 
 export const handleUnlockVerify = async (

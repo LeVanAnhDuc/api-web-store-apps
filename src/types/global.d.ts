@@ -1,7 +1,12 @@
-import type { TFunction, FlatNamespace } from "i18next";
-
 declare global {
-  type TranslateFunction = TFunction<FlatNamespace>;
+  interface TranslateFunction {
+    (key: I18n.Key, options?: Record<string, unknown>): string;
+    (
+      key: I18n.Key,
+      defaultValue: string,
+      options?: Record<string, unknown>
+    ): string;
+  }
 
   interface ResponsePattern<T> {
     message: string;

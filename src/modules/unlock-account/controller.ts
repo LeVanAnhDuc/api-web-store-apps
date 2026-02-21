@@ -19,7 +19,7 @@ export const unlockRequestController = asyncHandler(
 
     const result = await handleUnlockRequest(email, t, language);
 
-    const message = t("unlock-account:success.unlockEmailSent");
+    const message = t("unlockAccount:success.unlockEmailSent");
 
     new OkSuccess({ data: result, message }).send(req, res);
   }
@@ -31,7 +31,7 @@ export const unlockVerifyController = asyncHandler(
 
     const result = await handleUnlockVerify(req);
 
-    const message = t("unlock-account:success.accountUnlocked");
+    const message = t("unlockAccount:success.accountUnlocked");
 
     const { refreshToken, ...responseData } = result;
 
