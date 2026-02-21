@@ -1,5 +1,5 @@
-import AuthenticationModel from "@/modules/authentication/model";
-import UserModel from "@/modules/user/model";
+import AuthenticationModel from "@/models/authentication";
+import UserModel from "@/models/user";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { TEST_USERS } from "./data/users";
 import { Logger } from "@/utils/logger";

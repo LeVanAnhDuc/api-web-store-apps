@@ -2,7 +2,7 @@ import type {
   CreateLoginHistoryData,
   LoginHistoryDocument
 } from "@/types/modules/login-history";
-import LoginHistoryModel from "@/modules/login-history/model";
+import LoginHistoryModel from "@/models/login-history";
 import MongoDBRepository from "@/services/implements/MongoDBRepository";
 
 class LoginHistoryRepository {

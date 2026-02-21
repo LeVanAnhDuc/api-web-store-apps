@@ -4,7 +4,7 @@ import type {
   CreateAuthenticationData
 } from "@/types/modules/authentication";
 import { AUTHENTICATION_ROLES } from "@/constants/enums";
-import AuthenticationModel from "@/modules/authentication/model";
+import AuthenticationModel from "@/models/authentication";
 import type { RedisClientType } from "redis";
 import MongoDBRepository from "@/services/implements/MongoDBRepository";
 import RedisCache from "@/services/implements/RedisCache";
