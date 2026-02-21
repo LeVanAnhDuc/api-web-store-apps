@@ -1,12 +1,11 @@
 import type { AuthTokensResponse } from "@/types/auth";
-import { JsonWebTokenService } from "@/services/JsonWebTokenService";
+import { generateAuthTokens } from "./jwt";
 import { TOKEN_EXPIRY } from "@/constants/infrastructure";
 
 export const generateAuthTokensResponse = (
   payload: JwtUserPayload
 ): AuthTokensResponse => {
-  const { accessToken, refreshToken, idToken } =
-    JsonWebTokenService.generateAuthTokens(payload);
+  const { accessToken, refreshToken, idToken } = generateAuthTokens(payload);
 
   return {
     accessToken,

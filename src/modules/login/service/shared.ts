@@ -4,7 +4,7 @@ import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { LoginMethod } from "@/types/modules/login";
 import type { LoginFailReason } from "@/types/modules/login-history";
 import type { LoginResponse } from "@/types/modules/login";
-import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
+import { generateAuthTokensResponse } from "@/utils/token";
 import { Logger } from "@/utils/logger";
 import { LOGIN_STATUSES } from "@/constants/enums";
 import { logLoginAttempt } from "@/modules/login-history/service";

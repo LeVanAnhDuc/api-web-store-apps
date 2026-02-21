@@ -16,7 +16,7 @@ import { ensureAccountActive, ensureEmailVerified } from "../validators";
 import { recordSuccessfulLogin, recordFailedLogin } from "../shared";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/constants/enums";
 import { formatDuration } from "@/utils/date";
-import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
+import { generateAuthTokensResponse } from "@/utils/token";
 
 const ensureLoginNotLocked = async (
   email: string,

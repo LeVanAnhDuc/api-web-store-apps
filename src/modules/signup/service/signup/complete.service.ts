@@ -9,7 +9,7 @@ import { getAuthenticationRepository } from "@/repositories/authentication";
 import { getUserRepository } from "@/repositories/user";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { hashValue } from "@/utils/crypto/bcrypt";
-import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
+import { generateAuthTokensResponse } from "@/utils/token";
 import { ensureEmailAvailable, ensureSessionValid } from "../validators";
 import { AUTHENTICATION_ROLES } from "@/constants/enums";
 

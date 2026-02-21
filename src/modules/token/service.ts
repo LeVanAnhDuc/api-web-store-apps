@@ -4,9 +4,8 @@ import {
   UnauthorizedError,
   ForbiddenError
 } from "@/configurations/responses/error";
-import { JsonWebTokenService } from "@/services/JsonWebTokenService";
+import { verifyRefreshToken, generateAuthTokensResponse } from "@/utils/token";
 import { Logger } from "@/utils/logger";
-import { generateAuthTokensResponse } from "@/services/implements/AuthToken";
 
 const ensureRefreshTokenFromCookie = (
   req: Request,
@@ -27,7 +26,7 @@ const verifyAndExtractPayload = (
   t: TranslateFunction
 ): JwtUserPayload => {
   try {
-    return JsonWebTokenService.verifyRefreshToken(refreshToken);
+    return verifyRefreshToken(refreshToken);
   } catch (error) {
     Logger.warn("Token refresh failed - invalid refresh token", {
       error: error instanceof Error ? error.message : "Unknown error"

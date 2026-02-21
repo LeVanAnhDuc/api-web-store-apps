@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { UnauthorizedError } from "@/configurations/responses/error";
-import { JsonWebTokenService } from "@/services/JsonWebTokenService";
+import { verifyAccessToken } from "@/utils/token";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const authenticate = asyncHandler(
@@ -19,8 +19,7 @@ export const authenticate = asyncHandler(
       throw new UnauthorizedError(t("common:errors.unauthorized"));
     }
 
-    const payload =
-      JsonWebTokenService.verifyAccessToken<JwtTokenPayload>(token);
+    const payload = verifyAccessToken<JwtTokenPayload>(token);
 
     if (!payload || !payload.userId) {
       throw new UnauthorizedError(t("common:errors.invalidToken"));
