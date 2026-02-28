@@ -21,7 +21,8 @@ import {
 } from "@/configurations/responses/error";
 import type authenticationRepository from "@/repositories/authentication";
 import type userRepository from "@/repositories/user";
-import { otpStore, sessionStore } from "@/modules/signup/store";
+import type { OtpSignupRepository } from "./repositories/otp-signup.repository";
+import type { SessionSignupRepository } from "./repositories/session-signup.repository";
 import { sendSignupOtpEmail } from "./internals/emails";
 import { AUTHENTICATION_ROLES } from "@/constants/enums";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/config";
@@ -42,7 +43,9 @@ const SESSION_EXPIRY_SECONDS =
 export class SignupService {
   constructor(
     private readonly authRepo: typeof authenticationRepository,
-    private readonly userRepo: typeof userRepository
+    private readonly userRepo: typeof userRepository,
+    private readonly otpSignupRepo: OtpSignupRepository,
+    private readonly sessionSignupRepo: SessionSignupRepository
   ) {}
 
   async sendOtp(
@@ -58,7 +61,7 @@ export class SignupService {
 
     const otp = await this.createAndStoreOtp(email, OTP_EXPIRY_SECONDS);
 
-    await otpStore.setCooldown(email, OTP_COOLDOWN_SECONDS);
+    await this.otpSignupRepo.setCooldown(email, OTP_COOLDOWN_SECONDS);
 
     sendSignupOtpEmail(email, otp, language as I18n.Locale);
 
@@ -86,7 +89,10 @@ export class SignupService {
 
     Logger.info("VerifyOtp initiated", { email });
 
-    const isLocked = await otpStore.isLocked(email, MAX_FAILED_ATTEMPTS);
+    const isLocked = await this.otpSignupRepo.isLocked(
+      email,
+      MAX_FAILED_ATTEMPTS
+    );
     if (isLocked) {
       Logger.warn("OTP account locked", {
         email,
@@ -99,7 +105,7 @@ export class SignupService {
 
     const sessionToken = await this.createAndStoreSession(email);
 
-    await otpStore.cleanupOtpData(email);
+    await this.otpSignupRepo.cleanupOtpData(email);
 
     Logger.info("VerifyOtp completed successfully", {
       email,
@@ -126,7 +132,7 @@ export class SignupService {
 
     await this.ensureCooldownExpired(email, t);
 
-    const exceeded = await otpStore.hasExceededResendLimit(
+    const exceeded = await this.otpSignupRepo.hasExceededResendLimit(
       email,
       MAX_RESEND_COUNT
     );
@@ -142,9 +148,9 @@ export class SignupService {
 
     const otp = await this.createAndStoreOtp(email, OTP_EXPIRY_SECONDS);
 
-    await otpStore.setCooldown(email, OTP_COOLDOWN_SECONDS);
+    await this.otpSignupRepo.setCooldown(email, OTP_COOLDOWN_SECONDS);
 
-    const currentResendCount = await otpStore.incrementResendCount(
+    const currentResendCount = await this.otpSignupRepo.incrementResendCount(
       email,
       RESEND_WINDOW_SECONDS
     );
@@ -186,7 +192,7 @@ export class SignupService {
 
     Logger.info("CompleteSignup initiated", { email });
 
-    const isValid = await sessionStore.verify(email, sessionToken);
+    const isValid = await this.sessionSignupRepo.verify(email, sessionToken);
     if (!isValid) {
       Logger.warn("Invalid or expired signup session", { email });
       throw new BadRequestError(t("signup:errors.invalidSession"));
@@ -210,8 +216,8 @@ export class SignupService {
     });
 
     await Promise.all([
-      otpStore.cleanupOtpData(email),
-      sessionStore.clear(email)
+      this.otpSignupRepo.cleanupOtpData(email),
+      this.sessionSignupRepo.clear(email)
     ]);
     Logger.debug("Signup data cleaned up", { email });
 
@@ -272,10 +278,10 @@ export class SignupService {
     email: string,
     t: TranslateFunction
   ): Promise<void> {
-    const canSend = await otpStore.checkCooldown(email);
+    const canSend = await this.otpSignupRepo.checkCooldown(email);
 
     if (!canSend) {
-      const remaining = await otpStore.getCooldownRemaining(email);
+      const remaining = await this.otpSignupRepo.getCooldownRemaining(email);
       Logger.warn("OTP cooldown not expired", { email, remaining });
       throw new BadRequestError(
         t("signup:errors.resendCoolDown", { seconds: remaining })
@@ -291,10 +297,10 @@ export class SignupService {
     email: string,
     expirySeconds: number
   ): Promise<string> {
-    const otp = otpStore.createOtp();
+    const otp = this.otpSignupRepo.createOtp();
 
-    await otpStore.clearOtp(email);
-    await otpStore.storeHashed(email, otp, expirySeconds);
+    await this.otpSignupRepo.clearOtp(email);
+    await this.otpSignupRepo.storeHashed(email, otp, expirySeconds);
 
     Logger.debug("OTP created and stored", {
       email,
@@ -309,10 +315,10 @@ export class SignupService {
     otp: string,
     t: TranslateFunction
   ): Promise<void> {
-    const isValid = await otpStore.verify(email, otp);
+    const isValid = await this.otpSignupRepo.verify(email, otp);
 
     if (!isValid) {
-      const failedCount = await otpStore.incrementFailedAttempts(
+      const failedCount = await this.otpSignupRepo.incrementFailedAttempts(
         email,
         LOCKOUT_DURATION_MINUTES
       );
@@ -335,9 +341,13 @@ export class SignupService {
   }
 
   private async createAndStoreSession(email: string): Promise<string> {
-    const sessionToken = sessionStore.createToken();
+    const sessionToken = this.sessionSignupRepo.createToken();
 
-    await sessionStore.store(email, sessionToken, SESSION_EXPIRY_SECONDS);
+    await this.sessionSignupRepo.store(
+      email,
+      sessionToken,
+      SESSION_EXPIRY_SECONDS
+    );
 
     Logger.debug("Signup session created", {
       email,
