@@ -1,9 +1,14 @@
+import type { Schema } from "mongoose";
+import type { Request } from "express";
 import type loginHistoryRepository from "@/repositories/login-history";
 import { HTTP_HEADERS } from "@/constants/infrastructure";
 import type {
   LoginEventPayload,
-  ClientType
+  ClientType,
+  LoginFailReason
 } from "@/types/modules/login-history";
+import type { LoginMethod } from "@/types/modules/login";
+import { LOGIN_STATUSES } from "@/constants/enums";
 import Logger from "@/utils/logger";
 import {
   extractIp,
@@ -17,7 +22,50 @@ export class LoginHistoryService {
     private readonly loginHistoryRepo: typeof loginHistoryRepository
   ) {}
 
-  async logLoginAttempt(payload: LoginEventPayload): Promise<void> {
+  recordSuccessfulLogin({
+    userId,
+    usernameAttempted,
+    loginMethod,
+    req
+  }: {
+    userId: Schema.Types.ObjectId | string;
+    usernameAttempted: string;
+    loginMethod: LoginMethod;
+    req: Request;
+  }): void {
+    this.logLoginAttempt({
+      userId: userId.toString(),
+      usernameAttempted,
+      status: LOGIN_STATUSES.SUCCESS,
+      loginMethod,
+      req
+    });
+  }
+
+  recordFailedLogin({
+    userId,
+    usernameAttempted,
+    loginMethod,
+    failReason,
+    req
+  }: {
+    userId?: Schema.Types.ObjectId | string | null;
+    usernameAttempted: string;
+    loginMethod: LoginMethod;
+    failReason: LoginFailReason;
+    req: Request;
+  }): void {
+    this.logLoginAttempt({
+      userId: userId ? userId.toString() : null,
+      usernameAttempted,
+      status: LOGIN_STATUSES.FAILED,
+      failReason,
+      loginMethod,
+      req
+    });
+  }
+
+  private async logLoginAttempt(payload: LoginEventPayload): Promise<void> {
     try {
       const {
         userId,
