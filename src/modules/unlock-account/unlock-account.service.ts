@@ -12,7 +12,7 @@ import {
 } from "@/configurations/responses/error";
 import type authenticationRepository from "@/repositories/authentication";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import { failedAttemptsStore } from "@/modules/login/store";
+import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
 import {
   redisTtl,
   redisIncr,
@@ -39,7 +39,8 @@ const ALL_CHARS =
 export class UnlockAccountService {
   constructor(
     private readonly authRepo: typeof authenticationRepository,
-    private readonly loginHistoryService: LoginHistoryService
+    private readonly loginHistoryService: LoginHistoryService,
+    private readonly failedAttemptsRepo: FailedAttemptsRepository
   ) {}
 
   async unlockRequest(
@@ -68,7 +69,7 @@ export class UnlockAccountService {
       throw new BadRequestError(t("unlockAccount:errors.accountDisabled"));
     }
 
-    const { isLocked } = await failedAttemptsStore.checkLockout(email);
+    const { isLocked } = await this.failedAttemptsRepo.checkLockout(email);
     if (!isLocked) {
       Logger.info("Unlock request for non-locked account", {
         email,
@@ -169,7 +170,7 @@ export class UnlockAccountService {
       authId: auth._id
     });
 
-    withRetry(() => failedAttemptsStore.resetAll(email), {
+    withRetry(() => this.failedAttemptsRepo.resetAll(email), {
       operationName: "resetFailedAttemptsAfterUnlock",
       context: { email }
     });

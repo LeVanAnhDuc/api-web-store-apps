@@ -22,29 +22,20 @@ import {
 } from "@/configurations/responses/error";
 import type authenticationRepository from "@/repositories/authentication";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import {
-  failedAttemptsStore,
-  otpStore,
-  magicLinkStore
-} from "@/modules/login/store";
+import type { OtpLoginRepository } from "./repositories/otp-login.repository";
+import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
+import type { FailedAttemptsRepository } from "./repositories/failed-attempts.repository";
 import { sendLoginOtpEmail, sendMagicLinkEmail } from "./internals/emails";
-import {
-  createAndStoreOtp,
-  setOtpRateLimits,
-  createAndStoreToken,
-  setMagicLinkCooldown,
-  OTP_EXPIRY_SECONDS,
-  OTP_COOLDOWN_SECONDS,
-  MAGIC_LINK_EXPIRY_SECONDS,
-  MAGIC_LINK_COOLDOWN_SECONDS
-} from "./internals/helpers";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/constants/enums";
 import { LOGIN_OTP_CONFIG } from "@/constants/config";
 
 export class LoginService {
   constructor(
     private readonly authRepo: typeof authenticationRepository,
-    private readonly loginHistoryService: LoginHistoryService
+    private readonly loginHistoryService: LoginHistoryService,
+    private readonly otpLoginRepo: OtpLoginRepository,
+    private readonly magicLinkLoginRepo: MagicLinkLoginRepository,
+    private readonly failedAttemptsRepo: FailedAttemptsRepository
   ) {}
 
   async passwordLogin(
@@ -65,7 +56,7 @@ export class LoginService {
 
     await this.verifyPasswordOrFail(auth, password, email, language, req, t);
 
-    withRetry(() => failedAttemptsStore.resetAll(email), {
+    withRetry(() => this.failedAttemptsRepo.resetAll(email), {
       operationName: "resetFailedLoginAttempts",
       context: { email }
     });
@@ -90,7 +81,7 @@ export class LoginService {
     Logger.info("Login OTP send initiated", { email });
 
     await this.ensureCooldownExpired(
-      otpStore,
+      this.otpLoginRepo,
       email,
       t,
       "Login OTP cooldown not expired",
@@ -98,15 +89,15 @@ export class LoginService {
     );
     await this.validateAuthenticationForLogin(email, t);
 
-    const exceeded = await otpStore.hasExceededResendLimit(email);
+    const exceeded = await this.otpLoginRepo.hasExceededResendLimit(email);
     if (exceeded) {
       Logger.warn("Login OTP resend limit exceeded", { email });
       throw new BadRequestError(t("login:errors.otpResendLimitExceeded"));
     }
 
-    const otp = await createAndStoreOtp(email);
+    const otp = await this.otpLoginRepo.createAndStoreOtp(email);
 
-    withRetry(() => setOtpRateLimits(email), {
+    withRetry(() => this.otpLoginRepo.setRateLimits(email), {
       operationName: "setOtpRateLimits",
       context: { email }
     });
@@ -115,16 +106,16 @@ export class LoginService {
 
     Logger.info("Login OTP send completed", {
       email,
-      expiresIn: OTP_EXPIRY_SECONDS,
-      cooldown: OTP_COOLDOWN_SECONDS
+      expiresIn: this.otpLoginRepo.OTP_EXPIRY_SECONDS,
+      cooldown: this.otpLoginRepo.OTP_COOLDOWN_SECONDS
     });
 
     return {
       message: t("login:success.otpSent"),
       data: {
         success: true,
-        expiresIn: OTP_EXPIRY_SECONDS,
-        cooldown: OTP_COOLDOWN_SECONDS
+        expiresIn: this.otpLoginRepo.OTP_EXPIRY_SECONDS,
+        cooldown: this.otpLoginRepo.OTP_COOLDOWN_SECONDS
       }
     };
   }
@@ -141,11 +132,11 @@ export class LoginService {
 
     const auth = await this.ensureAuthenticationExists(email, t);
 
-    const isValid = await otpStore.verify(email, otp);
+    const isValid = await this.otpLoginRepo.verify(email, otp);
 
     if (!isValid) await this.handleInvalidOtp(email, auth, t, req);
 
-    withRetry(() => otpStore.cleanupAll(email), {
+    withRetry(() => this.otpLoginRepo.cleanupAll(email), {
       operationName: "cleanupLoginOtpData",
       context: { email }
     });
@@ -170,7 +161,7 @@ export class LoginService {
     Logger.info("Magic link send initiated", { email });
 
     await this.ensureCooldownExpired(
-      magicLinkStore,
+      this.magicLinkLoginRepo,
       email,
       t,
       "Magic link cooldown not expired",
@@ -178,9 +169,9 @@ export class LoginService {
     );
     await this.validateAuthenticationForLogin(email, t);
 
-    const token = await createAndStoreToken(email);
+    const token = await this.magicLinkLoginRepo.createAndStoreToken(email);
 
-    withRetry(() => setMagicLinkCooldown(email), {
+    withRetry(() => this.magicLinkLoginRepo.setCooldownAfterSend(email), {
       operationName: "setMagicLinkCooldown",
       context: { email }
     });
@@ -189,16 +180,16 @@ export class LoginService {
 
     Logger.info("Magic link send completed", {
       email,
-      expiresIn: MAGIC_LINK_EXPIRY_SECONDS,
-      cooldown: MAGIC_LINK_COOLDOWN_SECONDS
+      expiresIn: this.magicLinkLoginRepo.MAGIC_LINK_EXPIRY_SECONDS,
+      cooldown: this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
     });
 
     return {
       message: t("login:success.magicLinkSent"),
       data: {
         success: true,
-        expiresIn: MAGIC_LINK_EXPIRY_SECONDS,
-        cooldown: MAGIC_LINK_COOLDOWN_SECONDS
+        expiresIn: this.magicLinkLoginRepo.MAGIC_LINK_EXPIRY_SECONDS,
+        cooldown: this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
       }
     };
   }
@@ -213,11 +204,11 @@ export class LoginService {
 
     const auth = await this.ensureAuthenticationExists(email, t);
 
-    const isValid = await magicLinkStore.verifyToken(email, token);
+    const isValid = await this.magicLinkLoginRepo.verifyToken(email, token);
 
     if (!isValid) this.handleInvalidMagicLink(email, auth, req, t);
 
-    withRetry(() => magicLinkStore.cleanupAll(email), {
+    withRetry(() => this.magicLinkLoginRepo.cleanupAll(email), {
       operationName: "cleanupMagicLinkData",
       context: { email }
     });
@@ -335,11 +326,11 @@ export class LoginService {
     language: string
   ): Promise<void> {
     const { isLocked, remainingSeconds } =
-      await failedAttemptsStore.checkLockout(email);
+      await this.failedAttemptsRepo.checkLockout(email);
 
     if (!isLocked) return;
 
-    const attemptCount = await failedAttemptsStore.getCount(email);
+    const attemptCount = await this.failedAttemptsRepo.getCount(email);
     const timeMessage = formatDuration(remainingSeconds, language);
 
     Logger.warn("Login blocked - account locked", {
@@ -450,7 +441,7 @@ export class LoginService {
     req: PasswordLoginRequest
   ): Promise<{ attemptCount: number; lockoutSeconds: number }> {
     const { attemptCount, lockoutSeconds } =
-      await failedAttemptsStore.trackAttempt(email);
+      await this.failedAttemptsRepo.trackAttempt(email);
 
     this.loginHistoryService.recordFailedLogin({
       userId: auth._id,
@@ -472,11 +463,11 @@ export class LoginService {
     email: string,
     t: TranslateFunction
   ): Promise<void> {
-    const isLocked = await otpStore.isLocked(email);
+    const isLocked = await this.otpLoginRepo.isLocked(email);
 
     if (!isLocked) return;
 
-    const attempts = await otpStore.getFailedAttemptCount(email);
+    const attempts = await this.otpLoginRepo.getFailedAttemptCount(email);
     Logger.warn("Login OTP verification locked", { email, attempts });
 
     throw new BadRequestError(
@@ -513,7 +504,7 @@ export class LoginService {
     auth: AuthenticationDocument,
     req: OtpVerifyRequest
   ): Promise<number> {
-    const attempts = await otpStore.incrementFailedAttempts(email);
+    const attempts = await this.otpLoginRepo.incrementFailedAttempts(email);
 
     this.loginHistoryService.recordFailedLogin({
       userId: auth._id,
