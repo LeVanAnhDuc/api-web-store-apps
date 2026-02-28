@@ -1,11 +1,11 @@
 import type { Request } from "express";
 import type { RefreshTokenResponse } from "@/types/modules/token";
-import { generateAuthTokensResponse } from "@/utils/token";
+import { generateAuthTokensResponse, verifyRefreshToken } from "@/utils/token";
 import { Logger } from "@/utils/logger";
 import {
-  ensureRefreshTokenFromCookie,
-  verifyAndExtractPayload
-} from "./helpers";
+  UnauthorizedError,
+  ForbiddenError
+} from "@/configurations/responses/error";
 
 export class TokenService {
   refreshAccessToken(
@@ -13,8 +13,21 @@ export class TokenService {
   ): Partial<ResponsePattern<RefreshTokenResponse>> {
     const { t } = req;
 
-    const refreshToken = ensureRefreshTokenFromCookie(req, t);
-    const tokenPayload = verifyAndExtractPayload(refreshToken, t);
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) {
+      Logger.warn("Token refresh failed - no refresh token in cookie");
+      throw new UnauthorizedError(t("login:errors.refreshTokenRequired"));
+    }
+
+    let tokenPayload: JwtUserPayload;
+    try {
+      tokenPayload = verifyRefreshToken(refreshToken);
+    } catch (error) {
+      Logger.warn("Token refresh failed - invalid refresh token", {
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+      throw new ForbiddenError(t("login:errors.invalidRefreshToken"));
+    }
 
     Logger.info("Token refresh successful", { userId: tokenPayload.userId });
 
