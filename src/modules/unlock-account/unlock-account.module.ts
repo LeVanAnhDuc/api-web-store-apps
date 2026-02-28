@@ -1,8 +1,12 @@
 import authenticationRepository from "@/repositories/authentication";
+import { loginHistoryService } from "@/modules/login-history/login-history.module";
 import { UnlockAccountService } from "./unlock-account.service";
 import { UnlockAccountController } from "./unlock-account.controller";
 
-const unlockAccountService = new UnlockAccountService(authenticationRepository);
+const unlockAccountService = new UnlockAccountService(
+  authenticationRepository,
+  loginHistoryService
+);
 const unlockAccountController = new UnlockAccountController(
   unlockAccountService
 );
