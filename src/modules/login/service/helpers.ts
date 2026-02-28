@@ -26,7 +26,7 @@ import {
 } from "@/constants/enums";
 import { LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG } from "@/constants/config";
 import { SECONDS_PER_MINUTE } from "@/constants/infrastructure";
-import { logLoginAttempt } from "@/modules/login-history/service";
+import { loginHistoryService } from "@/modules/login-history/service/login-history.service";
 
 // ──────────────────────────────────────────────
 // Constants
@@ -54,7 +54,7 @@ export const recordSuccessfulLogin = ({
   loginMethod: LoginMethod;
   req: Request;
 }): void => {
-  logLoginAttempt({
+  loginHistoryService.logLoginAttempt({
     userId: userId.toString(),
     usernameAttempted,
     status: LOGIN_STATUSES.SUCCESS,
@@ -76,7 +76,7 @@ export const recordFailedLogin = ({
   failReason: LoginFailReason;
   req: Request;
 }): void => {
-  logLoginAttempt({
+  loginHistoryService.logLoginAttempt({
     userId: userId ? userId.toString() : null,
     usernameAttempted,
     status: LOGIN_STATUSES.FAILED,

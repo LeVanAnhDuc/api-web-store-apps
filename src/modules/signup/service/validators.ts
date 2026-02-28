@@ -3,14 +3,14 @@ import {
   ConflictRequestError
 } from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
-import { getAuthenticationRepository } from "@/repositories/authentication";
+import type authenticationRepository from "@/repositories/authentication";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 
 export const ensureEmailAvailable = async (
   email: string,
-  t: TranslateFunction
+  t: TranslateFunction,
+  authRepo: typeof authenticationRepository
 ): Promise<void> => {
-  const authRepo = getAuthenticationRepository();
   const exists = await authRepo.emailExists(email);
 
   if (exists) {

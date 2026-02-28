@@ -13,6 +13,7 @@ import type {
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
 import authenticationRepository from "@/repositories/authentication";
+import userRepository from "@/repositories/user";
 import { otpStore } from "@/modules/signup/store";
 import {
   ensureEmailAvailable,
@@ -39,7 +40,10 @@ import {
 import { AUTHENTICATION_ROLES } from "@/constants/enums";
 
 class SignupService {
-  constructor(private readonly authRepo: typeof authenticationRepository) {}
+  constructor(
+    private readonly authRepo: typeof authenticationRepository,
+    private readonly userRepo: typeof userRepository
+  ) {}
 
   async sendOtp(
     req: SendOtpRequest
@@ -50,7 +54,7 @@ class SignupService {
     Logger.info("SendOtp initiated", { email });
 
     await ensureCooldownExpired(email, t);
-    await ensureEmailAvailable(email, t);
+    await ensureEmailAvailable(email, t, this.authRepo);
 
     const otp = await createAndStoreOtp(email, OTP_EXPIRY_SECONDS);
 
@@ -115,7 +119,7 @@ class SignupService {
 
     await ensureCooldownExpired(email, t);
     await ensureCanResend(email, MAX_RESEND_COUNT, t);
-    await ensureEmailAvailable(email, t);
+    await ensureEmailAvailable(email, t, this.authRepo);
 
     const otp = await createAndStoreOtp(email, OTP_EXPIRY_SECONDS);
 
@@ -155,14 +159,16 @@ class SignupService {
     Logger.info("CompleteSignup initiated", { email });
 
     await ensureSessionValid(email, sessionToken, t);
-    await ensureEmailAvailable(email, t);
+    await ensureEmailAvailable(email, t, this.authRepo);
 
     const account = await createUserAccount(
       email,
       password,
       fullName,
       gender,
-      dateOfBirth
+      dateOfBirth,
+      this.authRepo,
+      this.userRepo
     );
 
     const tokens = generateAuthTokensResponse({
@@ -212,4 +218,7 @@ class SignupService {
   }
 }
 
-export const signupService = new SignupService(authenticationRepository);
+export const signupService = new SignupService(
+  authenticationRepository,
+  userRepository
+);

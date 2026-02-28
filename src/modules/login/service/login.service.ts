@@ -109,7 +109,7 @@ class LoginService {
       "Login OTP cooldown not expired",
       "login:errors.otpCooldown"
     );
-    await validateAuthenticationForLogin(email, t);
+    await validateAuthenticationForLogin(email, t, this.authRepo);
     await ensureCanResend(email, t);
 
     const otp = await createAndStoreOtp(email);
@@ -147,7 +147,7 @@ class LoginService {
 
     await ensureOtpNotLocked(email, t);
 
-    const auth = await ensureAuthenticationExists(email, t);
+    const auth = await ensureAuthenticationExists(email, t, this.authRepo);
 
     const isValid = await otpStore.verify(email, otp);
 
@@ -184,7 +184,7 @@ class LoginService {
       "Magic link cooldown not expired",
       "login:errors.magicLinkCooldown"
     );
-    await validateAuthenticationForLogin(email, t);
+    await validateAuthenticationForLogin(email, t, this.authRepo);
 
     const token = await createAndStoreToken(email);
 
@@ -219,7 +219,7 @@ class LoginService {
 
     Logger.info("Magic link verification initiated", { email });
 
-    const auth = await ensureAuthenticationExists(email, t);
+    const auth = await ensureAuthenticationExists(email, t, this.authRepo);
 
     const isValid = await magicLinkStore.verifyToken(email, token);
 

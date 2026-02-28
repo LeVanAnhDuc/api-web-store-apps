@@ -2,8 +2,8 @@ import type { Schema } from "mongoose";
 import type { Gender } from "@/types/modules/user";
 import { BadRequestError } from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
-import { getAuthenticationRepository } from "@/repositories/authentication";
-import { getUserRepository } from "@/repositories/user";
+import type authenticationRepository from "@/repositories/authentication";
+import type userRepository from "@/repositories/user";
 import { otpStore, sessionStore } from "@/modules/signup/store";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/config";
@@ -141,11 +141,11 @@ export const createAndStoreSession = async (email: string): Promise<string> => {
 
 const createAuthentication = async (
   email: string,
-  password: string
+  password: string,
+  authRepo: typeof authenticationRepository
 ): Promise<Schema.Types.ObjectId> => {
   const hashedPassword = hashValue(password);
 
-  const authRepo = getAuthenticationRepository();
   const auth = await authRepo.create({
     email,
     hashedPassword
@@ -163,9 +163,10 @@ const createUser = async (
   authId: Schema.Types.ObjectId,
   fullName: string,
   gender: Gender,
-  dateOfBirth: string
+  dateOfBirth: string,
+  userRepo: typeof userRepository
 ): Promise<Schema.Types.ObjectId> => {
-  const user = await getUserRepository().createProfile({
+  const user = await userRepo.createProfile({
     authId,
     fullName,
     gender,
@@ -185,15 +186,23 @@ export const createUserAccount = async (
   password: string,
   fullName: string,
   gender: Gender,
-  dateOfBirth: string
+  dateOfBirth: string,
+  authRepo: typeof authenticationRepository,
+  userRepo: typeof userRepository
 ): Promise<{
   authId: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
   email: string;
   fullName: string;
 }> => {
-  const authId = await createAuthentication(email, password);
-  const userId = await createUser(authId, fullName, gender, dateOfBirth);
+  const authId = await createAuthentication(email, password, authRepo);
+  const userId = await createUser(
+    authId,
+    fullName,
+    gender,
+    dateOfBirth,
+    userRepo
+  );
 
   return {
     authId,

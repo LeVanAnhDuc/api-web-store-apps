@@ -6,7 +6,7 @@ import {
 } from "@/configurations/responses/error";
 import { Logger } from "@/utils/logger";
 import { formatDuration } from "@/utils/date";
-import { getAuthenticationRepository } from "@/repositories/authentication";
+import type authenticationRepository from "@/repositories/authentication";
 import { failedAttemptsStore, otpStore } from "@/modules/login/store";
 import { recordFailedLogin } from "./helpers";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/constants/enums";
@@ -35,9 +35,9 @@ export const ensureCooldownExpired = async <
 
 export const ensureAuthenticationExists = async (
   email: string,
-  t: TranslateFunction
+  t: TranslateFunction,
+  authRepo: typeof authenticationRepository
 ): Promise<AuthenticationDocument> => {
-  const authRepo = getAuthenticationRepository();
   const auth = await authRepo.findByEmail(email);
 
   if (!auth) {
@@ -72,9 +72,10 @@ export const ensureEmailVerified = (
 
 export const validateAuthenticationForLogin = async (
   email: string,
-  t: TranslateFunction
+  t: TranslateFunction,
+  authRepo: typeof authenticationRepository
 ): Promise<AuthenticationDocument> => {
-  const auth = await ensureAuthenticationExists(email, t);
+  const auth = await ensureAuthenticationExists(email, t, authRepo);
   ensureAccountActive(auth, email, t);
   ensureEmailVerified(auth, email, t);
   return auth;
