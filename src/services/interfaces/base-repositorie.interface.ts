@@ -60,7 +60,6 @@ export interface UpdateOptions {
 
 export interface InsertOptions {
   ordered?: boolean;
-  skipValidation?: boolean;
 }
 
 export interface DeleteResult {
@@ -71,12 +70,6 @@ export interface UpdateResult {
   matchedCount: number;
   modifiedCount: number;
   upsertedId?: string | number;
-}
-
-export interface TransactionContext {
-  commit(): Promise<void>;
-  rollback(): Promise<void>;
-  isActive(): boolean;
 }
 
 export interface IBaseRepository<T, ID = string> {
