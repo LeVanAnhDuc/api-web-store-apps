@@ -12,8 +12,8 @@ import type {
 } from "@/types/modules/signup";
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
-import authenticationRepository from "@/repositories/authentication";
-import userRepository from "@/repositories/user";
+import type authenticationRepository from "@/repositories/authentication";
+import type userRepository from "@/repositories/user";
 import { otpStore } from "@/modules/signup/store";
 import {
   ensureEmailAvailable,
@@ -21,8 +21,8 @@ import {
   ensureCanResend,
   ensureOtpNotLocked,
   ensureSessionValid
-} from "./validators";
-import { sendSignupOtpEmail } from "./emails";
+} from "./internals/validators";
+import { sendSignupOtpEmail } from "./internals/emails";
 import {
   createAndStoreOtp,
   setOtpCooldown,
@@ -36,10 +36,10 @@ import {
   MAX_RESEND_COUNT,
   MAX_FAILED_ATTEMPTS,
   SESSION_EXPIRY_SECONDS
-} from "./helpers";
+} from "./internals/helpers";
 import { AUTHENTICATION_ROLES } from "@/constants/enums";
 
-class SignupService {
+export class SignupService {
   constructor(
     private readonly authRepo: typeof authenticationRepository,
     private readonly userRepo: typeof userRepository
@@ -217,8 +217,3 @@ class SignupService {
     };
   }
 }
-
-export const signupService = new SignupService(
-  authenticationRepository,
-  userRepository
-);

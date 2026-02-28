@@ -1,7 +1,7 @@
 import type { Request } from "express";
 import { Logger } from "@/utils/logger";
 
-class LogoutService {
+export class LogoutService {
   async logout(
     req: Request
   ): Promise<Partial<ResponsePattern<{ success: boolean }>>> {
@@ -17,5 +17,3 @@ class LogoutService {
     };
   }
 }
-
-export const logoutService = new LogoutService();

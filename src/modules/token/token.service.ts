@@ -7,7 +7,7 @@ import {
   verifyAndExtractPayload
 } from "./helpers";
 
-class TokenService {
+export class TokenService {
   refreshAccessToken(
     req: Request
   ): Partial<ResponsePattern<RefreshTokenResponse>> {
@@ -29,5 +29,3 @@ class TokenService {
     };
   }
 }
-
-export const tokenService = new TokenService();

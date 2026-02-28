@@ -1,9 +1,9 @@
 import { Router } from "express";
-import signupRouter from "@/routes/modules/signup.route";
-import loginRouter from "@/routes/modules/login.route";
-import logoutRouter from "@/routes/modules/logout.route";
-import tokenRouter from "@/routes/modules/token.route";
-import unlockAccountRouter from "@/routes/modules/unlock-account.route";
+import { signupRouter } from "@/modules/signup/signup.module";
+import { loginRouter } from "@/modules/login/login.module";
+import { logoutRouter } from "@/modules/logout/logout.module";
+import { tokenRouter } from "@/modules/token/token.module";
+import { unlockAccountRouter } from "@/modules/unlock-account/unlock-account.module";
 
 const v1Router = Router();
 

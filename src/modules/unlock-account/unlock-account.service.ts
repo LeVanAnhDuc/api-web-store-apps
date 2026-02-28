@@ -3,11 +3,11 @@ import type { UnlockVerifyRequest } from "@/types/modules/unlock-account";
 import { Logger } from "@/utils/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { withRetry } from "@/utils/retry";
-import authenticationRepository from "@/repositories/authentication";
+import type authenticationRepository from "@/repositories/authentication";
 import { failedAttemptsStore } from "@/modules/login/store";
-import { completeSuccessfulLogin } from "@/modules/login/service/helpers";
+import { completeSuccessfulLogin } from "@/modules/login/internals/helpers";
 import { LOGIN_METHODS } from "@/constants/enums";
-import { sendUnlockEmail } from "./emails";
+import { sendUnlockEmail } from "./internals/emails";
 import {
   checkCooldown,
   checkRateLimit,
@@ -21,9 +21,9 @@ import {
   verifyTempPasswordOrFail,
   generateTempPassword,
   TEMP_PASSWORD_EXPIRY_MINUTES
-} from "./helpers";
+} from "./internals/helpers";
 
-class UnlockAccountService {
+export class UnlockAccountService {
   constructor(private readonly authRepo: typeof authenticationRepository) {}
 
   async unlockRequest(
@@ -120,7 +120,3 @@ class UnlockAccountService {
     return response;
   }
 }
-
-export const unlockAccountService = new UnlockAccountService(
-  authenticationRepository
-);

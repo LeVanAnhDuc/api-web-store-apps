@@ -26,7 +26,7 @@ import {
 } from "@/constants/enums";
 import { LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG } from "@/constants/config";
 import { SECONDS_PER_MINUTE } from "@/constants/infrastructure";
-import { loginHistoryService } from "@/modules/login-history/service/login-history.service";
+import { loginHistoryService } from "@/modules/login-history/login-history.module";
 
 // ──────────────────────────────────────────────
 // Constants

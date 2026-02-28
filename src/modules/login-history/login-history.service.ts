@@ -1,4 +1,4 @@
-import loginHistoryRepository from "@/repositories/login-history";
+import type loginHistoryRepository from "@/repositories/login-history";
 import { HTTP_HEADERS } from "@/constants/infrastructure";
 import type {
   LoginEventPayload,
@@ -10,9 +10,9 @@ import {
   parseUserAgent,
   geoipLookup,
   determineClientType
-} from "./helpers";
+} from "./internals/helpers";
 
-class LoginHistoryService {
+export class LoginHistoryService {
   constructor(
     private readonly loginHistoryRepo: typeof loginHistoryRepository
   ) {}
@@ -81,7 +81,3 @@ class LoginHistoryService {
     }
   }
 }
-
-export const loginHistoryService = new LoginHistoryService(
-  loginHistoryRepository
-);

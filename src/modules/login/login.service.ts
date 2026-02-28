@@ -11,7 +11,7 @@ import type {
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { generateAuthTokensResponse } from "@/utils/token";
-import authenticationRepository from "@/repositories/authentication";
+import type authenticationRepository from "@/repositories/authentication";
 import {
   failedAttemptsStore,
   otpStore,
@@ -27,9 +27,12 @@ import {
   validateAuthenticationForLogin,
   ensureOtpNotLocked,
   ensureCanResend
-} from "./validators";
-import { recordSuccessfulLogin, completeSuccessfulLogin } from "./helpers";
-import { sendLoginOtpEmail, sendMagicLinkEmail } from "./emails";
+} from "./internals/validators";
+import {
+  recordSuccessfulLogin,
+  completeSuccessfulLogin
+} from "./internals/helpers";
+import { sendLoginOtpEmail, sendMagicLinkEmail } from "./internals/emails";
 import {
   verifyPasswordOrFail,
   createAndStoreOtp,
@@ -42,10 +45,10 @@ import {
   OTP_COOLDOWN_SECONDS,
   MAGIC_LINK_EXPIRY_SECONDS,
   MAGIC_LINK_COOLDOWN_SECONDS
-} from "./helpers";
+} from "./internals/helpers";
 import { LOGIN_METHODS } from "@/constants/enums";
 
-class LoginService {
+export class LoginService {
   constructor(private readonly authRepo: typeof authenticationRepository) {}
 
   async passwordLogin(
@@ -241,5 +244,3 @@ class LoginService {
     };
   }
 }
-
-export const loginService = new LoginService(authenticationRepository);
