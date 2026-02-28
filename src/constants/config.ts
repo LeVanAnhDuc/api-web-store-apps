@@ -44,13 +44,6 @@ export const MAGIC_LINK_CONFIG = {
   MAX_RESEND_ATTEMPTS: 3
 } as const;
 
-// Login - Account Unlock
-export const ACCOUNT_UNLOCK_CONFIG = {
-  AUTO_UNLOCK_MINUTES: 15,
-  UNLOCK_TOKEN_EXPIRY_HOURS: 24,
-  UNLOCK_TOKEN_LENGTH: 64
-} as const;
-
 // Login - History
 export const LOGIN_HISTORY_CONFIG = {
   RETENTION_DAYS: 90,

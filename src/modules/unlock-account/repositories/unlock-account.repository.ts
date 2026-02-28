@@ -1,9 +1,6 @@
 import type { RedisClientType } from "redis";
 import RedisCache from "@/services/implements/RedisCache";
-import { generateSecureToken } from "@/utils/crypto/otp";
-import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { REDIS_KEYS } from "@/constants/infrastructure";
-import { ACCOUNT_UNLOCK_CONFIG } from "@/constants/config";
 
 const KEYS = {
   UNLOCK_TOKEN: REDIS_KEYS.LOGIN.UNLOCK_TOKEN,
@@ -40,38 +37,6 @@ export class UnlockAccountRepository extends RedisCache {
 
   private rateKey(email: string): string {
     return this.buildKey(KEYS.RATE, email);
-  }
-
-  // ──────────────────────────────────────────────
-  // Token operations (currently unused)
-  // ──────────────────────────────────────────────
-
-  createToken(): string {
-    return generateSecureToken(ACCOUNT_UNLOCK_CONFIG.UNLOCK_TOKEN_LENGTH);
-  }
-
-  async storeTokenHashed(
-    email: string,
-    token: string,
-    expiry: number
-  ): Promise<void> {
-    const key = this.unlockTokenKey(email);
-    const hashedToken = hashValue(token);
-    await this.client.setEx(key, expiry, hashedToken);
-  }
-
-  async verifyToken(email: string, token: string): Promise<boolean> {
-    const key = this.unlockTokenKey(email);
-    const storedHash = await this.client.get(key);
-
-    if (!storedHash) return false;
-
-    return isValidHashedValue(token, storedHash);
-  }
-
-  async clearToken(email: string): Promise<void> {
-    const key = this.unlockTokenKey(email);
-    await this.client.del(key);
   }
 
   // ──────────────────────────────────────────────
