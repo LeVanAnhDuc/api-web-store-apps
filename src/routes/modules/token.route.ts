@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { refreshTokenController } from "@/modules/token/controller";
+import { tokenController } from "@/modules/token/controller";
 
 const tokenRouter = Router();
 
-tokenRouter.post("/refresh", refreshTokenController);
+tokenRouter.post("/refresh", tokenController.refreshToken);
 
 export default tokenRouter;

@@ -1,11 +1,5 @@
 import { Router } from "express";
-import {
-  sendOtpController,
-  verifyOtpController,
-  resendOtpController,
-  completeSignupController,
-  checkEmailController
-} from "@/modules/signup/controller";
+import { signupController } from "@/modules/signup/controller";
 import { validate } from "@/validators/middleware";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
@@ -24,13 +18,13 @@ signupRouter.post(
   (req, res, next) =>
     getRateLimiterMiddleware().signupOtpByEmail(req, res, next),
   validate(sendOtpSchema, "body"),
-  sendOtpController
+  signupController.sendOtp
 );
 
 signupRouter.post(
   "/verify-otp",
   validate(verifyOtpSchema, "body"),
-  verifyOtpController
+  signupController.verifyOtp
 );
 
 signupRouter.post(
@@ -39,20 +33,20 @@ signupRouter.post(
   (req, res, next) =>
     getRateLimiterMiddleware().signupOtpByEmail(req, res, next),
   validate(resendOtpSchema, "body"),
-  resendOtpController
+  signupController.resendOtp
 );
 
 signupRouter.post(
   "/complete",
   validate(completeSignupSchema, "body"),
-  completeSignupController
+  signupController.completeSignup
 );
 
 signupRouter.get(
   "/check-email/:email",
   (req, res, next) => getRateLimiterMiddleware().checkEmailByIp(req, res, next),
   validate(checkEmailSchema, "params"),
-  checkEmailController
+  signupController.checkEmail
 );
 
 export default signupRouter;

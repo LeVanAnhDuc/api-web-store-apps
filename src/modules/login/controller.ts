@@ -12,70 +12,76 @@ import { asyncHandler } from "@/utils/async-handler";
 import { COOKIE_NAMES } from "@/constants/infrastructure";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/configurations/cookie";
 
-export const loginController = asyncHandler(
-  async (req: PasswordLoginRequest, res: Response): Promise<void> => {
-    const { data, message } = await loginService.passwordLogin(req);
+class LoginController {
+  constructor(private readonly service: typeof loginService) {}
 
-    const { refreshToken, ...responseData } = data;
+  login = asyncHandler(
+    async (req: PasswordLoginRequest, res: Response): Promise<void> => {
+      const { data, message } = await this.service.passwordLogin(req);
 
-    if (refreshToken) {
-      res.cookie(
-        COOKIE_NAMES.REFRESH_TOKEN,
-        refreshToken,
-        REFRESH_TOKEN_COOKIE_OPTIONS
-      );
+      const { refreshToken, ...responseData } = data;
+
+      if (refreshToken) {
+        res.cookie(
+          COOKIE_NAMES.REFRESH_TOKEN,
+          refreshToken,
+          REFRESH_TOKEN_COOKIE_OPTIONS
+        );
+      }
+
+      new OkSuccess({ data: responseData, message }).send(req, res);
     }
+  );
 
-    new OkSuccess({ data: responseData, message }).send(req, res);
-  }
-);
-
-export const sendOtpController = asyncHandler(
-  async (req: OtpSendRequest, res: Response): Promise<void> => {
-    const { data, message } = await loginService.sendOtp(req);
-    new OkSuccess({ data, message }).send(req, res);
-  }
-);
-
-export const verifyOtpController = asyncHandler(
-  async (req: OtpVerifyRequest, res: Response): Promise<void> => {
-    const { data, message } = await loginService.verifyOtp(req);
-
-    const { refreshToken, ...responseData } = data;
-
-    if (refreshToken) {
-      res.cookie(
-        COOKIE_NAMES.REFRESH_TOKEN,
-        refreshToken,
-        REFRESH_TOKEN_COOKIE_OPTIONS
-      );
+  sendOtp = asyncHandler(
+    async (req: OtpSendRequest, res: Response): Promise<void> => {
+      const { data, message } = await this.service.sendOtp(req);
+      new OkSuccess({ data, message }).send(req, res);
     }
+  );
 
-    new OkSuccess({ data: responseData, message }).send(req, res);
-  }
-);
+  verifyOtp = asyncHandler(
+    async (req: OtpVerifyRequest, res: Response): Promise<void> => {
+      const { data, message } = await this.service.verifyOtp(req);
 
-export const sendMagicLinkController = asyncHandler(
-  async (req: MagicLinkSendRequest, res: Response): Promise<void> => {
-    const { data, message } = await loginService.sendMagicLink(req);
-    new OkSuccess({ data, message }).send(req, res);
-  }
-);
+      const { refreshToken, ...responseData } = data;
 
-export const verifyMagicLinkController = asyncHandler(
-  async (req: MagicLinkVerifyRequest, res: Response): Promise<void> => {
-    const { data, message } = await loginService.verifyMagicLink(req);
+      if (refreshToken) {
+        res.cookie(
+          COOKIE_NAMES.REFRESH_TOKEN,
+          refreshToken,
+          REFRESH_TOKEN_COOKIE_OPTIONS
+        );
+      }
 
-    const { refreshToken, ...responseData } = data;
-
-    if (refreshToken) {
-      res.cookie(
-        COOKIE_NAMES.REFRESH_TOKEN,
-        refreshToken,
-        REFRESH_TOKEN_COOKIE_OPTIONS
-      );
+      new OkSuccess({ data: responseData, message }).send(req, res);
     }
+  );
 
-    new OkSuccess({ data: responseData, message }).send(req, res);
-  }
-);
+  sendMagicLink = asyncHandler(
+    async (req: MagicLinkSendRequest, res: Response): Promise<void> => {
+      const { data, message } = await this.service.sendMagicLink(req);
+      new OkSuccess({ data, message }).send(req, res);
+    }
+  );
+
+  verifyMagicLink = asyncHandler(
+    async (req: MagicLinkVerifyRequest, res: Response): Promise<void> => {
+      const { data, message } = await this.service.verifyMagicLink(req);
+
+      const { refreshToken, ...responseData } = data;
+
+      if (refreshToken) {
+        res.cookie(
+          COOKIE_NAMES.REFRESH_TOKEN,
+          refreshToken,
+          REFRESH_TOKEN_COOKIE_OPTIONS
+        );
+      }
+
+      new OkSuccess({ data: responseData, message }).send(req, res);
+    }
+  );
+}
+
+export const loginController = new LoginController(loginService);

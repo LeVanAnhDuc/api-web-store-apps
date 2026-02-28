@@ -1,11 +1,5 @@
 import { Router } from "express";
-import {
-  loginController,
-  sendOtpController,
-  verifyOtpController,
-  sendMagicLinkController,
-  verifyMagicLinkController
-} from "@/modules/login/controller";
+import { loginController } from "@/modules/login/controller";
 import { validate } from "@/validators/middleware";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
@@ -22,7 +16,7 @@ loginRouter.post(
   "/",
   (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
   validate(loginSchema, "body"),
-  loginController
+  loginController.login
 );
 
 loginRouter.post(
@@ -31,14 +25,14 @@ loginRouter.post(
   (req, res, next) =>
     getRateLimiterMiddleware().loginOtpByEmail(req, res, next),
   validate(otpSendSchema, "body"),
-  sendOtpController
+  loginController.sendOtp
 );
 
 loginRouter.post(
   "/otp/verify",
   (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
   validate(otpVerifySchema, "body"),
-  verifyOtpController
+  loginController.verifyOtp
 );
 
 loginRouter.post(
@@ -47,14 +41,14 @@ loginRouter.post(
   (req, res, next) =>
     getRateLimiterMiddleware().magicLinkByEmail(req, res, next),
   validate(magicLinkSendSchema, "body"),
-  sendMagicLinkController
+  loginController.sendMagicLink
 );
 
 loginRouter.post(
   "/magic-link/verify",
   (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
   validate(magicLinkVerifySchema, "body"),
-  verifyMagicLinkController
+  loginController.verifyMagicLink
 );
 
 export default loginRouter;

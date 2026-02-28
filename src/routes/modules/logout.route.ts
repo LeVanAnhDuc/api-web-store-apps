@@ -4,6 +4,6 @@ import { authenticate } from "@/middlewares/auth";
 
 const logoutRouter = Router();
 
-logoutRouter.post("/", authenticate, logoutController);
+logoutRouter.post("/", authenticate, logoutController.logout);
 
 export default logoutRouter;

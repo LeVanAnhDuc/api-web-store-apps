@@ -9,37 +9,45 @@ import { asyncHandler } from "@/utils/async-handler";
 import { COOKIE_NAMES } from "@/constants/infrastructure";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/configurations/cookie";
 
-export const unlockRequestController = asyncHandler(
-  async (req: UnlockRequest, res: Response): Promise<void> => {
-    const { email } = req.body;
-    const { t, language } = req;
+class UnlockAccountController {
+  constructor(private readonly service: typeof unlockAccountService) {}
 
-    const result = await unlockAccountService.unlockRequest(email, t, language);
+  unlockRequest = asyncHandler(
+    async (req: UnlockRequest, res: Response): Promise<void> => {
+      const { email } = req.body;
+      const { t, language } = req;
 
-    const message = t("unlockAccount:success.unlockEmailSent");
+      const result = await this.service.unlockRequest(email, t, language);
 
-    new OkSuccess({ data: result, message }).send(req, res);
-  }
-);
+      const message = t("unlockAccount:success.unlockEmailSent");
 
-export const unlockVerifyController = asyncHandler(
-  async (req: UnlockVerifyRequest, res: Response): Promise<void> => {
-    const { t } = req;
-
-    const result = await unlockAccountService.unlockVerify(req);
-
-    const message = t("unlockAccount:success.accountUnlocked");
-
-    const { refreshToken, ...responseData } = result;
-
-    if (refreshToken) {
-      res.cookie(
-        COOKIE_NAMES.REFRESH_TOKEN,
-        refreshToken,
-        REFRESH_TOKEN_COOKIE_OPTIONS
-      );
+      new OkSuccess({ data: result, message }).send(req, res);
     }
+  );
 
-    new OkSuccess({ data: responseData, message }).send(req, res);
-  }
+  unlockVerify = asyncHandler(
+    async (req: UnlockVerifyRequest, res: Response): Promise<void> => {
+      const { t } = req;
+
+      const result = await this.service.unlockVerify(req);
+
+      const message = t("unlockAccount:success.accountUnlocked");
+
+      const { refreshToken, ...responseData } = result;
+
+      if (refreshToken) {
+        res.cookie(
+          COOKIE_NAMES.REFRESH_TOKEN,
+          refreshToken,
+          REFRESH_TOKEN_COOKIE_OPTIONS
+        );
+      }
+
+      new OkSuccess({ data: responseData, message }).send(req, res);
+    }
+  );
+}
+
+export const unlockAccountController = new UnlockAccountController(
+  unlockAccountService
 );

@@ -1,8 +1,5 @@
 import { Router } from "express";
-import {
-  unlockRequestController,
-  unlockVerifyController
-} from "@/modules/unlock-account/controller";
+import { unlockAccountController } from "@/modules/unlock-account/controller";
 import { validate } from "@/validators/middleware";
 import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
@@ -15,14 +12,14 @@ const unlockAccountRouter = Router();
 unlockAccountRouter.post(
   "/request",
   validate(unlockRequestSchema, "body"),
-  unlockRequestController
+  unlockAccountController.unlockRequest
 );
 
 unlockAccountRouter.post(
   "/verify",
   (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
   validate(unlockVerifySchema, "body"),
-  unlockVerifyController
+  unlockAccountController.unlockVerify
 );
 
 export default unlockAccountRouter;

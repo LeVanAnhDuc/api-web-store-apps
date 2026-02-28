@@ -5,9 +5,11 @@ import { COOKIE_NAMES } from "@/constants/infrastructure";
 import ENV from "@/configurations/env";
 import { logoutService } from "@/modules/logout/logout.service";
 
-export const logoutController = asyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
-    const { data, message } = await logoutService.logout(req);
+class LogoutController {
+  constructor(private readonly service: typeof logoutService) {}
+
+  logout = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { data, message } = await this.service.logout(req);
 
     res.clearCookie(COOKIE_NAMES.REFRESH_TOKEN, {
       httpOnly: true,
@@ -17,5 +19,7 @@ export const logoutController = asyncHandler(
     });
 
     new OkSuccess({ data, message }).send(req, res);
-  }
-);
+  });
+}
+
+export const logoutController = new LogoutController(logoutService);
