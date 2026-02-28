@@ -10,34 +10,34 @@ import type {
   CheckEmailRequest,
   CheckEmailResponse
 } from "@/types/modules/signup";
+import type { Gender } from "@/types/modules/user";
+import type { Schema } from "mongoose";
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
+import { hashValue } from "@/utils/crypto/bcrypt";
+import {
+  BadRequestError,
+  ConflictRequestError
+} from "@/configurations/responses/error";
 import type authenticationRepository from "@/repositories/authentication";
 import type userRepository from "@/repositories/user";
-import { otpStore } from "@/modules/signup/store";
-import {
-  ensureEmailAvailable,
-  ensureCooldownExpired,
-  ensureCanResend,
-  ensureOtpNotLocked,
-  ensureSessionValid
-} from "./internals/validators";
+import { otpStore, sessionStore } from "@/modules/signup/store";
 import { sendSignupOtpEmail } from "./internals/emails";
-import {
-  createAndStoreOtp,
-  setOtpCooldown,
-  trackResendAttempt,
-  verifyOtp,
-  createAndStoreSession,
-  createUserAccount,
-  cleanupSignupData,
-  OTP_EXPIRY_SECONDS,
-  OTP_COOLDOWN_SECONDS,
-  MAX_RESEND_COUNT,
-  MAX_FAILED_ATTEMPTS,
-  SESSION_EXPIRY_SECONDS
-} from "./internals/helpers";
 import { AUTHENTICATION_ROLES } from "@/constants/enums";
+import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/config";
+import {
+  SECONDS_PER_MINUTE,
+  MINUTES_PER_HOUR
+} from "@/constants/infrastructure";
+
+const OTP_EXPIRY_SECONDS = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
+const OTP_COOLDOWN_SECONDS = OTP_CONFIG.RESEND_COOLDOWN_SECONDS;
+const RESEND_WINDOW_SECONDS = MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
+const MAX_RESEND_COUNT = OTP_CONFIG.MAX_RESEND_COUNT;
+const MAX_FAILED_ATTEMPTS = OTP_CONFIG.MAX_FAILED_ATTEMPTS;
+const LOCKOUT_DURATION_MINUTES = OTP_CONFIG.LOCKOUT_DURATION_MINUTES;
+const SESSION_EXPIRY_SECONDS =
+  SESSION_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 
 export class SignupService {
   constructor(
@@ -53,12 +53,12 @@ export class SignupService {
 
     Logger.info("SendOtp initiated", { email });
 
-    await ensureCooldownExpired(email, t);
-    await ensureEmailAvailable(email, t, this.authRepo);
+    await this.ensureCooldownExpired(email, t);
+    await this.ensureEmailAvailable(email, t);
 
-    const otp = await createAndStoreOtp(email, OTP_EXPIRY_SECONDS);
+    const otp = await this.createAndStoreOtp(email, OTP_EXPIRY_SECONDS);
 
-    await setOtpCooldown(email, OTP_COOLDOWN_SECONDS);
+    await otpStore.setCooldown(email, OTP_COOLDOWN_SECONDS);
 
     sendSignupOtpEmail(email, otp, language as I18n.Locale);
 
@@ -86,11 +86,18 @@ export class SignupService {
 
     Logger.info("VerifyOtp initiated", { email });
 
-    await ensureOtpNotLocked(email, MAX_FAILED_ATTEMPTS, t);
+    const isLocked = await otpStore.isLocked(email, MAX_FAILED_ATTEMPTS);
+    if (isLocked) {
+      Logger.warn("OTP account locked", {
+        email,
+        maxAttempts: MAX_FAILED_ATTEMPTS
+      });
+      throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
+    }
 
-    await verifyOtp(email, otp, t);
+    await this.verifyOtpOrFail(email, otp, t);
 
-    const sessionToken = await createAndStoreSession(email);
+    const sessionToken = await this.createAndStoreSession(email);
 
     await otpStore.cleanupOtpData(email);
 
@@ -117,15 +124,36 @@ export class SignupService {
 
     Logger.info("ResendOtp initiated", { email });
 
-    await ensureCooldownExpired(email, t);
-    await ensureCanResend(email, MAX_RESEND_COUNT, t);
-    await ensureEmailAvailable(email, t, this.authRepo);
+    await this.ensureCooldownExpired(email, t);
 
-    const otp = await createAndStoreOtp(email, OTP_EXPIRY_SECONDS);
+    const exceeded = await otpStore.hasExceededResendLimit(
+      email,
+      MAX_RESEND_COUNT
+    );
+    if (exceeded) {
+      Logger.warn("Resend OTP limit exceeded", {
+        email,
+        maxResends: MAX_RESEND_COUNT
+      });
+      throw new BadRequestError(t("signup:errors.resendLimitExceeded"));
+    }
 
-    await setOtpCooldown(email, OTP_COOLDOWN_SECONDS);
+    await this.ensureEmailAvailable(email, t);
 
-    const currentResendCount = await trackResendAttempt(email);
+    const otp = await this.createAndStoreOtp(email, OTP_EXPIRY_SECONDS);
+
+    await otpStore.setCooldown(email, OTP_COOLDOWN_SECONDS);
+
+    const currentResendCount = await otpStore.incrementResendCount(
+      email,
+      RESEND_WINDOW_SECONDS
+    );
+    Logger.debug("Resend attempt tracked", {
+      email,
+      currentCount: currentResendCount,
+      maxResends: MAX_RESEND_COUNT,
+      windowSeconds: RESEND_WINDOW_SECONDS
+    });
 
     sendSignupOtpEmail(email, otp, language as I18n.Locale);
 
@@ -158,17 +186,20 @@ export class SignupService {
 
     Logger.info("CompleteSignup initiated", { email });
 
-    await ensureSessionValid(email, sessionToken, t);
-    await ensureEmailAvailable(email, t, this.authRepo);
+    const isValid = await sessionStore.verify(email, sessionToken);
+    if (!isValid) {
+      Logger.warn("Invalid or expired signup session", { email });
+      throw new BadRequestError(t("signup:errors.invalidSession"));
+    }
 
-    const account = await createUserAccount(
+    await this.ensureEmailAvailable(email, t);
+
+    const account = await this.createUserAccount(
       email,
       password,
       fullName,
       gender,
-      dateOfBirth,
-      this.authRepo,
-      this.userRepo
+      dateOfBirth
     );
 
     const tokens = generateAuthTokensResponse({
@@ -178,7 +209,11 @@ export class SignupService {
       roles: AUTHENTICATION_ROLES.USER
     });
 
-    await cleanupSignupData(email);
+    await Promise.all([
+      otpStore.cleanupOtpData(email),
+      sessionStore.clear(email)
+    ]);
+    Logger.debug("Signup data cleaned up", { email });
 
     Logger.info("CompleteSignup finished - new user registered", {
       email,
@@ -215,5 +250,137 @@ export class SignupService {
         available: !exists
       }
     };
+  }
+
+  // ──────────────────────────────────────────────
+  // Validators
+  // ──────────────────────────────────────────────
+
+  private async ensureEmailAvailable(
+    email: string,
+    t: TranslateFunction
+  ): Promise<void> {
+    const exists = await this.authRepo.emailExists(email);
+
+    if (exists) {
+      Logger.warn("Email already exists", { email });
+      throw new ConflictRequestError(t("signup:errors.emailAlreadyExists"));
+    }
+  }
+
+  private async ensureCooldownExpired(
+    email: string,
+    t: TranslateFunction
+  ): Promise<void> {
+    const canSend = await otpStore.checkCooldown(email);
+
+    if (!canSend) {
+      const remaining = await otpStore.getCooldownRemaining(email);
+      Logger.warn("OTP cooldown not expired", { email, remaining });
+      throw new BadRequestError(
+        t("signup:errors.resendCoolDown", { seconds: remaining })
+      );
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // OTP helpers
+  // ──────────────────────────────────────────────
+
+  private async createAndStoreOtp(
+    email: string,
+    expirySeconds: number
+  ): Promise<string> {
+    const otp = otpStore.createOtp();
+
+    await otpStore.clearOtp(email);
+    await otpStore.storeHashed(email, otp, expirySeconds);
+
+    Logger.debug("OTP created and stored", {
+      email,
+      expiresInSeconds: expirySeconds
+    });
+
+    return otp;
+  }
+
+  private async verifyOtpOrFail(
+    email: string,
+    otp: string,
+    t: TranslateFunction
+  ): Promise<void> {
+    const isValid = await otpStore.verify(email, otp);
+
+    if (!isValid) {
+      const failedCount = await otpStore.incrementFailedAttempts(
+        email,
+        LOCKOUT_DURATION_MINUTES
+      );
+      Logger.warn("Invalid OTP attempt", {
+        email,
+        failedCount,
+        lockoutDurationMinutes: LOCKOUT_DURATION_MINUTES
+      });
+
+      const remaining = MAX_FAILED_ATTEMPTS - failedCount;
+
+      if (remaining > 0) {
+        throw new BadRequestError(
+          t("signup:errors.invalidOtpWithRemaining", { remaining })
+        );
+      }
+
+      throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
+    }
+  }
+
+  private async createAndStoreSession(email: string): Promise<string> {
+    const sessionToken = sessionStore.createToken();
+
+    await sessionStore.store(email, sessionToken, SESSION_EXPIRY_SECONDS);
+
+    Logger.debug("Signup session created", {
+      email,
+      expiresInSeconds: SESSION_EXPIRY_SECONDS
+    });
+
+    return sessionToken;
+  }
+
+  // ──────────────────────────────────────────────
+  // Account creation
+  // ──────────────────────────────────────────────
+
+  private async createUserAccount(
+    email: string,
+    password: string,
+    fullName: string,
+    gender: Gender,
+    dateOfBirth: string
+  ): Promise<{
+    authId: Schema.Types.ObjectId;
+    userId: Schema.Types.ObjectId;
+    email: string;
+    fullName: string;
+  }> {
+    const hashedPassword = hashValue(password);
+    const auth = await this.authRepo.create({ email, hashedPassword });
+    Logger.debug("Auth record created", {
+      email,
+      authId: auth._id.toString()
+    });
+
+    const user = await this.userRepo.createProfile({
+      authId: auth._id,
+      fullName,
+      gender,
+      dateOfBirth: new Date(dateOfBirth)
+    });
+    Logger.info("User profile created", {
+      userId: user._id.toString(),
+      authId: auth._id.toString()
+    });
+
+    return { authId: auth._id, userId: user._id, email, fullName };
   }
 }
