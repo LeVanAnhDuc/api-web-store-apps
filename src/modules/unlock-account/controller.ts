@@ -3,19 +3,18 @@ import type {
   UnlockRequest,
   UnlockVerifyRequest
 } from "@/types/modules/unlock-account";
+import { unlockAccountService } from "./service/unlock-account.service";
 import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 import { COOKIE_NAMES } from "@/constants/infrastructure";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/configurations/cookie";
-import { handleUnlockRequest } from "./service/unlock-request.service";
-import { handleUnlockVerify } from "./service/unlock-verify.service";
 
 export const unlockRequestController = asyncHandler(
   async (req: UnlockRequest, res: Response): Promise<void> => {
     const { email } = req.body;
     const { t, language } = req;
 
-    const result = await handleUnlockRequest(email, t, language);
+    const result = await unlockAccountService.unlockRequest(email, t, language);
 
     const message = t("unlockAccount:success.unlockEmailSent");
 
@@ -27,7 +26,7 @@ export const unlockVerifyController = asyncHandler(
   async (req: UnlockVerifyRequest, res: Response): Promise<void> => {
     const { t } = req;
 
-    const result = await handleUnlockVerify(req);
+    const result = await unlockAccountService.unlockVerify(req);
 
     const message = t("unlockAccount:success.accountUnlocked");
 
