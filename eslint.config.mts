@@ -7,7 +7,7 @@ import pluginUnusedImports from "eslint-plugin-unused-imports";
 
 export default tseslint.config(
   {
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+    files: ["**/*.{js,mjs,cjs,ts,mts,cts,tsx}"],
     languageOptions: {
       globals: {
         ...globals.node,

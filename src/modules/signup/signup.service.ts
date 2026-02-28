@@ -23,7 +23,10 @@ import type authenticationRepository from "@/repositories/authentication";
 import type userRepository from "@/repositories/user";
 import type { OtpSignupRepository } from "./repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "./repositories/session-signup.repository";
-import { sendSignupOtpEmail } from "./internals/emails";
+import {
+  sendEmailService,
+  EmailType
+} from "@/modules/send-email/send-email.module";
 import { AUTHENTICATION_ROLES } from "@/constants/enums";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/config";
 import {
@@ -63,7 +66,11 @@ export class SignupService {
 
     await this.otpSignupRepo.setCooldown(email, OTP_COOLDOWN_SECONDS);
 
-    sendSignupOtpEmail(email, otp, language as I18n.Locale);
+    sendEmailService.send(EmailType.SIGNUP_OTP, {
+      email,
+      data: { otp, expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES },
+      locale: language as I18n.Locale
+    });
 
     Logger.info("SendOtp completed", {
       email,
@@ -161,7 +168,11 @@ export class SignupService {
       windowSeconds: RESEND_WINDOW_SECONDS
     });
 
-    sendSignupOtpEmail(email, otp, language as I18n.Locale);
+    sendEmailService.send(EmailType.SIGNUP_OTP, {
+      email,
+      data: { otp, expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES },
+      locale: language as I18n.Locale
+    });
 
     Logger.info("ResendOtp completed", {
       email,

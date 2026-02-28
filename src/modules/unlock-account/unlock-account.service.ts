@@ -15,7 +15,11 @@ import type { LoginHistoryService } from "@/modules/login-history/login-history.
 import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
 import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
 import { LOGIN_METHODS } from "@/constants/enums";
-import { sendUnlockEmail } from "./internals/emails";
+import {
+  sendEmailService,
+  EmailType
+} from "@/modules/send-email/send-email.module";
+import ENV from "@/configurations/env";
 
 const TEMP_PASSWORD_EXPIRY_MINUTES = 15;
 const TEMP_PASSWORD_LENGTH = 16;
@@ -88,7 +92,14 @@ export class UnlockAccountService {
       expiresAt: tempPasswordExpAt
     });
 
-    sendUnlockEmail(email, tempPassword, t, language as I18n.Locale);
+    sendEmailService.send(EmailType.UNLOCK_TEMP_PASSWORD, {
+      email,
+      data: {
+        tempPassword,
+        loginUrl: ENV.CLIENT_URL || "http://localhost:3000/login"
+      },
+      locale: language as I18n.Locale
+    });
 
     await this.unlockAccountRepo.setCooldown(email);
 

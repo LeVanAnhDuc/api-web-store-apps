@@ -25,9 +25,13 @@ import type { LoginHistoryService } from "@/modules/login-history/login-history.
 import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
 import type { FailedAttemptsRepository } from "./repositories/failed-attempts.repository";
-import { sendLoginOtpEmail, sendMagicLinkEmail } from "./internals/emails";
+import {
+  sendEmailService,
+  EmailType
+} from "@/modules/send-email/send-email.module";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/constants/enums";
-import { LOGIN_OTP_CONFIG } from "@/constants/config";
+import { LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG } from "@/constants/config";
+import ENV from "@/configurations/env";
 
 export class LoginService {
   constructor(
@@ -102,7 +106,11 @@ export class LoginService {
       context: { email }
     });
 
-    sendLoginOtpEmail(email, otp, language as I18n.Locale);
+    sendEmailService.send(EmailType.LOGIN_OTP, {
+      email,
+      data: { otp, expiryMinutes: LOGIN_OTP_CONFIG.EXPIRY_MINUTES },
+      locale: language as I18n.Locale
+    });
 
     Logger.info("Login OTP send completed", {
       email,
@@ -176,7 +184,12 @@ export class LoginService {
       context: { email }
     });
 
-    sendMagicLinkEmail(email, token, language as I18n.Locale);
+    const magicLinkUrl = `${ENV.CLIENT_URL}/auth/magic-link?token=${token}&email=${encodeURIComponent(email)}`;
+    sendEmailService.send(EmailType.MAGIC_LINK, {
+      email,
+      data: { magicLinkUrl, expiryMinutes: MAGIC_LINK_CONFIG.EXPIRY_MINUTES },
+      locale: language as I18n.Locale
+    });
 
     Logger.info("Magic link send completed", {
       email,

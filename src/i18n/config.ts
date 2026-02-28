@@ -26,7 +26,15 @@ i18next.use(Backend).init({
   // Using namespaces to separate concerns by domain/module
   // Prevents large monolithic translation files and improves maintainability
   defaultNS: DEFAULT_NAMESPACE,
-  ns: ["common", "validation", "signup", "login", "logout", "unlockAccount"],
+  ns: [
+    "common",
+    "validation",
+    "signup",
+    "login",
+    "logout",
+    "unlockAccount",
+    "sendEmail"
+  ],
 
   // Preload all supported languages and namespaces on startup
   // Ensures translations are available immediately without lazy loading
