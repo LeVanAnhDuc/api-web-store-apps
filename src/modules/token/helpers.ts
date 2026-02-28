@@ -1,13 +1,12 @@
 import type { Request } from "express";
-import type { RefreshTokenResponse } from "@/types/modules/token";
 import {
   UnauthorizedError,
   ForbiddenError
 } from "@/configurations/responses/error";
-import { verifyRefreshToken, generateAuthTokensResponse } from "@/utils/token";
+import { verifyRefreshToken } from "@/utils/token";
 import { Logger } from "@/utils/logger";
 
-const ensureRefreshTokenFromCookie = (
+export const ensureRefreshTokenFromCookie = (
   req: Request,
   t: TranslateFunction
 ): string => {
@@ -21,7 +20,7 @@ const ensureRefreshTokenFromCookie = (
   return refreshToken;
 };
 
-const verifyAndExtractPayload = (
+export const verifyAndExtractPayload = (
   refreshToken: string,
   t: TranslateFunction
 ): JwtUserPayload => {
@@ -33,25 +32,4 @@ const verifyAndExtractPayload = (
     });
     throw new ForbiddenError(t("login:errors.invalidRefreshToken"));
   }
-};
-
-export const refreshAccessTokenService = (
-  req: Request
-): Partial<ResponsePattern<RefreshTokenResponse>> => {
-  const { t } = req;
-
-  const refreshToken = ensureRefreshTokenFromCookie(req, t);
-  const tokenPayload = verifyAndExtractPayload(refreshToken, t);
-
-  Logger.info("Token refresh successful", { userId: tokenPayload.userId });
-
-  return {
-    message: t("login:success.tokenRefreshed"),
-    data: generateAuthTokensResponse({
-      userId: tokenPayload.userId,
-      authId: tokenPayload.authId,
-      email: tokenPayload.email,
-      roles: tokenPayload.roles
-    })
-  };
 };
