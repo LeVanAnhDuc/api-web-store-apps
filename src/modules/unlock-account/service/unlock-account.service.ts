@@ -3,8 +3,7 @@ import type { UnlockVerifyRequest } from "@/types/modules/unlock-account";
 import { Logger } from "@/utils/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { withRetry } from "@/utils/retry";
-import { getAuthenticationRepository } from "@/repositories/authentication";
-import type AuthenticationRepository from "@/repositories/authentication";
+import authenticationRepository from "@/repositories/authentication";
 import { failedAttemptsStore } from "@/modules/login/store";
 import { completeSuccessfulLogin } from "@/modules/login/service/helpers";
 import { LOGIN_METHODS } from "@/constants/enums";
@@ -25,7 +24,7 @@ import {
 } from "./helpers";
 
 class UnlockAccountService {
-  constructor(private readonly authRepo: AuthenticationRepository) {}
+  constructor(private readonly authRepo: typeof authenticationRepository) {}
 
   async unlockRequest(
     email: string,
@@ -123,5 +122,5 @@ class UnlockAccountService {
 }
 
 export const unlockAccountService = new UnlockAccountService(
-  getAuthenticationRepository()
+  authenticationRepository
 );

@@ -11,8 +11,7 @@ import type {
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { generateAuthTokensResponse } from "@/utils/token";
-import { getAuthenticationRepository } from "@/repositories/authentication";
-import type AuthenticationRepository from "@/repositories/authentication";
+import authenticationRepository from "@/repositories/authentication";
 import {
   failedAttemptsStore,
   otpStore,
@@ -47,7 +46,7 @@ import {
 import { LOGIN_METHODS } from "@/constants/enums";
 
 class LoginService {
-  constructor(private readonly authRepo: AuthenticationRepository) {}
+  constructor(private readonly authRepo: typeof authenticationRepository) {}
 
   async passwordLogin(
     req: PasswordLoginRequest
@@ -243,4 +242,4 @@ class LoginService {
   }
 }
 
-export const loginService = new LoginService(getAuthenticationRepository());
+export const loginService = new LoginService(authenticationRepository);

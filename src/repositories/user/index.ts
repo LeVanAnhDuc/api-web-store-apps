@@ -7,10 +7,14 @@ import RedisCache from "@/services/implements/RedisCache";
 import { instanceRedis } from "@/database/redis";
 
 class UserRepository {
-  constructor(
-    private readonly db: MongoDBRepository<UserDocument>,
-    private readonly cache: RedisCache
-  ) {}
+  private readonly db = new MongoDBRepository<UserDocument>(
+    UserModel,
+    "UserRepository"
+  );
+  private readonly cache = new RedisCache(
+    instanceRedis.getClient() as RedisClientType,
+    "UserCache"
+  );
 
   async createProfile(data: CreateUserData): Promise<UserRecord> {
     const user = await this.db.create({
@@ -27,18 +31,4 @@ class UserRepository {
   }
 }
 
-let instance: UserRepository | null = null;
-
-export const getUserRepository = (): UserRepository => {
-  if (!instance) {
-    const db = new MongoDBRepository<UserDocument>(UserModel, "UserRepository");
-    const cache = new RedisCache(
-      instanceRedis.getClient() as RedisClientType,
-      "UserCache"
-    );
-    instance = new UserRepository(db, cache);
-  }
-  return instance;
-};
-
-export default UserRepository;
+export default new UserRepository();

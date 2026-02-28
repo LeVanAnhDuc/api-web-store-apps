@@ -11,10 +11,14 @@ import RedisCache from "@/services/implements/RedisCache";
 import { instanceRedis } from "@/database/redis";
 
 class AuthenticationRepository {
-  constructor(
-    private readonly db: MongoDBRepository<AuthenticationDocument>,
-    private readonly cache: RedisCache
-  ) {}
+  private readonly db = new MongoDBRepository<AuthenticationDocument>(
+    AuthenticationModel,
+    "AuthenticationRepository"
+  );
+  private readonly cache = new RedisCache(
+    instanceRedis.getClient() as RedisClientType,
+    "AuthenticationCache"
+  );
 
   async findByEmail(email: string): Promise<AuthenticationDocument | null> {
     return this.db.findOne({ email }, { lean: true });
@@ -65,21 +69,4 @@ class AuthenticationRepository {
   }
 }
 
-let instance: AuthenticationRepository | null = null;
-
-export const getAuthenticationRepository = (): AuthenticationRepository => {
-  if (!instance) {
-    const db = new MongoDBRepository<AuthenticationDocument>(
-      AuthenticationModel,
-      "AuthenticationRepository"
-    );
-    const cache = new RedisCache(
-      instanceRedis.getClient() as RedisClientType,
-      "AuthenticationCache"
-    );
-    instance = new AuthenticationRepository(db, cache);
-  }
-  return instance;
-};
-
-export default AuthenticationRepository;
+export default new AuthenticationRepository();

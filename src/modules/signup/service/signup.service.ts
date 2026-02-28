@@ -12,8 +12,7 @@ import type {
 } from "@/types/modules/signup";
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
-import { getAuthenticationRepository } from "@/repositories/authentication";
-import type AuthenticationRepository from "@/repositories/authentication";
+import authenticationRepository from "@/repositories/authentication";
 import { otpStore } from "@/modules/signup/store";
 import {
   ensureEmailAvailable,
@@ -40,7 +39,7 @@ import {
 import { AUTHENTICATION_ROLES } from "@/constants/enums";
 
 class SignupService {
-  constructor(private readonly authRepo: AuthenticationRepository) {}
+  constructor(private readonly authRepo: typeof authenticationRepository) {}
 
   async sendOtp(
     req: SendOtpRequest
@@ -213,4 +212,4 @@ class SignupService {
   }
 }
 
-export const signupService = new SignupService(getAuthenticationRepository());
+export const signupService = new SignupService(authenticationRepository);
