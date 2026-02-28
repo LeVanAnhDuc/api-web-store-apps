@@ -13,20 +13,11 @@ import {
 import type authenticationRepository from "@/repositories/authentication";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
-import {
-  redisTtl,
-  redisIncr,
-  redisExpire,
-  redisSetEx
-} from "@/utils/store/redis-operations";
-import { REDIS_KEYS } from "@/constants/infrastructure";
+import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
 import { LOGIN_METHODS } from "@/constants/enums";
 import { sendUnlockEmail } from "./internals/emails";
 
-const COOLDOWN_SECONDS = 60;
 const TEMP_PASSWORD_EXPIRY_MINUTES = 15;
-const RATE_LIMIT_WINDOW_SECONDS = 3600;
-const MAX_UNLOCK_REQUESTS_PER_HOUR = 3;
 const TEMP_PASSWORD_LENGTH = 16;
 const MIN_PASSWORD_LENGTH = 12;
 const UPPERCASE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -40,7 +31,8 @@ export class UnlockAccountService {
   constructor(
     private readonly authRepo: typeof authenticationRepository,
     private readonly loginHistoryService: LoginHistoryService,
-    private readonly failedAttemptsRepo: FailedAttemptsRepository
+    private readonly failedAttemptsRepo: FailedAttemptsRepository,
+    private readonly unlockAccountRepo: UnlockAccountRepository
   ) {}
 
   async unlockRequest(
@@ -57,7 +49,7 @@ export class UnlockAccountService {
 
     if (!auth) {
       Logger.warn("Unlock request for non-existent email", { email });
-      await this.setCooldown(email);
+      await this.unlockAccountRepo.setCooldown(email);
       return { success: true };
     }
 
@@ -98,7 +90,7 @@ export class UnlockAccountService {
 
     sendUnlockEmail(email, tempPassword, t, language as I18n.Locale);
 
-    await this.setCooldown(email);
+    await this.unlockAccountRepo.setCooldown(email);
 
     Logger.info("Unlock email sent successfully", { email });
 
@@ -210,16 +202,15 @@ export class UnlockAccountService {
     email: string,
     t: TranslateFunction
   ): Promise<void> {
-    const cooldownKey = `${REDIS_KEYS.LOGIN.UNLOCK_COOLDOWN}:${email}`;
-    const ttl = await redisTtl(cooldownKey);
+    const remaining = await this.unlockAccountRepo.getCooldownRemaining(email);
 
-    if (ttl > 0) {
+    if (remaining > 0) {
       Logger.warn("Unlock request blocked - cooldown active", {
         email,
-        remainingSeconds: ttl
+        remainingSeconds: remaining
       });
       throw new BadRequestError(
-        t("unlockAccount:errors.unlockCooldown", { seconds: ttl })
+        t("unlockAccount:errors.unlockCooldown", { seconds: remaining })
       );
     }
   }
@@ -228,14 +219,10 @@ export class UnlockAccountService {
     email: string,
     t: TranslateFunction
   ): Promise<void> {
-    const rateLimitKey = `${REDIS_KEYS.LOGIN.UNLOCK_RATE}:${email}`;
-    const requestCount = await redisIncr(rateLimitKey);
+    const requestCount =
+      await this.unlockAccountRepo.incrementRequestCount(email);
 
-    if (requestCount === 1) {
-      await redisExpire(rateLimitKey, RATE_LIMIT_WINDOW_SECONDS);
-    }
-
-    if (requestCount > MAX_UNLOCK_REQUESTS_PER_HOUR) {
+    if (this.unlockAccountRepo.hasExceededRateLimit(requestCount)) {
       Logger.warn("Unlock request blocked - rate limit exceeded", {
         email,
         requestCount
@@ -246,17 +233,7 @@ export class UnlockAccountService {
     Logger.info("Unlock rate limit check passed", {
       email,
       requestCount,
-      limit: MAX_UNLOCK_REQUESTS_PER_HOUR
-    });
-  }
-
-  private async setCooldown(email: string): Promise<void> {
-    const cooldownKey = `${REDIS_KEYS.LOGIN.UNLOCK_COOLDOWN}:${email}`;
-    await redisSetEx(cooldownKey, COOLDOWN_SECONDS, "1");
-
-    Logger.debug("Unlock cooldown set", {
-      email,
-      seconds: COOLDOWN_SECONDS
+      limit: this.unlockAccountRepo.MAX_REQUESTS_PER_HOUR
     });
   }
 
