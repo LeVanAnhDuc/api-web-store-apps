@@ -32,6 +32,15 @@
     "oneTimeNote": "For your security, this is a one-time use link. After clicking, it cannot be used again.",
     "warning": "If you didn't request this link, please ignore this email and secure your account."
   },
+  "forgotPasswordOtp": {
+    "title": "Password Reset Verification Code",
+    "greeting": "Hello,",
+    "body": "You requested to reset your password. Use the verification code below to proceed with resetting your password.",
+    "expiryPrefix": "This code will expire in",
+    "expirySuffix": "minutes.",
+    "securityNote": "For your security, please do not share this code with anyone.",
+    "warning": "If you didn't request a password reset, please ignore this email. Your password will remain unchanged."
+  },
   "unlockTempPassword": {
     "title": "Unlock Your Account",
     "greeting": "Hello,",

@@ -7,13 +7,15 @@ import {
   type LoginOtpData,
   type SignupOtpData,
   type MagicLinkData,
-  type UnlockTempPasswordData
+  type UnlockTempPasswordData,
+  type ForgotPasswordOtpData
 } from "./send-email.types";
 import { getEmailT } from "./send-email.i18n";
 import { LoginOtpEmail } from "./templates/login-otp";
 import { SignupOtpEmail } from "./templates/signup-otp";
 import { MagicLinkEmail } from "./templates/magic-link";
 import { UnlockTempPasswordEmail } from "./templates/unlock-temp-password";
+import { ForgotPasswordOtpEmail } from "./templates/forgot-password-otp";
 
 export class SendEmailService {
   constructor(private readonly transport: EmailTransport) {}
@@ -63,6 +65,10 @@ export class SendEmailService {
             locale
           )
         );
+      case EmailType.FORGOT_PASSWORD_OTP:
+        return render(
+          ForgotPasswordOtpEmail(options.data as ForgotPasswordOtpData, locale)
+        );
       default:
         throw new Error(`Unknown email type: ${type}`);
     }
@@ -80,6 +86,8 @@ export class SendEmailService {
         return strings.magicLink.title;
       case EmailType.UNLOCK_TEMP_PASSWORD:
         return strings.unlockTempPassword.title;
+      case EmailType.FORGOT_PASSWORD_OTP:
+        return strings.forgotPasswordOtp.title;
       default:
         throw new Error(`Unknown email type: ${type}`);
     }

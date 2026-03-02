@@ -32,6 +32,15 @@
     "oneTimeNote": "Để bảo mật, đây là liên kết dùng một lần. Sau khi nhấp, không thể sử dụng lại.",
     "warning": "Nếu bạn không yêu cầu liên kết này, hãy bỏ qua email và bảo mật tài khoản của bạn."
   },
+  "forgotPasswordOtp": {
+    "title": "Mã Xác Thực Đặt Lại Mật Khẩu",
+    "greeting": "Xin chào,",
+    "body": "Bạn đã yêu cầu đặt lại mật khẩu. Sử dụng mã xác thực bên dưới để tiến hành đặt lại mật khẩu.",
+    "expiryPrefix": "Mã này sẽ hết hạn sau",
+    "expirySuffix": "phút.",
+    "securityNote": "Để bảo mật, vui lòng không chia sẻ mã này với bất kỳ ai.",
+    "warning": "Nếu bạn không yêu cầu đặt lại mật khẩu, hãy bỏ qua email này. Mật khẩu của bạn sẽ không thay đổi."
+  },
   "unlockTempPassword": {
     "title": "Mở Khóa Tài Khoản",
     "greeting": "Xin chào,",
