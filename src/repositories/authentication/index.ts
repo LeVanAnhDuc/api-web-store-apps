@@ -67,6 +67,13 @@ class AuthenticationRepository {
       mustChangePassword: true
     });
   }
+
+  async updatePassword(authId: string, hashedPassword: string): Promise<void> {
+    await this.db.findByIdAndUpdate(authId, {
+      password: hashedPassword,
+      passwordChangedAt: new Date()
+    });
+  }
 }
 
 export default new AuthenticationRepository();

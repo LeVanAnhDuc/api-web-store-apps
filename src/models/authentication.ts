@@ -62,6 +62,10 @@ const AuthenticationSchema = new Schema<AuthenticationDocument>(
     mustChangePassword: {
       type: Boolean,
       default: false
+    },
+    passwordChangedAt: {
+      type: Date,
+      default: null
     }
   },
   {

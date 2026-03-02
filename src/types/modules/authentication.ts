@@ -15,6 +15,7 @@ export interface AuthenticationDocument {
   tempPasswordExpAt: Date | null;
   tempPasswordUsed: boolean;
   mustChangePassword: boolean;
+  passwordChangedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
