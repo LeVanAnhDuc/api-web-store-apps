@@ -66,6 +66,30 @@ export const SESSION_CONFIG = {
   TOKEN_LENGTH: 32
 } as const;
 
+// Forgot Password - OTP
+export const FORGOT_PASSWORD_OTP_CONFIG = {
+  LENGTH: 6,
+  EXPIRY_MINUTES: 5,
+  COOLDOWN_SECONDS: 60,
+  MAX_FAILED_ATTEMPTS: 5,
+  MAX_RESEND_ATTEMPTS: 3,
+  LOCKOUT_DURATION_MINUTES: 15
+} as const;
+
+// Forgot Password - Magic Link
+export const FORGOT_PASSWORD_MAGIC_LINK_CONFIG = {
+  TOKEN_LENGTH: 64,
+  EXPIRY_MINUTES: 15,
+  COOLDOWN_SECONDS: 60,
+  MAX_RESEND_ATTEMPTS: 3
+} as const;
+
+// Forgot Password - Reset Token
+export const FORGOT_PASSWORD_RESET_TOKEN_CONFIG = {
+  TOKEN_LENGTH: 64,
+  EXPIRY_MINUTES: 10
+} as const;
+
 // Rate Limit
 export const RATE_LIMIT_CONFIG = {
   LOGIN: {
@@ -112,6 +136,35 @@ export const RATE_LIMIT_CONFIG = {
       PER_IP: {
         MAX_REQUESTS: 10,
         WINDOW_SECONDS: 60
+      }
+    }
+  },
+
+  FORGOT_PASSWORD: {
+    OTP: {
+      PER_IP: {
+        MAX_REQUESTS: 10,
+        WINDOW_SECONDS: 900
+      },
+      PER_EMAIL: {
+        MAX_REQUESTS: 5,
+        WINDOW_SECONDS: 900
+      }
+    },
+    MAGIC_LINK: {
+      PER_IP: {
+        MAX_REQUESTS: 10,
+        WINDOW_SECONDS: 900
+      },
+      PER_EMAIL: {
+        MAX_REQUESTS: 5,
+        WINDOW_SECONDS: 900
+      }
+    },
+    RESET: {
+      PER_IP: {
+        MAX_REQUESTS: 10,
+        WINDOW_SECONDS: 900
       }
     }
   }

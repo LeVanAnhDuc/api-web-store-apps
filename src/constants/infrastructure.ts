@@ -78,6 +78,17 @@ export const REDIS_KEYS = {
     UNLOCK_COOLDOWN: "unlock-cooldown"
   },
 
+  FORGOT_PASSWORD: {
+    OTP: "otp-forgot-pw",
+    OTP_COOLDOWN: "otp-forgot-pw-cd",
+    OTP_FAILED_ATTEMPTS: "otp-forgot-pw-fail",
+    OTP_RESEND_COUNT: "otp-forgot-pw-resend",
+    MAGIC_LINK: "ml-forgot-pw",
+    MAGIC_LINK_COOLDOWN: "ml-forgot-pw-cd",
+    MAGIC_LINK_RESEND_COUNT: "ml-forgot-pw-resend",
+    RESET_TOKEN: "reset-token"
+  },
+
   RATE_LIMIT: {
     LOGIN: {
       IP: "rate-limit:login:ip:",
@@ -97,6 +108,13 @@ export const REDIS_KEYS = {
     MAGIC_LINK: {
       IP: "rate-limit:magic-link:ip:",
       EMAIL: "rate-limit:magic-link:email:"
+    },
+    FORGOT_PASSWORD: {
+      OTP_IP: "rate-limit:forgot-pw-otp:ip:",
+      OTP_EMAIL: "rate-limit:forgot-pw-otp:email:",
+      MAGIC_LINK_IP: "rate-limit:forgot-pw-ml:ip:",
+      MAGIC_LINK_EMAIL: "rate-limit:forgot-pw-ml:email:",
+      RESET_IP: "rate-limit:forgot-pw-reset:ip:"
     }
   }
 } as const;

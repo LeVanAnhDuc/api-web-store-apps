@@ -16,7 +16,8 @@ export const GENDERS = {
 export const LOGIN_METHODS = {
   PASSWORD: "password",
   OTP: "otp",
-  MAGIC_LINK: "magic-link"
+  MAGIC_LINK: "magic-link",
+  FORGOT_PASSWORD: "forgot-password"
 } as const;
 
 export const LOGIN_STATUSES = {
@@ -34,7 +35,8 @@ export const LOGIN_FAIL_REASONS = {
   INVALID_MAGIC_LINK: "invalid_magic_link",
   MAGIC_LINK_EXPIRED: "magic_link_expired",
   RATE_LIMITED: "rate_limited",
-  PASSWORDLESS_ACCOUNT: "passwordless_account"
+  PASSWORDLESS_ACCOUNT: "passwordless_account",
+  INVALID_RESET_TOKEN: "invalid_reset_token"
 } as const;
 
 // Login History
