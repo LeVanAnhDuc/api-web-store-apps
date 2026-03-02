@@ -106,6 +106,30 @@
       "value": "",
       "type": "string",
       "description": "Session token from OTP verification (auto-filled)"
+    },
+    {
+      "key": "forgotPasswordEmail",
+      "value": "user@test.com",
+      "type": "string",
+      "description": "Email for forgot password flow"
+    },
+    {
+      "key": "forgotPasswordOtp",
+      "value": "",
+      "type": "string",
+      "description": "OTP from email (manual entry)"
+    },
+    {
+      "key": "forgotPasswordResetToken",
+      "value": "",
+      "type": "string",
+      "description": "Reset token from OTP/magic link verify (auto-filled)"
+    },
+    {
+      "key": "forgotPasswordMagicLinkToken",
+      "value": "",
+      "type": "string",
+      "description": "Magic link token from email (manual entry)"
     }
   ],
   "item": [
@@ -945,6 +969,668 @@
         }
       ],
       "description": "Unlock account flow for locked accounts:\n\n1. **Request Unlock**: POST /auth/unlock/request - Sends temp password to email\n2. **Verify Unlock**: POST /auth/unlock/verify - Verify temp password and login\n\nConstraints:\n- Cooldown: 60 seconds between requests\n- Rate limit: 3 requests per hour\n- Temp password expires after 15 minutes\n- Temp password can only be used once"
+    },
+    {
+      "name": "Forgot Password",
+      "item": [
+        {
+          "name": "Send OTP - Happy Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/otp/send",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "otp",
+                "send"
+              ]
+            },
+            "description": "Send OTP for password recovery. Returns success even if email does not exist (anti-enumeration).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send OTP - Invalid Email Format (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/otp/send",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "otp",
+                "send"
+              ]
+            },
+            "description": "Send OTP with invalid email format. Should return 422 validation error.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"not-an-email\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send OTP - Missing Email (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/otp/send",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "otp",
+                "send"
+              ]
+            },
+            "description": "Send OTP without email field. Should return 422 validation error.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send OTP - Non-Existent Email (Still Returns 200)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/otp/send",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "otp",
+                "send"
+              ]
+            },
+            "description": "Send OTP for non-existent email. Should return 200 (fake success) to prevent email enumeration.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nonexistent@example.com\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send OTP - Cooldown Active (Should Fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/otp/send",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "otp",
+                "send"
+              ]
+            },
+            "description": "Send OTP again within 60s cooldown window. Should return 400 with cooldown message. Run \"Send OTP - Happy Path\" first.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP - Happy Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/otp/verify",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "otp",
+                "verify"
+              ]
+            },
+            "description": "Verify OTP and receive reset token. Copy OTP from email before running. Auto-saves resetToken to collection variable.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\",\n  \"otp\": \"{{forgotPasswordOtp}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.resetToken) {",
+                  "        pm.collectionVariables.set(\"forgotPasswordResetToken\", response.data.resetToken);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify OTP - Wrong OTP (Should Fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/otp/verify",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "otp",
+                "verify"
+              ]
+            },
+            "description": "Verify with wrong OTP. Should return 401 with remaining attempts count.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\",\n  \"otp\": \"000000\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP - Missing OTP Field (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/otp/verify",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "otp",
+                "verify"
+              ]
+            },
+            "description": "Verify without OTP field. Should return 422 validation error.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP - Invalid OTP Format (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/otp/verify",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "otp",
+                "verify"
+              ]
+            },
+            "description": "Verify with non-numeric OTP. Should return 422 validation error.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\",\n  \"otp\": \"abc\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Magic Link - Happy Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/magic-link/send",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "magic-link",
+                "send"
+              ]
+            },
+            "description": "Send magic link for password recovery. Returns success even if email does not exist (anti-enumeration).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Magic Link - Invalid Email Format (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/magic-link/send",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "magic-link",
+                "send"
+              ]
+            },
+            "description": "Send magic link with invalid email format. Should return 422 validation error.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"bad-email\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Magic Link - Cooldown Active (Should Fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/magic-link/send",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "magic-link",
+                "send"
+              ]
+            },
+            "description": "Send magic link again within 60s cooldown. Should return 400. Run \"Send Magic Link - Happy Path\" first.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Magic Link - Happy Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/magic-link/verify",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "magic-link",
+                "verify"
+              ]
+            },
+            "description": "Verify magic link token and receive reset token. Copy token from email URL before running. Auto-saves resetToken.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\",\n  \"token\": \"{{forgotPasswordMagicLinkToken}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.resetToken) {",
+                  "        pm.collectionVariables.set(\"forgotPasswordResetToken\", response.data.resetToken);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify Magic Link - Invalid Token (Should Fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/magic-link/verify",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "magic-link",
+                "verify"
+              ]
+            },
+            "description": "Verify with wrong magic link token. Should return 401.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\",\n  \"token\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Magic Link - Missing Token (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/magic-link/verify",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "magic-link",
+                "verify"
+              ]
+            },
+            "description": "Verify without token field. Should return 422 validation error.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Magic Link - Invalid Token Format (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/magic-link/verify",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "magic-link",
+                "verify"
+              ]
+            },
+            "description": "Verify with token that is too short. Should return 422 validation error.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\",\n  \"token\": \"short\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password - Happy Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/reset",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "reset"
+              ]
+            },
+            "description": "Reset password using reset token from OTP or magic link verification. Run verify first to get the reset token.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\",\n  \"resetToken\": \"{{forgotPasswordResetToken}}\",\n  \"newPassword\": \"NewSecure@123\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password - Invalid Reset Token (Should Fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/reset",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "reset"
+              ]
+            },
+            "description": "Reset password with invalid/expired reset token. Should return 401.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\",\n  \"resetToken\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"newPassword\": \"NewSecure@123\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password - Weak Password (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/reset",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "reset"
+              ]
+            },
+            "description": "Reset password with weak password (too short, missing complexity). Should return 422 validation error.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\",\n  \"resetToken\": \"{{forgotPasswordResetToken}}\",\n  \"newPassword\": \"123\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password - Missing Fields (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/reset",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "reset"
+              ]
+            },
+            "description": "Reset password without resetToken and newPassword. Should return 422 validation error.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password - Invalid Reset Token Format (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/forgot-password/reset",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "{{apiVersion}}",
+                "auth",
+                "forgot-password",
+                "reset"
+              ]
+            },
+            "description": "Reset password with non-hex reset token format. Should return 422 validation error.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{forgotPasswordEmail}}\",\n  \"resetToken\": \"not-hex!\",\n  \"newPassword\": \"NewSecure@123\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
     },
     {
       "name": "Logout",

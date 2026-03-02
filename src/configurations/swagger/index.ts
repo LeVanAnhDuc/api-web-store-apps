@@ -5,6 +5,10 @@ import { loginSwaggerSchemas, loginPaths } from "@/modules/login/swagger";
 import { signupSwaggerSchemas, signupPaths } from "@/modules/signup/swagger";
 import { logoutSwaggerSchemas, logoutPaths } from "@/modules/logout/swagger";
 import { tokenSwaggerSchemas, tokenPaths } from "@/modules/token/swagger";
+import {
+  forgotPasswordSwaggerSchemas,
+  forgotPasswordPaths
+} from "@/modules/forgot-password/swagger";
 
 const PORT = ENV.APP_PORT || 3000;
 
@@ -13,14 +17,16 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...loginSwaggerSchemas,
   ...signupSwaggerSchemas,
   ...logoutSwaggerSchemas,
-  ...tokenSwaggerSchemas
+  ...tokenSwaggerSchemas,
+  ...forgotPasswordSwaggerSchemas
 };
 
 const allPaths: OpenAPIV3.PathsObject = {
   ...loginPaths,
   ...signupPaths,
   ...logoutPaths,
-  ...tokenPaths
+  ...tokenPaths,
+  ...forgotPasswordPaths
 };
 
 export const openApiSpec: OpenAPIV3.Document = {
@@ -48,6 +54,10 @@ export const openApiSpec: OpenAPIV3.Document = {
     {
       name: "Auth - Session",
       description: "Session management endpoints (logout, token refresh)"
+    },
+    {
+      name: "Auth - Forgot Password",
+      description: "Password recovery via OTP or magic link"
     }
   ],
   paths: allPaths,
