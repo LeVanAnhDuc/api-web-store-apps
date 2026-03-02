@@ -5,3 +5,4 @@ export { default as login } from "./login.json";
 export { default as logout } from "./logout.json";
 export { default as unlockAccount } from "./unlockAccount.json";
 export { default as sendEmail } from "./sendEmail.json";
+export { default as forgotPassword } from "./forgotPassword.json";

@@ -185,4 +185,104 @@ export class RateLimiterMiddleware {
       })
     );
   }
+
+  // Prevent forgot-password OTP spam from single IP
+  get forgotPasswordOtpByIp(): RateLimitRequestHandler {
+    return this.getOrCreateLimiter("forgot-pw-otp:ip", () =>
+      rateLimit({
+        windowMs:
+          RATE_LIMIT_CONFIG.FORGOT_PASSWORD.OTP.PER_IP.WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.OTP.PER_IP.MAX_REQUESTS,
+        store: this.createRedisStore(
+          REDIS_KEYS.RATE_LIMIT.FORGOT_PASSWORD.OTP_IP
+        ),
+        standardHeaders: true,
+        legacyHeaders: false,
+        handler: this.createRateLimitExceededHandler(
+          "forgotPassword:errors.rateLimitExceeded"
+        )
+      })
+    );
+  }
+
+  // Prevent forgot-password OTP targeted email abuse
+  get forgotPasswordOtpByEmail(): RateLimitRequestHandler {
+    return this.getOrCreateLimiter("forgot-pw-otp:email", () =>
+      rateLimit({
+        windowMs:
+          RATE_LIMIT_CONFIG.FORGOT_PASSWORD.OTP.PER_EMAIL.WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.OTP.PER_EMAIL.MAX_REQUESTS,
+        store: this.createRedisStore(
+          REDIS_KEYS.RATE_LIMIT.FORGOT_PASSWORD.OTP_EMAIL
+        ),
+        standardHeaders: true,
+        legacyHeaders: false,
+        keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
+        handler: this.createRateLimitExceededHandler(
+          "forgotPassword:errors.rateLimitExceeded"
+        )
+      })
+    );
+  }
+
+  // Prevent forgot-password magic link spam from single IP
+  get forgotPasswordMagicLinkByIp(): RateLimitRequestHandler {
+    return this.getOrCreateLimiter("forgot-pw-ml:ip", () =>
+      rateLimit({
+        windowMs:
+          RATE_LIMIT_CONFIG.FORGOT_PASSWORD.MAGIC_LINK.PER_IP.WINDOW_SECONDS *
+          1000,
+        max: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.MAGIC_LINK.PER_IP.MAX_REQUESTS,
+        store: this.createRedisStore(
+          REDIS_KEYS.RATE_LIMIT.FORGOT_PASSWORD.MAGIC_LINK_IP
+        ),
+        standardHeaders: true,
+        legacyHeaders: false,
+        handler: this.createRateLimitExceededHandler(
+          "forgotPassword:errors.rateLimitExceeded"
+        )
+      })
+    );
+  }
+
+  // Prevent forgot-password magic link targeted email abuse
+  get forgotPasswordMagicLinkByEmail(): RateLimitRequestHandler {
+    return this.getOrCreateLimiter("forgot-pw-ml:email", () =>
+      rateLimit({
+        windowMs:
+          RATE_LIMIT_CONFIG.FORGOT_PASSWORD.MAGIC_LINK.PER_EMAIL
+            .WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.MAGIC_LINK.PER_EMAIL
+          .MAX_REQUESTS,
+        store: this.createRedisStore(
+          REDIS_KEYS.RATE_LIMIT.FORGOT_PASSWORD.MAGIC_LINK_EMAIL
+        ),
+        standardHeaders: true,
+        legacyHeaders: false,
+        keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
+        handler: this.createRateLimitExceededHandler(
+          "forgotPassword:errors.rateLimitExceeded"
+        )
+      })
+    );
+  }
+
+  // Prevent forgot-password reset brute force from single IP
+  get forgotPasswordResetByIp(): RateLimitRequestHandler {
+    return this.getOrCreateLimiter("forgot-pw-reset:ip", () =>
+      rateLimit({
+        windowMs:
+          RATE_LIMIT_CONFIG.FORGOT_PASSWORD.RESET.PER_IP.WINDOW_SECONDS * 1000,
+        max: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.RESET.PER_IP.MAX_REQUESTS,
+        store: this.createRedisStore(
+          REDIS_KEYS.RATE_LIMIT.FORGOT_PASSWORD.RESET_IP
+        ),
+        standardHeaders: true,
+        legacyHeaders: false,
+        handler: this.createRateLimitExceededHandler(
+          "forgotPassword:errors.rateLimitExceeded"
+        )
+      })
+    );
+  }
 }
