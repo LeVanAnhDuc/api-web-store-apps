@@ -17,7 +17,7 @@ import {
   BadRequestError,
   UnauthorizedError
 } from "@/configurations/responses/error";
-import type authenticationRepository from "@/repositories/authentication";
+import type { AuthenticationRepository } from "@/repositories/authentication";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
 import type { MagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
@@ -35,7 +35,7 @@ import ENV from "@/configurations/env";
 
 export class ForgotPasswordService {
   constructor(
-    private readonly authRepo: typeof authenticationRepository,
+    private readonly authRepo: AuthenticationRepository,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly otpRepo: OtpForgotPasswordRepository,
     private readonly magicLinkRepo: MagicLinkForgotPasswordRepository,

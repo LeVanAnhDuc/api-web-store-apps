@@ -1,18 +1,23 @@
 import { Router } from "express";
-import { signupRouter } from "@/modules/signup/signup.module";
-import { loginRouter } from "@/modules/login/login.module";
-import { logoutRouter } from "@/modules/logout/logout.module";
-import { tokenRouter } from "@/modules/token/token.module";
-import { unlockAccountRouter } from "@/modules/unlock-account/unlock-account.module";
-import { forgotPasswordRouter } from "@/modules/forgot-password/forgot-password.module";
 
-const v1Router = Router();
+interface V1Routers {
+  signupRouter: Router;
+  loginRouter: Router;
+  logoutRouter: Router;
+  tokenRouter: Router;
+  unlockAccountRouter: Router;
+  forgotPasswordRouter: Router;
+}
 
-v1Router.use("/auth/signup", signupRouter);
-v1Router.use("/auth/login", loginRouter);
-v1Router.use("/auth/logout", logoutRouter);
-v1Router.use("/auth/token", tokenRouter);
-v1Router.use("/auth/unlock", unlockAccountRouter);
-v1Router.use("/auth/forgot-password", forgotPasswordRouter);
+export const createV1Router = (routers: V1Routers): Router => {
+  const v1Router = Router();
 
-export default v1Router;
+  v1Router.use("/auth/signup", routers.signupRouter);
+  v1Router.use("/auth/login", routers.loginRouter);
+  v1Router.use("/auth/logout", routers.logoutRouter);
+  v1Router.use("/auth/token", routers.tokenRouter);
+  v1Router.use("/auth/unlock", routers.unlockAccountRouter);
+  v1Router.use("/auth/forgot-password", routers.forgotPasswordRouter);
+
+  return v1Router;
+};

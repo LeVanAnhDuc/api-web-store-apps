@@ -1,11 +1,21 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { UnauthorizedError } from "@/configurations/responses/error";
 import { verifyAccessToken } from "@/utils/token";
 import { asyncHandler } from "@/utils/async-handler";
-import authenticationRepository from "@/repositories/authentication";
+import type { AuthenticationRepository } from "@/repositories/authentication";
 
-export const authenticate = asyncHandler(
-  async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+export class AuthMiddleware {
+  public readonly authenticate: RequestHandler;
+
+  constructor(private readonly authRepo: AuthenticationRepository) {
+    this.authenticate = asyncHandler(this.handle);
+  }
+
+  private handle = async (
+    req: Request,
+    _res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const { t } = req;
 
     const authHeader = req.headers.authorization;
@@ -27,7 +37,7 @@ export const authenticate = asyncHandler(
     }
 
     const authId = payload.authId || payload.userId;
-    const auth = await authenticationRepository.findById(authId);
+    const auth = await this.authRepo.findById(authId);
 
     if (!auth) {
       throw new UnauthorizedError(t("common:errors.unauthorized"));
@@ -51,5 +61,5 @@ export const authenticate = asyncHandler(
     };
 
     next();
-  }
-);
+  };
+}

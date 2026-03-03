@@ -19,8 +19,8 @@ import {
   BadRequestError,
   ConflictRequestError
 } from "@/configurations/responses/error";
-import type authenticationRepository from "@/repositories/authentication";
-import type userRepository from "@/repositories/user";
+import type { AuthenticationRepository } from "@/repositories/authentication";
+import type { UserRepository } from "@/repositories/user";
 import type { OtpSignupRepository } from "./repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "./repositories/session-signup.repository";
 import {
@@ -45,8 +45,8 @@ const SESSION_EXPIRY_SECONDS =
 
 export class SignupService {
   constructor(
-    private readonly authRepo: typeof authenticationRepository,
-    private readonly userRepo: typeof userRepository,
+    private readonly authRepo: AuthenticationRepository,
+    private readonly userRepo: UserRepository,
     private readonly otpSignupRepo: OtpSignupRepository,
     private readonly sessionSignupRepo: SessionSignupRepository
   ) {}

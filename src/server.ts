@@ -6,7 +6,7 @@ import config from "@/configurations/env";
 
 const startServer = async (): Promise<void> => {
   try {
-    await loadAll();
+    await loadAll(app);
 
     const PORT = config.APP_PORT || 3000;
     const server = app.listen(PORT, () => {

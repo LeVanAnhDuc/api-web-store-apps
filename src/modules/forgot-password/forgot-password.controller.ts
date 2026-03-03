@@ -8,10 +8,10 @@ import type {
   FPResetPasswordRequest
 } from "@/types/modules/forgot-password";
 import type { ForgotPasswordService } from "./forgot-password.service";
+import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 import { validate } from "@/validators/middleware";
-import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   fpOtpSendSchema,
   fpOtpVerifySchema,
@@ -23,55 +23,47 @@ import {
 export class ForgotPasswordController {
   public readonly router = Router();
 
-  constructor(private readonly service: ForgotPasswordService) {
+  constructor(
+    private readonly service: ForgotPasswordService,
+    private readonly rl: RateLimiterMiddleware
+  ) {
     this.initRoutes();
   }
 
   private initRoutes() {
     this.router.post(
       "/otp/send",
-      (req, res, next) =>
-        getRateLimiterMiddleware().forgotPasswordOtpByIp(req, res, next),
-      (req, res, next) =>
-        getRateLimiterMiddleware().forgotPasswordOtpByEmail(req, res, next),
+      this.rl.forgotPasswordOtpByIp,
+      this.rl.forgotPasswordOtpByEmail,
       validate(fpOtpSendSchema, "body"),
       asyncHandler(this.sendOtp)
     );
 
     this.router.post(
       "/otp/verify",
-      (req, res, next) =>
-        getRateLimiterMiddleware().forgotPasswordOtpByIp(req, res, next),
+      this.rl.forgotPasswordOtpByIp,
       validate(fpOtpVerifySchema, "body"),
       asyncHandler(this.verifyOtp)
     );
 
     this.router.post(
       "/magic-link/send",
-      (req, res, next) =>
-        getRateLimiterMiddleware().forgotPasswordMagicLinkByIp(req, res, next),
-      (req, res, next) =>
-        getRateLimiterMiddleware().forgotPasswordMagicLinkByEmail(
-          req,
-          res,
-          next
-        ),
+      this.rl.forgotPasswordMagicLinkByIp,
+      this.rl.forgotPasswordMagicLinkByEmail,
       validate(fpMagicLinkSendSchema, "body"),
       asyncHandler(this.sendMagicLink)
     );
 
     this.router.post(
       "/magic-link/verify",
-      (req, res, next) =>
-        getRateLimiterMiddleware().forgotPasswordMagicLinkByIp(req, res, next),
+      this.rl.forgotPasswordMagicLinkByIp,
       validate(fpMagicLinkVerifySchema, "body"),
       asyncHandler(this.verifyMagicLink)
     );
 
     this.router.post(
       "/reset",
-      (req, res, next) =>
-        getRateLimiterMiddleware().forgotPasswordResetByIp(req, res, next),
+      this.rl.forgotPasswordResetByIp,
       validate(fpResetPasswordSchema, "body"),
       asyncHandler(this.resetPassword)
     );

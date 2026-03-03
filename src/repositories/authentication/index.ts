@@ -5,19 +5,12 @@ import type {
 } from "@/types/modules/authentication";
 import { AUTHENTICATION_ROLES } from "@/constants/enums";
 import AuthenticationModel from "@/models/authentication";
-import type { RedisClientType } from "redis";
 import MongoDBRepository from "@/services/implements/MongoDBRepository";
-import RedisCache from "@/services/implements/RedisCache";
-import { instanceRedis } from "@/database/redis";
 
-class AuthenticationRepository {
+export class AuthenticationRepository {
   private readonly db = new MongoDBRepository<AuthenticationDocument>(
     AuthenticationModel,
     "AuthenticationRepository"
-  );
-  private readonly cache = new RedisCache(
-    instanceRedis.getClient() as RedisClientType,
-    "AuthenticationCache"
   );
 
   async findByEmail(email: string): Promise<AuthenticationDocument | null> {
@@ -75,5 +68,3 @@ class AuthenticationRepository {
     });
   }
 }
-
-export default new AuthenticationRepository();

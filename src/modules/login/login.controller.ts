@@ -8,12 +8,12 @@ import type {
   MagicLinkVerifyRequest
 } from "@/types/modules/login";
 import type { LoginService } from "./login.service";
+import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 import { COOKIE_NAMES } from "@/constants/infrastructure";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/configurations/cookie";
 import { validate } from "@/validators/middleware";
-import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   loginSchema,
   otpSendSchema,
@@ -25,48 +25,47 @@ import {
 export class LoginController {
   public readonly router = Router();
 
-  constructor(private readonly service: LoginService) {
+  constructor(
+    private readonly service: LoginService,
+    private readonly rl: RateLimiterMiddleware
+  ) {
     this.initRoutes();
   }
 
   private initRoutes() {
     this.router.post(
       "/",
-      (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
+      this.rl.loginByIp,
       validate(loginSchema, "body"),
       asyncHandler(this.login)
     );
 
     this.router.post(
       "/otp/send",
-      (req, res, next) =>
-        getRateLimiterMiddleware().loginOtpByIp(req, res, next),
-      (req, res, next) =>
-        getRateLimiterMiddleware().loginOtpByEmail(req, res, next),
+      this.rl.loginOtpByIp,
+      this.rl.loginOtpByEmail,
       validate(otpSendSchema, "body"),
       asyncHandler(this.sendOtp)
     );
 
     this.router.post(
       "/otp/verify",
-      (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
+      this.rl.loginByIp,
       validate(otpVerifySchema, "body"),
       asyncHandler(this.verifyOtp)
     );
 
     this.router.post(
       "/magic-link/send",
-      (req, res, next) =>
-        getRateLimiterMiddleware().magicLinkByIp(req, res, next),
-      (req, res, next) =>
-        getRateLimiterMiddleware().magicLinkByEmail(req, res, next),
+      this.rl.magicLinkByIp,
+      this.rl.magicLinkByEmail,
       validate(magicLinkSendSchema, "body"),
       asyncHandler(this.sendMagicLink)
     );
 
     this.router.post(
       "/magic-link/verify",
-      (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
+      this.rl.loginByIp,
       validate(magicLinkVerifySchema, "body"),
       asyncHandler(this.verifyMagicLink)
     );

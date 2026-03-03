@@ -8,10 +8,10 @@ import type {
   CheckEmailRequest
 } from "@/types/modules/signup";
 import type { SignupService } from "./signup.service";
+import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 import { validate } from "@/validators/middleware";
-import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   sendOtpSchema,
   resendOtpSchema,
@@ -23,17 +23,18 @@ import {
 export class SignupController {
   public readonly router = Router();
 
-  constructor(private readonly service: SignupService) {
+  constructor(
+    private readonly service: SignupService,
+    private readonly rl: RateLimiterMiddleware
+  ) {
     this.initRoutes();
   }
 
   private initRoutes() {
     this.router.post(
       "/send-otp",
-      (req, res, next) =>
-        getRateLimiterMiddleware().signupOtpByIp(req, res, next),
-      (req, res, next) =>
-        getRateLimiterMiddleware().signupOtpByEmail(req, res, next),
+      this.rl.signupOtpByIp,
+      this.rl.signupOtpByEmail,
       validate(sendOtpSchema, "body"),
       asyncHandler(this.sendOtp)
     );
@@ -46,10 +47,8 @@ export class SignupController {
 
     this.router.post(
       "/resend-otp",
-      (req, res, next) =>
-        getRateLimiterMiddleware().signupOtpByIp(req, res, next),
-      (req, res, next) =>
-        getRateLimiterMiddleware().signupOtpByEmail(req, res, next),
+      this.rl.signupOtpByIp,
+      this.rl.signupOtpByEmail,
       validate(resendOtpSchema, "body"),
       asyncHandler(this.resendOtp)
     );
@@ -62,8 +61,7 @@ export class SignupController {
 
     this.router.get(
       "/check-email/:email",
-      (req, res, next) =>
-        getRateLimiterMiddleware().checkEmailByIp(req, res, next),
+      this.rl.checkEmailByIp,
       validate(checkEmailSchema, "params"),
       asyncHandler(this.checkEmail)
     );

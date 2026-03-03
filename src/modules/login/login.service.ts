@@ -20,7 +20,7 @@ import {
   BadRequestError,
   UnauthorizedError
 } from "@/configurations/responses/error";
-import type authenticationRepository from "@/repositories/authentication";
+import type { AuthenticationRepository } from "@/repositories/authentication";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
@@ -35,7 +35,7 @@ import ENV from "@/configurations/env";
 
 export class LoginService {
   constructor(
-    private readonly authRepo: typeof authenticationRepository,
+    private readonly authRepo: AuthenticationRepository,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly otpLoginRepo: OtpLoginRepository,
     private readonly magicLinkLoginRepo: MagicLinkLoginRepository,

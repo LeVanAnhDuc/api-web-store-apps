@@ -1,15 +1,16 @@
+import type { Express } from "express";
 import { loadDatabase, closeDatabase } from "./database.loader";
 import { loadRedis, closeRedis } from "./redis.loader";
-import { loadRateLimiters } from "./rate-limiter.loader";
+import { loadModules } from "./modules.loader";
 import { Logger } from "@/utils/logger";
 
-export const loadAll = async (): Promise<void> => {
+export const loadAll = async (app: Express): Promise<void> => {
   try {
     await loadDatabase();
     await loadRedis();
 
-    // Rate limiters use RedisStore - must initialize after Redis connects
-    loadRateLimiters();
+    // Modules (including rate limiters) use Redis - must initialize after Redis connects
+    loadModules(app);
 
     Logger.info("All loaders initialized successfully");
   } catch (error) {

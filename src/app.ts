@@ -2,7 +2,6 @@ import express from "express";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
-import { mountRoutes } from "./routes";
 import { requestLogger } from "@/middlewares/request-logger";
 import { handleError, handleNotFound } from "@/middlewares/error-handler";
 import { handleMongooseError } from "@/middlewares/mongoose-error-handler";
@@ -26,8 +25,6 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
-
-mountRoutes(app);
 
 // Error handlers must be registered last
 app.use(handleNotFound);

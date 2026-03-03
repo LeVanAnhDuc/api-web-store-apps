@@ -1,24 +1,31 @@
 import type { RedisClientType } from "redis";
-import authenticationRepository from "@/repositories/authentication";
-import userRepository from "@/repositories/user";
-import { instanceRedis } from "@/database/redis";
+import type { AuthenticationRepository } from "@/repositories/authentication";
+import type { UserRepository } from "@/repositories/user";
+import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import { OtpSignupRepository } from "./repositories/otp-signup.repository";
 import { SessionSignupRepository } from "./repositories/session-signup.repository";
 import { SignupService } from "./signup.service";
 import { SignupController } from "./signup.controller";
 
-const redisClient = instanceRedis.getClient() as RedisClientType;
+export const createSignupModule = (
+  redisClient: RedisClientType,
+  authRepo: AuthenticationRepository,
+  userRepo: UserRepository,
+  rateLimiter: RateLimiterMiddleware
+) => {
+  const otpSignupRepo = new OtpSignupRepository(redisClient);
+  const sessionSignupRepo = new SessionSignupRepository(redisClient);
 
-const otpSignupRepo = new OtpSignupRepository(redisClient);
-const sessionSignupRepo = new SessionSignupRepository(redisClient);
+  const signupService = new SignupService(
+    authRepo,
+    userRepo,
+    otpSignupRepo,
+    sessionSignupRepo
+  );
+  const signupController = new SignupController(signupService, rateLimiter);
 
-const signupService = new SignupService(
-  authenticationRepository,
-  userRepository,
-  otpSignupRepo,
-  sessionSignupRepo
-);
-const signupController = new SignupController(signupService);
-
-export const signupRouter = signupController.router;
-export { signupService };
+  return {
+    signupRouter: signupController.router,
+    signupService
+  };
+};

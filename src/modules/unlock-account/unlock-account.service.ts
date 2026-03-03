@@ -10,7 +10,7 @@ import {
   TooManyRequestsError,
   UnauthorizedError
 } from "@/configurations/responses/error";
-import type authenticationRepository from "@/repositories/authentication";
+import type { AuthenticationRepository } from "@/repositories/authentication";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
 import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
@@ -33,7 +33,7 @@ const ALL_CHARS =
 
 export class UnlockAccountService {
   constructor(
-    private readonly authRepo: typeof authenticationRepository,
+    private readonly authRepo: AuthenticationRepository,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly failedAttemptsRepo: FailedAttemptsRepository,
     private readonly unlockAccountRepo: UnlockAccountRepository

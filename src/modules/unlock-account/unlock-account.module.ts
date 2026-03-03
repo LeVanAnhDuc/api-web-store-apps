@@ -1,25 +1,34 @@
 import type { RedisClientType } from "redis";
-import authenticationRepository from "@/repositories/authentication";
-import { instanceRedis } from "@/database/redis";
-import { loginHistoryService } from "@/modules/login-history/login-history.module";
-import { failedAttemptsRepo } from "@/modules/login/login.module";
+import type { AuthenticationRepository } from "@/repositories/authentication";
+import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
+import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
+import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import { UnlockAccountRepository } from "./repositories/unlock-account.repository";
 import { UnlockAccountService } from "./unlock-account.service";
 import { UnlockAccountController } from "./unlock-account.controller";
 
-const redisClient = instanceRedis.getClient() as RedisClientType;
+export const createUnlockAccountModule = (
+  redisClient: RedisClientType,
+  authRepo: AuthenticationRepository,
+  loginHistorySvc: LoginHistoryService,
+  failedAttemptsRepo: FailedAttemptsRepository,
+  rateLimiter: RateLimiterMiddleware
+) => {
+  const unlockAccountRepo = new UnlockAccountRepository(redisClient);
 
-const unlockAccountRepo = new UnlockAccountRepository(redisClient);
+  const unlockAccountService = new UnlockAccountService(
+    authRepo,
+    loginHistorySvc,
+    failedAttemptsRepo,
+    unlockAccountRepo
+  );
+  const unlockAccountController = new UnlockAccountController(
+    unlockAccountService,
+    rateLimiter
+  );
 
-const unlockAccountService = new UnlockAccountService(
-  authenticationRepository,
-  loginHistoryService,
-  failedAttemptsRepo,
-  unlockAccountRepo
-);
-const unlockAccountController = new UnlockAccountController(
-  unlockAccountService
-);
-
-export const unlockAccountRouter = unlockAccountController.router;
-export { unlockAccountService };
+  return {
+    unlockAccountRouter: unlockAccountController.router,
+    unlockAccountService
+  };
+};

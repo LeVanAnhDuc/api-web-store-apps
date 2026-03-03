@@ -5,12 +5,12 @@ import type {
   UnlockVerifyRequest
 } from "@/types/modules/unlock-account";
 import type { UnlockAccountService } from "./unlock-account.service";
+import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 import { COOKIE_NAMES } from "@/constants/infrastructure";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/configurations/cookie";
 import { validate } from "@/validators/middleware";
-import { getRateLimiterMiddleware } from "@/loaders/rate-limiter.loader";
 import {
   unlockRequestSchema,
   unlockVerifySchema
@@ -19,7 +19,10 @@ import {
 export class UnlockAccountController {
   public readonly router = Router();
 
-  constructor(private readonly service: UnlockAccountService) {
+  constructor(
+    private readonly service: UnlockAccountService,
+    private readonly rl: RateLimiterMiddleware
+  ) {
     this.initRoutes();
   }
 
@@ -32,7 +35,7 @@ export class UnlockAccountController {
 
     this.router.post(
       "/verify",
-      (req, res, next) => getRateLimiterMiddleware().loginByIp(req, res, next),
+      this.rl.loginByIp,
       validate(unlockVerifySchema, "body"),
       asyncHandler(this.unlockVerify)
     );
