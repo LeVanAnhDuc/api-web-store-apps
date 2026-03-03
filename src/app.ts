@@ -1,10 +1,7 @@
 import express from "express";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
-
 import { requestLogger } from "@/middlewares/request-logger";
-import { handleError, handleNotFound } from "@/middlewares/error-handler";
-import { handleMongooseError } from "@/middlewares/mongoose-error-handler";
 import { i18nMiddleware } from "./i18n";
 import { setupSwagger } from "@/config/swagger.setup";
 
@@ -18,17 +15,5 @@ app.use(requestLogger);
 app.use(i18nMiddleware);
 
 setupSwagger(app);
-
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "healthy",
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Error handlers must be registered last
-app.use(handleNotFound);
-app.use(handleMongooseError);
-app.use(handleError);
 
 export default app;

@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { loadDatabase, closeDatabase } from "./database.loader";
 import { loadRedis, closeRedis } from "./redis.loader";
 import { loadModules } from "./modules.loader";
+import { loadErrorHandlers } from "./error-handler.loader";
 import { Logger } from "@/utils/logger";
 
 export const loadAll = async (app: Express): Promise<void> => {
@@ -11,6 +12,9 @@ export const loadAll = async (app: Express): Promise<void> => {
 
     // Modules (including rate limiters) use Redis - must initialize after Redis connects
     loadModules(app);
+
+    // Error handlers must be registered AFTER all routes
+    loadErrorHandlers(app);
 
     Logger.info("All loaders initialized successfully");
   } catch (error) {

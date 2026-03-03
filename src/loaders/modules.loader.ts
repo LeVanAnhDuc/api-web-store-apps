@@ -1,5 +1,5 @@
 import { Router } from "express";
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import type { RedisClientType } from "redis";
 import { instanceRedis } from "@/database/redis";
 import { AuthenticationRepository } from "@/repositories/authentication.repository";
@@ -65,6 +65,12 @@ export const loadModules = (app: Express): void => {
   v1Router.use("/auth/token", tokenRouter);
   v1Router.use("/auth/unlock", unlockAccountRouter);
   v1Router.use("/auth/forgot-password", forgotPasswordRouter);
+
+  app.get("/health", (_req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({ status: "healthy", timestamp: new Date().toISOString() });
+  });
 
   app.use("/api/v1", v1Router);
   Logger.info("Modules loaded and routes mounted successfully");
