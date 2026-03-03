@@ -1,8 +1,8 @@
-import type { AuthMiddleware } from "@/middlewares/auth";
+import type { AuthGuard } from "@/middlewares/auth.guard";
 import { LogoutService } from "./logout.service";
 import { LogoutController } from "./logout.controller";
 
-export const createLogoutModule = (auth: AuthMiddleware) => {
+export const createLogoutModule = (auth: AuthGuard) => {
   const logoutService = new LogoutService();
   const logoutController = new LogoutController(logoutService, auth);
 

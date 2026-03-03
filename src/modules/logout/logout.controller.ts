@@ -4,6 +4,7 @@ import type { HandlerResult } from "@/types/http";
 import type { LogoutService } from "./logout.service";
 import type { AuthGuard } from "@/middlewares/auth.guard";
 import { asyncHandler } from "@/utils/async-handler";
+import { STATUS_CODES } from "@/config/http";
 import { COOKIE_NAMES } from "@/constants/infrastructure";
 import ENV from "@/config/env";
 
@@ -22,11 +23,10 @@ export class LogoutController {
   }
 
   private logout = async (req: Request): Promise<HandlerResult> => {
-    const { data, message } = await this.service.logout(req);
+    await this.service.logout(req);
 
     return {
-      data,
-      message,
+      statusCode: STATUS_CODES.NO_CONTENT,
       clearCookies: [
         {
           name: COOKIE_NAMES.REFRESH_TOKEN,

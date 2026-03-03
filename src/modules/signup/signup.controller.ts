@@ -8,6 +8,7 @@ import type {
 } from "@/types/modules/signup";
 import type { HandlerResult } from "@/types/http";
 import type { SignupService } from "./signup.service";
+import { STATUS_CODES } from "@/config/http";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import { asyncHandler } from "@/utils/async-handler";
 import { validate } from "@/validators/middleware";
@@ -85,7 +86,7 @@ export class SignupController {
     req: CompleteSignupRequest
   ): Promise<HandlerResult> => {
     const { data, message } = await this.service.completeSignup(req);
-    return { data, message };
+    return { data, message, statusCode: STATUS_CODES.CREATED };
   };
 
   private checkEmail = async (
