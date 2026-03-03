@@ -1,8 +1,8 @@
 import jwt, { type Secret } from "jsonwebtoken";
 import type { TPayload, TExpiresIn, AuthTokens } from "@/types/jwt";
-import { ForbiddenError } from "@/configurations/responses/error";
+import { ForbiddenError } from "@/config/responses/error";
 import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/constants/infrastructure";
-import ENV from "@/configurations/env";
+import ENV from "@/config/env";
 
 const TOKEN_TYPES = {
   ACCESS: "ACCESS",

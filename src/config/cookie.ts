@@ -1,6 +1,6 @@
 import type { CookieOptions } from "express";
 import { TOKEN_EXPIRY } from "@/constants/infrastructure";
-import ENV from "@/configurations/env";
+import ENV from "@/config/env";
 
 const allowCrossOrigin = ENV.ALLOW_CROSS_ORIGIN_COOKIES === "true";
 

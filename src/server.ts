@@ -2,7 +2,7 @@ import "reflect-metadata";
 import app from "./app";
 import { loadAll, closeAll } from "./loaders";
 import { Logger } from "@/utils/logger";
-import config from "@/configurations/env";
+import config from "@/config/env";
 
 const startServer = async (): Promise<void> => {
   try {

@@ -2,10 +2,7 @@ import type { Request } from "express";
 import type { RefreshTokenResponse } from "@/types/modules/token";
 import { generateAuthTokensResponse, verifyRefreshToken } from "@/utils/token";
 import { Logger } from "@/utils/logger";
-import {
-  UnauthorizedError,
-  ForbiddenError
-} from "@/configurations/responses/error";
+import { UnauthorizedError, ForbiddenError } from "@/config/responses/error";
 
 export class TokenService {
   refreshAccessToken(

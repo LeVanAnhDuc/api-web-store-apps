@@ -1,7 +1,7 @@
 import type { UserDocument } from "@/types/modules/user";
 import type { CreateUserData, UserRecord } from "@/types/modules/user";
 import UserModel from "@/models/user";
-import MongoDBRepository from "@/services/implements/MongoDBRepository";
+import MongoDBRepository from "@/core/implements/MongoDBRepository";
 
 export class UserRepository {
   private readonly db = new MongoDBRepository<UserDocument>(

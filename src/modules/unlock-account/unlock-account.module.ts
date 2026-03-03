@@ -1,5 +1,5 @@
 import type { RedisClientType } from "redis";
-import type { AuthenticationRepository } from "@/repositories/authentication";
+import type { AuthenticationRepository } from "@/repositories/authentication.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";

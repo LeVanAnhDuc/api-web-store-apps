@@ -3,9 +3,9 @@ import type {
   LoginHistoryDocument
 } from "@/types/modules/login-history";
 import LoginHistoryModel from "@/models/login-history";
-import MongoDBRepository from "@/services/implements/MongoDBRepository";
+import MongoDBRepository from "@/core/implements/MongoDBRepository";
 
-class LoginHistoryRepository {
+export class LoginHistoryRepository {
   private readonly db = new MongoDBRepository<LoginHistoryDocument>(
     LoginHistoryModel,
     "LoginHistoryRepository"
@@ -15,5 +15,3 @@ class LoginHistoryRepository {
     return this.db.create(data as Partial<LoginHistoryDocument>);
   }
 }
-
-export default new LoginHistoryRepository();

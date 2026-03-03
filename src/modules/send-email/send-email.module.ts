@@ -1,4 +1,4 @@
-import { NodemailerTransport } from "@/services/implements/NodemailerTransport";
+import { NodemailerTransport } from "@/core/implements/NodemailerTransport";
 import { SendEmailService } from "./send-email.service";
 
 const emailTransport = NodemailerTransport.getInstance();

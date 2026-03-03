@@ -1,5 +1,4 @@
 import { Router } from "express";
-import type { Response } from "express";
 import type {
   SendOtpRequest,
   VerifyOtpRequest,
@@ -7,9 +6,9 @@ import type {
   CompleteSignupRequest,
   CheckEmailRequest
 } from "@/types/modules/signup";
+import type { HandlerResult } from "@/types/http";
 import type { SignupService } from "./signup.service";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
-import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 import { validate } from "@/validators/middleware";
 import {
@@ -67,43 +66,32 @@ export class SignupController {
     );
   }
 
-  private sendOtp = async (
-    req: SendOtpRequest,
-    res: Response
-  ): Promise<void> => {
+  private sendOtp = async (req: SendOtpRequest): Promise<HandlerResult> => {
     const { data, message } = await this.service.sendOtp(req);
-    new OkSuccess({ data, message }).send(req, res);
+    return { data, message };
   };
 
-  private verifyOtp = async (
-    req: VerifyOtpRequest,
-    res: Response
-  ): Promise<void> => {
+  private verifyOtp = async (req: VerifyOtpRequest): Promise<HandlerResult> => {
     const { data, message } = await this.service.verifyOtp(req);
-    new OkSuccess({ data, message }).send(req, res);
+    return { data, message };
   };
 
-  private resendOtp = async (
-    req: ResendOtpRequest,
-    res: Response
-  ): Promise<void> => {
+  private resendOtp = async (req: ResendOtpRequest): Promise<HandlerResult> => {
     const { data, message } = await this.service.resendOtp(req);
-    new OkSuccess({ data, message }).send(req, res);
+    return { data, message };
   };
 
   private completeSignup = async (
-    req: CompleteSignupRequest,
-    res: Response
-  ): Promise<void> => {
+    req: CompleteSignupRequest
+  ): Promise<HandlerResult> => {
     const { data, message } = await this.service.completeSignup(req);
-    new OkSuccess({ data, message }).send(req, res);
+    return { data, message };
   };
 
   private checkEmail = async (
-    req: CheckEmailRequest,
-    res: Response
-  ): Promise<void> => {
+    req: CheckEmailRequest
+  ): Promise<HandlerResult> => {
     const { data } = await this.service.checkEmail(req);
-    new OkSuccess({ data }).send(req, res);
+    return { data };
   };
 }

@@ -1,6 +1,6 @@
 import { render } from "@react-email/render";
 import { Logger } from "@/utils/logger";
-import type { EmailTransport } from "@/services/EmailTransport";
+import type { EmailTransport } from "@/core/EmailTransport";
 import {
   EmailType,
   type SendEmailOptions,

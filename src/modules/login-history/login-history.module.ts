@@ -1,6 +1,9 @@
-import loginHistoryRepository from "@/repositories/login-history";
+import { LoginHistoryRepository } from "@/repositories/login-history.repository";
 import { LoginHistoryService } from "./login-history.service";
 
-const loginHistoryService = new LoginHistoryService(loginHistoryRepository);
+export const createLoginHistoryModule = () => {
+  const loginHistoryRepo = new LoginHistoryRepository();
+  const loginHistoryService = new LoginHistoryService(loginHistoryRepo);
 
-export { loginHistoryService };
+  return { loginHistoryService };
+};

@@ -1,36 +1,43 @@
 import { Router } from "express";
-import type { Response, Request } from "express";
+import type { Request } from "express";
+import type { HandlerResult } from "@/types/http";
 import type { LogoutService } from "./logout.service";
-import type { AuthMiddleware } from "@/middlewares/auth";
-import { OkSuccess } from "@/configurations/responses/success";
+import type { AuthGuard } from "@/middlewares/auth.guard";
 import { asyncHandler } from "@/utils/async-handler";
 import { COOKIE_NAMES } from "@/constants/infrastructure";
-import ENV from "@/configurations/env";
+import ENV from "@/config/env";
 
 export class LogoutController {
   public readonly router = Router();
 
   constructor(
     private readonly service: LogoutService,
-    private readonly auth: AuthMiddleware
+    private readonly auth: AuthGuard
   ) {
     this.initRoutes();
   }
 
   private initRoutes() {
-    this.router.post("/", this.auth.authenticate, asyncHandler(this.logout));
+    this.router.post("/", this.auth.middleware, asyncHandler(this.logout));
   }
 
-  private logout = async (req: Request, res: Response): Promise<void> => {
+  private logout = async (req: Request): Promise<HandlerResult> => {
     const { data, message } = await this.service.logout(req);
 
-    res.clearCookie(COOKIE_NAMES.REFRESH_TOKEN, {
-      httpOnly: true,
-      secure: ENV.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/"
-    });
-
-    new OkSuccess({ data, message }).send(req, res);
+    return {
+      data,
+      message,
+      clearCookies: [
+        {
+          name: COOKIE_NAMES.REFRESH_TOKEN,
+          options: {
+            httpOnly: true,
+            secure: ENV.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/"
+          }
+        }
+      ]
+    };
   };
 }

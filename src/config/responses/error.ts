@@ -1,4 +1,4 @@
-import { REASON_PHRASES, STATUS_CODES } from "@/configurations/http";
+import { REASON_PHRASES, STATUS_CODES } from "@/config/http";
 
 export class ErrorResponse extends Error {
   readonly status: number;

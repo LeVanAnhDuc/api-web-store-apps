@@ -1,9 +1,9 @@
 import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 import { Logger } from "@/utils/logger";
-import config from "@/configurations/env";
-import type { EmailSendOptions } from "@/services/EmailTransport";
-import { EmailTransport } from "@/services/EmailTransport";
+import config from "@/config/env";
+import type { EmailSendOptions } from "@/core/EmailTransport";
+import { EmailTransport } from "@/core/EmailTransport";
 
 const EMAIL_SERVICE = {
   PROVIDER: "gmail"

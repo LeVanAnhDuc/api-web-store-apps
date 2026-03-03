@@ -1,5 +1,5 @@
 import type { RedisClientType } from "redis";
-import RedisCache from "@/services/implements/RedisCache";
+import RedisCache from "@/core/implements/RedisCache";
 import { REDIS_KEYS } from "@/constants/infrastructure";
 import { LOGIN_LOCKOUT } from "@/constants/config";
 

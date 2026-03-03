@@ -1,5 +1,5 @@
 import type { RedisClientType } from "redis";
-import RedisCache from "@/services/implements/RedisCache";
+import RedisCache from "@/core/implements/RedisCache";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { REDIS_KEYS } from "@/constants/infrastructure";
 import { SESSION_CONFIG } from "@/constants/config";

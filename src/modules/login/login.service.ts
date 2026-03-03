@@ -16,11 +16,8 @@ import { withRetry } from "@/utils/retry";
 import { generateAuthTokensResponse } from "@/utils/token";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { formatDuration } from "@/utils/date";
-import {
-  BadRequestError,
-  UnauthorizedError
-} from "@/configurations/responses/error";
-import type { AuthenticationRepository } from "@/repositories/authentication";
+import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
+import type { AuthenticationRepository } from "@/repositories/authentication.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
@@ -31,7 +28,7 @@ import {
 } from "@/modules/send-email/send-email.module";
 import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/constants/enums";
 import { LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG } from "@/constants/config";
-import ENV from "@/configurations/env";
+import ENV from "@/config/env";
 
 export class LoginService {
   constructor(

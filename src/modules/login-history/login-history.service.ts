@@ -1,6 +1,6 @@
 import type { Schema } from "mongoose";
 import type { Request } from "express";
-import type loginHistoryRepository from "@/repositories/login-history";
+import type { LoginHistoryRepository } from "@/repositories/login-history.repository";
 import { HTTP_HEADERS } from "@/constants/infrastructure";
 import type {
   LoginEventPayload,
@@ -18,9 +18,7 @@ import {
 } from "./internals/helpers";
 
 export class LoginHistoryService {
-  constructor(
-    private readonly loginHistoryRepo: typeof loginHistoryRepository
-  ) {}
+  constructor(private readonly loginHistoryRepo: LoginHistoryRepository) {}
 
   recordSuccessfulLogin({
     userId,

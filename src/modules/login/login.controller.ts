@@ -1,5 +1,5 @@
 import { Router } from "express";
-import type { Response } from "express";
+import type { Response, NextFunction } from "express";
 import type {
   PasswordLoginRequest,
   OtpSendRequest,
@@ -7,12 +7,12 @@ import type {
   MagicLinkSendRequest,
   MagicLinkVerifyRequest
 } from "@/types/modules/login";
+import type { HandlerResult } from "@/types/http";
 import type { LoginService } from "./login.service";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
-import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 import { COOKIE_NAMES } from "@/constants/infrastructure";
-import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/configurations/cookie";
+import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
 import { validate } from "@/validators/middleware";
 import {
   loginSchema,
@@ -73,74 +73,82 @@ export class LoginController {
 
   private login = async (
     req: PasswordLoginRequest,
-    res: Response
-  ): Promise<void> => {
+    _res: Response,
+    _next: NextFunction
+  ): Promise<HandlerResult> => {
     const { data, message } = await this.service.passwordLogin(req);
-
     const { refreshToken, ...responseData } = data;
 
-    if (refreshToken) {
-      res.cookie(
-        COOKIE_NAMES.REFRESH_TOKEN,
-        refreshToken,
-        REFRESH_TOKEN_COOKIE_OPTIONS
-      );
-    }
-
-    new OkSuccess({ data: responseData, message }).send(req, res);
+    return {
+      data: responseData,
+      message,
+      cookies: refreshToken
+        ? [
+            {
+              name: COOKIE_NAMES.REFRESH_TOKEN,
+              value: refreshToken,
+              options: REFRESH_TOKEN_COOKIE_OPTIONS
+            }
+          ]
+        : undefined
+    };
   };
 
-  private sendOtp = async (
-    req: OtpSendRequest,
-    res: Response
-  ): Promise<void> => {
+  private sendOtp = async (req: OtpSendRequest): Promise<HandlerResult> => {
     const { data, message } = await this.service.sendOtp(req);
-    new OkSuccess({ data, message }).send(req, res);
+    return { data, message };
   };
 
   private verifyOtp = async (
     req: OtpVerifyRequest,
-    res: Response
-  ): Promise<void> => {
+    _res: Response,
+    _next: NextFunction
+  ): Promise<HandlerResult> => {
     const { data, message } = await this.service.verifyOtp(req);
-
     const { refreshToken, ...responseData } = data;
 
-    if (refreshToken) {
-      res.cookie(
-        COOKIE_NAMES.REFRESH_TOKEN,
-        refreshToken,
-        REFRESH_TOKEN_COOKIE_OPTIONS
-      );
-    }
-
-    new OkSuccess({ data: responseData, message }).send(req, res);
+    return {
+      data: responseData,
+      message,
+      cookies: refreshToken
+        ? [
+            {
+              name: COOKIE_NAMES.REFRESH_TOKEN,
+              value: refreshToken,
+              options: REFRESH_TOKEN_COOKIE_OPTIONS
+            }
+          ]
+        : undefined
+    };
   };
 
   private sendMagicLink = async (
-    req: MagicLinkSendRequest,
-    res: Response
-  ): Promise<void> => {
+    req: MagicLinkSendRequest
+  ): Promise<HandlerResult> => {
     const { data, message } = await this.service.sendMagicLink(req);
-    new OkSuccess({ data, message }).send(req, res);
+    return { data, message };
   };
 
   private verifyMagicLink = async (
     req: MagicLinkVerifyRequest,
-    res: Response
-  ): Promise<void> => {
+    _res: Response,
+    _next: NextFunction
+  ): Promise<HandlerResult> => {
     const { data, message } = await this.service.verifyMagicLink(req);
-
     const { refreshToken, ...responseData } = data;
 
-    if (refreshToken) {
-      res.cookie(
-        COOKIE_NAMES.REFRESH_TOKEN,
-        refreshToken,
-        REFRESH_TOKEN_COOKIE_OPTIONS
-      );
-    }
-
-    new OkSuccess({ data: responseData, message }).send(req, res);
+    return {
+      data: responseData,
+      message,
+      cookies: refreshToken
+        ? [
+            {
+              name: COOKIE_NAMES.REFRESH_TOKEN,
+              value: refreshToken,
+              options: REFRESH_TOKEN_COOKIE_OPTIONS
+            }
+          ]
+        : undefined
+    };
   };
 }

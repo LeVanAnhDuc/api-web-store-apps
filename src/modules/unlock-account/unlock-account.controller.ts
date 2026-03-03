@@ -1,15 +1,14 @@
 import { Router } from "express";
-import type { Response } from "express";
 import type {
   UnlockRequest,
   UnlockVerifyRequest
 } from "@/types/modules/unlock-account";
+import type { HandlerResult } from "@/types/http";
 import type { UnlockAccountService } from "./unlock-account.service";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
-import { OkSuccess } from "@/configurations/responses/success";
 import { asyncHandler } from "@/utils/async-handler";
 import { COOKIE_NAMES } from "@/constants/infrastructure";
-import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/configurations/cookie";
+import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
 import { validate } from "@/validators/middleware";
 import {
   unlockRequestSchema,
@@ -42,39 +41,39 @@ export class UnlockAccountController {
   }
 
   private unlockRequest = async (
-    req: UnlockRequest,
-    res: Response
-  ): Promise<void> => {
+    req: UnlockRequest
+  ): Promise<HandlerResult> => {
     const { email } = req.body;
     const { t, language } = req;
 
     const result = await this.service.unlockRequest(email, t, language);
-
     const message = t("unlockAccount:success.unlockEmailSent");
 
-    new OkSuccess({ data: result, message }).send(req, res);
+    return { data: result, message };
   };
 
   private unlockVerify = async (
-    req: UnlockVerifyRequest,
-    res: Response
-  ): Promise<void> => {
+    req: UnlockVerifyRequest
+  ): Promise<HandlerResult> => {
     const { t } = req;
 
     const result = await this.service.unlockVerify(req);
-
     const message = t("unlockAccount:success.accountUnlocked");
 
     const { refreshToken, ...responseData } = result;
 
-    if (refreshToken) {
-      res.cookie(
-        COOKIE_NAMES.REFRESH_TOKEN,
-        refreshToken,
-        REFRESH_TOKEN_COOKIE_OPTIONS
-      );
-    }
-
-    new OkSuccess({ data: responseData, message }).send(req, res);
+    return {
+      data: responseData,
+      message,
+      cookies: refreshToken
+        ? [
+            {
+              name: COOKIE_NAMES.REFRESH_TOKEN,
+              value: refreshToken,
+              options: REFRESH_TOKEN_COOKIE_OPTIONS
+            }
+          ]
+        : undefined
+    };
   };
 }

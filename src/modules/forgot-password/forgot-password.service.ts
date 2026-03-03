@@ -13,11 +13,8 @@ import type { AuthenticationDocument } from "@/types/modules/authentication";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { hashValue } from "@/utils/crypto/bcrypt";
-import {
-  BadRequestError,
-  UnauthorizedError
-} from "@/configurations/responses/error";
-import type { AuthenticationRepository } from "@/repositories/authentication";
+import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
+import type { AuthenticationRepository } from "@/repositories/authentication.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
 import type { MagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
@@ -31,7 +28,7 @@ import {
   FORGOT_PASSWORD_OTP_CONFIG,
   FORGOT_PASSWORD_MAGIC_LINK_CONFIG
 } from "@/constants/config";
-import ENV from "@/configurations/env";
+import ENV from "@/config/env";
 
 export class ForgotPasswordService {
   constructor(

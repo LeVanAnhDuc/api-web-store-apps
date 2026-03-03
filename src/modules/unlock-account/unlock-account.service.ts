@@ -9,8 +9,8 @@ import {
   BadRequestError,
   TooManyRequestsError,
   UnauthorizedError
-} from "@/configurations/responses/error";
-import type { AuthenticationRepository } from "@/repositories/authentication";
+} from "@/config/responses/error";
+import type { AuthenticationRepository } from "@/repositories/authentication.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
 import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
@@ -19,7 +19,7 @@ import {
   sendEmailService,
   EmailType
 } from "@/modules/send-email/send-email.module";
-import ENV from "@/configurations/env";
+import ENV from "@/config/env";
 
 const TEMP_PASSWORD_EXPIRY_MINUTES = 15;
 const TEMP_PASSWORD_LENGTH = 16;

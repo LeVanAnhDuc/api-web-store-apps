@@ -6,7 +6,7 @@ import { requestLogger } from "@/middlewares/request-logger";
 import { handleError, handleNotFound } from "@/middlewares/error-handler";
 import { handleMongooseError } from "@/middlewares/mongoose-error-handler";
 import { i18nMiddleware } from "./i18n";
-import { setupSwagger } from "@/configurations/swagger.setup";
+import { setupSwagger } from "@/config/swagger.setup";
 
 const app = express();
 

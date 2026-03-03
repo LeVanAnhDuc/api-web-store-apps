@@ -5,7 +5,7 @@ import type {
 } from "@/types/modules/authentication";
 import { AUTHENTICATION_ROLES } from "@/constants/enums";
 import AuthenticationModel from "@/models/authentication";
-import MongoDBRepository from "@/services/implements/MongoDBRepository";
+import MongoDBRepository from "@/core/implements/MongoDBRepository";
 
 export class AuthenticationRepository {
   private readonly db = new MongoDBRepository<AuthenticationDocument>(
