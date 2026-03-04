@@ -13,6 +13,8 @@ import { createLogoutModule } from "@/modules/logout/logout.module";
 import { createTokenModule } from "@/modules/token/token.module";
 import { createUnlockAccountModule } from "@/modules/unlock-account/unlock-account.module";
 import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-password.module";
+import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
+import { OptionalAuthGuard } from "@/middlewares/optional-auth.guard";
 import { Logger } from "@/utils/logger";
 
 export const loadModules = (app: Express): void => {
@@ -21,6 +23,7 @@ export const loadModules = (app: Express): void => {
   const authRepo = new AuthenticationRepository();
   const userRepo = new UserRepository();
   const auth = new AuthGuard(authRepo);
+  const optionalAuth = new OptionalAuthGuard(authRepo);
   const rateLimiter = new RateLimiterMiddleware(redisClient);
 
   const { loginHistoryService } = createLoginHistoryModule();
@@ -58,6 +61,11 @@ export const loadModules = (app: Express): void => {
     rateLimiter
   );
 
+  const { contactAdminRouter } = createContactAdminModule(
+    rateLimiter,
+    optionalAuth
+  );
+
   const v1Router = Router();
   v1Router.use("/auth/signup", signupRouter);
   v1Router.use("/auth/login", loginRouter);
@@ -65,6 +73,7 @@ export const loadModules = (app: Express): void => {
   v1Router.use("/auth/token", tokenRouter);
   v1Router.use("/auth/unlock", unlockAccountRouter);
   v1Router.use("/auth/forgot-password", forgotPasswordRouter);
+  v1Router.use("/contact", contactAdminRouter);
 
   app.get("/health", (_req: Request, res: Response) => {
     res
