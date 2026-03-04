@@ -1666,6 +1666,400 @@
         }
       ],
       "description": "Logout endpoint (requires authentication)"
+    },
+    {
+      "name": "Contact Admin",
+      "description": "Submit contact requests to the admin. Supports guests and authenticated users. Multipart/form-data with optional file attachments.",
+      "item": [
+        {
+          "name": "Submit Contact - Happy Path (Guest, no files)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "guest@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "subject",
+                  "value": "Cannot access my account",
+                  "type": "text"
+                },
+                { "key": "category", "value": "account", "type": "text" },
+                { "key": "priority", "value": "high", "type": "text" },
+                {
+                  "key": "message",
+                  "value": "I have been unable to log in to my account for the past 2 days. Please help.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "Guest submits a contact request without file attachments. Should return 201 with a ticketNumber."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Contact - Happy Path (Authenticated User, no files)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "subject",
+                  "value": "Billing issue with my subscription",
+                  "type": "text"
+                },
+                { "key": "category", "value": "billing", "type": "text" },
+                { "key": "priority", "value": "medium", "type": "text" },
+                {
+                  "key": "message",
+                  "value": "I was charged twice for my subscription this month. Please review my account.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "Authenticated user submits a contact request. Email is auto-filled from token. Should return 201 with ticketNumber."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Contact - Happy Path (Authenticated, with file attachment)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "subject",
+                  "value": "Screenshot of the error I encountered",
+                  "type": "text"
+                },
+                { "key": "category", "value": "technical", "type": "text" },
+                { "key": "priority", "value": "high", "type": "text" },
+                {
+                  "key": "message",
+                  "value": "The app crashes when I try to upload a profile picture. See attached screenshot for details.",
+                  "type": "text"
+                },
+                {
+                  "key": "attachments",
+                  "type": "file",
+                  "src": [],
+                  "description": "Attach a jpg/png/pdf file here"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "Authenticated user submits with a file attachment. Attach a valid file (jpg/png/pdf, under 5MB) in the attachments field."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Contact - Default Priority (no priority field)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "guest@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "subject",
+                  "value": "Feature suggestion for dark mode",
+                  "type": "text"
+                },
+                { "key": "category", "value": "feature", "type": "text" },
+                {
+                  "key": "message",
+                  "value": "It would be great if the app had a dark mode option for nighttime use.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "Priority field omitted — should default to 'medium'. Should return 201."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Contact - Validation Error Missing Required Fields (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "email", "value": "guest@example.com", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "Missing subject, category, and message. Should return 422 - validation error."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Contact - Validation Error Subject Too Short (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "subject", "value": "Hi", "type": "text" },
+                { "key": "category", "value": "other", "type": "text" },
+                {
+                  "key": "message",
+                  "value": "This message is long enough to pass the minimum character check.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "Subject is only 2 characters (min 5). Should return 422 - subject too short."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Contact - Validation Error Message Too Short (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "subject",
+                  "value": "Valid subject here",
+                  "type": "text"
+                },
+                { "key": "category", "value": "other", "type": "text" },
+                { "key": "message", "value": "Too short", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "Message is only 9 characters (min 20). Should return 422 - message too short."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Contact - Validation Error Invalid Category (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "subject",
+                  "value": "Valid subject here",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "unknown_category",
+                  "type": "text"
+                },
+                {
+                  "key": "message",
+                  "value": "This message is long enough to pass the minimum character check.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "Category is not in allowed enum values. Should return 422 - invalid category."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Contact - Validation Error Invalid Priority (Should Fail 422)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "subject",
+                  "value": "Valid subject here",
+                  "type": "text"
+                },
+                { "key": "category", "value": "technical", "type": "text" },
+                { "key": "priority", "value": "urgent", "type": "text" },
+                {
+                  "key": "message",
+                  "value": "This message is long enough to pass the minimum character check.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "Priority 'urgent' is not in allowed enum (low/medium/high). Should return 422 - invalid priority."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Contact - File Too Large (Should Fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "subject",
+                  "value": "Valid subject here",
+                  "type": "text"
+                },
+                { "key": "category", "value": "technical", "type": "text" },
+                {
+                  "key": "message",
+                  "value": "This message is long enough to pass the minimum character check.",
+                  "type": "text"
+                },
+                {
+                  "key": "attachments",
+                  "type": "file",
+                  "src": [],
+                  "description": "Attach a file larger than 5MB here"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "File attachment exceeds 5MB limit. Should return 400 - file too large."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Contact - Unsupported File Type (Should Fail 400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "subject",
+                  "value": "Valid subject here",
+                  "type": "text"
+                },
+                { "key": "category", "value": "technical", "type": "text" },
+                {
+                  "key": "message",
+                  "value": "This message is long enough to pass the minimum character check.",
+                  "type": "text"
+                },
+                {
+                  "key": "attachments",
+                  "type": "file",
+                  "src": [],
+                  "description": "Attach a .exe or .zip file here"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "File type not in allowed list (jpg/jpeg/png/gif/pdf/doc/docx). Should return 400 - file type not supported."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Contact - Rate Limit Exceeded (Should Fail 429)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "subject",
+                  "value": "Rate limit test request",
+                  "type": "text"
+                },
+                { "key": "category", "value": "other", "type": "text" },
+                {
+                  "key": "message",
+                  "value": "This message is long enough to pass the minimum character check.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contact", "submit"]
+            },
+            "description": "Send this request more than 5 times within 15 minutes from the same IP. The 6th request should return 429 - rate limit exceeded."
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
