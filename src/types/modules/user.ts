@@ -1,3 +1,4 @@
+import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { GENDERS } from "@/constants/enums";
 
@@ -26,4 +27,60 @@ export interface CreateUserData {
 export interface UserRecord {
   _id: Schema.Types.ObjectId;
   fullName: string;
+}
+
+export interface UpdateProfileData {
+  fullName?: string;
+  phone?: string;
+  address?: string;
+  dateOfBirth?: string;
+  gender?: Gender;
+}
+
+export interface PublicUserRecord {
+  _id: Schema.Types.ObjectId;
+  fullName: string;
+  avatar?: string;
+  gender?: Gender;
+}
+
+export interface MyProfileResponse {
+  _id: string;
+  fullName: string;
+  phone: string | null;
+  avatar: string | null;
+  address: string | null;
+  dateOfBirth: string | null;
+  gender: string | null;
+  email: string;
+  createdAt: string;
+}
+
+export interface PublicProfileResponse {
+  _id: string;
+  fullName: string;
+  avatar: string | null;
+  gender: string | null;
+}
+
+export interface UploadAvatarResponse {
+  avatarUrl: string;
+}
+
+export interface GetMyProfileRequest extends Request {
+  user: JwtTokenPayload;
+}
+
+export interface UpdateProfileRequest extends Request {
+  user: JwtTokenPayload;
+  body: UpdateProfileData;
+}
+
+export interface UploadAvatarRequest extends Request {
+  user: JwtTokenPayload;
+  file?: Express.Multer.File;
+}
+
+export interface GetPublicProfileRequest extends Request {
+  params: { id: string };
 }
