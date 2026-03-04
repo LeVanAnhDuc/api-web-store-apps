@@ -9,6 +9,10 @@ import {
   forgotPasswordSwaggerSchemas,
   forgotPasswordPaths
 } from "@/modules/forgot-password/swagger";
+import {
+  contactAdminSwaggerSchemas,
+  contactAdminPaths
+} from "@/modules/contact-admin/swagger";
 
 const PORT = ENV.APP_PORT || 3000;
 
@@ -18,7 +22,8 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...signupSwaggerSchemas,
   ...logoutSwaggerSchemas,
   ...tokenSwaggerSchemas,
-  ...forgotPasswordSwaggerSchemas
+  ...forgotPasswordSwaggerSchemas,
+  ...contactAdminSwaggerSchemas
 };
 
 const allPaths: OpenAPIV3.PathsObject = {
@@ -26,7 +31,8 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...signupPaths,
   ...logoutPaths,
   ...tokenPaths,
-  ...forgotPasswordPaths
+  ...forgotPasswordPaths,
+  ...contactAdminPaths
 };
 
 export const openApiSpec: OpenAPIV3.Document = {
@@ -58,6 +64,10 @@ export const openApiSpec: OpenAPIV3.Document = {
     {
       name: "Auth - Forgot Password",
       description: "Password recovery via OTP or magic link"
+    },
+    {
+      name: "Contact Admin",
+      description: "Submit contact requests to the admin"
     }
   ],
   paths: allPaths,
