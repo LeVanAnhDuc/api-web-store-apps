@@ -28,6 +28,7 @@ export class RateLimiterMiddleware {
   public readonly forgotPasswordMagicLinkByIp: RateLimitRequestHandler;
   public readonly forgotPasswordMagicLinkByEmail: RateLimitRequestHandler;
   public readonly forgotPasswordResetByIp: RateLimitRequestHandler;
+  public readonly contactByIp: RateLimitRequestHandler;
 
   constructor(redisClient: RedisClient) {
     this.redisClient = redisClient;
@@ -193,6 +194,18 @@ export class RateLimiterMiddleware {
       keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
       handler: this.createRateLimitExceededHandler(
         "forgotPassword:errors.rateLimitExceeded"
+      )
+    });
+
+    // Prevent contact form spam from single IP
+    this.contactByIp = rateLimit({
+      windowMs: RATE_LIMIT_CONFIG.CONTACT.SUBMIT.PER_IP.WINDOW_SECONDS * 1000,
+      max: RATE_LIMIT_CONFIG.CONTACT.SUBMIT.PER_IP.MAX_REQUESTS,
+      store: this.createRedisStore(REDIS_KEYS.RATE_LIMIT.CONTACT.IP),
+      standardHeaders: true,
+      legacyHeaders: false,
+      handler: this.createRateLimitExceededHandler(
+        "contactAdmin:errors.rateLimitExceeded"
       )
     });
 
