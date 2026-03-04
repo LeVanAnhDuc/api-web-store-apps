@@ -118,6 +118,10 @@ export const REDIS_KEYS = {
     },
     CONTACT: {
       IP: "rate-limit:contact:ip:"
+    },
+    USER: {
+      UPDATE_IP: "rate-limit:user-update:ip:",
+      AVATAR_IP: "rate-limit:user-avatar:ip:"
     }
   }
 } as const;
