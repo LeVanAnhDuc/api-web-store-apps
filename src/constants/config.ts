@@ -176,7 +176,29 @@ export const RATE_LIMIT_CONFIG = {
         WINDOW_SECONDS: 900
       }
     }
+  },
+
+  USER: {
+    UPDATE_PROFILE: {
+      PER_IP: {
+        MAX_REQUESTS: 10,
+        WINDOW_SECONDS: 900
+      }
+    },
+    UPLOAD_AVATAR: {
+      PER_IP: {
+        MAX_REQUESTS: 5,
+        WINDOW_SECONDS: 900
+      }
+    }
   }
+} as const;
+
+// User Profile
+export const USER_CONFIG = {
+  AVATAR_MAX_SIZE_BYTES: 10 * 1024 * 1024, // 10MB
+  AVATAR_UPLOAD_DIR: "uploads/avatars",
+  BASE_URL: process.env.BASE_URL ?? "http://localhost:3000"
 } as const;
 
 // Contact Admin
