@@ -4,7 +4,7 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import type { Request, RequestHandler } from "express";
 import { BadRequestError } from "@/config/responses/error";
-import { CONTACT_CONFIG } from "@/constants/config";
+import { CONTACT_CONFIG, USER_CONFIG } from "@/constants/config";
 
 const ALLOWED_MIME_TYPES = new Set([
   "image/jpeg",
@@ -67,6 +67,89 @@ const upload = multer({
     files: CONTACT_CONFIG.MAX_ATTACHMENTS
   }
 });
+
+const AVATAR_ALLOWED_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/avif"
+]);
+
+const AVATAR_ALLOWED_EXTENSIONS = new Set([
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".gif",
+  ".avif"
+]);
+
+const avatarStorage = multer.diskStorage({
+  destination: (_req: Request, _file: Express.Multer.File, cb) => {
+    const uploadDir = path.join(process.cwd(), USER_CONFIG.AVATAR_UPLOAD_DIR);
+    fs.mkdirSync(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: (_req: Request, file: Express.Multer.File, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `${uuidv4()}${ext}`);
+  }
+});
+
+const avatarFileFilter = (
+  _req: Request,
+  file: Express.Multer.File,
+  cb: FileFilterCallback
+) => {
+  const ext = path.extname(file.originalname).toLowerCase();
+
+  if (
+    !AVATAR_ALLOWED_MIME_TYPES.has(file.mimetype) ||
+    !AVATAR_ALLOWED_EXTENSIONS.has(ext)
+  ) {
+    cb(
+      new BadRequestError(
+        "user:errors.fileTypeNotSupported",
+        "FILE_TYPE_NOT_SUPPORTED"
+      )
+    );
+    return;
+  }
+
+  cb(null, true);
+};
+
+const avatarUpload = multer({
+  storage: avatarStorage,
+  fileFilter: avatarFileFilter,
+  limits: {
+    fileSize: USER_CONFIG.AVATAR_MAX_SIZE_BYTES,
+    files: 1
+  }
+});
+
+export const uploadAvatar: RequestHandler = (req, res, next) => {
+  avatarUpload.single("avatar")(req, res, (err) => {
+    if (!err) {
+      next();
+      return;
+    }
+
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        next(new BadRequestError("user:errors.fileTooLarge", "FILE_TOO_LARGE"));
+        return;
+      }
+      next(
+        new BadRequestError("user:errors.fileUploadFailed", "FILE_UPLOAD_ERROR")
+      );
+      return;
+    }
+
+    next(err);
+  });
+};
 
 export const uploadContactFiles: RequestHandler = (req, res, next) => {
   upload.array("attachments", CONTACT_CONFIG.MAX_ATTACHMENTS)(
