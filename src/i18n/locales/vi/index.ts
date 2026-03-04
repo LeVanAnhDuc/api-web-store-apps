@@ -6,3 +6,5 @@ export { default as logout } from "./logout.json";
 export { default as unlockAccount } from "./unlockAccount.json";
 export { default as sendEmail } from "./sendEmail.json";
 export { default as forgotPassword } from "./forgotPassword.json";
+export { default as contactAdmin } from "./contactAdmin.json";
+export { default as user } from "./user.json";

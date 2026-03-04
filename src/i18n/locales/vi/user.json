@@ -1,0 +1,17 @@
+{
+  "success": {
+    "getProfile": "Lấy thông tin hồ sơ thành công",
+    "updateProfile": "Cập nhật hồ sơ thành công",
+    "uploadAvatar": "Tải ảnh đại diện lên thành công",
+    "getPublicProfile": "Lấy hồ sơ công khai thành công"
+  },
+  "errors": {
+    "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau",
+    "notFound": "Không tìm thấy người dùng",
+    "invalidId": "Định dạng ID người dùng không hợp lệ",
+    "noFileUploaded": "Chưa chọn tệp. Vui lòng chọn một ảnh",
+    "fileTypeNotSupported": "Loại tệp không được hỗ trợ. Cho phép: jpg, jpeg, png, webp, gif, avif",
+    "fileTooLarge": "Kích thước tệp vượt quá giới hạn 10MB",
+    "fileUploadFailed": "Tải tệp lên thất bại. Vui lòng thử lại"
+  }
+}

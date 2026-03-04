@@ -34,7 +34,9 @@ i18next.use(Backend).init({
     "logout",
     "unlockAccount",
     "sendEmail",
-    "forgotPassword"
+    "forgotPassword",
+    "contactAdmin",
+    "user"
   ],
 
   // Preload all supported languages and namespaces on startup

@@ -1,0 +1,17 @@
+{
+  "success": {
+    "getProfile": "Profile retrieved successfully",
+    "updateProfile": "Profile updated successfully",
+    "uploadAvatar": "Avatar uploaded successfully",
+    "getPublicProfile": "Public profile retrieved successfully"
+  },
+  "errors": {
+    "rateLimitExceeded": "Too many requests. Please try again later",
+    "notFound": "User not found",
+    "invalidId": "Invalid user ID format",
+    "noFileUploaded": "No file uploaded. Please select an image",
+    "fileTypeNotSupported": "File type not supported. Allowed: jpg, jpeg, png, webp, gif, avif",
+    "fileTooLarge": "File size exceeds the 10MB limit",
+    "fileUploadFailed": "File upload failed. Please try again"
+  }
+}
