@@ -14,6 +14,7 @@ import { createTokenModule } from "@/modules/token/token.module";
 import { createUnlockAccountModule } from "@/modules/unlock-account/unlock-account.module";
 import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-password.module";
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
+import { createUserModule } from "@/modules/user/user.module";
 import { OptionalAuthGuard } from "@/middlewares/optional-auth.guard";
 import { Logger } from "@/utils/logger";
 
@@ -66,6 +67,8 @@ export const loadModules = (app: Express): void => {
     optionalAuth
   );
 
+  const { userRouter } = createUserModule(auth, rateLimiter);
+
   const v1Router = Router();
   v1Router.use("/auth/signup", signupRouter);
   v1Router.use("/auth/login", loginRouter);
@@ -74,6 +77,7 @@ export const loadModules = (app: Express): void => {
   v1Router.use("/auth/unlock", unlockAccountRouter);
   v1Router.use("/auth/forgot-password", forgotPasswordRouter);
   v1Router.use("/contact", contactAdminRouter);
+  v1Router.use("/users", userRouter);
 
   app.get("/health", (_req: Request, res: Response) => {
     res
