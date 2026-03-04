@@ -115,6 +115,9 @@ export const REDIS_KEYS = {
       MAGIC_LINK_IP: "rate-limit:forgot-pw-ml:ip:",
       MAGIC_LINK_EMAIL: "rate-limit:forgot-pw-ml:email:",
       RESET_IP: "rate-limit:forgot-pw-reset:ip:"
+    },
+    CONTACT: {
+      IP: "rate-limit:contact:ip:"
     }
   }
 } as const;

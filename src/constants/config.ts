@@ -167,5 +167,26 @@ export const RATE_LIMIT_CONFIG = {
         WINDOW_SECONDS: 900
       }
     }
+  },
+
+  CONTACT: {
+    SUBMIT: {
+      PER_IP: {
+        MAX_REQUESTS: 5,
+        WINDOW_SECONDS: 900
+      }
+    }
   }
+} as const;
+
+// Contact Admin
+export const CONTACT_CONFIG = {
+  SUBJECT_MIN_LENGTH: 5,
+  SUBJECT_MAX_LENGTH: 200,
+  MESSAGE_MIN_LENGTH: 20,
+  MESSAGE_MAX_LENGTH: 5000,
+  MAX_ATTACHMENTS: 5,
+  MAX_FILE_SIZE_BYTES: 5 * 1024 * 1024, // 5MB
+  TICKET_RANDOM_LENGTH: 4,
+  TICKET_MAX_RETRIES: 3
 } as const;

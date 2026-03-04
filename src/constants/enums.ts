@@ -64,3 +64,25 @@ export const USER_AGENT_DEFAULTS = {
   UNKNOWN_OS: "UNKNOWN",
   UNKNOWN_BROWSER: "UNKNOWN"
 } as const;
+
+// Contact Admin
+export const CONTACT_CATEGORIES = {
+  ACCOUNT: "account",
+  TECHNICAL: "technical",
+  FEATURE: "feature",
+  BILLING: "billing",
+  SECURITY: "security",
+  OTHER: "other"
+} as const;
+
+export const CONTACT_PRIORITIES = {
+  LOW: "low",
+  MEDIUM: "medium",
+  HIGH: "high"
+} as const;
+
+export const CONTACT_STATUSES = {
+  NEW: "new",
+  PROCESSING: "processing",
+  RESOLVED: "resolved"
+} as const;
