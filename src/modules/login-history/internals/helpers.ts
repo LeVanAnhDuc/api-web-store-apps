@@ -168,6 +168,29 @@ export const geoipLookup = (
 };
 
 // ──────────────────────────────────────────────
+// maskIp
+// ──────────────────────────────────────────────
+
+const IPV4_PARTS = 4;
+const IPV4_KEEP_PARTS = 2;
+const IPV6_MIN_PARTS = 4;
+const IPV6_KEEP_PARTS = 3;
+
+export const maskIp = (ip: string): string => {
+  const ipv4Parts = ip.split(".");
+  if (ipv4Parts.length === IPV4_PARTS) {
+    return `${ipv4Parts.slice(0, IPV4_KEEP_PARTS).join(".")}.*.*`;
+  }
+
+  const ipv6Parts = ip.split(":");
+  if (ipv6Parts.length >= IPV6_MIN_PARTS) {
+    return `${ipv6Parts.slice(0, IPV6_KEEP_PARTS).join(":")}:*:*:*:*:*`;
+  }
+
+  return ip;
+};
+
+// ──────────────────────────────────────────────
 // determineClientType
 // ──────────────────────────────────────────────
 

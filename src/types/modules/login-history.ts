@@ -8,6 +8,72 @@ import type {
 } from "@/constants/enums";
 import type { Request } from "express";
 
+export interface PaginationParams {
+  page: number;
+  limit: number;
+}
+
+export interface LoginHistoryQuery extends PaginationParams {
+  status?: LoginStatus;
+  method?: LoginMethod;
+  deviceType?: DeviceType;
+  clientType?: ClientType;
+  country?: string;
+  city?: string;
+  os?: string;
+  browser?: string;
+  fromDate?: string;
+  toDate?: string;
+  sortBy?: "createdAt" | "method" | "status" | "country";
+  sortOrder?: "asc" | "desc";
+}
+
+export interface LoginHistoryAdminQuery extends LoginHistoryQuery {
+  userId?: string;
+  ip?: string;
+  sortBy?:
+    | "createdAt"
+    | "method"
+    | "status"
+    | "country"
+    | "ip"
+    | "usernameAttempted";
+}
+
+export interface LoginHistoryItem {
+  _id: string;
+  method: LoginMethod;
+  status: LoginStatus;
+  failReason: LoginFailReason | null;
+  ip: string;
+  country: string;
+  city: string;
+  deviceType: DeviceType;
+  os: string;
+  browser: string;
+  clientType: ClientType;
+  createdAt: string;
+}
+
+export interface LoginHistoryAdminItem extends LoginHistoryItem {
+  userId: string | null;
+  usernameAttempted: string;
+  userAgent: string;
+  timezoneOffset: string | null;
+  isAnomaly: boolean;
+  anomalyReasons: string[];
+}
+
+export interface PaginatedResult<T> {
+  items: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 export type LoginStatus = (typeof LOGIN_STATUSES)[keyof typeof LOGIN_STATUSES];
 
 export type LoginFailReason =
