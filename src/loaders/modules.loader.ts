@@ -5,6 +5,7 @@ import { instanceRedis } from "@/database/redis";
 import { AuthenticationRepository } from "@/repositories/authentication.repository";
 import { UserRepository } from "@/repositories/user.repository";
 import { AuthGuard } from "@/middlewares/auth.guard";
+import { AdminGuard } from "@/middlewares/admin.guard";
 import { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import { createLoginHistoryModule } from "@/modules/login-history/login-history.module";
 import { createLoginModule } from "@/modules/login/login.module";
@@ -24,10 +25,15 @@ export const loadModules = (app: Express): void => {
   const authRepo = new AuthenticationRepository();
   const userRepo = new UserRepository();
   const auth = new AuthGuard(authRepo);
+  const adminGuard = new AdminGuard();
   const optionalAuth = new OptionalAuthGuard(authRepo);
   const rateLimiter = new RateLimiterMiddleware(redisClient);
 
-  const { loginHistoryService } = createLoginHistoryModule();
+  const {
+    loginHistoryService,
+    loginHistoryUserRouter,
+    loginHistoryAdminRouter
+  } = createLoginHistoryModule(auth, adminGuard);
 
   const { loginRouter, failedAttemptsRepo } = createLoginModule(
     redisClient,
@@ -76,6 +82,8 @@ export const loadModules = (app: Express): void => {
   v1Router.use("/auth/token", tokenRouter);
   v1Router.use("/auth/unlock", unlockAccountRouter);
   v1Router.use("/auth/forgot-password", forgotPasswordRouter);
+  v1Router.use("/auth/login-history", loginHistoryUserRouter);
+  v1Router.use("/admin/login-history", loginHistoryAdminRouter);
   v1Router.use("/contact", contactAdminRouter);
   v1Router.use("/users", userRouter);
 
