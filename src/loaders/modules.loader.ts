@@ -16,6 +16,7 @@ import { createUnlockAccountModule } from "@/modules/unlock-account/unlock-accou
 import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-password.module";
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
 import { createUserModule } from "@/modules/user/user.module";
+import { createBlogModule } from "@/modules/apps/blog/blog.module";
 import { OptionalAuthGuard } from "@/middlewares/optional-auth.guard";
 import { Logger } from "@/utils/logger";
 
@@ -76,6 +77,8 @@ export const loadModules = (app: Express): void => {
 
   const { userRouter } = createUserModule(auth, rateLimiter);
 
+  const { blogRouter } = createBlogModule(auth, optionalAuth);
+
   const v1Router = Router();
   v1Router.use("/auth/signup", signupRouter);
   v1Router.use("/auth/login", loginRouter);
@@ -89,6 +92,7 @@ export const loadModules = (app: Express): void => {
   v1Router.use("/admin/contacts", contactAdminQueryAdminRouter);
   v1Router.use("/auth/contacts", contactAdminQueryUserRouter);
   v1Router.use("/users", userRouter);
+  v1Router.use("/apps/blogs", blogRouter);
 
   app.get("/health", (_req: Request, res: Response) => {
     res
