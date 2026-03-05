@@ -201,6 +201,12 @@ export const USER_CONFIG = {
   BASE_URL: process.env.BASE_URL ?? "http://localhost:3000"
 } as const;
 
+// Blog
+export const BLOG_CONFIG = {
+  COVER_MAX_SIZE_BYTES: 5 * 1024 * 1024, // 5MB
+  COVER_UPLOAD_DIR: "uploads/blogs"
+} as const;
+
 // Contact Admin
 export const CONTACT_CONFIG = {
   SUBJECT_MIN_LENGTH: 5,
