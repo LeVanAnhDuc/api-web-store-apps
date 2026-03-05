@@ -82,7 +82,7 @@ export const loadModules = (app: Express): void => {
   v1Router.use("/auth/token", tokenRouter);
   v1Router.use("/auth/unlock", unlockAccountRouter);
   v1Router.use("/auth/forgot-password", forgotPasswordRouter);
-  v1Router.use("/auth/login-history", loginHistoryUserRouter);
+  v1Router.use("/login-history", loginHistoryUserRouter);
   v1Router.use("/admin/login-history", loginHistoryAdminRouter);
   v1Router.use("/contact", contactAdminRouter);
   v1Router.use("/users", userRouter);
