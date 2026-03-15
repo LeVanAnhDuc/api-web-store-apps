@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import type { FilterQuery } from "mongoose";
 import type {
   ContactDocument,
+  ContactCategory,
   ContactStatus
 } from "@/types/modules/contact-admin";
 import ContactModel from "@/models/contact";
@@ -46,6 +47,13 @@ export class ContactRepository {
 
   async findById(id: string): Promise<ContactDocument | null> {
     return this.db.findById(id);
+  }
+
+  async updateCategory(
+    id: string,
+    category: ContactCategory
+  ): Promise<ContactDocument | null> {
+    return this.db.findByIdAndUpdate(id, { $set: { category } }, { new: true });
   }
 
   async updateStatus(

@@ -16,6 +16,7 @@
     "ticketGenerationFailed": "Unable to generate ticket number. Please try again"
   },
   "success": {
-    "submitted": "Your request has been submitted successfully"
+    "submitted": "Your request has been submitted successfully",
+    "updateContactCategory": "Category updated successfully"
   }
 }

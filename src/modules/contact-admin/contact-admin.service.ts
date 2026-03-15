@@ -10,6 +10,7 @@ import type {
   ContactAttachment,
   ContactAttachmentResponse,
   ContactDocument,
+  ContactCategory,
   ContactStatus
 } from "@/types/modules/contact-admin";
 import type { HandlerResult } from "@/types/http";
@@ -105,7 +106,6 @@ export class ContactAdminService {
       userId: userId as never,
       email: email ?? undefined,
       subject: sanitizeText(body.subject),
-      category: body.category,
       message: sanitizeText(body.message),
       attachments,
       status: CONTACT_STATUSES.NEW,
@@ -156,6 +156,22 @@ export class ContactAdminService {
       ipAddress: doc.ipAddress ?? null,
       attachments: doc.attachments.map((att) => this.mapAttachment(att))
     };
+  }
+
+  async updateContactCategory(
+    id: string,
+    category: ContactCategory
+  ): Promise<ContactListItem> {
+    const updated = await this.contactRepo.updateCategory(id, category);
+
+    if (!updated) {
+      throw new NotFoundError(
+        "contactAdmin:errors.notFound",
+        "CONTACT_NOT_FOUND"
+      );
+    }
+
+    return this.mapToContactListItem(updated);
   }
 
   async updateContactStatus(

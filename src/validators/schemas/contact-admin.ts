@@ -38,14 +38,6 @@ export const submitContactSchema: Joi.ObjectSchema<SubmitContactBody> =
         "string.max": "contactAdmin:errors.subjectTooLong",
         "any.required": "contactAdmin:errors.subjectRequired"
       }),
-    category: Joi.string()
-      .valid(...CATEGORY_VALUES)
-      .required()
-      .messages({
-        "string.empty": "contactAdmin:errors.categoryRequired",
-        "any.required": "contactAdmin:errors.categoryRequired",
-        "any.only": "contactAdmin:errors.categoryInvalid"
-      }),
     message: Joi.string()
       .min(CONTACT_CONFIG.MESSAGE_MIN_LENGTH)
       .max(CONTACT_CONFIG.MESSAGE_MAX_LENGTH)
@@ -66,6 +58,17 @@ export const contactIdParamSchema = Joi.object({
     "string.pattern.base": "contactAdmin:errors.invalidId",
     "any.required": "contactAdmin:errors.invalidId"
   })
+});
+
+export const updateContactCategorySchema = Joi.object({
+  category: Joi.string()
+    .valid(...CATEGORY_VALUES)
+    .required()
+    .messages({
+      "string.empty": "contactAdmin:errors.categoryRequired",
+      "any.required": "contactAdmin:errors.categoryRequired",
+      "any.only": "contactAdmin:errors.categoryInvalid"
+    })
 });
 
 export const updateContactStatusSchema = Joi.object({

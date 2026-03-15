@@ -39,8 +39,11 @@ export interface ContactDocument extends Document {
 export interface SubmitContactBody {
   email?: string;
   subject: string;
-  category: ContactCategory;
   message: string;
+}
+
+export interface UpdateContactCategoryBody {
+  category: ContactCategory;
 }
 
 export interface SubmitContactRequest extends Request {

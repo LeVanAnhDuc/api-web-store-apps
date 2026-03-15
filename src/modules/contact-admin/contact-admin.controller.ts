@@ -17,6 +17,7 @@ import { validate } from "@/validators/middleware";
 import {
   submitContactSchema,
   contactIdParamSchema,
+  updateContactCategorySchema,
   updateContactStatusSchema,
   adminListContactsQuerySchema,
   myContactsQuerySchema
@@ -78,6 +79,15 @@ export class ContactAdminController {
     );
 
     this.adminRouter.patch(
+      "/:id/category",
+      this.auth.middleware,
+      this.adminGuard.middleware,
+      validate(contactIdParamSchema, "params"),
+      validate(updateContactCategorySchema, "body"),
+      asyncHandler(this.updateContactCategory)
+    );
+
+    this.adminRouter.patch(
       "/:id/status",
       this.auth.middleware,
       this.adminGuard.middleware,
@@ -122,6 +132,20 @@ export class ContactAdminController {
     return {
       data,
       message: "contactAdmin:success.getContactDetail",
+      statusCode: STATUS_CODES.OK
+    };
+  };
+
+  private updateContactCategory = async (
+    req: AuthenticatedRequest
+  ): Promise<HandlerResult> => {
+    const data = await this.service.updateContactCategory(
+      req.params.id,
+      req.body.category
+    );
+    return {
+      data,
+      message: "contactAdmin:success.updateContactCategory",
       statusCode: STATUS_CODES.OK
     };
   };

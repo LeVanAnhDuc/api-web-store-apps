@@ -58,7 +58,8 @@ const ContactSchema = new Schema<ContactDocument>(
     category: {
       type: String,
       required: [true, "Category is required"],
-      enum: Object.values(CONTACT_CATEGORIES)
+      enum: Object.values(CONTACT_CATEGORIES),
+      default: CONTACT_CATEGORIES.OTHER
     },
     priority: {
       type: String,

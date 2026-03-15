@@ -53,5 +53,37 @@ Submit a contact request to the admin. Can be sent by both guests and authentica
         "429": { $ref: "#/components/responses/TooManyRequests" }
       }
     }
+  },
+  "/admin/contacts/{id}/category": {
+    patch: {
+      summary: "Update contact category (Admin only)",
+      tags: ["Contact Admin"],
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          schema: { type: "string", pattern: "^[a-fA-F0-9]{24}$" }
+        }
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              $ref: "#/components/schemas/UpdateContactCategoryRequest"
+            }
+          }
+        }
+      },
+      responses: {
+        "200": { description: "Category updated successfully" },
+        "400": { $ref: "#/components/responses/ValidationError" },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": { $ref: "#/components/responses/Forbidden" },
+        "404": { $ref: "#/components/responses/NotFound" }
+      }
+    }
   }
 };

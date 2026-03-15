@@ -6,7 +6,7 @@ export const contactAdminSwaggerSchemas: Record<
 > = {
   SubmitContactRequest: {
     type: "object",
-    required: ["subject", "category", "message"],
+    required: ["subject", "message"],
     properties: {
       email: {
         type: "string",
@@ -20,18 +20,6 @@ export const contactAdminSwaggerSchemas: Record<
         maxLength: 200,
         example: "Cannot access my account"
       },
-      category: {
-        type: "string",
-        enum: [
-          "account",
-          "technical",
-          "feature",
-          "billing",
-          "security",
-          "other"
-        ],
-        example: "account"
-      },
       message: {
         type: "string",
         minLength: 20,
@@ -44,6 +32,24 @@ export const contactAdminSwaggerSchemas: Record<
         items: { type: "string", format: "binary" },
         description:
           "Up to 5 files, max 5MB each. Allowed: jpg, jpeg, png, gif, pdf, doc, docx"
+      }
+    }
+  },
+  UpdateContactCategoryRequest: {
+    type: "object",
+    required: ["category"],
+    properties: {
+      category: {
+        type: "string",
+        enum: [
+          "account",
+          "technical",
+          "feature",
+          "billing",
+          "security",
+          "other"
+        ],
+        example: "technical"
       }
     }
   },

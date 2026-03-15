@@ -16,6 +16,7 @@
     "ticketGenerationFailed": "Không thể tạo mã ticket. Vui lòng thử lại"
   },
   "success": {
-    "submitted": "Yêu cầu của bạn đã được gửi thành công"
+    "submitted": "Yêu cầu của bạn đã được gửi thành công",
+    "updateContactCategory": "Cập nhật danh mục thành công"
   }
 }
