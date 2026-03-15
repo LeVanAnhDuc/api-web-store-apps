@@ -53,6 +53,7 @@
     "nodemailer": "^6.9.14",
     "rate-limit-redis": "^4.3.0",
     "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "redis": "^4.6.13",
     "reflect-metadata": "^0.2.2",
     "slugify": "^1.6.6",
