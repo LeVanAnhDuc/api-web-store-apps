@@ -40,7 +40,6 @@ export interface SubmitContactBody {
   email?: string;
   subject: string;
   category: ContactCategory;
-  priority: ContactPriority;
   message: string;
 }
 

@@ -46,12 +46,6 @@ export const submitContactSchema: Joi.ObjectSchema<SubmitContactBody> =
         "any.required": "contactAdmin:errors.categoryRequired",
         "any.only": "contactAdmin:errors.categoryInvalid"
       }),
-    priority: Joi.string()
-      .valid(...PRIORITY_VALUES)
-      .default(CONTACT_PRIORITIES.MEDIUM)
-      .messages({
-        "any.only": "contactAdmin:errors.priorityInvalid"
-      }),
     message: Joi.string()
       .min(CONTACT_CONFIG.MESSAGE_MIN_LENGTH)
       .max(CONTACT_CONFIG.MESSAGE_MAX_LENGTH)

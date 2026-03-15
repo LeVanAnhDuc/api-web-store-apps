@@ -14,7 +14,7 @@ import type {
 } from "@/types/modules/contact-admin";
 import type { HandlerResult } from "@/types/http";
 import type { ContactRepository } from "./repositories/contact.repository";
-import { CONTACT_PRIORITIES, CONTACT_STATUSES } from "@/constants/enums";
+import { CONTACT_STATUSES } from "@/constants/enums";
 import { CONTACT_CONFIG, USER_CONFIG } from "@/constants/config";
 import { BadRequestError, NotFoundError } from "@/config/responses/error";
 import { buildContactFilter } from "./internals/query-builder";
@@ -106,7 +106,6 @@ export class ContactAdminService {
       email: email ?? undefined,
       subject: sanitizeText(body.subject),
       category: body.category,
-      priority: body.priority ?? CONTACT_PRIORITIES.MEDIUM,
       message: sanitizeText(body.message),
       attachments,
       status: CONTACT_STATUSES.NEW,

@@ -10,7 +10,6 @@
     "subjectTooLong": "Tiêu đề không được vượt quá 200 ký tự",
     "categoryRequired": "Danh mục là bắt buộc",
     "categoryInvalid": "Danh mục không hợp lệ",
-    "priorityInvalid": "Mức độ ưu tiên không hợp lệ",
     "messageRequired": "Nội dung là bắt buộc",
     "messageTooShort": "Nội dung phải có ít nhất 20 ký tự",
     "messageTooLong": "Nội dung không được vượt quá 5000 ký tự",

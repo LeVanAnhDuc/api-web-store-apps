@@ -10,7 +10,6 @@
     "subjectTooLong": "Subject must not exceed 200 characters",
     "categoryRequired": "Category is required",
     "categoryInvalid": "Invalid category",
-    "priorityInvalid": "Invalid priority",
     "messageRequired": "Message is required",
     "messageTooShort": "Message must be at least 20 characters",
     "messageTooLong": "Message must not exceed 5000 characters",

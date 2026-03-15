@@ -32,12 +32,6 @@ export const contactAdminSwaggerSchemas: Record<
         ],
         example: "account"
       },
-      priority: {
-        type: "string",
-        enum: ["low", "medium", "high"],
-        default: "medium",
-        example: "medium"
-      },
       message: {
         type: "string",
         minLength: 20,
