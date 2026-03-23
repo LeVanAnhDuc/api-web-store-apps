@@ -26,7 +26,9 @@ const ENV = {
   JWT_ID_SECRET: process.env.JWT_ID_SECRET,
 
   USERNAME_EMAIL: process.env.USERNAME_EMAIL,
-  PASSWORD_EMAIL: process.env.PASSWORD_EMAIL
+  PASSWORD_EMAIL: process.env.PASSWORD_EMAIL,
+
+  BASE_URL: process.env.BASE_URL || "http://localhost:3000"
 };
 
 export default ENV;

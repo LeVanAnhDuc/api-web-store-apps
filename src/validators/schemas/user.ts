@@ -26,10 +26,12 @@ export const updateProfileSchema: Joi.ObjectSchema<UpdateProfileData> =
 
     phone: Joi.string()
       .min(1)
+      .max(20)
       .pattern(/^[\d\s()+-]+$/)
       .optional()
       .messages({
         "string.empty": "validation:phone.invalid",
+        "string.max": "validation:phone.invalid",
         "string.pattern.base": "validation:phone.invalid"
       }),
 

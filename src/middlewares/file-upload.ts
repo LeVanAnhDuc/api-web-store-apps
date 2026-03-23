@@ -68,6 +68,73 @@ const upload = multer({
   }
 });
 
+// Detect actual MIME type from file magic bytes (first 12 bytes).
+// Multer's file.mimetype comes from the HTTP Content-Type header and can be
+// spoofed by the client. Reading the actual file bytes prevents MIME faking.
+function detectImageMimeType(filePath: string): string | null {
+  try {
+    const fd = fs.openSync(filePath, "r");
+    const buffer = Buffer.alloc(12);
+    fs.readSync(fd, buffer, 0, 12, 0);
+    fs.closeSync(fd);
+
+    // JPEG: FF D8 FF
+    if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+      return "image/jpeg";
+    }
+    // PNG: 89 50 4E 47
+    if (
+      buffer[0] === 0x89 &&
+      buffer[1] === 0x50 &&
+      buffer[2] === 0x4e &&
+      buffer[3] === 0x47
+    ) {
+      return "image/png";
+    }
+    // GIF: 47 49 46 38 (GIF8)
+    if (
+      buffer[0] === 0x47 &&
+      buffer[1] === 0x49 &&
+      buffer[2] === 0x46 &&
+      buffer[3] === 0x38
+    ) {
+      return "image/gif";
+    }
+    // WEBP: RIFF at 0-3, WEBP at 8-11
+    if (
+      buffer[0] === 0x52 &&
+      buffer[1] === 0x49 &&
+      buffer[2] === 0x46 &&
+      buffer[3] === 0x46 &&
+      buffer[8] === 0x57 &&
+      buffer[9] === 0x45 &&
+      buffer[10] === 0x42 &&
+      buffer[11] === 0x50
+    ) {
+      return "image/webp";
+    }
+    // AVIF: ISO BMFF 'ftyp' box at offset 4, brand at offset 8.
+    // Box size (bytes 0–3, big-endian uint32) must be >= 16 (minimum ftyp box size).
+    const boxSize = buffer.readUInt32BE(0);
+    if (
+      boxSize >= 16 &&
+      buffer[4] === 0x66 &&
+      buffer[5] === 0x74 &&
+      buffer[6] === 0x79 &&
+      buffer[7] === 0x70
+    ) {
+      const brand = buffer.slice(8, 12).toString("ascii");
+      if (["avif", "avis", "MA1B", "MA1A"].includes(brand)) {
+        return "image/avif";
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 const AVATAR_ALLOWED_MIME_TYPES = new Set([
   "image/jpeg",
   "image/png",
@@ -132,6 +199,20 @@ const avatarUpload = multer({
 export const uploadAvatar: RequestHandler = (req, res, next) => {
   avatarUpload.single("avatar")(req, res, (err) => {
     if (!err) {
+      // Validate actual file content via magic bytes — prevents MIME type spoofing
+      if (req.file) {
+        const actualMimeType = detectImageMimeType(req.file.path);
+        if (!actualMimeType || !AVATAR_ALLOWED_MIME_TYPES.has(actualMimeType)) {
+          fs.unlink(req.file.path, () => {});
+          next(
+            new BadRequestError(
+              "user:errors.fileTypeNotSupported",
+              "FILE_TYPE_NOT_SUPPORTED"
+            )
+          );
+          return;
+        }
+      }
       next();
       return;
     }

@@ -3,6 +3,7 @@ import {
   MINUTES_PER_HOUR,
   HOURS_PER_DAY
 } from "@/constants/infrastructure";
+import ENV from "@/config/env";
 
 // Bcrypt
 export const BCRYPT = {
@@ -198,7 +199,7 @@ export const RATE_LIMIT_CONFIG = {
 export const USER_CONFIG = {
   AVATAR_MAX_SIZE_BYTES: 10 * 1024 * 1024, // 10MB
   AVATAR_UPLOAD_DIR: "uploads/avatars",
-  BASE_URL: process.env.BASE_URL ?? "http://localhost:3000"
+  BASE_URL: ENV.BASE_URL
 } as const;
 
 // Blog

@@ -8,7 +8,7 @@ export interface UserDocument {
   _id: Schema.Types.ObjectId;
   authId: Schema.Types.ObjectId;
   fullName: string;
-  phone: string;
+  phone?: string;
   avatar?: string;
   address?: string;
   dateOfBirth?: Date;

@@ -1,3 +1,4 @@
+import path from "path";
 import type { UserRepository } from "@/repositories/user.repository";
 import type {
   UpdateProfileData,
@@ -62,10 +63,9 @@ export class UserService {
     userId: string,
     filePath: string
   ): Promise<UploadAvatarResponse> {
-    const relativePath = filePath.replace(/\\/g, "/");
-    const normalizedPath = relativePath.includes("uploads/")
-      ? relativePath.substring(relativePath.indexOf("uploads/"))
-      : relativePath;
+    const normalizedPath = path
+      .relative(process.cwd(), filePath)
+      .replace(/\\/g, "/");
 
     await this.userRepo.updateAvatar(userId, normalizedPath);
 

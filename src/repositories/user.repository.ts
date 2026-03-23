@@ -29,18 +29,27 @@ export class UserRepository {
   }
 
   async findById(userId: string): Promise<UserDocument | null> {
-    return this.db.findById(userId, { lean: true });
+    return UserModel.findById(userId)
+      .select("fullName phone avatar address dateOfBirth gender createdAt")
+      .lean<UserDocument>()
+      .exec();
   }
 
   async updateById(
     userId: string,
     data: Partial<UpdateProfileData>
   ): Promise<UserDocument | null> {
-    return this.db.findByIdAndUpdate(userId, { $set: data }, { new: true });
+    return UserModel.findByIdAndUpdate(userId, { $set: data }, { new: true })
+      .select("fullName phone avatar address dateOfBirth gender createdAt")
+      .lean<UserDocument>()
+      .exec();
   }
 
   async updateAvatar(userId: string, avatarPath: string): Promise<void> {
-    await this.db.findByIdAndUpdate(userId, { $set: { avatar: avatarPath } });
+    await UserModel.updateOne(
+      { _id: userId },
+      { $set: { avatar: avatarPath } }
+    );
   }
 
   async findPublicById(userId: string): Promise<PublicUserRecord | null> {
