@@ -1,0 +1,737 @@
+{
+  "info": {
+    "name": "User Profile API",
+    "description": "Test scenarios for User Profile endpoints: GET /users/me, PATCH /users/me, POST /users/me/avatar, GET /users/:id",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "idToken",
+      "value": "your-id-token-here",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "64f1b2c3d4e5f6a7b8c9d0e1",
+      "type": "string"
+    },
+    {
+      "key": "myUserId",
+      "value": "your-own-user-id-here",
+      "type": "string",
+      "description": "The userId from your own auth token — used for TC-04.3"
+    }
+  ],
+  "item": [
+    {
+      "name": "GET /users/me - Get My Profile",
+      "item": [
+        {
+          "name": "TC-01.1 Happy - Get full profile with valid token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 200 with _id, fullName, phone, avatar, address, dateOfBirth, gender, email, createdAt"
+          }
+        },
+        {
+          "name": "TC-01.2 Happy - Profile with null optional fields",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Use a user that has not set phone/address/dateOfBirth/avatar. Expect: 200, optional fields are null"
+          }
+        },
+        {
+          "name": "TC-01.4 Error - No Authorization header",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 401 Unauthorized"
+          }
+        },
+        {
+          "name": "TC-01.5 Error - Tampered token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.signature"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 401 Unauthorized"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PATCH /users/me - Update My Profile",
+      "item": [
+        {
+          "name": "TC-02.1 Happy - Update fullName only",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Nguyen Van A\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 200, fullName updated, other fields unchanged"
+          }
+        },
+        {
+          "name": "TC-02.2 Happy - Update all fields",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Nguyen Van B\",\n  \"phone\": \"+84 912 345 678\",\n  \"address\": \"123 Le Loi, District 1, Ho Chi Minh City\",\n  \"dateOfBirth\": \"1995-06-15\",\n  \"gender\": \"male\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 200, all fields updated"
+          }
+        },
+        {
+          "name": "TC-02.3 Happy - Update gender only",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gender\": \"female\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 200, only gender changes"
+          }
+        },
+        {
+          "name": "TC-02.4 Edge - Empty phone string",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 422 Validation Error - phone cannot be empty"
+          }
+        },
+        {
+          "name": "TC-02.5 Edge - Empty body {}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 200, no fields changed"
+          }
+        },
+        {
+          "name": "TC-02.6 Edge - Future dateOfBirth",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateOfBirth\": \"2030-01-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 422 Validation Error - date cannot be in the future"
+          }
+        },
+        {
+          "name": "TC-02.7 Edge - dateOfBirth > 100 years ago",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateOfBirth\": \"1900-01-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 422 Validation Error - age exceeds 100 years"
+          }
+        },
+        {
+          "name": "TC-02.8 Edge - fullName too short (< 2 chars)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"A\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 422 Validation Error - fullName min 2 characters"
+          }
+        },
+        {
+          "name": "TC-02.9 Edge - Invalid gender enum",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gender\": \"alien\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 422 Validation Error - gender must be male|female|other|prefer_not_to_say"
+          }
+        },
+        {
+          "name": "TC-02.10 Edge - Unknown field (email) is ignored",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newemail@hacker.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 200, email field is stripped and NOT updated"
+          }
+        },
+        {
+          "name": "TC-02.11 Error - No Authorization header",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Expect: 401 Unauthorized"
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST /users/me/avatar - Upload Avatar",
+      "item": [
+        {
+          "name": "TC-03.1 Happy - Upload valid JPG (user has no avatar)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": "/path/to/test-avatar.jpg",
+                  "description": "Replace src with a valid local JPG file path under 10MB"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me", "avatar"]
+            },
+            "description": "Expect: 200, returns { avatarUrl: 'http://...' }"
+          }
+        },
+        {
+          "name": "TC-03.2 Happy - Upload new avatar (replacing existing one)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": "/path/to/new-avatar.jpg",
+                  "description": "Replace src with a different JPG file. Old avatar file remains on disk."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me", "avatar"]
+            },
+            "description": "Run AFTER TC-03.1 so user already has an avatar. Expect: 200, avatarUrl is the NEW file URL. Old file is NOT deleted from disk."
+          }
+        },
+        {
+          "name": "TC-03.3 Happy - Upload PNG, WEBP, GIF, AVIF formats",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": "/path/to/test-avatar.png",
+                  "description": "Replace src with a PNG/WEBP/GIF/AVIF file to test each format. Run once per format."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me", "avatar"]
+            },
+            "description": "Duplicate this request and swap the file for each format: .png, .webp, .gif, .avif. Expect: 200 for all supported formats."
+          }
+        },
+        {
+          "name": "TC-03.4 Edge - MIME type faking (.jpg extension, PDF content)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": "/path/to/fake-image.jpg",
+                  "description": "Prepare: rename a PDF to .jpg (e.g. 'cp document.pdf fake-image.jpg'). The middleware reads the actual MIME type from file bytes."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me", "avatar"]
+            },
+            "description": "Expect: 400 Bad Request - File type not supported. Tests that MIME validation reads actual file bytes, not just the extension."
+          }
+        },
+        {
+          "name": "TC-03.5 Edge - File near size limit (~9.99MB)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": "/path/to/large-avatar-9mb.jpg",
+                  "description": "Prepare: a valid JPEG image approx 9.99MB in size"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me", "avatar"]
+            },
+            "description": "Expect: 200. File is just under the 10MB limit."
+          }
+        },
+        {
+          "name": "TC-03.6 Edge - File over size limit (~10.01MB)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": "/path/to/oversized-avatar-11mb.jpg",
+                  "description": "Prepare: a valid JPEG image over 10MB in size"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me", "avatar"]
+            },
+            "description": "Expect: 400 Bad Request - File too large. Max size is 10MB."
+          }
+        },
+        {
+          "name": "TC-03.7 Edge - No file in request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me", "avatar"]
+            },
+            "description": "Expect: 400 Bad Request - No file uploaded"
+          }
+        },
+        {
+          "name": "TC-03.8 Edge - Upload unsupported file type (.pdf)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": "/path/to/document.pdf",
+                  "description": "Replace src with an actual PDF file"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me", "avatar"]
+            },
+            "description": "Expect: 400 Bad Request - File type not supported"
+          }
+        },
+        {
+          "name": "TC-03.9 Error - No Authorization header",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": "/path/to/test-avatar.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/me/avatar",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me", "avatar"]
+            },
+            "description": "Expect: 401 Unauthorized"
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /users/:id - Get Public Profile",
+      "item": [
+        {
+          "name": "TC-04.1 Happy - Guest gets public profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
+            },
+            "description": "Expect: 200, returns only { _id, fullName, avatar, gender }. No email, phone, address."
+          }
+        },
+        {
+          "name": "TC-04.2 Happy - Authenticated user gets another user's public profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
+            },
+            "description": "Expect: 200, returns only public fields (NOT full profile even with valid token)"
+          }
+        },
+        {
+          "name": "TC-04.3 Edge - Authenticated user queries their own ID via public endpoint",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{myUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{myUserId}}"]
+            },
+            "description": "Set {{myUserId}} to your own user ID. Expect: 200 with only public fields (_id, fullName, avatar, gender) — NOT the full profile with email/phone/address."
+          }
+        },
+        {
+          "name": "TC-04.4 Edge - User with no avatar set",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
+            },
+            "description": "Use the ID of a user that has never uploaded an avatar. Expect: 200, avatar field is null."
+          }
+        },
+        {
+          "name": "TC-04.5 Edge - Valid ObjectId but user not found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/000000000000000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "000000000000000000000000"]
+            },
+            "description": "Expect: 404 Not Found"
+          }
+        },
+        {
+          "name": "TC-04.6 Edge - Invalid ObjectId format",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/abc123",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "abc123"]
+            },
+            "description": "Expect: 400 Bad Request - Invalid user ID format"
+          }
+        }
+      ]
+    }
+  ]
+}

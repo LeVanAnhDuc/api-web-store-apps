@@ -13,6 +13,7 @@ import {
   contactAdminSwaggerSchemas,
   contactAdminPaths
 } from "@/modules/contact-admin/swagger";
+import { userSwaggerSchemas, userPaths } from "@/modules/user/swagger";
 
 const PORT = ENV.APP_PORT || 3000;
 
@@ -23,7 +24,8 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...logoutSwaggerSchemas,
   ...tokenSwaggerSchemas,
   ...forgotPasswordSwaggerSchemas,
-  ...contactAdminSwaggerSchemas
+  ...contactAdminSwaggerSchemas,
+  ...userSwaggerSchemas
 };
 
 const allPaths: OpenAPIV3.PathsObject = {
@@ -32,7 +34,8 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...logoutPaths,
   ...tokenPaths,
   ...forgotPasswordPaths,
-  ...contactAdminPaths
+  ...contactAdminPaths,
+  ...userPaths
 };
 
 export const openApiSpec: OpenAPIV3.Document = {
@@ -68,6 +71,10 @@ export const openApiSpec: OpenAPIV3.Document = {
     {
       name: "Contact Admin",
       description: "Submit contact requests to the admin"
+    },
+    {
+      name: "User Profile",
+      description: "View and update user profile, upload avatar"
     }
   ],
   paths: allPaths,
