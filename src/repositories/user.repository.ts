@@ -50,12 +50,18 @@ export class UserRepository {
       .exec();
   }
 
-  async findByAuthId(
-    authId: string
-  ): Promise<{ fullName: string; avatar?: string | null } | null> {
+  async findByAuthId(authId: string): Promise<{
+    _id: UserDocument["_id"];
+    fullName: string;
+    avatar?: string | null;
+  } | null> {
     return UserModel.findOne({ authId })
-      .select("fullName avatar")
-      .lean<{ fullName: string; avatar?: string | null }>()
+      .select("_id fullName avatar")
+      .lean<{
+        _id: UserDocument["_id"];
+        fullName: string;
+        avatar?: string | null;
+      }>()
       .exec();
   }
 }

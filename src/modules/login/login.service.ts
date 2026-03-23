@@ -16,7 +16,11 @@ import { withRetry } from "@/utils/retry";
 import { generateAuthTokensResponse } from "@/utils/token";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { formatDuration } from "@/utils/date";
-import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError
+} from "@/config/responses/error";
 import type { AuthenticationRepository } from "@/repositories/authentication.repository";
 import type { UserRepository } from "@/repositories/user.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
@@ -260,19 +264,23 @@ export class LoginService {
 
     const user = await this.userRepo.findByAuthId(auth._id.toString());
 
+    if (!user) {
+      throw new NotFoundError("user:errors.notFound");
+    }
+
     Logger.info("Login successful", {
       email,
-      userId: auth._id.toString(),
+      userId: user._id.toString(),
       method: loginMethod
     });
 
     return generateAuthTokensResponse({
-      userId: auth._id.toString(),
+      userId: user._id.toString(),
       authId: auth._id.toString(),
       email: auth.email,
       roles: auth.roles,
-      fullName: user?.fullName ?? "",
-      avatar: user?.avatar ?? null
+      fullName: user.fullName,
+      avatar: user.avatar ?? null
     });
   }
 

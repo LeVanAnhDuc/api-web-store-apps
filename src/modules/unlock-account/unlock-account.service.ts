@@ -7,6 +7,7 @@ import { withRetry } from "@/utils/retry";
 import { generateAuthTokensResponse } from "@/utils/token";
 import {
   BadRequestError,
+  NotFoundError,
   TooManyRequestsError,
   UnauthorizedError
 } from "@/config/responses/error";
@@ -201,13 +202,17 @@ export class UnlockAccountService {
 
     const user = await this.userRepo.findByAuthId(auth._id.toString());
 
+    if (!user) {
+      throw new NotFoundError("user:errors.notFound");
+    }
+
     return generateAuthTokensResponse({
-      userId: auth._id.toString(),
+      userId: user._id.toString(),
       authId: auth._id.toString(),
       email: auth.email,
       roles: auth.roles,
-      fullName: user?.fullName ?? "",
-      avatar: user?.avatar ?? null
+      fullName: user.fullName,
+      avatar: user.avatar ?? null
     });
   }
 
