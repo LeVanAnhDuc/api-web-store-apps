@@ -39,6 +39,7 @@ export const loadModules = (app: Express): void => {
   const { loginRouter, failedAttemptsRepo } = createLoginModule(
     redisClient,
     authRepo,
+    userRepo,
     loginHistoryService,
     rateLimiter
   );
@@ -57,6 +58,7 @@ export const loadModules = (app: Express): void => {
   const { unlockAccountRouter } = createUnlockAccountModule(
     redisClient,
     authRepo,
+    userRepo,
     loginHistoryService,
     failedAttemptsRepo,
     rateLimiter

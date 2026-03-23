@@ -34,7 +34,9 @@ export class TokenService {
         userId: tokenPayload.userId,
         authId: tokenPayload.authId,
         email: tokenPayload.email,
-        roles: tokenPayload.roles
+        roles: tokenPayload.roles,
+        fullName: tokenPayload.fullName,
+        avatar: tokenPayload.avatar
       })
     };
   }

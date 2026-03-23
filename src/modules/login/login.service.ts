@@ -18,6 +18,7 @@ import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { formatDuration } from "@/utils/date";
 import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
 import type { AuthenticationRepository } from "@/repositories/authentication.repository";
+import type { UserRepository } from "@/repositories/user.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
@@ -33,6 +34,7 @@ import ENV from "@/config/env";
 export class LoginService {
   constructor(
     private readonly authRepo: AuthenticationRepository,
+    private readonly userRepo: UserRepository,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly otpLoginRepo: OtpLoginRepository,
     private readonly magicLinkLoginRepo: MagicLinkLoginRepository,
@@ -64,7 +66,7 @@ export class LoginService {
 
     return {
       message: t("login:success.loginSuccessful"),
-      data: this.completeSuccessfulLogin({
+      data: await this.completeSuccessfulLogin({
         email,
         auth,
         loginMethod: LOGIN_METHODS.PASSWORD,
@@ -148,7 +150,7 @@ export class LoginService {
 
     return {
       message: t("login:success.loginSuccessful"),
-      data: this.completeSuccessfulLogin({
+      data: await this.completeSuccessfulLogin({
         email,
         auth,
         loginMethod: LOGIN_METHODS.OTP,
@@ -225,7 +227,7 @@ export class LoginService {
 
     return {
       message: t("login:success.loginSuccessful"),
-      data: this.completeSuccessfulLogin({
+      data: await this.completeSuccessfulLogin({
         email,
         auth,
         loginMethod: LOGIN_METHODS.MAGIC_LINK,
@@ -238,7 +240,7 @@ export class LoginService {
   // Login history helpers
   // ──────────────────────────────────────────────
 
-  private completeSuccessfulLogin({
+  private async completeSuccessfulLogin({
     email,
     auth,
     loginMethod,
@@ -248,13 +250,15 @@ export class LoginService {
     auth: AuthenticationDocument;
     loginMethod: LoginMethod;
     req: Request;
-  }): LoginResponse {
+  }): Promise<LoginResponse> {
     this.loginHistoryService.recordSuccessfulLogin({
       userId: auth._id,
       usernameAttempted: email,
       loginMethod,
       req
     });
+
+    const user = await this.userRepo.findByAuthId(auth._id.toString());
 
     Logger.info("Login successful", {
       email,
@@ -266,7 +270,9 @@ export class LoginService {
       userId: auth._id.toString(),
       authId: auth._id.toString(),
       email: auth.email,
-      roles: auth.roles
+      roles: auth.roles,
+      fullName: user?.fullName ?? "",
+      avatar: user?.avatar ?? null
     });
   }
 

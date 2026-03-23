@@ -29,6 +29,8 @@ declare global {
     authId: string;
     email: string;
     roles: string;
+    fullName: string;
+    avatar?: string | null;
   }
 
   interface JwtTokenPayload extends JwtUserPayload {

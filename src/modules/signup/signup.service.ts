@@ -223,7 +223,9 @@ export class SignupService {
       userId: account.userId.toString(),
       authId: account.authId.toString(),
       email: account.email,
-      roles: AUTHENTICATION_ROLES.USER
+      roles: AUTHENTICATION_ROLES.USER,
+      fullName: account.fullName,
+      avatar: null
     });
 
     await Promise.all([

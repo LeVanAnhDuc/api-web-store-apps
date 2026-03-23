@@ -49,4 +49,13 @@ export class UserRepository {
       .lean<PublicUserRecord>()
       .exec();
   }
+
+  async findByAuthId(
+    authId: string
+  ): Promise<{ fullName: string; avatar?: string | null } | null> {
+    return UserModel.findOne({ authId })
+      .select("fullName avatar")
+      .lean<{ fullName: string; avatar?: string | null }>()
+      .exec();
+  }
 }

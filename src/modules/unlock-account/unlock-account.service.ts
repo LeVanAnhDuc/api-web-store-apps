@@ -11,6 +11,7 @@ import {
   UnauthorizedError
 } from "@/config/responses/error";
 import type { AuthenticationRepository } from "@/repositories/authentication.repository";
+import type { UserRepository } from "@/repositories/user.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
 import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
@@ -34,6 +35,7 @@ const ALL_CHARS =
 export class UnlockAccountService {
   constructor(
     private readonly authRepo: AuthenticationRepository,
+    private readonly userRepo: UserRepository,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly failedAttemptsRepo: FailedAttemptsRepository,
     private readonly unlockAccountRepo: UnlockAccountRepository
@@ -197,11 +199,15 @@ export class UnlockAccountService {
       authId: auth._id
     });
 
+    const user = await this.userRepo.findByAuthId(auth._id.toString());
+
     return generateAuthTokensResponse({
       userId: auth._id.toString(),
       authId: auth._id.toString(),
       email: auth.email,
-      roles: auth.roles
+      roles: auth.roles,
+      fullName: user?.fullName ?? "",
+      avatar: user?.avatar ?? null
     });
   }
 
