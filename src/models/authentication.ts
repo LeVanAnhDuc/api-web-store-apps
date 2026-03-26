@@ -1,7 +1,7 @@
 import { Schema, model, type Model } from "mongoose";
 import type { AuthenticationDocument } from "@/types/modules/authentication";
 import { MODEL_NAMES } from "@/constants/models";
-import { AUTHENTICATION_ROLES } from "@/constants/enums";
+import { AUTHENTICATION_ROLES } from "@/constants/enums/authentication";
 import {
   EMAIL_FORMAT_PATTERN,
   SAFE_EMAIL_PATTERN

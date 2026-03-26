@@ -1,18 +1,3 @@
-// Authentication
-export const AUTHENTICATION_ROLES = {
-  USER: "user",
-  ADMIN: "admin"
-} as const;
-
-// User
-export const GENDERS = {
-  MALE: "male",
-  FEMALE: "female",
-  OTHER: "other",
-  PREFER_NOT_TO_SAY: "prefer_not_to_say"
-} as const;
-
-// Login
 export const LOGIN_METHODS = {
   PASSWORD: "password",
   OTP: "otp",
@@ -39,7 +24,6 @@ export const LOGIN_FAIL_REASONS = {
   INVALID_RESET_TOKEN: "invalid_reset_token"
 } as const;
 
-// Login History
 export const DEVICE_TYPES = {
   DESKTOP: "DESKTOP",
   MOBILE: "MOBILE",
@@ -65,7 +49,6 @@ export const USER_AGENT_DEFAULTS = {
   UNKNOWN_BROWSER: "UNKNOWN"
 } as const;
 
-// Contact Admin
 export const CONTACT_CATEGORIES = {
   ACCOUNT: "account",
   TECHNICAL: "technical",
@@ -87,7 +70,6 @@ export const CONTACT_STATUSES = {
   RESOLVED: "resolved"
 } as const;
 
-// Blog
 export const BLOG_VISIBILITY = {
   PUBLIC: "public",
   PRIVATE: "private"

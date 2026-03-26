@@ -27,7 +27,7 @@ import {
   sendEmailService,
   EmailType
 } from "@/modules/send-email/send-email.module";
-import { AUTHENTICATION_ROLES } from "@/constants/enums";
+import { AUTHENTICATION_ROLES } from "@/constants/enums/authentication";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/config";
 import {
   SECONDS_PER_MINUTE,

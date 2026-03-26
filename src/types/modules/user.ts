@@ -1,6 +1,6 @@
 import type { Request } from "express";
 import type { Schema } from "mongoose";
-import type { GENDERS } from "@/constants/enums";
+import type { GENDERS } from "@/constants/enums/user";
 
 export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
 

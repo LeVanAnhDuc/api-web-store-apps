@@ -3,7 +3,7 @@ import type {
   AuthenticationRecord,
   CreateAuthenticationData
 } from "@/types/modules/authentication";
-import { AUTHENTICATION_ROLES } from "@/constants/enums";
+import { AUTHENTICATION_ROLES } from "@/constants/enums/authentication";
 import AuthenticationModel from "@/models/authentication";
 import MongoDBRepository from "@/core/implements/MongoDBRepository";
 
