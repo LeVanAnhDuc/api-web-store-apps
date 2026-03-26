@@ -2,7 +2,7 @@ import {
   SECONDS_PER_MINUTE,
   MINUTES_PER_HOUR,
   HOURS_PER_DAY
-} from "@/constants/infrastructure";
+} from "@/constants/time";
 import ENV from "@/config/env";
 
 // Login - Lockout

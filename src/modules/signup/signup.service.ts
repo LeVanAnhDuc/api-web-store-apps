@@ -29,10 +29,7 @@ import {
 } from "@/modules/send-email/send-email.module";
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/config";
-import {
-  SECONDS_PER_MINUTE,
-  MINUTES_PER_HOUR
-} from "@/constants/infrastructure";
+import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
 
 const OTP_EXPIRY_SECONDS = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const OTP_COOLDOWN_SECONDS = OTP_CONFIG.RESEND_COOLDOWN_SECONDS;
