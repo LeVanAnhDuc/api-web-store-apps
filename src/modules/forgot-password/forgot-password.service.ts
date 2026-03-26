@@ -23,7 +23,10 @@ import {
   sendEmailService,
   EmailType
 } from "@/modules/send-email/send-email.module";
-import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/constants/enums";
+import {
+  LOGIN_METHODS,
+  LOGIN_FAIL_REASONS
+} from "@/constants/enums/login-history";
 import {
   FORGOT_PASSWORD_OTP_CONFIG,
   FORGOT_PASSWORD_MAGIC_LINK_CONFIG

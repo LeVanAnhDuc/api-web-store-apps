@@ -13,7 +13,7 @@ import type {
   PaginatedResult
 } from "@/types/modules/login-history";
 import type { LoginMethod } from "@/types/modules/login";
-import { LOGIN_STATUSES } from "@/constants/enums";
+import { LOGIN_STATUSES } from "@/constants/enums/login-history";
 import Logger from "@/utils/logger";
 import {
   extractIp,

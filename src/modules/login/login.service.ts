@@ -31,7 +31,10 @@ import {
   sendEmailService,
   EmailType
 } from "@/modules/send-email/send-email.module";
-import { LOGIN_METHODS, LOGIN_FAIL_REASONS } from "@/constants/enums";
+import {
+  LOGIN_METHODS,
+  LOGIN_FAIL_REASONS
+} from "@/constants/enums/login-history";
 import { LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG } from "@/constants/config";
 import ENV from "@/config/env";
 

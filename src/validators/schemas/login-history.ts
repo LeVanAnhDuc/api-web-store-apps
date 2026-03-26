@@ -4,7 +4,7 @@ import {
   LOGIN_METHODS,
   DEVICE_TYPES,
   CLIENT_TYPES
-} from "@/constants/enums";
+} from "@/constants/enums/login-history";
 
 const STATUS_VALUES = Object.values(LOGIN_STATUSES);
 const METHOD_VALUES = Object.values(LOGIN_METHODS);

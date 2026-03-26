@@ -7,7 +7,7 @@ import {
   DEVICE_TYPES,
   GEO_DEFAULTS,
   USER_AGENT_DEFAULTS
-} from "@/constants/enums";
+} from "@/constants/enums/login-history";
 import { HTTP_HEADERS } from "@/constants/infrastructure";
 import type { ClientType, DeviceType } from "@/types/modules/login-history";
 

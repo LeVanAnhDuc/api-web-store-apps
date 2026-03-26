@@ -8,7 +8,7 @@ import {
   DEVICE_TYPES,
   CLIENT_TYPES,
   GEO_DEFAULTS
-} from "@/constants/enums";
+} from "@/constants/enums/login-history";
 import { LOGIN_HISTORY_CONFIG } from "@/constants/config";
 
 const { LOGIN_HISTORY, AUTHENTICATION } = MODEL_NAMES;
