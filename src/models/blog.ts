@@ -1,6 +1,6 @@
 import { Schema, model, type Model } from "mongoose";
 import type { BlogDocument } from "@/types/modules/blog";
-import { BLOG_VISIBILITY, BLOG_COVER_TYPE } from "@/constants/enums/blog";
+import { BLOG_VISIBILITY, BLOG_COVER_TYPE } from "@/constants/modules/blog";
 import { MODEL_NAMES } from "@/constants/models";
 
 const { BLOG, USER, BLOG_TAG, BLOG_CATEGORY } = MODEL_NAMES;

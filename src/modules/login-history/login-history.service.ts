@@ -1,7 +1,6 @@
 import type { Schema } from "mongoose";
 import type { Request } from "express";
 import type { LoginHistoryRepository } from "@/repositories/login-history.repository";
-import { HTTP_HEADERS } from "@/constants/infrastructure";
 import type {
   LoginEventPayload,
   ClientType,
@@ -13,7 +12,10 @@ import type {
   PaginatedResult
 } from "@/types/modules/login-history";
 import type { LoginMethod } from "@/types/modules/login";
-import { LOGIN_STATUSES } from "@/constants/enums/login-history";
+import {
+  LOGIN_STATUSES,
+  HTTP_HEADERS
+} from "@/constants/modules/login-history";
 import Logger from "@/utils/logger";
 import {
   extractIp,

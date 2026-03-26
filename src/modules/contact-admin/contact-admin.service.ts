@@ -15,7 +15,7 @@ import type {
 } from "@/types/modules/contact-admin";
 import type { HandlerResult } from "@/types/http";
 import type { ContactRepository } from "./repositories/contact.repository";
-import { CONTACT_STATUSES } from "@/constants/enums/contact-admin";
+import { CONTACT_STATUSES } from "@/constants/modules/contact-admin";
 import { CONTACT_CONFIG, USER_CONFIG } from "@/constants/config";
 import { BadRequestError, NotFoundError } from "@/config/responses/error";
 import { buildContactFilter } from "./internals/query-builder";

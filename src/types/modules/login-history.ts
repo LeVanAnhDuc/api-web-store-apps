@@ -5,7 +5,7 @@ import type {
   LOGIN_FAIL_REASONS,
   DEVICE_TYPES,
   CLIENT_TYPES
-} from "@/constants/enums/login-history";
+} from "@/constants/modules/login-history";
 import type { Request } from "express";
 
 export interface PaginationParams {

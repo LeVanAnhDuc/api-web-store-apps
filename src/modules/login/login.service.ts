@@ -34,7 +34,7 @@ import {
 import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS
-} from "@/constants/enums/login-history";
+} from "@/constants/modules/login-history";
 import { LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG } from "@/constants/config";
 import ENV from "@/config/env";
 

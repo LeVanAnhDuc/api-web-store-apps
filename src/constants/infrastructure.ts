@@ -42,13 +42,6 @@ export const CONNECTION_STATES = {
   DISCONNECTING: 3
 } as const;
 
-// HTTP Headers
-export const HTTP_HEADERS = {
-  USER_AGENT: "user-agent",
-  CLIENT_TYPE: "x-client-type",
-  X_FORWARDED_FOR: "x-forwarded-for"
-} as const;
-
 // Cookie
 export const COOKIE_NAMES = {
   REFRESH_TOKEN: "refreshToken"

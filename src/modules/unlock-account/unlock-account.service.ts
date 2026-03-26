@@ -16,7 +16,7 @@ import type { UserRepository } from "@/repositories/user.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
 import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
-import { LOGIN_METHODS } from "@/constants/enums/login-history";
+import { LOGIN_METHODS } from "@/constants/modules/login-history";
 import {
   sendEmailService,
   EmailType

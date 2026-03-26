@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import type { FilterQuery, SortOrder } from "mongoose";
-import { BLOG_VISIBILITY } from "@/constants/enums/blog";
+import { BLOG_VISIBILITY } from "@/constants/modules/blog";
 import type { BlogDocument, BlogQuery } from "@/types/modules/blog";
 
 interface RequestUser {

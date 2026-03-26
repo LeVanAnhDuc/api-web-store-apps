@@ -1,6 +1,6 @@
 import { Schema, model, type Model } from "mongoose";
 import type { UserDocument } from "@/types/modules/user";
-import { GENDERS } from "@/constants/enums/user";
+import { GENDERS } from "@/constants/modules/user";
 import {
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN,

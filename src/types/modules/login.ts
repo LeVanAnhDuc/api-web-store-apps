@@ -1,6 +1,6 @@
 import type { Request } from "express";
 import type { AuthTokensResponse } from "@/types/auth";
-import type { LOGIN_METHODS } from "@/constants/enums/login-history";
+import type { LOGIN_METHODS } from "@/constants/modules/login-history";
 import type { Schema } from "mongoose";
 import type {
   LoginFailReason,

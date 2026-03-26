@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import type { CanActivate } from "@/core/interfaces/can-activate.interface";
 import { ForbiddenError } from "@/config/responses/error";
-import { AUTHENTICATION_ROLES } from "@/constants/enums/authentication";
+import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
 
 export class AdminGuard implements CanActivate {
   canActivate(req: Request): boolean {

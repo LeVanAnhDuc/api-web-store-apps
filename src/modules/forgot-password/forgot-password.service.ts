@@ -26,7 +26,7 @@ import {
 import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS
-} from "@/constants/enums/login-history";
+} from "@/constants/modules/login-history";
 import {
   FORGOT_PASSWORD_OTP_CONFIG,
   FORGOT_PASSWORD_MAGIC_LINK_CONFIG
