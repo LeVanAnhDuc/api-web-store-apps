@@ -81,6 +81,23 @@ export class ServiceUnavailableError extends ErrorResponse {
   }
 }
 
+export class DatabaseError extends ErrorResponse {
+  readonly operation: string;
+  override readonly cause: unknown;
+
+  constructor(operation: string, cause: unknown) {
+    const message = cause instanceof Error ? cause.message : String(cause);
+    super({
+      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+      code: "DATABASE_ERROR",
+      message
+    });
+    this.name = "DatabaseError";
+    this.operation = operation;
+    this.cause = cause;
+  }
+}
+
 /**
  * Validation Error with field-level error details
  * Used for form validation failures

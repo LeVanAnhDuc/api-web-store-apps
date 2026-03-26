@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
+import { DatabaseError } from "@/config/responses/error";
 
 type ControllerFn = (
   req: Request,
@@ -49,6 +50,17 @@ export const asyncHandler =
       next(error);
     }
   };
+
+export async function asyncDatabaseHandler<T>(
+  operation: string,
+  fn: () => Promise<T>
+): Promise<T> {
+  try {
+    return await fn();
+  } catch (error) {
+    throw new DatabaseError(operation, error);
+  }
+}
 
 export const asyncMiddlewareHandler =
   (middleware: MiddlewareFn) =>

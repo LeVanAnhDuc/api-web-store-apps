@@ -90,15 +90,11 @@ export class LoginHistoryService {
       query as LoginHistoryAdminQuery,
       userId
     );
-    const { data, total } = await this.loginHistoryRepo.findByUser(
-      userId,
-      filter,
-      {
-        skip,
-        limit,
-        sort: { [sortBy]: sortOrder }
-      }
-    );
+    const { data, total } = await this.loginHistoryRepo.findByUser(filter, {
+      skip,
+      limit,
+      sort: { [sortBy]: sortOrder }
+    });
 
     const items: LoginHistoryItem[] = data.map((record) => ({
       _id: record._id.toString(),

@@ -2,8 +2,8 @@ import { Router } from "express";
 import type { Express, Request, Response } from "express";
 import type { RedisClientType } from "redis";
 import { instanceRedis } from "@/database/redis";
-import { AuthenticationRepository } from "@/repositories/authentication.repository";
-import { UserRepository } from "@/repositories/user.repository";
+import { MongoAuthenticationRepository } from "@/repositories/authentication.repository";
+import { MongoUserRepository } from "@/repositories/user.repository";
 import { AuthGuard } from "@/middlewares/auth.guard";
 import { AdminGuard } from "@/middlewares/admin.guard";
 import { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
@@ -23,8 +23,8 @@ import { Logger } from "@/utils/logger";
 export const loadModules = (app: Express): void => {
   const redisClient = instanceRedis.getClient() as RedisClientType;
 
-  const authRepo = new AuthenticationRepository();
-  const userRepo = new UserRepository();
+  const authRepo = new MongoAuthenticationRepository();
+  const userRepo = new MongoUserRepository();
   const auth = new AuthGuard(authRepo);
   const adminGuard = new AdminGuard();
   const optionalAuth = new OptionalAuthGuard(authRepo);

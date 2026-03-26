@@ -3,9 +3,9 @@ import type { AuthenticationRepository } from "@/repositories/authentication.rep
 import type { UserRepository } from "@/repositories/user.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
-import { OtpLoginRepository } from "./repositories/otp-login.repository";
-import { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
-import { FailedAttemptsRepository } from "./repositories/failed-attempts.repository";
+import { OtpLoginRepository } from "@/repositories/otp-login.repository";
+import { MagicLinkLoginRepository } from "@/repositories/magic-link-login.repository";
+import { FailedAttemptsRepository } from "@/repositories/failed-attempts.repository";
 import { LoginService } from "./login.service";
 import { LoginController } from "./login.controller";
 

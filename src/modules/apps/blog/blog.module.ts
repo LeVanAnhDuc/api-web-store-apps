@@ -1,8 +1,8 @@
 import type { AuthGuard } from "@/middlewares/auth.guard";
 import type { OptionalAuthGuard } from "@/middlewares/optional-auth.guard";
-import { BlogRepository } from "./repositories/blog.repository";
-import { BlogTagRepository } from "./repositories/blog-tag.repository";
-import { BlogCategoryRepository } from "./repositories/blog-category.repository";
+import { MongoBlogRepository } from "@/repositories/blog.repository";
+import { MongoBlogTagRepository } from "@/repositories/blog-tag.repository";
+import { MongoBlogCategoryRepository } from "@/repositories/blog-category.repository";
 import { BlogService } from "./blog.service";
 import { BlogTagsService } from "./sub-modules/tags/blog-tags.service";
 import { BlogCategoriesService } from "./sub-modules/categories/blog-categories.service";
@@ -14,9 +14,9 @@ export const createBlogModule = (
   auth: AuthGuard,
   optionalAuth: OptionalAuthGuard
 ) => {
-  const blogRepo = new BlogRepository();
-  const tagRepo = new BlogTagRepository();
-  const categoryRepo = new BlogCategoryRepository();
+  const blogRepo = new MongoBlogRepository();
+  const tagRepo = new MongoBlogTagRepository();
+  const categoryRepo = new MongoBlogCategoryRepository();
 
   const blogService = new BlogService(blogRepo);
   const tagsService = new BlogTagsService(tagRepo);

@@ -6,57 +6,72 @@ import type {
   PublicUserRecord
 } from "@/types/modules/user";
 import UserModel from "@/models/user";
-import MongoDBRepository from "@/core/implements/MongoDBRepository";
+import { asyncDatabaseHandler } from "@/utils/async-handler";
 
-export class UserRepository {
-  private readonly db = new MongoDBRepository<UserDocument>(
-    UserModel,
-    "UserRepository"
-  );
+export type UserRepository = {
+  createProfile(data: CreateUserData): Promise<UserRecord>;
+  findById(userId: string): Promise<UserDocument | null>;
+  updateById(
+    userId: string,
+    data: Partial<UpdateProfileData>
+  ): Promise<UserDocument | null>;
+  updateAvatar(userId: string, avatarPath: string): Promise<void>;
+  findPublicById(userId: string): Promise<PublicUserRecord | null>;
+  findByAuthId(authId: string): Promise<{
+    _id: UserDocument["_id"];
+    fullName: string;
+    avatar?: string | null;
+  } | null>;
+};
 
+export class MongoUserRepository implements UserRepository {
   async createProfile(data: CreateUserData): Promise<UserRecord> {
-    const user = await this.db.create({
-      authId: data.authId,
-      fullName: data.fullName,
-      gender: data.gender,
-      dateOfBirth: data.dateOfBirth
-    });
+    return asyncDatabaseHandler("createProfile", async () => {
+      const user = await UserModel.create({
+        authId: data.authId,
+        fullName: data.fullName,
+        gender: data.gender,
+        dateOfBirth: data.dateOfBirth
+      });
 
-    return {
-      _id: user._id,
-      fullName: user.fullName
-    };
+      return { _id: user._id, fullName: user.fullName };
+    });
   }
 
   async findById(userId: string): Promise<UserDocument | null> {
-    return UserModel.findById(userId)
-      .select("fullName phone avatar address dateOfBirth gender createdAt")
-      .lean<UserDocument>()
-      .exec();
+    return asyncDatabaseHandler("findById", () =>
+      UserModel.findById(userId)
+        .select("fullName phone avatar address dateOfBirth gender createdAt")
+        .lean<UserDocument>()
+        .exec()
+    );
   }
 
   async updateById(
     userId: string,
     data: Partial<UpdateProfileData>
   ): Promise<UserDocument | null> {
-    return UserModel.findByIdAndUpdate(userId, { $set: data }, { new: true })
-      .select("fullName phone avatar address dateOfBirth gender createdAt")
-      .lean<UserDocument>()
-      .exec();
+    return asyncDatabaseHandler("updateById", () =>
+      UserModel.findByIdAndUpdate(userId, { $set: data }, { new: true })
+        .select("fullName phone avatar address dateOfBirth gender createdAt")
+        .lean<UserDocument>()
+        .exec()
+    );
   }
 
   async updateAvatar(userId: string, avatarPath: string): Promise<void> {
-    await UserModel.updateOne(
-      { _id: userId },
-      { $set: { avatar: avatarPath } }
+    await asyncDatabaseHandler("updateAvatar", () =>
+      UserModel.updateOne({ _id: userId }, { $set: { avatar: avatarPath } })
     );
   }
 
   async findPublicById(userId: string): Promise<PublicUserRecord | null> {
-    return UserModel.findById(userId)
-      .select("fullName avatar gender")
-      .lean<PublicUserRecord>()
-      .exec();
+    return asyncDatabaseHandler("findPublicById", () =>
+      UserModel.findById(userId)
+        .select("fullName avatar gender")
+        .lean<PublicUserRecord>()
+        .exec()
+    );
   }
 
   async findByAuthId(authId: string): Promise<{
@@ -64,13 +79,15 @@ export class UserRepository {
     fullName: string;
     avatar?: string | null;
   } | null> {
-    return UserModel.findOne({ authId })
-      .select("_id fullName avatar")
-      .lean<{
-        _id: UserDocument["_id"];
-        fullName: string;
-        avatar?: string | null;
-      }>()
-      .exec();
+    return asyncDatabaseHandler("findByAuthId", () =>
+      UserModel.findOne({ authId })
+        .select("_id fullName avatar")
+        .lean<{
+          _id: UserDocument["_id"];
+          fullName: string;
+          avatar?: string | null;
+        }>()
+        .exec()
+    );
   }
 }
