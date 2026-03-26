@@ -11,7 +11,6 @@ import type { HandlerResult } from "@/types/http";
 import type { LoginService } from "./login.service";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import { asyncHandler } from "@/utils/async-handler";
-import { COOKIE_NAMES } from "@/constants/infrastructure";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
 import { validate } from "@/validators/middleware";
 import {
@@ -21,6 +20,7 @@ import {
   magicLinkSendSchema,
   magicLinkVerifySchema
 } from "@/validators/schemas/login";
+import { REFRESH_TOKEN } from "@/constants/modules/token";
 
 export class LoginController {
   public readonly router = Router();
@@ -85,7 +85,7 @@ export class LoginController {
       cookies: refreshToken
         ? [
             {
-              name: COOKIE_NAMES.REFRESH_TOKEN,
+              name: REFRESH_TOKEN,
               value: refreshToken,
               options: REFRESH_TOKEN_COOKIE_OPTIONS
             }
@@ -113,7 +113,7 @@ export class LoginController {
       cookies: refreshToken
         ? [
             {
-              name: COOKIE_NAMES.REFRESH_TOKEN,
+              name: REFRESH_TOKEN,
               value: refreshToken,
               options: REFRESH_TOKEN_COOKIE_OPTIONS
             }
@@ -143,7 +143,7 @@ export class LoginController {
       cookies: refreshToken
         ? [
             {
-              name: COOKIE_NAMES.REFRESH_TOKEN,
+              name: REFRESH_TOKEN,
               value: refreshToken,
               options: REFRESH_TOKEN_COOKIE_OPTIONS
             }

@@ -5,8 +5,8 @@ import type { LogoutService } from "./logout.service";
 import type { AuthGuard } from "@/middlewares/auth.guard";
 import { asyncHandler } from "@/utils/async-handler";
 import { STATUS_CODES } from "@/config/http";
-import { COOKIE_NAMES } from "@/constants/infrastructure";
 import ENV from "@/config/env";
+import { REFRESH_TOKEN } from "@/constants/modules/token";
 
 export class LogoutController {
   public readonly router = Router();
@@ -29,7 +29,7 @@ export class LogoutController {
       statusCode: STATUS_CODES.NO_CONTENT,
       clearCookies: [
         {
-          name: COOKIE_NAMES.REFRESH_TOKEN,
+          name: REFRESH_TOKEN,
           options: {
             httpOnly: true,
             secure: ENV.NODE_ENV === "production",

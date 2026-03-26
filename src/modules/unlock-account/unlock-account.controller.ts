@@ -7,13 +7,13 @@ import type { HandlerResult } from "@/types/http";
 import type { UnlockAccountService } from "./unlock-account.service";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import { asyncHandler } from "@/utils/async-handler";
-import { COOKIE_NAMES } from "@/constants/infrastructure";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
 import { validate } from "@/validators/middleware";
 import {
   unlockRequestSchema,
   unlockVerifySchema
 } from "@/validators/schemas/unlock-account";
+import { REFRESH_TOKEN } from "@/constants/modules/token";
 
 export class UnlockAccountController {
   public readonly router = Router();
@@ -68,7 +68,7 @@ export class UnlockAccountController {
       cookies: refreshToken
         ? [
             {
-              name: COOKIE_NAMES.REFRESH_TOKEN,
+              name: REFRESH_TOKEN,
               value: refreshToken,
               options: REFRESH_TOKEN_COOKIE_OPTIONS
             }

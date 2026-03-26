@@ -12,20 +12,6 @@ export const MILLISECONDS_PER_DAY = MILLISECONDS_PER_HOUR * HOURS_PER_DAY;
 export const SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 export const SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY;
 
-// JWT
-export const TOKEN_EXPIRY = {
-  ACCESS_TOKEN: "8h",
-  REFRESH_TOKEN: "7day",
-  ID_TOKEN: "8h",
-  NUMBER_ACCESS_TOKEN: 8 * 60 * 60 * 1000,
-  NUMBER_REFRESH_TOKEN: 7 * 24 * 60 * 60 * 1000
-} as const;
-
-export const TOKEN_ERRORS = {
-  TOKEN_EXPIRED_ERROR: "TokenExpiredError",
-  JSON_WEB_TOKEN_ERROR: "JsonWebTokenError"
-} as const;
-
 // MongoDB
 /**
  * MongoDB connection states
@@ -40,11 +26,6 @@ export const CONNECTION_STATES = {
   CONNECTING: 2,
   /** Connection is being closed */
   DISCONNECTING: 3
-} as const;
-
-// Cookie
-export const COOKIE_NAMES = {
-  REFRESH_TOKEN: "refreshToken"
 } as const;
 
 // Redis
