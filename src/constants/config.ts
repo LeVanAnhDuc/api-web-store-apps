@@ -5,11 +5,6 @@ import {
 } from "@/constants/infrastructure";
 import ENV from "@/config/env";
 
-// Bcrypt
-export const BCRYPT = {
-  SALT_ROUNDS: 10
-} as const;
-
 // Login - Lockout
 export const LOGIN_LOCKOUT = {
   FREE_ATTEMPTS: 4,
