@@ -12,22 +12,6 @@ export const MILLISECONDS_PER_DAY = MILLISECONDS_PER_HOUR * HOURS_PER_DAY;
 export const SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 export const SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY;
 
-// MongoDB
-/**
- * MongoDB connection states
- * These values correspond to the Mongoose connection readyState values
- */
-export const CONNECTION_STATES = {
-  /** Connection is not established */
-  DISCONNECTED: 0,
-  /** Connection is active and ready to use */
-  CONNECTED: 1,
-  /** Connection is being established */
-  CONNECTING: 2,
-  /** Connection is being closed */
-  DISCONNECTING: 3
-} as const;
-
 // Redis
 export const REDIS_KEYS = {
   RATE_LIMIT: {
