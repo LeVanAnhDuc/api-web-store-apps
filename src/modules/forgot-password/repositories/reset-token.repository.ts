@@ -3,11 +3,11 @@ import RedisCache from "@/core/implements/RedisCache";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
-import { REDIS_KEYS } from "@/constants/infrastructure";
 import { FORGOT_PASSWORD_RESET_TOKEN_CONFIG } from "@/constants/config";
 import { SECONDS_PER_MINUTE } from "@/constants/infrastructure";
+import { FORGOT_PASSWORD } from "@/constants/redis/store";
 
-const KEY = REDIS_KEYS.FORGOT_PASSWORD.RESET_TOKEN;
+const KEY = FORGOT_PASSWORD.RESET_TOKEN;
 
 export class ResetTokenRepository extends RedisCache {
   readonly RESET_TOKEN_EXPIRY_SECONDS =

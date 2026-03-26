@@ -2,14 +2,14 @@ import type { RedisClientType } from "redis";
 import RedisCache from "@/core/implements/RedisCache";
 import { generateOtp } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
-import { REDIS_KEYS } from "@/constants/infrastructure";
 import { OTP_CONFIG } from "@/constants/config";
+import { SIGNUP } from "@/constants/redis/store";
 
 const KEYS = {
-  OTP: REDIS_KEYS.SIGNUP.OTP,
-  COOLDOWN: REDIS_KEYS.SIGNUP.OTP_COOLDOWN,
-  FAILED_ATTEMPTS: REDIS_KEYS.SIGNUP.OTP_FAILED_ATTEMPTS,
-  RESEND_COUNT: REDIS_KEYS.SIGNUP.OTP_RESEND_COUNT
+  OTP: SIGNUP.OTP,
+  COOLDOWN: SIGNUP.OTP_COOLDOWN,
+  FAILED_ATTEMPTS: SIGNUP.OTP_FAILED_ATTEMPTS,
+  RESEND_COUNT: SIGNUP.OTP_RESEND_COUNT
 };
 
 export class OtpSignupRepository extends RedisCache {

@@ -1,11 +1,11 @@
 import type { RedisClientType } from "redis";
 import RedisCache from "@/core/implements/RedisCache";
-import { REDIS_KEYS } from "@/constants/infrastructure";
 import { LOGIN_LOCKOUT } from "@/constants/config";
+import { LOGIN } from "@/constants/redis/store";
 
 const KEYS = {
-  FAILED_ATTEMPTS: REDIS_KEYS.LOGIN.FAILED_ATTEMPTS,
-  LOCKOUT: REDIS_KEYS.LOGIN.LOCKOUT
+  FAILED_ATTEMPTS: LOGIN.FAILED_ATTEMPTS,
+  LOCKOUT: LOGIN.LOCKOUT
 };
 
 export class FailedAttemptsRepository extends RedisCache {

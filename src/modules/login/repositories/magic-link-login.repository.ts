@@ -3,13 +3,13 @@ import RedisCache from "@/core/implements/RedisCache";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
-import { REDIS_KEYS } from "@/constants/infrastructure";
 import { MAGIC_LINK_CONFIG } from "@/constants/config";
 import { SECONDS_PER_MINUTE } from "@/constants/infrastructure";
+import { LOGIN } from "@/constants/redis/store";
 
 const KEYS = {
-  MAGIC_LINK: REDIS_KEYS.LOGIN.MAGIC_LINK,
-  COOLDOWN: REDIS_KEYS.LOGIN.MAGIC_LINK_COOLDOWN
+  MAGIC_LINK: LOGIN.MAGIC_LINK,
+  COOLDOWN: LOGIN.MAGIC_LINK_COOLDOWN
 };
 
 export class MagicLinkLoginRepository extends RedisCache {

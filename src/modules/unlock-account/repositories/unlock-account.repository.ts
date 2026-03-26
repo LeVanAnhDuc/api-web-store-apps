@@ -1,11 +1,11 @@
 import type { RedisClientType } from "redis";
 import RedisCache from "@/core/implements/RedisCache";
-import { REDIS_KEYS } from "@/constants/infrastructure";
+import { LOGIN } from "@/constants/redis/store";
 
 const KEYS = {
-  UNLOCK_TOKEN: REDIS_KEYS.LOGIN.UNLOCK_TOKEN,
-  COOLDOWN: REDIS_KEYS.LOGIN.UNLOCK_COOLDOWN,
-  RATE: REDIS_KEYS.LOGIN.UNLOCK_RATE
+  UNLOCK_TOKEN: LOGIN.UNLOCK_TOKEN,
+  COOLDOWN: LOGIN.UNLOCK_COOLDOWN,
+  RATE: LOGIN.UNLOCK_RATE
 };
 
 const COOLDOWN_SECONDS = 60;

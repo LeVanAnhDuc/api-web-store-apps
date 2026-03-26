@@ -3,14 +3,14 @@ import RedisCache from "@/core/implements/RedisCache";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
-import { REDIS_KEYS } from "@/constants/infrastructure";
 import { FORGOT_PASSWORD_MAGIC_LINK_CONFIG } from "@/constants/config";
 import { SECONDS_PER_MINUTE } from "@/constants/infrastructure";
+import { FORGOT_PASSWORD } from "@/constants/redis/store";
 
 const KEYS = {
-  MAGIC_LINK: REDIS_KEYS.FORGOT_PASSWORD.MAGIC_LINK,
-  COOLDOWN: REDIS_KEYS.FORGOT_PASSWORD.MAGIC_LINK_COOLDOWN,
-  RESEND_COUNT: REDIS_KEYS.FORGOT_PASSWORD.MAGIC_LINK_RESEND_COUNT
+  MAGIC_LINK: FORGOT_PASSWORD.MAGIC_LINK,
+  COOLDOWN: FORGOT_PASSWORD.MAGIC_LINK_COOLDOWN,
+  RESEND_COUNT: FORGOT_PASSWORD.MAGIC_LINK_RESEND_COUNT
 };
 
 export class MagicLinkForgotPasswordRepository extends RedisCache {

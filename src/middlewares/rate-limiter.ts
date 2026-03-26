@@ -4,7 +4,7 @@ import type { createClient } from "redis";
 import RedisStore from "rate-limit-redis";
 import { TooManyRequestsError } from "@/config/responses/error";
 import { REDIS_KEYS } from "@/constants/infrastructure";
-import { RATE_LIMIT_CONFIG } from "@/constants/config";
+import { RATE_LIMIT_CONFIG } from "@/constants/redis/rate-limit";
 
 type RedisClient = ReturnType<typeof createClient>;
 type RateLimitHandler = (req: Request, res: Response) => void;

@@ -3,15 +3,15 @@ import RedisCache from "@/core/implements/RedisCache";
 import { generateOtp } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
-import { REDIS_KEYS } from "@/constants/infrastructure";
 import { FORGOT_PASSWORD_OTP_CONFIG } from "@/constants/config";
 import { SECONDS_PER_MINUTE } from "@/constants/infrastructure";
+import { FORGOT_PASSWORD } from "@/constants/redis/store";
 
 const KEYS = {
-  OTP: REDIS_KEYS.FORGOT_PASSWORD.OTP,
-  COOLDOWN: REDIS_KEYS.FORGOT_PASSWORD.OTP_COOLDOWN,
-  FAILED_ATTEMPTS: REDIS_KEYS.FORGOT_PASSWORD.OTP_FAILED_ATTEMPTS,
-  RESEND_COUNT: REDIS_KEYS.FORGOT_PASSWORD.OTP_RESEND_COUNT
+  OTP: FORGOT_PASSWORD.OTP,
+  COOLDOWN: FORGOT_PASSWORD.OTP_COOLDOWN,
+  FAILED_ATTEMPTS: FORGOT_PASSWORD.OTP_FAILED_ATTEMPTS,
+  RESEND_COUNT: FORGOT_PASSWORD.OTP_RESEND_COUNT
 };
 
 export class OtpForgotPasswordRepository extends RedisCache {
