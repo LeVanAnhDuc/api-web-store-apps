@@ -1,5 +1,5 @@
 import type { Document, Types } from "mongoose";
-import type { BLOG_VISIBILITY, BLOG_COVER_TYPE } from "@/constants/enums";
+import type { BLOG_VISIBILITY, BLOG_COVER_TYPE } from "@/constants/enums/blog";
 
 // ─── Enum value types ──────────────────────────────────────────────────────
 

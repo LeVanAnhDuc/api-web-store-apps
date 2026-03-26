@@ -4,7 +4,7 @@ import type {
   CONTACT_CATEGORIES,
   CONTACT_PRIORITIES,
   CONTACT_STATUSES
-} from "@/constants/enums";
+} from "@/constants/enums/contact-admin";
 
 export type ContactCategory =
   (typeof CONTACT_CATEGORIES)[keyof typeof CONTACT_CATEGORIES];

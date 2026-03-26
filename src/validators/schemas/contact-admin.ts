@@ -3,7 +3,7 @@ import {
   CONTACT_CATEGORIES,
   CONTACT_PRIORITIES,
   CONTACT_STATUSES
-} from "@/constants/enums";
+} from "@/constants/enums/contact-admin";
 import { CONTACT_CONFIG } from "@/constants/config";
 import { emailSchema } from "./base";
 import type { SubmitContactBody } from "@/types/modules/contact-admin";

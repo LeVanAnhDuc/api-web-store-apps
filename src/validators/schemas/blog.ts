@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { BLOG_VISIBILITY } from "@/constants/enums";
+import { BLOG_VISIBILITY } from "@/constants/enums/blog";
 
 const OBJECTID_PATTERN = /^[a-fA-F0-9]{24}$/;
 const VISIBILITY_VALUES = Object.values(BLOG_VISIBILITY);

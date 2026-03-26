@@ -14,7 +14,7 @@ import type {
   BlogTagItem,
   PaginatedResult
 } from "@/types/modules/blog";
-import { BLOG_COVER_TYPE, BLOG_VISIBILITY } from "@/constants/enums";
+import { BLOG_COVER_TYPE, BLOG_VISIBILITY } from "@/constants/enums/blog";
 import {
   NotFoundError,
   ForbiddenError,

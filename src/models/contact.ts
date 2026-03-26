@@ -4,7 +4,7 @@ import {
   CONTACT_CATEGORIES,
   CONTACT_PRIORITIES,
   CONTACT_STATUSES
-} from "@/constants/enums";
+} from "@/constants/enums/contact-admin";
 import { MODEL_NAMES } from "@/constants/models";
 import { CONTACT_CONFIG } from "@/constants/config";
 
