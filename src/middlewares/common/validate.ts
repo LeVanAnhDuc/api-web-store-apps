@@ -1,32 +1,36 @@
 // types
-import type { Request } from "express";
+import type { Request, Response, NextFunction } from "express";
 import type { Schema } from "joi";
-// utils
-import { asyncMiddlewareHandler } from "@/utils/async-handler";
 // config
 import { ValidationError, type FieldError } from "@/config/responses/error";
 
-const validate = (source: "body" | "params" | "query", schema: Schema) =>
-  asyncMiddlewareHandler(async (req: Request): Promise<void> => {
-    const data = req[source];
-    const { error, value } = schema.validate(data, {
-      abortEarly: false,
-      stripUnknown: true
-    });
+const validate =
+  (source: "body" | "params" | "query", schema: Schema) =>
+  async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = req[source];
+      const { error, value } = schema.validate(data, {
+        abortEarly: false,
+        stripUnknown: true
+      });
 
-    if (error) {
-      const fields: FieldError[] = error.details.map((detail) => ({
-        field: detail.path.join("."),
-        message: req.t(detail.message as I18n.Key)
-      }));
+      if (error) {
+        const fields: FieldError[] = error.details.map((detail) => ({
+          field: detail.path.join("."),
+          message: req.t(detail.message as I18n.Key)
+        }));
 
-      const mainMessage = req.t("common:errors.validationFailed");
+        const mainMessage = req.t("common:errors.validationFailed");
 
-      throw new ValidationError(mainMessage, fields);
+        throw new ValidationError(mainMessage, fields);
+      }
+
+      req[source] = value;
+      next();
+    } catch (error) {
+      next(error);
     }
-
-    req[source] = value;
-  });
+  };
 
 export const validateBody = (schema: Schema) => validate("body", schema);
 export const validateParams = (schema: Schema) => validate("params", schema);
