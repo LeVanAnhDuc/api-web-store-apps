@@ -13,6 +13,6 @@ export * from "./pipes/validation.pipe";
 // interceptors
 export * from "./interceptors/file-upload";
 
-// errors
-export * from "./errors/error-handler";
-export * from "./errors/mongoose-error-handler";
+// filters
+export * from "./filters/error.filter";
+export * from "./filters/mongoose-error.filter";
