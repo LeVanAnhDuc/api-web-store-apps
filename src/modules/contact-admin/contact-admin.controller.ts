@@ -1,10 +1,12 @@
 import { Router } from "express";
-import type { Request, RequestHandler } from "express";
+import type { RequestHandler } from "express";
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ContactAdminService } from "./contact-admin.service";
 import type {
   SubmitContactRequest,
-  AdminContactsQueryRequest
+  AdminContactsQueryRequest,
+  ContactIdParamRequest,
+  UpdateContactStatusRequest
 } from "@/types/modules/contact-admin";
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
@@ -16,15 +18,6 @@ import {
   updateContactStatusSchema,
   adminListContactsQuerySchema
 } from "@/validators/schemas/contact-admin";
-
-interface AuthenticatedRequest extends Request {
-  user: {
-    userId: string;
-    authId: string;
-    email: string;
-    roles: string;
-  };
-}
 
 export class ContactAdminController {
   public readonly router = Router();
@@ -79,7 +72,8 @@ export class ContactAdminController {
   private submit = async (
     req: SubmitContactRequest
   ): Promise<HandlerResult> => {
-    const { data } = await this.service.submitContact(req.body);
+    const data = await this.service.submitContact(req.body);
+
     return {
       data,
       message: "contactAdmin:success.submitted",
@@ -91,6 +85,7 @@ export class ContactAdminController {
     req: AdminContactsQueryRequest
   ): Promise<HandlerResult> => {
     const data = await this.service.getContactList(req.query);
+
     return {
       data,
       message: "contactAdmin:success.getContactList",
@@ -99,9 +94,10 @@ export class ContactAdminController {
   };
 
   private getContactDetail = async (
-    req: AuthenticatedRequest
+    req: ContactIdParamRequest
   ): Promise<HandlerResult> => {
     const data = await this.service.getContactDetail(req.params.id);
+
     return {
       data,
       message: "contactAdmin:success.getContactDetail",
@@ -110,12 +106,13 @@ export class ContactAdminController {
   };
 
   private updateContactStatus = async (
-    req: AuthenticatedRequest
+    req: UpdateContactStatusRequest
   ): Promise<HandlerResult> => {
     const data = await this.service.updateContactStatus(
       req.params.id,
       req.body.status
     );
+
     return {
       data,
       message: "contactAdmin:success.updateContactStatus",

@@ -1,16 +1,18 @@
 import type {
   SubmitContactBody,
   AdminContactsQuery,
-  ContactDetailItem as ContactDetailItemType,
   PaginatedResult,
   ContactStatus
 } from "@/types/modules/contact-admin";
-import type { HandlerResult } from "@/types/http";
 import type { ContactRepository } from "./repositories/contact.repository";
 import type { SubmitContactResponseDto } from "./dto/submit-contact.dto";
 import { toSubmitContactResponseDto } from "./dto/submit-contact.dto";
 import type { ContactListItemDto } from "./dto/contact-list-item.dto";
 import { toContactListItemDto } from "./dto/contact-list-item.dto";
+import type { ContactDetailItemDto } from "./dto/contact-detail-item.dto";
+import { toContactDetailItemDto } from "./dto/contact-detail-item.dto";
+import type { UpdateContactStatusDto } from "./dto/update-contact-status.dto";
+import { toUpdateContactStatusDto } from "./dto/update-contact-status.dto";
 import { CONTACT_STATUSES } from "@/constants/modules/contact-admin";
 import { NotFoundError } from "@/config/responses/error";
 import { buildContactFilter } from "./contact-admin.helper";
@@ -27,7 +29,7 @@ export class ContactAdminService {
 
   async submitContact(
     body: SubmitContactBody
-  ): Promise<HandlerResult<SubmitContactResponseDto>> {
+  ): Promise<SubmitContactResponseDto> {
     const { message, subject, email } = body;
 
     const sanitizedSubject = sanitizeText(subject);
@@ -53,9 +55,7 @@ export class ContactAdminService {
       status: CONTACT_STATUSES.NEW
     });
 
-    return {
-      data: toSubmitContactResponseDto(contact)
-    };
+    return toSubmitContactResponseDto(contact);
   }
 
   async getContactList(
@@ -85,7 +85,7 @@ export class ContactAdminService {
     };
   }
 
-  async getContactDetail(id: string): Promise<ContactDetailItemType> {
+  async getContactDetail(id: string): Promise<ContactDetailItemDto> {
     const doc = await this.contactRepo.findById(id);
 
     if (!doc) {
@@ -95,16 +95,13 @@ export class ContactAdminService {
       );
     }
 
-    return {
-      ...toContactListItemDto(doc),
-      message: doc.message
-    };
+    return toContactDetailItemDto(doc);
   }
 
   async updateContactStatus(
     id: string,
     status: ContactStatus
-  ): Promise<ContactListItemDto> {
+  ): Promise<UpdateContactStatusDto> {
     const updated = await this.contactRepo.updateStatus(id, status);
 
     if (!updated) {
@@ -114,6 +111,6 @@ export class ContactAdminService {
       );
     }
 
-    return toContactListItemDto(updated);
+    return toUpdateContactStatusDto(updated);
   }
 }

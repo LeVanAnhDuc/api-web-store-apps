@@ -49,6 +49,16 @@ export interface AdminContactsQueryRequest extends Omit<Request, "query"> {
   query: AdminContactsQuery;
 }
 
+export interface ContactIdParamRequest extends Omit<Request, "params"> {
+  params: { id: string };
+}
+
+export interface UpdateContactStatusRequest
+  extends Omit<Request, "params" | "body"> {
+  params: { id: string };
+  body: { status: ContactStatus };
+}
+
 // ─── v2.0 Response Types ───────────────────────────────────────────────────
 
 export interface ContactListItem {
