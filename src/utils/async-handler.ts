@@ -10,12 +10,6 @@ type ControllerFn = (
   next: NextFunction
 ) => Promise<HandlerResult | void>;
 
-type MiddlewareFn = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => Promise<void>;
-
 function isHandlerResult(
   result: HandlerResult | void
 ): result is HandlerResult {
@@ -62,14 +56,6 @@ export async function asyncDatabaseHandler<T>(
     throw new DatabaseError(operation, error);
   }
 }
-
-export const asyncMiddlewareHandler =
-  (middleware: MiddlewareFn) =>
-  (req: Request, res: Response, next: NextFunction): void => {
-    middleware(req, res, next)
-      .then(() => next())
-      .catch((error) => next(error));
-  };
 
 // Wraps a guard that throws on failure — errors are forwarded to next(error)
 export const asyncGuardHandler =
