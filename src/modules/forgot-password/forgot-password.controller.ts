@@ -1,4 +1,8 @@
+// libs
 import { Router } from "express";
+import type { Response } from "express";
+
+// types
 import type {
   FPOtpSendRequest,
   FPOtpVerifyRequest,
@@ -6,11 +10,19 @@ import type {
   FPMagicLinkVerifyRequest,
   FPResetPasswordRequest
 } from "@/types/modules/forgot-password";
-import type { HandlerResult } from "@/types/http";
 import type { ForgotPasswordService } from "./forgot-password.service";
 import type { RateLimiterMiddleware } from "@/middlewares";
+
+// config
+import { OkSuccess } from "@/config/responses/success";
+
+// utils
 import { asyncHandler } from "@/utils/async-handler";
+
+// middlewares
 import { bodyPipe } from "@/middlewares";
+
+// validators
 import {
   fpOtpSendSchema,
   fpOtpVerifySchema,
@@ -68,36 +80,43 @@ export class ForgotPasswordController {
     );
   }
 
-  private sendOtp = async (req: FPOtpSendRequest): Promise<HandlerResult> => {
+  private sendOtp = async (
+    req: FPOtpSendRequest,
+    res: Response
+  ): Promise<void> => {
     const { data, message } = await this.service.sendOtp(req);
-    return { data, message };
+    new OkSuccess({ data, message }).send(req, res);
   };
 
   private verifyOtp = async (
-    req: FPOtpVerifyRequest
-  ): Promise<HandlerResult> => {
+    req: FPOtpVerifyRequest,
+    res: Response
+  ): Promise<void> => {
     const { data, message } = await this.service.verifyOtp(req);
-    return { data, message };
+    new OkSuccess({ data, message }).send(req, res);
   };
 
   private sendMagicLink = async (
-    req: FPMagicLinkSendRequest
-  ): Promise<HandlerResult> => {
+    req: FPMagicLinkSendRequest,
+    res: Response
+  ): Promise<void> => {
     const { data, message } = await this.service.sendMagicLink(req);
-    return { data, message };
+    new OkSuccess({ data, message }).send(req, res);
   };
 
   private verifyMagicLink = async (
-    req: FPMagicLinkVerifyRequest
-  ): Promise<HandlerResult> => {
+    req: FPMagicLinkVerifyRequest,
+    res: Response
+  ): Promise<void> => {
     const { data, message } = await this.service.verifyMagicLink(req);
-    return { data, message };
+    new OkSuccess({ data, message }).send(req, res);
   };
 
   private resetPassword = async (
-    req: FPResetPasswordRequest
-  ): Promise<HandlerResult> => {
+    req: FPResetPasswordRequest,
+    res: Response
+  ): Promise<void> => {
     const { data, message } = await this.service.resetPassword(req);
-    return { data, message };
+    new OkSuccess({ data, message }).send(req, res);
   };
 }

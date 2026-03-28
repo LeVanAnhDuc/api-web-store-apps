@@ -1,11 +1,21 @@
+// libs
 import { Router } from "express";
-import type { Request, RequestHandler } from "express";
+import type { Request, RequestHandler, Response } from "express";
+
+// types
 import type { BlogCategoriesService } from "./blog-categories.service";
-import type { HandlerResult } from "@/types/http";
 import type { TagQuery } from "@/types/modules/blog";
-import { STATUS_CODES } from "@/config/http";
+
+// config
+import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
+
+// utils
 import { asyncHandler } from "@/utils/async-handler";
+
+// middlewares
 import { bodyPipe, queryPipe } from "@/middlewares";
+
+// validators
 import {
   tagQuerySchema,
   createCategorySchema
@@ -45,24 +55,26 @@ export class BlogCategoriesController {
     );
   }
 
-  private searchCategories = async (req: Request): Promise<HandlerResult> => {
+  private searchCategories = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
     const query = req.query as unknown as TagQuery;
     const data = await this.service.searchCategories(query);
-    return {
-      data,
-      message: "blog:success.categoriesFound",
-      statusCode: STATUS_CODES.OK
-    };
+    new OkSuccess({ data, message: "blog:success.categoriesFound" }).send(
+      req,
+      res
+    );
   };
 
   private createCategory = async (
-    req: AuthenticatedRequest
-  ): Promise<HandlerResult> => {
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
     const data = await this.service.createCategory(req.body.name);
-    return {
-      data,
-      message: "blog:success.categoryCreated",
-      statusCode: STATUS_CODES.CREATED
-    };
+    new CreatedSuccess({ data, message: "blog:success.categoryCreated" }).send(
+      req,
+      res
+    );
   };
 }

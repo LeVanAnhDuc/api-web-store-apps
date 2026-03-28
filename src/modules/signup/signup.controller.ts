@@ -1,4 +1,8 @@
+// libs
 import { Router } from "express";
+import type { Response } from "express";
+
+// types
 import type {
   SendOtpRequest,
   VerifyOtpRequest,
@@ -6,12 +10,19 @@ import type {
   CompleteSignupRequest,
   CheckEmailRequest
 } from "@/types/modules/signup";
-import type { HandlerResult } from "@/types/http";
 import type { SignupService } from "./signup.service";
-import { STATUS_CODES } from "@/config/http";
 import type { RateLimiterMiddleware } from "@/middlewares";
+
+// config
+import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
+
+// utils
 import { asyncHandler } from "@/utils/async-handler";
+
+// middlewares
 import { bodyPipe, paramsPipe } from "@/middlewares";
+
+// validators
 import {
   sendOtpSchema,
   resendOtpSchema,
@@ -67,32 +78,43 @@ export class SignupController {
     );
   }
 
-  private sendOtp = async (req: SendOtpRequest): Promise<HandlerResult> => {
+  private sendOtp = async (
+    req: SendOtpRequest,
+    res: Response
+  ): Promise<void> => {
     const { data, message } = await this.service.sendOtp(req);
-    return { data, message };
+    new OkSuccess({ data, message }).send(req, res);
   };
 
-  private verifyOtp = async (req: VerifyOtpRequest): Promise<HandlerResult> => {
+  private verifyOtp = async (
+    req: VerifyOtpRequest,
+    res: Response
+  ): Promise<void> => {
     const { data, message } = await this.service.verifyOtp(req);
-    return { data, message };
+    new OkSuccess({ data, message }).send(req, res);
   };
 
-  private resendOtp = async (req: ResendOtpRequest): Promise<HandlerResult> => {
+  private resendOtp = async (
+    req: ResendOtpRequest,
+    res: Response
+  ): Promise<void> => {
     const { data, message } = await this.service.resendOtp(req);
-    return { data, message };
+    new OkSuccess({ data, message }).send(req, res);
   };
 
   private completeSignup = async (
-    req: CompleteSignupRequest
-  ): Promise<HandlerResult> => {
+    req: CompleteSignupRequest,
+    res: Response
+  ): Promise<void> => {
     const { data, message } = await this.service.completeSignup(req);
-    return { data, message, statusCode: STATUS_CODES.CREATED };
+    new CreatedSuccess({ data, message }).send(req, res);
   };
 
   private checkEmail = async (
-    req: CheckEmailRequest
-  ): Promise<HandlerResult> => {
+    req: CheckEmailRequest,
+    res: Response
+  ): Promise<void> => {
     const { data } = await this.service.checkEmail(req);
-    return { data };
+    new OkSuccess({ data }).send(req, res);
   };
 }

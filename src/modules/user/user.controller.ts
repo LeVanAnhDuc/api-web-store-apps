@@ -1,5 +1,8 @@
+// libs
 import { Router } from "express";
-import type { RequestHandler } from "express";
+import type { RequestHandler, Response } from "express";
+
+// types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { UserService } from "./user.service";
 import type {
@@ -8,15 +11,22 @@ import type {
   UploadAvatarRequest,
   GetPublicProfileRequest
 } from "@/types/modules/user";
-import type { HandlerResult } from "@/types/http";
-import { STATUS_CODES } from "@/config/http";
+
+// config
+import { OkSuccess } from "@/config/responses/success";
+import { BadRequestError } from "@/config/responses/error";
+
+// utils
 import { asyncHandler } from "@/utils/async-handler";
+
+// middlewares
 import { bodyPipe, paramsPipe, uploadAvatar } from "@/middlewares";
+
+// validators
 import {
   updateProfileSchema,
   getPublicProfileSchema
 } from "@/validators/schemas/user";
-import { BadRequestError } from "@/config/responses/error";
 
 export class UserController {
   public readonly router = Router();
@@ -56,32 +66,30 @@ export class UserController {
   }
 
   private getMyProfile = async (
-    req: GetMyProfileRequest
-  ): Promise<HandlerResult> => {
+    req: GetMyProfileRequest,
+    res: Response
+  ): Promise<void> => {
     const { userId, email } = req.user;
     const data = await this.service.getMyProfile(userId, email);
-    return {
-      data,
-      message: "user:success.getProfile",
-      statusCode: STATUS_CODES.OK
-    };
+    new OkSuccess({ data, message: "user:success.getProfile" }).send(req, res);
   };
 
   private updateMyProfile = async (
-    req: UpdateProfileRequest
-  ): Promise<HandlerResult> => {
+    req: UpdateProfileRequest,
+    res: Response
+  ): Promise<void> => {
     const { userId, email } = req.user;
     const data = await this.service.updateMyProfile(userId, email, req.body);
-    return {
-      data,
-      message: "user:success.updateProfile",
-      statusCode: STATUS_CODES.OK
-    };
+    new OkSuccess({ data, message: "user:success.updateProfile" }).send(
+      req,
+      res
+    );
   };
 
   private uploadAvatarHandler = async (
-    req: UploadAvatarRequest
-  ): Promise<HandlerResult> => {
+    req: UploadAvatarRequest,
+    res: Response
+  ): Promise<void> => {
     if (!req.file) {
       throw new BadRequestError(
         "user:errors.noFileUploaded",
@@ -91,21 +99,20 @@ export class UserController {
 
     const { userId } = req.user;
     const data = await this.service.updateAvatar(userId, req.file.path);
-    return {
-      data,
-      message: "user:success.uploadAvatar",
-      statusCode: STATUS_CODES.OK
-    };
+    new OkSuccess({ data, message: "user:success.uploadAvatar" }).send(
+      req,
+      res
+    );
   };
 
   private getPublicProfile = async (
-    req: GetPublicProfileRequest
-  ): Promise<HandlerResult> => {
+    req: GetPublicProfileRequest,
+    res: Response
+  ): Promise<void> => {
     const data = await this.service.getPublicProfile(req.params.id);
-    return {
-      data,
-      message: "user:success.getPublicProfile",
-      statusCode: STATUS_CODES.OK
-    };
+    new OkSuccess({ data, message: "user:success.getPublicProfile" }).send(
+      req,
+      res
+    );
   };
 }

@@ -1,15 +1,24 @@
+// libs
 import { Router } from "express";
-import type { Request } from "express";
-import type { RequestHandler } from "express";
+import type { Request, Response, RequestHandler } from "express";
+
+// types
 import type { LoginHistoryService } from "./login-history.service";
 import type {
   LoginHistoryQuery,
   LoginHistoryAdminQuery
 } from "@/types/modules/login-history";
-import type { HandlerResult } from "@/types/http";
-import { STATUS_CODES } from "@/config/http";
+
+// config
+import { OkSuccess } from "@/config/responses/success";
+
+// utils
 import { asyncHandler } from "@/utils/async-handler";
+
+// middlewares
 import { queryPipe } from "@/middlewares";
+
+// validators
 import {
   loginHistoryQuerySchema,
   loginHistoryAdminQuerySchema
@@ -57,27 +66,27 @@ export class LoginHistoryController {
   }
 
   private getMyHistory = async (
-    req: AuthenticatedRequest
-  ): Promise<HandlerResult> => {
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
     const { userId } = req.user;
     const query = req.query as unknown as LoginHistoryQuery;
     const data = await this.service.getMyLoginHistory(userId, query);
-    return {
-      data,
-      message: "loginHistory:success.getMyHistory",
-      statusCode: STATUS_CODES.OK
-    };
+    new OkSuccess({ data, message: "loginHistory:success.getMyHistory" }).send(
+      req,
+      res
+    );
   };
 
   private getAllHistory = async (
-    req: AuthenticatedRequest
-  ): Promise<HandlerResult> => {
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
     const query = req.query as unknown as LoginHistoryAdminQuery;
     const data = await this.service.getAllLoginHistory(query);
-    return {
+    new OkSuccess({
       data,
-      message: "loginHistory:success.getAllHistory",
-      statusCode: STATUS_CODES.OK
-    };
+      message: "loginHistory:success.getAllHistory"
+    }).send(req, res);
   };
 }

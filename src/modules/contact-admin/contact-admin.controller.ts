@@ -1,5 +1,7 @@
+// libs
 import { Router } from "express";
-import type { RequestHandler } from "express";
+import type { RequestHandler, Response } from "express";
+// types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ContactAdminService } from "./contact-admin.service";
 import type {
@@ -8,16 +10,19 @@ import type {
   ContactIdParamRequest,
   UpdateContactStatusRequest
 } from "@/types/modules/contact-admin";
-import type { HandlerResult } from "@/types/http";
-import { STATUS_CODES } from "@/config/http";
-import { asyncHandler } from "@/utils/async-handler";
+// config
+import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
+// middlewares
 import { bodyPipe, paramsPipe, queryPipe } from "@/middlewares";
+// validators
 import {
   submitContactSchema,
   contactIdParamSchema,
   updateContactStatusSchema,
   adminListContactsQuerySchema
 } from "@/validators/schemas/contact-admin";
+// others
+import { asyncHandler } from "@/utils/async-handler";
 
 export class ContactAdminController {
   public readonly router = Router();
@@ -70,53 +75,49 @@ export class ContactAdminController {
   }
 
   private submit = async (
-    req: SubmitContactRequest
-  ): Promise<HandlerResult> => {
+    req: SubmitContactRequest,
+    res: Response
+  ): Promise<void> => {
     const data = await this.service.submitContact(req.body);
-
-    return {
+    new CreatedSuccess({
       data,
-      message: "contactAdmin:success.submitted",
-      statusCode: STATUS_CODES.CREATED
-    };
+      message: "contactAdmin:success.submitted"
+    }).send(req, res);
   };
 
   private getContactList = async (
-    req: AdminContactsQueryRequest
-  ): Promise<HandlerResult> => {
+    req: AdminContactsQueryRequest,
+    res: Response
+  ): Promise<void> => {
     const data = await this.service.getContactList(req.query);
-
-    return {
+    new OkSuccess({
       data,
-      message: "contactAdmin:success.getContactList",
-      statusCode: STATUS_CODES.OK
-    };
+      message: "contactAdmin:success.getContactList"
+    }).send(req, res);
   };
 
   private getContactDetail = async (
-    req: ContactIdParamRequest
-  ): Promise<HandlerResult> => {
+    req: ContactIdParamRequest,
+    res: Response
+  ): Promise<void> => {
     const data = await this.service.getContactDetail(req.params.id);
-
-    return {
+    new OkSuccess({
       data,
-      message: "contactAdmin:success.getContactDetail",
-      statusCode: STATUS_CODES.OK
-    };
+      message: "contactAdmin:success.getContactDetail"
+    }).send(req, res);
   };
 
   private updateContactStatus = async (
-    req: UpdateContactStatusRequest
-  ): Promise<HandlerResult> => {
+    req: UpdateContactStatusRequest,
+    res: Response
+  ): Promise<void> => {
     const data = await this.service.updateContactStatus(
       req.params.id,
       req.body.status
     );
-
-    return {
+    new OkSuccess({
       data,
-      message: "contactAdmin:success.updateContactStatus",
-      statusCode: STATUS_CODES.OK
-    };
+      message: "contactAdmin:success.updateContactStatus"
+    }).send(req, res);
   };
 }

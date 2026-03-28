@@ -1,10 +1,18 @@
+// libs
 import { Router } from "express";
-import type { Request, RequestHandler } from "express";
-import type { HandlerResult } from "@/types/http";
+import type { Request, Response, RequestHandler } from "express";
+
+// types
 import type { LogoutService } from "./logout.service";
-import { asyncHandler } from "@/utils/async-handler";
-import { STATUS_CODES } from "@/config/http";
+
+// config
+import { NoContentSuccess } from "@/config/responses/success";
 import ENV from "@/config/env";
+
+// utils
+import { asyncHandler } from "@/utils/async-handler";
+
+// others
 import { REFRESH_TOKEN } from "@/constants/modules/token";
 
 export class LogoutController {
@@ -21,22 +29,16 @@ export class LogoutController {
     this.router.post("/", this.authGuard, asyncHandler(this.logout));
   }
 
-  private logout = async (req: Request): Promise<HandlerResult> => {
+  private logout = async (req: Request, res: Response): Promise<void> => {
     await this.service.logout(req);
 
-    return {
-      statusCode: STATUS_CODES.NO_CONTENT,
-      clearCookies: [
-        {
-          name: REFRESH_TOKEN,
-          options: {
-            httpOnly: true,
-            secure: ENV.NODE_ENV === "production",
-            sameSite: "lax",
-            path: "/"
-          }
-        }
-      ]
-    };
+    res.clearCookie(REFRESH_TOKEN, {
+      httpOnly: true,
+      secure: ENV.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/"
+    });
+
+    new NoContentSuccess().send(req, res);
   };
 }

@@ -1,22 +1,32 @@
+// libs
 import { Router } from "express";
-import type { Request, RequestHandler } from "express";
+import type { Request, RequestHandler, Response } from "express";
+
+// types
 import type { BlogService } from "./blog.service";
 import type { BlogTagsController } from "./sub-modules/tags/blog-tags.controller";
 import type { BlogCategoriesController } from "./sub-modules/categories/blog-categories.controller";
-import type { HandlerResult } from "@/types/http";
 import type {
   CreateBlogDto,
   UpdateBlogDto,
   BlogQuery
 } from "@/types/modules/blog";
-import { STATUS_CODES } from "@/config/http";
+
+// config
+import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
+
+// utils
 import { asyncHandler } from "@/utils/async-handler";
+
+// middlewares
 import {
   bodyPipe,
   paramsPipe,
   queryPipe,
   uploadBlogCover
 } from "@/middlewares";
+
+// validators
 import {
   createBlogSchema,
   updateBlogSchema,
@@ -100,44 +110,39 @@ export class BlogController {
   }
 
   private createBlog = async (
-    req: AuthenticatedRequest
-  ): Promise<HandlerResult> => {
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
     const dto = req.body as CreateBlogDto;
     const file = req.file;
     const data = await this.service.createBlog(req.user.userId, dto, file);
-    return {
-      data,
-      message: "blog:success.created",
-      statusCode: STATUS_CODES.CREATED
-    };
+    new CreatedSuccess({ data, message: "blog:success.created" }).send(
+      req,
+      res
+    );
   };
 
   private listBlogs = async (
-    req: OptionalAuthRequest
-  ): Promise<HandlerResult> => {
+    req: OptionalAuthRequest,
+    res: Response
+  ): Promise<void> => {
     const query = req.query as unknown as BlogQuery;
     const data = await this.service.listBlogs(query, req.user);
-    return {
-      data,
-      message: "blog:success.listed",
-      statusCode: STATUS_CODES.OK
-    };
+    new OkSuccess({ data, message: "blog:success.listed" }).send(req, res);
   };
 
   private getBlogBySlug = async (
-    req: OptionalAuthRequest
-  ): Promise<HandlerResult> => {
+    req: OptionalAuthRequest,
+    res: Response
+  ): Promise<void> => {
     const data = await this.service.getBlogBySlug(req.params.slug, req.user);
-    return {
-      data,
-      message: "blog:success.found",
-      statusCode: STATUS_CODES.OK
-    };
+    new OkSuccess({ data, message: "blog:success.found" }).send(req, res);
   };
 
   private updateBlog = async (
-    req: AuthenticatedRequest
-  ): Promise<HandlerResult> => {
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
     const dto = req.body as UpdateBlogDto;
     const file = req.file;
     const data = await this.service.updateBlog(
@@ -146,21 +151,14 @@ export class BlogController {
       dto,
       file
     );
-    return {
-      data,
-      message: "blog:success.updated",
-      statusCode: STATUS_CODES.OK
-    };
+    new OkSuccess({ data, message: "blog:success.updated" }).send(req, res);
   };
 
   private deleteBlog = async (
-    req: AuthenticatedRequest
-  ): Promise<HandlerResult> => {
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> => {
     const data = await this.service.deleteBlog(req.params.id, req.user);
-    return {
-      data,
-      message: "blog:success.deleted",
-      statusCode: STATUS_CODES.OK
-    };
+    new OkSuccess({ data, message: "blog:success.deleted" }).send(req, res);
   };
 }

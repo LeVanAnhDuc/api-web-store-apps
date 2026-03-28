@@ -1,7 +1,14 @@
+// libs
 import { Router } from "express";
-import type { Request } from "express";
-import type { HandlerResult } from "@/types/http";
+import type { Request, Response } from "express";
+
+// types
 import type { TokenService } from "./token.service";
+
+// config
+import { OkSuccess } from "@/config/responses/success";
+
+// utils
 import { asyncHandler } from "@/utils/async-handler";
 
 export class TokenController {
@@ -15,8 +22,8 @@ export class TokenController {
     this.router.post("/refresh", asyncHandler(this.refreshToken));
   }
 
-  private refreshToken = async (req: Request): Promise<HandlerResult> => {
+  private refreshToken = async (req: Request, res: Response): Promise<void> => {
     const { data, message } = this.service.refreshAccessToken(req);
-    return { data, message };
+    new OkSuccess({ data, message }).send(req, res);
   };
 }

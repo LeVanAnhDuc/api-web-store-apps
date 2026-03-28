@@ -1,5 +1,8 @@
+// libs
 import { Router } from "express";
 import type { Response, NextFunction } from "express";
+
+// types
 import type {
   PasswordLoginRequest,
   OtpSendRequest,
@@ -7,12 +10,18 @@ import type {
   MagicLinkSendRequest,
   MagicLinkVerifyRequest
 } from "@/types/modules/login";
-import type { HandlerResult } from "@/types/http";
 import type { LoginService } from "./login.service";
 import type { RateLimiterMiddleware } from "@/middlewares";
-import { asyncHandler } from "@/utils/async-handler";
+
+// config
+import { OkSuccess } from "@/config/responses/success";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
+
+// middlewares
+import { asyncHandler } from "@/utils/async-handler";
 import { bodyPipe } from "@/middlewares";
+
+// validators
 import {
   loginSchema,
   otpSendSchema,
@@ -20,6 +29,8 @@ import {
   magicLinkSendSchema,
   magicLinkVerifySchema
 } from "@/validators/schemas/login";
+
+// others
 import { REFRESH_TOKEN } from "@/constants/modules/token";
 
 export class LoginController {
@@ -73,82 +84,62 @@ export class LoginController {
 
   private login = async (
     req: PasswordLoginRequest,
-    _res: Response,
+    res: Response,
     _next: NextFunction
-  ): Promise<HandlerResult> => {
+  ): Promise<void> => {
     const { data, message } = await this.service.passwordLogin(req);
     const { refreshToken, ...responseData } = data;
 
-    return {
-      data: responseData,
-      message,
-      cookies: refreshToken
-        ? [
-            {
-              name: REFRESH_TOKEN,
-              value: refreshToken,
-              options: REFRESH_TOKEN_COOKIE_OPTIONS
-            }
-          ]
-        : undefined
-    };
+    if (refreshToken) {
+      res.cookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+    }
+
+    new OkSuccess({ data: responseData, message }).send(req, res);
   };
 
-  private sendOtp = async (req: OtpSendRequest): Promise<HandlerResult> => {
+  private sendOtp = async (
+    req: OtpSendRequest,
+    res: Response
+  ): Promise<void> => {
     const { data, message } = await this.service.sendOtp(req);
-    return { data, message };
+    new OkSuccess({ data, message }).send(req, res);
   };
 
   private verifyOtp = async (
     req: OtpVerifyRequest,
-    _res: Response,
+    res: Response,
     _next: NextFunction
-  ): Promise<HandlerResult> => {
+  ): Promise<void> => {
     const { data, message } = await this.service.verifyOtp(req);
     const { refreshToken, ...responseData } = data;
 
-    return {
-      data: responseData,
-      message,
-      cookies: refreshToken
-        ? [
-            {
-              name: REFRESH_TOKEN,
-              value: refreshToken,
-              options: REFRESH_TOKEN_COOKIE_OPTIONS
-            }
-          ]
-        : undefined
-    };
+    if (refreshToken) {
+      res.cookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+    }
+
+    new OkSuccess({ data: responseData, message }).send(req, res);
   };
 
   private sendMagicLink = async (
-    req: MagicLinkSendRequest
-  ): Promise<HandlerResult> => {
+    req: MagicLinkSendRequest,
+    res: Response
+  ): Promise<void> => {
     const { data, message } = await this.service.sendMagicLink(req);
-    return { data, message };
+    new OkSuccess({ data, message }).send(req, res);
   };
 
   private verifyMagicLink = async (
     req: MagicLinkVerifyRequest,
-    _res: Response,
+    res: Response,
     _next: NextFunction
-  ): Promise<HandlerResult> => {
+  ): Promise<void> => {
     const { data, message } = await this.service.verifyMagicLink(req);
     const { refreshToken, ...responseData } = data;
 
-    return {
-      data: responseData,
-      message,
-      cookies: refreshToken
-        ? [
-            {
-              name: REFRESH_TOKEN,
-              value: refreshToken,
-              options: REFRESH_TOKEN_COOKIE_OPTIONS
-            }
-          ]
-        : undefined
-    };
+    if (refreshToken) {
+      res.cookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+    }
+
+    new OkSuccess({ data: responseData, message }).send(req, res);
   };
 }
