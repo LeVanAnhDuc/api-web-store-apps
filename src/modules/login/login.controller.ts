@@ -12,7 +12,7 @@ import type { LoginService } from "./login.service";
 import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
 import { asyncHandler } from "@/utils/async-handler";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
-import { validateBody } from "@/middlewares";
+import { bodyPipe } from "@/middlewares";
 import {
   loginSchema,
   otpSendSchema,
@@ -36,7 +36,7 @@ export class LoginController {
     this.router.post(
       "/",
       this.rl.loginByIp,
-      validateBody(loginSchema),
+      bodyPipe(loginSchema),
       asyncHandler(this.login)
     );
 
@@ -44,14 +44,14 @@ export class LoginController {
       "/otp/send",
       this.rl.loginOtpByIp,
       this.rl.loginOtpByEmail,
-      validateBody(otpSendSchema),
+      bodyPipe(otpSendSchema),
       asyncHandler(this.sendOtp)
     );
 
     this.router.post(
       "/otp/verify",
       this.rl.loginByIp,
-      validateBody(otpVerifySchema),
+      bodyPipe(otpVerifySchema),
       asyncHandler(this.verifyOtp)
     );
 
@@ -59,14 +59,14 @@ export class LoginController {
       "/magic-link/send",
       this.rl.magicLinkByIp,
       this.rl.magicLinkByEmail,
-      validateBody(magicLinkSendSchema),
+      bodyPipe(magicLinkSendSchema),
       asyncHandler(this.sendMagicLink)
     );
 
     this.router.post(
       "/magic-link/verify",
       this.rl.loginByIp,
-      validateBody(magicLinkVerifySchema),
+      bodyPipe(magicLinkVerifySchema),
       asyncHandler(this.verifyMagicLink)
     );
   }

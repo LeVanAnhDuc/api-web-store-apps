@@ -10,7 +10,7 @@ import type { HandlerResult } from "@/types/http";
 import type { ForgotPasswordService } from "./forgot-password.service";
 import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
 import { asyncHandler } from "@/utils/async-handler";
-import { validateBody } from "@/middlewares";
+import { bodyPipe } from "@/middlewares";
 import {
   fpOtpSendSchema,
   fpOtpVerifySchema,
@@ -34,14 +34,14 @@ export class ForgotPasswordController {
       "/otp/send",
       this.rl.forgotPasswordOtpByIp,
       this.rl.forgotPasswordOtpByEmail,
-      validateBody(fpOtpSendSchema),
+      bodyPipe(fpOtpSendSchema),
       asyncHandler(this.sendOtp)
     );
 
     this.router.post(
       "/otp/verify",
       this.rl.forgotPasswordOtpByIp,
-      validateBody(fpOtpVerifySchema),
+      bodyPipe(fpOtpVerifySchema),
       asyncHandler(this.verifyOtp)
     );
 
@@ -49,21 +49,21 @@ export class ForgotPasswordController {
       "/magic-link/send",
       this.rl.forgotPasswordMagicLinkByIp,
       this.rl.forgotPasswordMagicLinkByEmail,
-      validateBody(fpMagicLinkSendSchema),
+      bodyPipe(fpMagicLinkSendSchema),
       asyncHandler(this.sendMagicLink)
     );
 
     this.router.post(
       "/magic-link/verify",
       this.rl.forgotPasswordMagicLinkByIp,
-      validateBody(fpMagicLinkVerifySchema),
+      bodyPipe(fpMagicLinkVerifySchema),
       asyncHandler(this.verifyMagicLink)
     );
 
     this.router.post(
       "/reset",
       this.rl.forgotPasswordResetByIp,
-      validateBody(fpResetPasswordSchema),
+      bodyPipe(fpResetPasswordSchema),
       asyncHandler(this.resetPassword)
     );
   }

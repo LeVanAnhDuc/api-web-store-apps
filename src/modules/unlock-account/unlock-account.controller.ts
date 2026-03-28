@@ -8,7 +8,7 @@ import type { UnlockAccountService } from "./unlock-account.service";
 import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
 import { asyncHandler } from "@/utils/async-handler";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
-import { validateBody } from "@/middlewares";
+import { bodyPipe } from "@/middlewares";
 import {
   unlockRequestSchema,
   unlockVerifySchema
@@ -28,14 +28,14 @@ export class UnlockAccountController {
   private initRoutes() {
     this.router.post(
       "/request",
-      validateBody(unlockRequestSchema),
+      bodyPipe(unlockRequestSchema),
       asyncHandler(this.unlockRequest)
     );
 
     this.router.post(
       "/verify",
       this.rl.loginByIp,
-      validateBody(unlockVerifySchema),
+      bodyPipe(unlockVerifySchema),
       asyncHandler(this.unlockVerify)
     );
   }

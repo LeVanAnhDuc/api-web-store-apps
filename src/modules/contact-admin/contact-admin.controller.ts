@@ -11,7 +11,7 @@ import type {
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
 import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
-import { validateBody, validateParams, validateQuery } from "@/middlewares";
+import { bodyPipe, paramsPipe, queryPipe } from "@/middlewares";
 import {
   submitContactSchema,
   contactIdParamSchema,
@@ -46,7 +46,7 @@ export class ContactAdminController {
     this.router.post(
       "/submit",
       this.rl.contactByIp,
-      validateBody(submitContactSchema),
+      bodyPipe(submitContactSchema),
       asyncHandler(this.submit)
     );
   }
@@ -56,7 +56,7 @@ export class ContactAdminController {
       "/",
       asyncGuardHandler(this.auth),
       asyncGuardHandler(this.adminGuard),
-      validateQuery(adminListContactsQuerySchema),
+      queryPipe(adminListContactsQuerySchema),
       asyncHandler(this.getContactList)
     );
 
@@ -64,7 +64,7 @@ export class ContactAdminController {
       "/:id",
       asyncGuardHandler(this.auth),
       asyncGuardHandler(this.adminGuard),
-      validateParams(contactIdParamSchema),
+      paramsPipe(contactIdParamSchema),
       asyncHandler(this.getContactDetail)
     );
 
@@ -72,8 +72,8 @@ export class ContactAdminController {
       "/:id/status",
       asyncGuardHandler(this.auth),
       asyncGuardHandler(this.adminGuard),
-      validateParams(contactIdParamSchema),
-      validateBody(updateContactStatusSchema),
+      paramsPipe(contactIdParamSchema),
+      bodyPipe(updateContactStatusSchema),
       asyncHandler(this.updateContactStatus)
     );
   }

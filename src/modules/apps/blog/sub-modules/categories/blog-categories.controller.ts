@@ -6,7 +6,7 @@ import type { HandlerResult } from "@/types/http";
 import type { TagQuery } from "@/types/modules/blog";
 import { STATUS_CODES } from "@/config/http";
 import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
-import { validateBody, validateQuery } from "@/middlewares";
+import { bodyPipe, queryPipe } from "@/middlewares";
 import {
   tagQuerySchema,
   createCategorySchema
@@ -34,14 +34,14 @@ export class BlogCategoriesController {
   private initRoutes() {
     this.router.get(
       "/",
-      validateQuery(tagQuerySchema),
+      queryPipe(tagQuerySchema),
       asyncHandler(this.searchCategories)
     );
 
     this.router.post(
       "/",
       asyncGuardHandler(this.auth),
-      validateBody(createCategorySchema),
+      bodyPipe(createCategorySchema),
       asyncHandler(this.createCategory)
     );
   }

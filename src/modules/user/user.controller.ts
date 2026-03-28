@@ -11,7 +11,7 @@ import type {
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
 import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
-import { validateBody, validateParams } from "@/middlewares";
+import { bodyPipe, paramsPipe } from "@/middlewares";
 import {
   updateProfileSchema,
   getPublicProfileSchema
@@ -41,7 +41,7 @@ export class UserController {
       "/me",
       this.rl.updateProfileByIp,
       asyncGuardHandler(this.auth),
-      validateBody(updateProfileSchema),
+      bodyPipe(updateProfileSchema),
       asyncHandler(this.updateMyProfile)
     );
 
@@ -55,7 +55,7 @@ export class UserController {
 
     this.router.get(
       "/:id",
-      validateParams(getPublicProfileSchema),
+      paramsPipe(getPublicProfileSchema),
       asyncHandler(this.getPublicProfile)
     );
   }

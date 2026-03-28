@@ -6,7 +6,9 @@ export * from "./guards/optional-auth.guard";
 // common
 export * from "./common/request-logger";
 export * from "./common/rate-limiter";
-export * from "./common/validate";
+
+// pipes
+export * from "./pipes/validation.pipe";
 
 // interceptors
 export * from "./interceptors/file-upload";

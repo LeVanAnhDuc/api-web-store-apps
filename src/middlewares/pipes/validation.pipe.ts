@@ -4,7 +4,7 @@ import type { Schema } from "joi";
 // config
 import { ValidationError, type FieldError } from "@/config/responses/error";
 
-const validate =
+const validationPipe =
   (source: "body" | "params" | "query", schema: Schema) =>
   async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -32,6 +32,6 @@ const validate =
     }
   };
 
-export const validateBody = (schema: Schema) => validate("body", schema);
-export const validateParams = (schema: Schema) => validate("params", schema);
-export const validateQuery = (schema: Schema) => validate("query", schema);
+export const bodyPipe = (schema: Schema) => validationPipe("body", schema);
+export const paramsPipe = (schema: Schema) => validationPipe("params", schema);
+export const queryPipe = (schema: Schema) => validationPipe("query", schema);
