@@ -17,7 +17,7 @@ import {
   asyncGuardHandler,
   asyncOptionalGuardHandler
 } from "@/utils/async-handler";
-import { validate } from "@/middlewares";
+import { validateBody, validateParams, validateQuery } from "@/middlewares";
 import {
   createBlogSchema,
   updateBlogSchema,
@@ -67,14 +67,14 @@ export class BlogController {
       "/",
       asyncGuardHandler(this.auth),
       uploadBlogCover,
-      validate(createBlogSchema, "body"),
+      validateBody(createBlogSchema),
       asyncHandler(this.createBlog)
     );
 
     this.router.get(
       "/",
       asyncOptionalGuardHandler(this.optionalAuth),
-      validate(listBlogsQuerySchema, "query"),
+      validateQuery(listBlogsQuerySchema),
       asyncHandler(this.listBlogs)
     );
 
@@ -88,15 +88,15 @@ export class BlogController {
       "/:id",
       asyncGuardHandler(this.auth),
       uploadBlogCover,
-      validate(blogIdParamSchema, "params"),
-      validate(updateBlogSchema, "body"),
+      validateParams(blogIdParamSchema),
+      validateBody(updateBlogSchema),
       asyncHandler(this.updateBlog)
     );
 
     this.router.delete(
       "/:id",
       asyncGuardHandler(this.auth),
-      validate(blogIdParamSchema, "params"),
+      validateParams(blogIdParamSchema),
       asyncHandler(this.deleteBlog)
     );
   }

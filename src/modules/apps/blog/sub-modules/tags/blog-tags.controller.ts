@@ -6,7 +6,7 @@ import type { HandlerResult } from "@/types/http";
 import type { TagQuery } from "@/types/modules/blog";
 import { STATUS_CODES } from "@/config/http";
 import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
-import { validate } from "@/middlewares";
+import { validateBody, validateQuery } from "@/middlewares";
 import { tagQuerySchema, createTagSchema } from "@/validators/schemas/blog";
 
 interface AuthenticatedRequest extends Request {
@@ -31,14 +31,14 @@ export class BlogTagsController {
   private initRoutes() {
     this.router.get(
       "/",
-      validate(tagQuerySchema, "query"),
+      validateQuery(tagQuerySchema),
       asyncHandler(this.searchTags)
     );
 
     this.router.post(
       "/",
       asyncGuardHandler(this.auth),
-      validate(createTagSchema, "body"),
+      validateBody(createTagSchema),
       asyncHandler(this.createTag)
     );
   }

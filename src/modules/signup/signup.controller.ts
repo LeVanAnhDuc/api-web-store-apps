@@ -11,7 +11,7 @@ import type { SignupService } from "./signup.service";
 import { STATUS_CODES } from "@/config/http";
 import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
 import { asyncHandler } from "@/utils/async-handler";
-import { validate } from "@/middlewares";
+import { validateBody, validateParams } from "@/middlewares";
 import {
   sendOtpSchema,
   resendOtpSchema,
@@ -35,13 +35,13 @@ export class SignupController {
       "/send-otp",
       this.rl.signupOtpByIp,
       this.rl.signupOtpByEmail,
-      validate(sendOtpSchema, "body"),
+      validateBody(sendOtpSchema),
       asyncHandler(this.sendOtp)
     );
 
     this.router.post(
       "/verify-otp",
-      validate(verifyOtpSchema, "body"),
+      validateBody(verifyOtpSchema),
       asyncHandler(this.verifyOtp)
     );
 
@@ -49,20 +49,20 @@ export class SignupController {
       "/resend-otp",
       this.rl.signupOtpByIp,
       this.rl.signupOtpByEmail,
-      validate(resendOtpSchema, "body"),
+      validateBody(resendOtpSchema),
       asyncHandler(this.resendOtp)
     );
 
     this.router.post(
       "/complete",
-      validate(completeSignupSchema, "body"),
+      validateBody(completeSignupSchema),
       asyncHandler(this.completeSignup)
     );
 
     this.router.get(
       "/check-email/:email",
       this.rl.checkEmailByIp,
-      validate(checkEmailSchema, "params"),
+      validateParams(checkEmailSchema),
       asyncHandler(this.checkEmail)
     );
   }
