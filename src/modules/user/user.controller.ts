@@ -1,5 +1,6 @@
 import { Router } from "express";
-import type { AuthGuard, RateLimiterMiddleware } from "@/middlewares";
+import type { RequestHandler } from "express";
+import type { RateLimiterMiddleware } from "@/middlewares";
 import type { UserService } from "./user.service";
 import type {
   GetMyProfileRequest,
@@ -9,7 +10,7 @@ import type {
 } from "@/types/modules/user";
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
-import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 import { bodyPipe, paramsPipe, uploadAvatar } from "@/middlewares";
 import {
   updateProfileSchema,
@@ -22,23 +23,19 @@ export class UserController {
 
   constructor(
     private readonly service: UserService,
-    private readonly auth: AuthGuard,
+    private readonly auth: RequestHandler,
     private readonly rl: RateLimiterMiddleware
   ) {
     this.initRoutes();
   }
 
   private initRoutes() {
-    this.router.get(
-      "/me",
-      asyncGuardHandler(this.auth),
-      asyncHandler(this.getMyProfile)
-    );
+    this.router.get("/me", this.auth, asyncHandler(this.getMyProfile));
 
     this.router.patch(
       "/me",
       this.rl.updateProfileByIp,
-      asyncGuardHandler(this.auth),
+      this.auth,
       bodyPipe(updateProfileSchema),
       asyncHandler(this.updateMyProfile)
     );
@@ -46,7 +43,7 @@ export class UserController {
     this.router.post(
       "/me/avatar",
       this.rl.uploadAvatarByIp,
-      asyncGuardHandler(this.auth),
+      this.auth,
       uploadAvatar,
       asyncHandler(this.uploadAvatarHandler)
     );

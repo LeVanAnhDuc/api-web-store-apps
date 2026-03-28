@@ -1,10 +1,16 @@
-import type { Request } from "express";
-import type { CanActivate } from "@/core/common";
+// types
+import type { Request, Response, NextFunction } from "express";
+// config
 import { ForbiddenError } from "@/config/responses/error";
+// others
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
 
-export class AdminGuard implements CanActivate {
-  canActivate(req: Request): boolean {
+export const adminGuard = (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+): void => {
+  try {
     const { t } = req;
 
     if (!req.user) {
@@ -15,6 +21,8 @@ export class AdminGuard implements CanActivate {
       throw new ForbiddenError(t("common:errors.forbidden"));
     }
 
-    return true;
+    next();
+  } catch (error) {
+    next(error);
   }
-}
+};

@@ -4,10 +4,10 @@ import type { RedisClientType } from "redis";
 import { instanceRedis } from "@/database/redis";
 import { createAuthenticationModule } from "@/modules/authentication/authentication.module";
 import {
-  AuthGuard,
-  AdminGuard,
-  RateLimiterMiddleware,
-  OptionalAuthGuard
+  authGuard,
+  adminGuard,
+  optionalAuthGuard,
+  RateLimiterMiddleware
 } from "@/middlewares";
 import { createLoginHistoryModule } from "@/modules/login-history/login-history.module";
 import { createLoginModule } from "@/modules/login/login.module";
@@ -26,9 +26,8 @@ export const loadModules = (app: Express): void => {
   const redisClient = instanceRedis.getClient() as RedisClientType;
 
   const { authService } = createAuthenticationModule();
-  const auth = new AuthGuard(authService);
-  const adminGuard = new AdminGuard();
-  const optionalAuth = new OptionalAuthGuard(authService);
+  const auth = authGuard(authService);
+  const optionalAuth = optionalAuthGuard(authService);
   const rateLimiter = new RateLimiterMiddleware(redisClient);
 
   const { userRouter, userService } = createUserModule(auth, rateLimiter);

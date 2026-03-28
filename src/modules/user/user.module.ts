@@ -1,10 +1,11 @@
-import type { AuthGuard, RateLimiterMiddleware } from "@/middlewares";
+import type { RequestHandler } from "express";
+import type { RateLimiterMiddleware } from "@/middlewares";
 import { MongoUserRepository } from "./repositories/user.repository";
 import { UserService } from "./user.service";
 import { UserController } from "./user.controller";
 
 export const createUserModule = (
-  auth: AuthGuard,
+  auth: RequestHandler,
   rateLimiter: RateLimiterMiddleware
 ) => {
   const userRepo = new MongoUserRepository();

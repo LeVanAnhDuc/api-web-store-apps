@@ -1,11 +1,11 @@
-import type { AuthGuard, AdminGuard } from "@/middlewares";
+import type { RequestHandler } from "express";
 import { MongoLoginHistoryRepository } from "./repositories/login-history.repository";
 import { LoginHistoryService } from "./login-history.service";
 import { LoginHistoryController } from "./login-history.controller";
 
 export const createLoginHistoryModule = (
-  auth: AuthGuard,
-  adminGuard: AdminGuard
+  auth: RequestHandler,
+  adminGuard: RequestHandler
 ) => {
   const loginHistoryRepo = new MongoLoginHistoryRepository();
   const loginHistoryService = new LoginHistoryService(loginHistoryRepo);

@@ -1,15 +1,12 @@
-import type {
-  AuthGuard,
-  AdminGuard,
-  RateLimiterMiddleware
-} from "@/middlewares";
+import type { RequestHandler } from "express";
+import type { RateLimiterMiddleware } from "@/middlewares";
 import { MongoContactRepository } from "./repositories/contact.repository";
 import { ContactAdminService } from "./contact-admin.service";
 import { ContactAdminController } from "./contact-admin.controller";
 
 export const createContactAdminModule = (
-  auth: AuthGuard,
-  adminGuard: AdminGuard,
+  auth: RequestHandler,
+  adminGuard: RequestHandler,
   rateLimiter: RateLimiterMiddleware
 ) => {
   const contactRepo = new MongoContactRepository();

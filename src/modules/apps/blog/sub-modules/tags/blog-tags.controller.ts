@@ -1,11 +1,10 @@
 import { Router } from "express";
-import type { Request } from "express";
-import type { AuthGuard } from "@/middlewares";
+import type { Request, RequestHandler } from "express";
 import type { BlogTagsService } from "./blog-tags.service";
 import type { HandlerResult } from "@/types/http";
 import type { TagQuery } from "@/types/modules/blog";
 import { STATUS_CODES } from "@/config/http";
-import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 import { bodyPipe, queryPipe } from "@/middlewares";
 import { tagQuerySchema, createTagSchema } from "@/validators/schemas/blog";
 
@@ -23,7 +22,7 @@ export class BlogTagsController {
 
   constructor(
     private readonly service: BlogTagsService,
-    private readonly auth: AuthGuard
+    private readonly auth: RequestHandler
   ) {
     this.initRoutes();
   }
@@ -37,7 +36,7 @@ export class BlogTagsController {
 
     this.router.post(
       "/",
-      asyncGuardHandler(this.auth),
+      this.auth,
       bodyPipe(createTagSchema),
       asyncHandler(this.createTag)
     );

@@ -1,10 +1,6 @@
 import { Router } from "express";
-import type { Request } from "express";
-import type {
-  RateLimiterMiddleware,
-  AuthGuard,
-  AdminGuard
-} from "@/middlewares";
+import type { Request, RequestHandler } from "express";
+import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ContactAdminService } from "./contact-admin.service";
 import type {
   SubmitContactRequest,
@@ -12,7 +8,7 @@ import type {
 } from "@/types/modules/contact-admin";
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
-import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 import { bodyPipe, paramsPipe, queryPipe } from "@/middlewares";
 import {
   submitContactSchema,
@@ -36,8 +32,8 @@ export class ContactAdminController {
 
   constructor(
     private readonly service: ContactAdminService,
-    private readonly auth: AuthGuard,
-    private readonly adminGuard: AdminGuard,
+    private readonly auth: RequestHandler,
+    private readonly adminGuard: RequestHandler,
     private readonly rl: RateLimiterMiddleware
   ) {
     this.initRoutes();
@@ -56,24 +52,24 @@ export class ContactAdminController {
   private initAdminRoutes() {
     this.adminRouter.get(
       "/",
-      asyncGuardHandler(this.auth),
-      asyncGuardHandler(this.adminGuard),
+      this.auth,
+      this.adminGuard,
       queryPipe(adminListContactsQuerySchema),
       asyncHandler(this.getContactList)
     );
 
     this.adminRouter.get(
       "/:id",
-      asyncGuardHandler(this.auth),
-      asyncGuardHandler(this.adminGuard),
+      this.auth,
+      this.adminGuard,
       paramsPipe(contactIdParamSchema),
       asyncHandler(this.getContactDetail)
     );
 
     this.adminRouter.patch(
       "/:id/status",
-      asyncGuardHandler(this.auth),
-      asyncGuardHandler(this.adminGuard),
+      this.auth,
+      this.adminGuard,
       paramsPipe(contactIdParamSchema),
       bodyPipe(updateContactStatusSchema),
       asyncHandler(this.updateContactStatus)

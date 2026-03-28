@@ -1,4 +1,4 @@
-import type { AuthGuard, OptionalAuthGuard } from "@/middlewares";
+import type { RequestHandler } from "express";
 import { MongoBlogRepository } from "./repositories/blog.repository";
 import { MongoBlogTagRepository } from "./repositories/blog-tag.repository";
 import { MongoBlogCategoryRepository } from "./repositories/blog-category.repository";
@@ -10,8 +10,8 @@ import { BlogCategoriesController } from "./sub-modules/categories/blog-categori
 import { BlogController } from "./blog.controller";
 
 export const createBlogModule = (
-  auth: AuthGuard,
-  optionalAuth: OptionalAuthGuard
+  auth: RequestHandler,
+  optionalAuth: RequestHandler
 ) => {
   const blogRepo = new MongoBlogRepository();
   const tagRepo = new MongoBlogTagRepository();

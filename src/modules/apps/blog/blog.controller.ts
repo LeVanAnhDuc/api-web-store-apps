@@ -1,6 +1,5 @@
 import { Router } from "express";
-import type { Request } from "express";
-import type { AuthGuard, OptionalAuthGuard } from "@/middlewares";
+import type { Request, RequestHandler } from "express";
 import type { BlogService } from "./blog.service";
 import type { BlogTagsController } from "./sub-modules/tags/blog-tags.controller";
 import type { BlogCategoriesController } from "./sub-modules/categories/blog-categories.controller";
@@ -11,11 +10,7 @@ import type {
   BlogQuery
 } from "@/types/modules/blog";
 import { STATUS_CODES } from "@/config/http";
-import {
-  asyncHandler,
-  asyncGuardHandler,
-  asyncOptionalGuardHandler
-} from "@/utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 import {
   bodyPipe,
   paramsPipe,
@@ -52,8 +47,8 @@ export class BlogController {
 
   constructor(
     private readonly service: BlogService,
-    private readonly auth: AuthGuard,
-    private readonly optionalAuth: OptionalAuthGuard,
+    private readonly auth: RequestHandler,
+    private readonly optionalAuth: RequestHandler,
     private readonly tagsController: BlogTagsController,
     private readonly categoriesController: BlogCategoriesController
   ) {
@@ -68,7 +63,7 @@ export class BlogController {
     // Blog CRUD
     this.router.post(
       "/",
-      asyncGuardHandler(this.auth),
+      this.auth,
       uploadBlogCover,
       bodyPipe(createBlogSchema),
       asyncHandler(this.createBlog)
@@ -76,20 +71,20 @@ export class BlogController {
 
     this.router.get(
       "/",
-      asyncOptionalGuardHandler(this.optionalAuth),
+      this.optionalAuth,
       queryPipe(listBlogsQuerySchema),
       asyncHandler(this.listBlogs)
     );
 
     this.router.get(
       "/:slug",
-      asyncOptionalGuardHandler(this.optionalAuth),
+      this.optionalAuth,
       asyncHandler(this.getBlogBySlug)
     );
 
     this.router.patch(
       "/:id",
-      asyncGuardHandler(this.auth),
+      this.auth,
       uploadBlogCover,
       paramsPipe(blogIdParamSchema),
       bodyPipe(updateBlogSchema),
@@ -98,7 +93,7 @@ export class BlogController {
 
     this.router.delete(
       "/:id",
-      asyncGuardHandler(this.auth),
+      this.auth,
       paramsPipe(blogIdParamSchema),
       asyncHandler(this.deleteBlog)
     );

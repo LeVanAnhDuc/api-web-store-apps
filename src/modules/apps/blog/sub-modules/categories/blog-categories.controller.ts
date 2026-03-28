@@ -1,11 +1,10 @@
 import { Router } from "express";
-import type { Request } from "express";
-import type { AuthGuard } from "@/middlewares";
+import type { Request, RequestHandler } from "express";
 import type { BlogCategoriesService } from "./blog-categories.service";
 import type { HandlerResult } from "@/types/http";
 import type { TagQuery } from "@/types/modules/blog";
 import { STATUS_CODES } from "@/config/http";
-import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 import { bodyPipe, queryPipe } from "@/middlewares";
 import {
   tagQuerySchema,
@@ -26,7 +25,7 @@ export class BlogCategoriesController {
 
   constructor(
     private readonly service: BlogCategoriesService,
-    private readonly auth: AuthGuard
+    private readonly auth: RequestHandler
   ) {
     this.initRoutes();
   }
@@ -40,7 +39,7 @@ export class BlogCategoriesController {
 
     this.router.post(
       "/",
-      asyncGuardHandler(this.auth),
+      this.auth,
       bodyPipe(createCategorySchema),
       asyncHandler(this.createCategory)
     );

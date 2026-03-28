@@ -1,6 +1,6 @@
 import { Router } from "express";
 import type { Request } from "express";
-import type { AuthGuard, AdminGuard } from "@/middlewares";
+import type { RequestHandler } from "express";
 import type { LoginHistoryService } from "./login-history.service";
 import type {
   LoginHistoryQuery,
@@ -8,7 +8,7 @@ import type {
 } from "@/types/modules/login-history";
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
-import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 import { queryPipe } from "@/middlewares";
 import {
   loginHistoryQuerySchema,
@@ -30,8 +30,8 @@ export class LoginHistoryController {
 
   constructor(
     private readonly service: LoginHistoryService,
-    private readonly auth: AuthGuard,
-    private readonly adminGuard: AdminGuard
+    private readonly auth: RequestHandler,
+    private readonly adminGuard: RequestHandler
   ) {
     this.initUserRoutes();
     this.initAdminRoutes();
@@ -40,7 +40,7 @@ export class LoginHistoryController {
   private initUserRoutes(): void {
     this.userRouter.get(
       "/",
-      asyncGuardHandler(this.auth),
+      this.auth,
       queryPipe(loginHistoryQuerySchema),
       asyncHandler(this.getMyHistory)
     );
@@ -49,8 +49,8 @@ export class LoginHistoryController {
   private initAdminRoutes(): void {
     this.adminRouter.get(
       "/",
-      asyncGuardHandler(this.auth),
-      asyncGuardHandler(this.adminGuard),
+      this.auth,
+      this.adminGuard,
       queryPipe(loginHistoryAdminQuerySchema),
       asyncHandler(this.getAllHistory)
     );

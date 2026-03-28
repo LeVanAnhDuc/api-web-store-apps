@@ -1,9 +1,8 @@
 import { Router } from "express";
-import type { Request } from "express";
+import type { Request, RequestHandler } from "express";
 import type { HandlerResult } from "@/types/http";
 import type { LogoutService } from "./logout.service";
-import type { AuthGuard } from "@/middlewares";
-import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 import { STATUS_CODES } from "@/config/http";
 import ENV from "@/config/env";
 import { REFRESH_TOKEN } from "@/constants/modules/token";
@@ -13,17 +12,13 @@ export class LogoutController {
 
   constructor(
     private readonly service: LogoutService,
-    private readonly auth: AuthGuard
+    private readonly auth: RequestHandler
   ) {
     this.initRoutes();
   }
 
   private initRoutes() {
-    this.router.post(
-      "/",
-      asyncGuardHandler(this.auth),
-      asyncHandler(this.logout)
-    );
+    this.router.post("/", this.auth, asyncHandler(this.logout));
   }
 
   private logout = async (req: Request): Promise<HandlerResult> => {
