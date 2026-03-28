@@ -36,3 +36,10 @@ export const AGE_VALIDATION = {
 } as const;
 
 export const SAFE_ADDRESS_PATTERN = /^[\p{L}\p{N}\s,.\-'/#]+$/u;
+
+export const IMAGE_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif"
+]);

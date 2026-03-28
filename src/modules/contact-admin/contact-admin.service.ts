@@ -18,20 +18,14 @@ import type { ContactRepository } from "./repositories/contact.repository";
 import { CONTACT_STATUSES } from "@/constants/modules/contact-admin";
 import { USER_CONFIG } from "@/constants/config";
 import { NotFoundError } from "@/config/responses/error";
-import { buildContactFilter } from "./internals/query-builder";
+import { buildContactFilter } from "./contact-admin.helper";
 // validators
 import { sanitizeText } from "@/validators/utils";
+import { IMAGE_MIME_TYPES } from "@/validators/constants";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
-
-const IMAGE_MIME_TYPES = new Set([
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/gif"
-]);
 
 export class ContactAdminService {
   constructor(private readonly contactRepo: ContactRepository) {}
