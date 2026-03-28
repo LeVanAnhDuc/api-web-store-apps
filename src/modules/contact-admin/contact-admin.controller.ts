@@ -1,14 +1,12 @@
 import { Router } from "express";
 import type { Request } from "express";
 import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
-import type { OptionalAuthGuard } from "@/middlewares/guards/optional-auth.guard";
 import type { AuthGuard } from "@/middlewares/guards/auth.guard";
 import type { AdminGuard } from "@/middlewares/guards/admin.guard";
 import type { ContactAdminService } from "./contact-admin.service";
 import type {
   SubmitContactRequest,
-  AdminContactsQuery,
-  MyContactsQuery
+  AdminContactsQuery
 } from "@/types/modules/contact-admin";
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
@@ -17,12 +15,9 @@ import { validate } from "@/validators/middleware";
 import {
   submitContactSchema,
   contactIdParamSchema,
-  updateContactCategorySchema,
   updateContactStatusSchema,
-  adminListContactsQuerySchema,
-  myContactsQuerySchema
+  adminListContactsQuerySchema
 } from "@/validators/schemas/contact-admin";
-import { uploadContactFiles } from "@/middlewares/interceptors/file-upload";
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -36,26 +31,21 @@ interface AuthenticatedRequest extends Request {
 export class ContactAdminController {
   public readonly router = Router();
   public readonly adminRouter = Router();
-  public readonly userContactRouter = Router();
 
   constructor(
     private readonly service: ContactAdminService,
     private readonly auth: AuthGuard,
     private readonly adminGuard: AdminGuard,
-    private readonly rl: RateLimiterMiddleware,
-    private readonly optionalAuth: OptionalAuthGuard
+    private readonly rl: RateLimiterMiddleware
   ) {
     this.initRoutes();
     this.initAdminRoutes();
-    this.initUserRoutes();
   }
 
   private initRoutes() {
     this.router.post(
       "/submit",
       this.rl.contactByIp,
-      this.optionalAuth.middleware,
-      uploadContactFiles,
       validate(submitContactSchema, "body"),
       asyncHandler(this.submit)
     );
@@ -79,15 +69,6 @@ export class ContactAdminController {
     );
 
     this.adminRouter.patch(
-      "/:id/category",
-      this.auth.middleware,
-      this.adminGuard.middleware,
-      validate(contactIdParamSchema, "params"),
-      validate(updateContactCategorySchema, "body"),
-      asyncHandler(this.updateContactCategory)
-    );
-
-    this.adminRouter.patch(
       "/:id/status",
       this.auth.middleware,
       this.adminGuard.middleware,
@@ -97,19 +78,10 @@ export class ContactAdminController {
     );
   }
 
-  private initUserRoutes() {
-    this.userContactRouter.get(
-      "/me",
-      this.auth.middleware,
-      validate(myContactsQuerySchema, "query"),
-      asyncHandler(this.getMyContacts)
-    );
-  }
-
   private submit = async (
     req: SubmitContactRequest
   ): Promise<HandlerResult> => {
-    const { data, message } = await this.service.submitContact(req);
+    const { data, message } = await this.service.submitContact(req.body);
     return { data, message, statusCode: STATUS_CODES.CREATED };
   };
 
@@ -136,20 +108,6 @@ export class ContactAdminController {
     };
   };
 
-  private updateContactCategory = async (
-    req: AuthenticatedRequest
-  ): Promise<HandlerResult> => {
-    const data = await this.service.updateContactCategory(
-      req.params.id,
-      req.body.category
-    );
-    return {
-      data,
-      message: "contactAdmin:success.updateContactCategory",
-      statusCode: STATUS_CODES.OK
-    };
-  };
-
   private updateContactStatus = async (
     req: AuthenticatedRequest
   ): Promise<HandlerResult> => {
@@ -160,19 +118,6 @@ export class ContactAdminController {
     return {
       data,
       message: "contactAdmin:success.updateContactStatus",
-      statusCode: STATUS_CODES.OK
-    };
-  };
-
-  private getMyContacts = async (
-    req: AuthenticatedRequest
-  ): Promise<HandlerResult> => {
-    const { userId } = req.user;
-    const query = req.query as unknown as MyContactsQuery;
-    const data = await this.service.getMyContacts(userId, query);
-    return {
-      data,
-      message: "contactAdmin:success.getMyContacts",
       statusCode: STATUS_CODES.OK
     };
   };

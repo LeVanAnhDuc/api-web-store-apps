@@ -43,7 +43,8 @@ export class OptionalAuthGuard {
       userId: payload.userId,
       authId,
       email: payload.email || "",
-      roles: payload.roles || "user"
+      roles: payload.roles || "user",
+      fullName: payload.fullName || ""
     };
   }
 

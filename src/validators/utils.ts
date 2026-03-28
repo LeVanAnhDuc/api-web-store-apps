@@ -40,6 +40,20 @@ export const validateRequiredString = (
   }
 };
 
+export const validateStringLength = (
+  value: string,
+  fieldName: string,
+  min: number,
+  max: number
+): void => {
+  if (value.length < min) {
+    throw new BadRequestError(`${fieldName} is too short`);
+  }
+  if (value.length > max) {
+    throw new BadRequestError(`${fieldName} is too long`);
+  }
+};
+
 export const sanitizeText = (text: string): string =>
   text
     .replace(/<[^>]*>/g, "")

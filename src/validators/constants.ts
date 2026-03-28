@@ -37,9 +37,9 @@ export const AGE_VALIDATION = {
 
 export const SAFE_ADDRESS_PATTERN = /^[\p{L}\p{N}\s,.\-'/#]+$/u;
 
-export const IMAGE_MIME_TYPES = new Set([
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/gif"
-]);
+export const CONTACT_CONFIG = {
+  SUBJECT_MIN_LENGTH: 5,
+  SUBJECT_MAX_LENGTH: 200,
+  MESSAGE_MIN_LENGTH: 20,
+  MESSAGE_MAX_LENGTH: 5000
+} as const;

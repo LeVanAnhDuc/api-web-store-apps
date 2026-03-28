@@ -1,8 +1,6 @@
-import { Types } from "mongoose";
 import type { FilterQuery } from "mongoose";
 import type {
   ContactDocument,
-  ContactCategory,
   ContactStatus
 } from "@/types/modules/contact-admin";
 import ContactModel from "@/models/contact";
@@ -21,18 +19,10 @@ export type ContactRepository = {
     options: PaginationOptions
   ): Promise<{ data: ContactDocument[]; total: number }>;
   findById(id: string): Promise<ContactDocument | null>;
-  updateCategory(
-    id: string,
-    category: ContactCategory
-  ): Promise<ContactDocument | null>;
   updateStatus(
     id: string,
     status: ContactStatus
   ): Promise<ContactDocument | null>;
-  findByUser(
-    userId: string,
-    options: PaginationOptions
-  ): Promise<{ data: ContactDocument[]; total: number }>;
 };
 
 export class MongoContactRepository implements ContactRepository {
@@ -68,17 +58,6 @@ export class MongoContactRepository implements ContactRepository {
     );
   }
 
-  async updateCategory(
-    id: string,
-    category: ContactCategory
-  ): Promise<ContactDocument | null> {
-    return asyncDatabaseHandler("updateCategory", () =>
-      ContactModel.findByIdAndUpdate(id, { $set: { category } }, { new: true })
-        .lean<ContactDocument>()
-        .exec()
-    );
-  }
-
   async updateStatus(
     id: string,
     status: ContactStatus
@@ -88,28 +67,5 @@ export class MongoContactRepository implements ContactRepository {
         .lean<ContactDocument>()
         .exec()
     );
-  }
-
-  async findByUser(
-    userId: string,
-    options: PaginationOptions
-  ): Promise<{ data: ContactDocument[]; total: number }> {
-    return asyncDatabaseHandler("findByUser", async () => {
-      const filter: FilterQuery<ContactDocument> = {
-        userId: new Types.ObjectId(userId)
-      };
-
-      const [data, total] = await Promise.all([
-        ContactModel.find(filter)
-          .skip(options.skip)
-          .limit(options.limit)
-          .sort(options.sort)
-          .lean()
-          .exec(),
-        ContactModel.countDocuments(filter).exec()
-      ]);
-
-      return { data: data as unknown as ContactDocument[], total };
-    });
   }
 }

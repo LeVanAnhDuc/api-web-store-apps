@@ -1,26 +1,19 @@
 import Joi from "joi";
 import {
-  CONTACT_CATEGORIES,
   CONTACT_PRIORITIES,
   CONTACT_STATUSES
 } from "@/constants/modules/contact-admin";
-import { CONTACT_CONFIG } from "@/constants/config";
+import { CONTACT_CONFIG } from "@/validators/constants";
 import { emailSchema } from "./base";
 import type { SubmitContactBody } from "@/types/modules/contact-admin";
 
-const CATEGORY_VALUES = Object.values(CONTACT_CATEGORIES);
 const PRIORITY_VALUES = Object.values(CONTACT_PRIORITIES);
 const STATUS_VALUES = Object.values(CONTACT_STATUSES);
 
 const OBJECTID_PATTERN = /^[a-fA-F0-9]{24}$/;
 const LIMIT_MAX = 100;
 const SORT_ORDER_VALUES = ["asc", "desc"] as const;
-const ADMIN_SORT_BY_VALUES = [
-  "createdAt",
-  "priority",
-  "status",
-  "category"
-] as const;
+const ADMIN_SORT_BY_VALUES = ["createdAt", "priority", "status"] as const;
 
 export const submitContactSchema: Joi.ObjectSchema<SubmitContactBody> =
   Joi.object({
@@ -60,17 +53,6 @@ export const contactIdParamSchema = Joi.object({
   })
 });
 
-export const updateContactCategorySchema = Joi.object({
-  category: Joi.string()
-    .valid(...CATEGORY_VALUES)
-    .required()
-    .messages({
-      "string.empty": "contactAdmin:errors.categoryRequired",
-      "any.required": "contactAdmin:errors.categoryRequired",
-      "any.only": "contactAdmin:errors.categoryInvalid"
-    })
-});
-
 export const updateContactStatusSchema = Joi.object({
   status: Joi.string()
     .valid(...STATUS_VALUES)
@@ -101,22 +83,12 @@ export const adminListContactsQuerySchema = Joi.object({
     .optional()
     .messages({ "any.only": "validation:status.invalid" }),
 
-  category: Joi.string()
-    .valid(...CATEGORY_VALUES)
-    .optional()
-    .messages({ "any.only": "validation:category.invalid" }),
-
   priority: Joi.string()
     .valid(...PRIORITY_VALUES)
     .optional()
     .messages({ "any.only": "validation:priority.invalid" }),
 
   email: Joi.string().trim().optional(),
-
-  userId: Joi.string()
-    .pattern(OBJECTID_PATTERN)
-    .optional()
-    .messages({ "string.pattern.base": "validation:userId.invalid" }),
 
   search: Joi.string().trim().optional(),
 
@@ -147,28 +119,3 @@ export const adminListContactsQuerySchema = Joi.object({
   })
   .messages({ "date.range": "validation:dateRange.invalid" })
   .options({ stripUnknown: true });
-
-export const myContactsQuerySchema = Joi.object({
-  page: Joi.number().integer().min(1).optional().messages({
-    "number.base": "validation:page.invalid",
-    "number.integer": "validation:page.invalid",
-    "number.min": "validation:page.invalid"
-  }),
-
-  limit: Joi.number().integer().min(1).max(LIMIT_MAX).optional().messages({
-    "number.base": "validation:limit.invalid",
-    "number.integer": "validation:limit.invalid",
-    "number.min": "validation:limit.invalid",
-    "number.max": "validation:limit.invalid"
-  }),
-
-  sortBy: Joi.string()
-    .valid("createdAt")
-    .optional()
-    .messages({ "any.only": "validation:sortBy.invalid" }),
-
-  sortOrder: Joi.string()
-    .valid(...SORT_ORDER_VALUES)
-    .optional()
-    .messages({ "any.only": "validation:sortOrder.invalid" })
-}).options({ stripUnknown: true });

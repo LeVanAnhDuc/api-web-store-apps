@@ -26,30 +26,6 @@ export const contactAdminSwaggerSchemas: Record<
         maxLength: 5000,
         example:
           "I have been unable to log in to my account for the past 2 days."
-      },
-      attachments: {
-        type: "array",
-        items: { type: "string", format: "binary" },
-        description:
-          "Up to 5 files, max 5MB each. Allowed: jpg, jpeg, png, gif, pdf, doc, docx"
-      }
-    }
-  },
-  UpdateContactCategoryRequest: {
-    type: "object",
-    required: ["category"],
-    properties: {
-      category: {
-        type: "string",
-        enum: [
-          "account",
-          "technical",
-          "feature",
-          "billing",
-          "security",
-          "other"
-        ],
-        example: "technical"
       }
     }
   },

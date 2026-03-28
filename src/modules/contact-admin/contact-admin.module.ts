@@ -1,7 +1,6 @@
 import type { AuthGuard } from "@/middlewares/guards/auth.guard";
 import type { AdminGuard } from "@/middlewares/guards/admin.guard";
 import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
-import type { OptionalAuthGuard } from "@/middlewares/guards/optional-auth.guard";
 import { MongoContactRepository } from "./repositories/contact.repository";
 import { ContactAdminService } from "./contact-admin.service";
 import { ContactAdminController } from "./contact-admin.controller";
@@ -9,8 +8,7 @@ import { ContactAdminController } from "./contact-admin.controller";
 export const createContactAdminModule = (
   auth: AuthGuard,
   adminGuard: AdminGuard,
-  rateLimiter: RateLimiterMiddleware,
-  optionalAuth: OptionalAuthGuard
+  rateLimiter: RateLimiterMiddleware
 ) => {
   const contactRepo = new MongoContactRepository();
   const contactAdminService = new ContactAdminService(contactRepo);
@@ -18,13 +16,11 @@ export const createContactAdminModule = (
     contactAdminService,
     auth,
     adminGuard,
-    rateLimiter,
-    optionalAuth
+    rateLimiter
   );
 
   return {
     contactAdminRouter: contactAdminController.router,
-    contactAdminQueryAdminRouter: contactAdminController.adminRouter,
-    contactAdminQueryUserRouter: contactAdminController.userContactRouter
+    contactAdminQueryAdminRouter: contactAdminController.adminRouter
   };
 };

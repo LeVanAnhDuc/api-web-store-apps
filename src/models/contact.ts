@@ -1,34 +1,16 @@
 import { Schema, model, type Model } from "mongoose";
 import type { ContactDocument } from "@/types/modules/contact-admin";
 import {
-  CONTACT_CATEGORIES,
   CONTACT_PRIORITIES,
   CONTACT_STATUSES
 } from "@/constants/modules/contact-admin";
 import { MODEL_NAMES } from "@/constants/models";
-import { CONTACT_CONFIG } from "@/constants/config";
+import { CONTACT_CONFIG } from "@/validators/constants";
 
-const { CONTACT, USER } = MODEL_NAMES;
-
-const ContactAttachmentSchema = new Schema(
-  {
-    originalName: { type: String, required: true, trim: true },
-    fileName: { type: String, required: true, trim: true },
-    mimeType: { type: String, required: true, trim: true },
-    size: { type: Number, required: true },
-    path: { type: String, required: true, trim: true }
-  },
-  { _id: false }
-);
+const { CONTACT } = MODEL_NAMES;
 
 const ContactSchema = new Schema<ContactDocument>(
   {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: USER,
-      required: false,
-      default: null
-    },
     email: {
       type: String,
       required: false,
@@ -49,12 +31,6 @@ const ContactSchema = new Schema<ContactDocument>(
         `Subject must not exceed ${CONTACT_CONFIG.SUBJECT_MAX_LENGTH} characters`
       ]
     },
-    category: {
-      type: String,
-      required: [true, "Category is required"],
-      enum: Object.values(CONTACT_CATEGORIES),
-      default: CONTACT_CATEGORIES.OTHER
-    },
     priority: {
       type: String,
       required: [true, "Priority is required"],
@@ -74,20 +50,11 @@ const ContactSchema = new Schema<ContactDocument>(
         `Message must not exceed ${CONTACT_CONFIG.MESSAGE_MAX_LENGTH} characters`
       ]
     },
-    attachments: {
-      type: [ContactAttachmentSchema],
-      default: []
-    },
     status: {
       type: String,
       required: [true, "Status is required"],
       enum: Object.values(CONTACT_STATUSES),
       default: CONTACT_STATUSES.NEW
-    },
-    ipAddress: {
-      type: String,
-      required: false,
-      default: null
     }
   },
   {
@@ -96,7 +63,6 @@ const ContactSchema = new Schema<ContactDocument>(
   }
 );
 
-ContactSchema.index({ userId: 1 }, { sparse: true });
 ContactSchema.index({ status: 1 });
 ContactSchema.index({ createdAt: -1 });
 ContactSchema.index({ status: 1, createdAt: -1 });

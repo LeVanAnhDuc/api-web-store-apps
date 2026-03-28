@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import type { FilterQuery } from "mongoose";
 import type {
   AdminContactsQuery,
@@ -12,13 +11,7 @@ export const buildContactFilter = (
 
   // Exact match fields
   if (query.status) filter.status = query.status;
-  if (query.category) filter.category = query.category;
   if (query.priority) filter.priority = query.priority;
-
-  // userId: convert to ObjectId
-  if (query.userId) {
-    filter.userId = new Types.ObjectId(query.userId);
-  }
 
   // Partial match (case-insensitive regex)
   if (query.email) filter.email = { $regex: query.email, $options: "i" };

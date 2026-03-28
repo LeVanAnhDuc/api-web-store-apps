@@ -71,11 +71,8 @@ export const loadModules = (app: Express): void => {
     rateLimiter
   );
 
-  const {
-    contactAdminRouter,
-    contactAdminQueryAdminRouter,
-    contactAdminQueryUserRouter
-  } = createContactAdminModule(auth, adminGuard, rateLimiter, optionalAuth);
+  const { contactAdminRouter, contactAdminQueryAdminRouter } =
+    createContactAdminModule(auth, adminGuard, rateLimiter);
 
   const { blogRouter } = createBlogModule(auth, optionalAuth);
 
@@ -90,7 +87,6 @@ export const loadModules = (app: Express): void => {
   v1Router.use("/admin/login-history", loginHistoryAdminRouter);
   v1Router.use("/contact", contactAdminRouter);
   v1Router.use("/admin/contacts", contactAdminQueryAdminRouter);
-  v1Router.use("/auth/contacts", contactAdminQueryUserRouter);
   v1Router.use("/users", userRouter);
   v1Router.use("/apps/blogs", blogRouter);
 
