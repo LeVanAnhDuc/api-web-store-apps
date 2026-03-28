@@ -1,9 +1,9 @@
 import { Router } from "express";
 import type { Request } from "express";
-import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
-import type { OptionalAuthGuard } from "@/middlewares/optional-auth.guard";
-import type { AuthGuard } from "@/middlewares/auth.guard";
-import type { AdminGuard } from "@/middlewares/admin.guard";
+import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
+import type { OptionalAuthGuard } from "@/middlewares/guards/optional-auth.guard";
+import type { AuthGuard } from "@/middlewares/guards/auth.guard";
+import type { AdminGuard } from "@/middlewares/guards/admin.guard";
 import type { ContactAdminService } from "./contact-admin.service";
 import type {
   SubmitContactRequest,
@@ -22,7 +22,7 @@ import {
   adminListContactsQuerySchema,
   myContactsQuerySchema
 } from "@/validators/schemas/contact-admin";
-import { uploadContactFiles } from "@/middlewares/file-upload";
+import { uploadContactFiles } from "@/middlewares/interceptors/file-upload";
 
 interface AuthenticatedRequest extends Request {
   user: {

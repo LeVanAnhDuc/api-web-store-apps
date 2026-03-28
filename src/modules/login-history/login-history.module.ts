@@ -1,5 +1,5 @@
-import type { AuthGuard } from "@/middlewares/auth.guard";
-import type { AdminGuard } from "@/middlewares/admin.guard";
+import type { AuthGuard } from "@/middlewares/guards/auth.guard";
+import type { AdminGuard } from "@/middlewares/guards/admin.guard";
 import { MongoLoginHistoryRepository } from "./repositories/login-history.repository";
 import { LoginHistoryService } from "./login-history.service";
 import { LoginHistoryController } from "./login-history.controller";

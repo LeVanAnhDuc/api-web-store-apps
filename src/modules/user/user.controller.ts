@@ -1,6 +1,6 @@
 import { Router } from "express";
-import type { AuthGuard } from "@/middlewares/auth.guard";
-import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
+import type { AuthGuard } from "@/middlewares/guards/auth.guard";
+import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
 import type { UserService } from "./user.service";
 import type {
   GetMyProfileRequest,
@@ -16,7 +16,7 @@ import {
   updateProfileSchema,
   getPublicProfileSchema
 } from "@/validators/schemas/user";
-import { uploadAvatar } from "@/middlewares/file-upload";
+import { uploadAvatar } from "@/middlewares/interceptors/file-upload";
 import { BadRequestError } from "@/config/responses/error";
 
 export class UserController {

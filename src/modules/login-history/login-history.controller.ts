@@ -1,7 +1,7 @@
 import { Router } from "express";
 import type { Request } from "express";
-import type { AuthGuard } from "@/middlewares/auth.guard";
-import type { AdminGuard } from "@/middlewares/admin.guard";
+import type { AuthGuard } from "@/middlewares/guards/auth.guard";
+import type { AdminGuard } from "@/middlewares/guards/admin.guard";
 import type { LoginHistoryService } from "./login-history.service";
 import type {
   LoginHistoryQuery,

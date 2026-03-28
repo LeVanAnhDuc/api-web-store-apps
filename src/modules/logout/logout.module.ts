@@ -1,4 +1,4 @@
-import type { AuthGuard } from "@/middlewares/auth.guard";
+import type { AuthGuard } from "@/middlewares/guards/auth.guard";
 import { LogoutService } from "./logout.service";
 import { LogoutController } from "./logout.controller";
 

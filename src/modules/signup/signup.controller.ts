@@ -9,7 +9,7 @@ import type {
 import type { HandlerResult } from "@/types/http";
 import type { SignupService } from "./signup.service";
 import { STATUS_CODES } from "@/config/http";
-import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
+import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
 import { asyncHandler } from "@/utils/async-handler";
 import { validate } from "@/validators/middleware";
 import {

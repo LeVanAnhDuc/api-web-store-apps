@@ -3,9 +3,9 @@ import type { Express, Request, Response } from "express";
 import type { RedisClientType } from "redis";
 import { instanceRedis } from "@/database/redis";
 import { createAuthenticationModule } from "@/modules/authentication/authentication.module";
-import { AuthGuard } from "@/middlewares/auth.guard";
-import { AdminGuard } from "@/middlewares/admin.guard";
-import { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
+import { AuthGuard } from "@/middlewares/guards/auth.guard";
+import { AdminGuard } from "@/middlewares/guards/admin.guard";
+import { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
 import { createLoginHistoryModule } from "@/modules/login-history/login-history.module";
 import { createLoginModule } from "@/modules/login/login.module";
 import { createSignupModule } from "@/modules/signup/signup.module";
@@ -16,7 +16,7 @@ import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-pas
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
 import { createUserModule } from "@/modules/user/user.module";
 import { createBlogModule } from "@/modules/apps/blog/blog.module";
-import { OptionalAuthGuard } from "@/middlewares/optional-auth.guard";
+import { OptionalAuthGuard } from "@/middlewares/guards/optional-auth.guard";
 import { Logger } from "@/utils/logger";
 
 export const loadModules = (app: Express): void => {

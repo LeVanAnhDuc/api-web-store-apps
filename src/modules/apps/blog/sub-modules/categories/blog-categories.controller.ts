@@ -1,6 +1,6 @@
 import { Router } from "express";
 import type { Request } from "express";
-import type { AuthGuard } from "@/middlewares/auth.guard";
+import type { AuthGuard } from "@/middlewares/guards/auth.guard";
 import type { BlogCategoriesService } from "./blog-categories.service";
 import type { HandlerResult } from "@/types/http";
 import type { TagQuery } from "@/types/modules/blog";
