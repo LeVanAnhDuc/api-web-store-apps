@@ -10,7 +10,7 @@ import type {
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
 import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
-import { validate } from "@/validators/middleware";
+import { validate } from "@/middlewares";
 import {
   loginHistoryQuerySchema,
   loginHistoryAdminQuerySchema

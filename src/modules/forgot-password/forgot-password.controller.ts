@@ -10,7 +10,7 @@ import type { HandlerResult } from "@/types/http";
 import type { ForgotPasswordService } from "./forgot-password.service";
 import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
 import { asyncHandler } from "@/utils/async-handler";
-import { validate } from "@/validators/middleware";
+import { validate } from "@/middlewares";
 import {
   fpOtpSendSchema,
   fpOtpVerifySchema,

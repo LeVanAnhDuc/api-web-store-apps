@@ -6,7 +6,7 @@ import type { HandlerResult } from "@/types/http";
 import type { TagQuery } from "@/types/modules/blog";
 import { STATUS_CODES } from "@/config/http";
 import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
-import { validate } from "@/validators/middleware";
+import { validate } from "@/middlewares";
 import {
   tagQuerySchema,
   createCategorySchema

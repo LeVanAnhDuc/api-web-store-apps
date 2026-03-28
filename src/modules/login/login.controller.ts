@@ -12,7 +12,7 @@ import type { LoginService } from "./login.service";
 import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
 import { asyncHandler } from "@/utils/async-handler";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
-import { validate } from "@/validators/middleware";
+import { validate } from "@/middlewares";
 import {
   loginSchema,
   otpSendSchema,

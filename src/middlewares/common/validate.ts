@@ -3,22 +3,6 @@ import type { Schema } from "joi";
 import { asyncMiddlewareHandler } from "@/utils/async-handler";
 import { ValidationError, type FieldError } from "@/config/responses/error";
 
-/**
- * Validation Middleware
- * Validates request data against Joi schema
- * Returns field-level errors for better client-side error handling
- *
- * Response format on validation error:
- * {
- *   timestamp: "ISO string",
- *   route: "/api/v1/...",
- *   error: {
- *     code: "VALIDATION_ERROR",
- *     message: "Validation failed",
- *     fields: [{ field: "email", message: "Email is required" }]
- *   }
- * }
- */
 export const validate = (
   schema: Schema,
   source: "body" | "params" | "query" = "body"

@@ -17,7 +17,7 @@ import {
   asyncGuardHandler,
   asyncOptionalGuardHandler
 } from "@/utils/async-handler";
-import { validate } from "@/validators/middleware";
+import { validate } from "@/middlewares";
 import {
   createBlogSchema,
   updateBlogSchema,
