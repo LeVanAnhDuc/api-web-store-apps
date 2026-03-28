@@ -8,7 +8,7 @@ import type {
 } from "@/types/modules/forgot-password";
 import type { HandlerResult } from "@/types/http";
 import type { ForgotPasswordService } from "./forgot-password.service";
-import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
+import type { RateLimiterMiddleware } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 import { bodyPipe } from "@/middlewares";
 import {

@@ -3,7 +3,7 @@ import type { AuthenticationService } from "@/modules/authentication/authenticat
 import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/login.service";
-import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
+import type { RateLimiterMiddleware } from "@/middlewares";
 import { RedisUnlockAccountRepository } from "./repositories/unlock-account.repository";
 import { UnlockAccountService } from "./unlock-account.service";
 import { UnlockAccountController } from "./unlock-account.controller";

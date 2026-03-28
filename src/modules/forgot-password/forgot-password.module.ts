@@ -1,7 +1,7 @@
 import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
+import type { RateLimiterMiddleware } from "@/middlewares";
 import { RedisOtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
 import { RedisMagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
 import { RedisResetTokenRepository } from "./repositories/reset-token.repository";

@@ -1,5 +1,4 @@
-import type { AuthGuard } from "@/middlewares/guards/auth.guard";
-import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
+import type { AuthGuard, RateLimiterMiddleware } from "@/middlewares";
 import { MongoUserRepository } from "./repositories/user.repository";
 import { UserService } from "./user.service";
 import { UserController } from "./user.controller";

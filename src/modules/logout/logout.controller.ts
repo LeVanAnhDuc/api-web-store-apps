@@ -2,7 +2,7 @@ import { Router } from "express";
 import type { Request } from "express";
 import type { HandlerResult } from "@/types/http";
 import type { LogoutService } from "./logout.service";
-import type { AuthGuard } from "@/middlewares/guards/auth.guard";
+import type { AuthGuard } from "@/middlewares";
 import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
 import { STATUS_CODES } from "@/config/http";
 import ENV from "@/config/env";

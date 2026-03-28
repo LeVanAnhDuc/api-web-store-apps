@@ -1,6 +1,5 @@
 import { Router } from "express";
-import type { AuthGuard } from "@/middlewares/guards/auth.guard";
-import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
+import type { AuthGuard, RateLimiterMiddleware } from "@/middlewares";
 import type { UserService } from "./user.service";
 import type {
   GetMyProfileRequest,
@@ -11,12 +10,11 @@ import type {
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
 import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
-import { bodyPipe, paramsPipe } from "@/middlewares";
+import { bodyPipe, paramsPipe, uploadAvatar } from "@/middlewares";
 import {
   updateProfileSchema,
   getPublicProfileSchema
 } from "@/validators/schemas/user";
-import { uploadAvatar } from "@/middlewares/interceptors/file-upload.interceptor";
 import { BadRequestError } from "@/config/responses/error";
 
 export class UserController {

@@ -1,7 +1,7 @@
 import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
-import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
+import type { RateLimiterMiddleware } from "@/middlewares";
 import { RedisOtpSignupRepository } from "./repositories/otp-signup.repository";
 import { RedisSessionSignupRepository } from "./repositories/session-signup.repository";
 import { SignupService } from "./signup.service";

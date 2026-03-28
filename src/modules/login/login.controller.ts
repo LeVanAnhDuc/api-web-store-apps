@@ -9,7 +9,7 @@ import type {
 } from "@/types/modules/login";
 import type { HandlerResult } from "@/types/http";
 import type { LoginService } from "./login.service";
-import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
+import type { RateLimiterMiddleware } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
 import { bodyPipe } from "@/middlewares";

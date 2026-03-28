@@ -1,7 +1,6 @@
 import { Router } from "express";
 import type { Request } from "express";
-import type { AuthGuard } from "@/middlewares/guards/auth.guard";
-import type { OptionalAuthGuard } from "@/middlewares/guards/optional-auth.guard";
+import type { AuthGuard, OptionalAuthGuard } from "@/middlewares";
 import type { BlogService } from "./blog.service";
 import type { BlogTagsController } from "./sub-modules/tags/blog-tags.controller";
 import type { BlogCategoriesController } from "./sub-modules/categories/blog-categories.controller";
@@ -17,14 +16,18 @@ import {
   asyncGuardHandler,
   asyncOptionalGuardHandler
 } from "@/utils/async-handler";
-import { bodyPipe, paramsPipe, queryPipe } from "@/middlewares";
+import {
+  bodyPipe,
+  paramsPipe,
+  queryPipe,
+  uploadBlogCover
+} from "@/middlewares";
 import {
   createBlogSchema,
   updateBlogSchema,
   listBlogsQuerySchema,
   blogIdParamSchema
 } from "@/validators/schemas/blog";
-import { uploadBlogCover } from "@/middlewares/interceptors/file-upload.interceptor";
 
 interface AuthenticatedRequest extends Request {
   user: {

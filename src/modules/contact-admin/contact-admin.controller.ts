@@ -1,8 +1,10 @@
 import { Router } from "express";
 import type { Request } from "express";
-import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
-import type { AuthGuard } from "@/middlewares/guards/auth.guard";
-import type { AdminGuard } from "@/middlewares/guards/admin.guard";
+import type {
+  RateLimiterMiddleware,
+  AuthGuard,
+  AdminGuard
+} from "@/middlewares";
 import type { ContactAdminService } from "./contact-admin.service";
 import type {
   SubmitContactRequest,

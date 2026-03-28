@@ -1,5 +1,4 @@
-import type { AuthGuard } from "@/middlewares/guards/auth.guard";
-import type { OptionalAuthGuard } from "@/middlewares/guards/optional-auth.guard";
+import type { AuthGuard, OptionalAuthGuard } from "@/middlewares";
 import { MongoBlogRepository } from "./repositories/blog.repository";
 import { MongoBlogTagRepository } from "./repositories/blog-tag.repository";
 import { MongoBlogCategoryRepository } from "./repositories/blog-category.repository";

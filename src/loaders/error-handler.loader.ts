@@ -1,9 +1,9 @@
 import type { Express } from "express";
 import {
   handleNotFound,
-  handleError
-} from "@/middlewares/filters/error.filter";
-import { handleMongooseError } from "@/middlewares/filters/mongoose-error.filter";
+  handleError,
+  handleMongooseError
+} from "@/middlewares";
 
 export const loadErrorHandlers = (app: Express): void => {
   app.use(handleNotFound);
