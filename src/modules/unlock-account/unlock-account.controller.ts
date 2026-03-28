@@ -5,7 +5,7 @@ import type {
 } from "@/types/modules/unlock-account";
 import type { HandlerResult } from "@/types/http";
 import type { UnlockAccountService } from "./unlock-account.service";
-import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
+import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
 import { asyncHandler } from "@/utils/async-handler";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
 import { bodyPipe } from "@/middlewares";

@@ -3,7 +3,7 @@ import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
-import { requestLogger } from "@/middlewares/common/request-logger";
+import { requestLogger } from "@/middlewares/common/request-logger.middleware";
 import { i18nMiddleware } from "./i18n";
 import { setupSwagger } from "@/config/swagger.setup";
 import config from "@/config/env";

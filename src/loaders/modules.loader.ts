@@ -5,7 +5,7 @@ import { instanceRedis } from "@/database/redis";
 import { createAuthenticationModule } from "@/modules/authentication/authentication.module";
 import { AuthGuard } from "@/middlewares/guards/auth.guard";
 import { AdminGuard } from "@/middlewares/guards/admin.guard";
-import { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
+import { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
 import { createLoginHistoryModule } from "@/modules/login-history/login-history.module";
 import { createLoginModule } from "@/modules/login/login.module";
 import { createSignupModule } from "@/modules/signup/signup.module";

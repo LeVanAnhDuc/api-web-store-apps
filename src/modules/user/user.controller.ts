@@ -1,6 +1,6 @@
 import { Router } from "express";
 import type { AuthGuard } from "@/middlewares/guards/auth.guard";
-import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter";
+import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
 import type { UserService } from "./user.service";
 import type {
   GetMyProfileRequest,
