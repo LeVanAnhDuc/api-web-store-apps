@@ -47,7 +47,7 @@ export class BlogController {
 
   constructor(
     private readonly service: BlogService,
-    private readonly auth: RequestHandler,
+    private readonly authGuard: RequestHandler,
     private readonly optionalAuth: RequestHandler,
     private readonly tagsController: BlogTagsController,
     private readonly categoriesController: BlogCategoriesController
@@ -63,7 +63,7 @@ export class BlogController {
     // Blog CRUD
     this.router.post(
       "/",
-      this.auth,
+      this.authGuard,
       uploadBlogCover,
       bodyPipe(createBlogSchema),
       asyncHandler(this.createBlog)
@@ -84,7 +84,7 @@ export class BlogController {
 
     this.router.patch(
       "/:id",
-      this.auth,
+      this.authGuard,
       uploadBlogCover,
       paramsPipe(blogIdParamSchema),
       bodyPipe(updateBlogSchema),
@@ -93,7 +93,7 @@ export class BlogController {
 
     this.router.delete(
       "/:id",
-      this.auth,
+      this.authGuard,
       paramsPipe(blogIdParamSchema),
       asyncHandler(this.deleteBlog)
     );

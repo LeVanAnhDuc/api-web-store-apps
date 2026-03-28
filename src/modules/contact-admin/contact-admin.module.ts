@@ -5,7 +5,7 @@ import { ContactAdminService } from "./contact-admin.service";
 import { ContactAdminController } from "./contact-admin.controller";
 
 export const createContactAdminModule = (
-  auth: RequestHandler,
+  authGuard: RequestHandler,
   adminGuard: RequestHandler,
   rateLimiter: RateLimiterMiddleware
 ) => {
@@ -13,7 +13,7 @@ export const createContactAdminModule = (
   const contactAdminService = new ContactAdminService(contactRepo);
   const contactAdminController = new ContactAdminController(
     contactAdminService,
-    auth,
+    authGuard,
     adminGuard,
     rateLimiter
   );

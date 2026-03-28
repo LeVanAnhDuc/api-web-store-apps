@@ -12,13 +12,13 @@ export class LogoutController {
 
   constructor(
     private readonly service: LogoutService,
-    private readonly auth: RequestHandler
+    private readonly authGuard: RequestHandler
   ) {
     this.initRoutes();
   }
 
   private initRoutes() {
-    this.router.post("/", this.auth, asyncHandler(this.logout));
+    this.router.post("/", this.authGuard, asyncHandler(this.logout));
   }
 
   private logout = async (req: Request): Promise<HandlerResult> => {

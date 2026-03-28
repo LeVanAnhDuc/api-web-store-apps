@@ -30,7 +30,7 @@ export class LoginHistoryController {
 
   constructor(
     private readonly service: LoginHistoryService,
-    private readonly auth: RequestHandler,
+    private readonly authGuard: RequestHandler,
     private readonly adminGuard: RequestHandler
   ) {
     this.initUserRoutes();
@@ -40,7 +40,7 @@ export class LoginHistoryController {
   private initUserRoutes(): void {
     this.userRouter.get(
       "/",
-      this.auth,
+      this.authGuard,
       queryPipe(loginHistoryQuerySchema),
       asyncHandler(this.getMyHistory)
     );
@@ -49,7 +49,7 @@ export class LoginHistoryController {
   private initAdminRoutes(): void {
     this.adminRouter.get(
       "/",
-      this.auth,
+      this.authGuard,
       this.adminGuard,
       queryPipe(loginHistoryAdminQuerySchema),
       asyncHandler(this.getAllHistory)

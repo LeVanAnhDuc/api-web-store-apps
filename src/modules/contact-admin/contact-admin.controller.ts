@@ -32,7 +32,7 @@ export class ContactAdminController {
 
   constructor(
     private readonly service: ContactAdminService,
-    private readonly auth: RequestHandler,
+    private readonly authGuard: RequestHandler,
     private readonly adminGuard: RequestHandler,
     private readonly rl: RateLimiterMiddleware
   ) {
@@ -52,7 +52,7 @@ export class ContactAdminController {
   private initAdminRoutes() {
     this.adminRouter.get(
       "/",
-      this.auth,
+      this.authGuard,
       this.adminGuard,
       queryPipe(adminListContactsQuerySchema),
       asyncHandler(this.getContactList)
@@ -60,7 +60,7 @@ export class ContactAdminController {
 
     this.adminRouter.get(
       "/:id",
-      this.auth,
+      this.authGuard,
       this.adminGuard,
       paramsPipe(contactIdParamSchema),
       asyncHandler(this.getContactDetail)
@@ -68,7 +68,7 @@ export class ContactAdminController {
 
     this.adminRouter.patch(
       "/:id/status",
-      this.auth,
+      this.authGuard,
       this.adminGuard,
       paramsPipe(contactIdParamSchema),
       bodyPipe(updateContactStatusSchema),

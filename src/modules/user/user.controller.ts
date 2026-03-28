@@ -23,19 +23,19 @@ export class UserController {
 
   constructor(
     private readonly service: UserService,
-    private readonly auth: RequestHandler,
+    private readonly authGuard: RequestHandler,
     private readonly rl: RateLimiterMiddleware
   ) {
     this.initRoutes();
   }
 
   private initRoutes() {
-    this.router.get("/me", this.auth, asyncHandler(this.getMyProfile));
+    this.router.get("/me", this.authGuard, asyncHandler(this.getMyProfile));
 
     this.router.patch(
       "/me",
       this.rl.updateProfileByIp,
-      this.auth,
+      this.authGuard,
       bodyPipe(updateProfileSchema),
       asyncHandler(this.updateMyProfile)
     );
@@ -43,7 +43,7 @@ export class UserController {
     this.router.post(
       "/me/avatar",
       this.rl.uploadAvatarByIp,
-      this.auth,
+      this.authGuard,
       uploadAvatar,
       asyncHandler(this.uploadAvatarHandler)
     );

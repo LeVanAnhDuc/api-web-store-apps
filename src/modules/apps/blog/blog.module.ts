@@ -10,7 +10,7 @@ import { BlogCategoriesController } from "./sub-modules/categories/blog-categori
 import { BlogController } from "./blog.controller";
 
 export const createBlogModule = (
-  auth: RequestHandler,
+  authGuard: RequestHandler,
   optionalAuth: RequestHandler
 ) => {
   const blogRepo = new MongoBlogRepository();
@@ -21,14 +21,14 @@ export const createBlogModule = (
   const tagsService = new BlogTagsService(tagRepo);
   const categoriesService = new BlogCategoriesService(categoryRepo);
 
-  const tagsController = new BlogTagsController(tagsService, auth);
+  const tagsController = new BlogTagsController(tagsService, authGuard);
   const categoriesController = new BlogCategoriesController(
     categoriesService,
-    auth
+    authGuard
   );
   const blogController = new BlogController(
     blogService,
-    auth,
+    authGuard,
     optionalAuth,
     tagsController,
     categoriesController

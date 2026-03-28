@@ -22,7 +22,7 @@ export class BlogTagsController {
 
   constructor(
     private readonly service: BlogTagsService,
-    private readonly auth: RequestHandler
+    private readonly authGuard: RequestHandler
   ) {
     this.initRoutes();
   }
@@ -36,7 +36,7 @@ export class BlogTagsController {
 
     this.router.post(
       "/",
-      this.auth,
+      this.authGuard,
       bodyPipe(createTagSchema),
       asyncHandler(this.createTag)
     );

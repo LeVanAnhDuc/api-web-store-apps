@@ -4,14 +4,14 @@ import { LoginHistoryService } from "./login-history.service";
 import { LoginHistoryController } from "./login-history.controller";
 
 export const createLoginHistoryModule = (
-  auth: RequestHandler,
+  authGuard: RequestHandler,
   adminGuard: RequestHandler
 ) => {
   const loginHistoryRepo = new MongoLoginHistoryRepository();
   const loginHistoryService = new LoginHistoryService(loginHistoryRepo);
   const loginHistoryController = new LoginHistoryController(
     loginHistoryService,
-    auth,
+    authGuard,
     adminGuard
   );
 

@@ -5,12 +5,16 @@ import { UserService } from "./user.service";
 import { UserController } from "./user.controller";
 
 export const createUserModule = (
-  auth: RequestHandler,
+  authGuard: RequestHandler,
   rateLimiter: RateLimiterMiddleware
 ) => {
   const userRepo = new MongoUserRepository();
   const userService = new UserService(userRepo);
-  const userController = new UserController(userService, auth, rateLimiter);
+  const userController = new UserController(
+    userService,
+    authGuard,
+    rateLimiter
+  );
 
   return {
     userRouter: userController.router,

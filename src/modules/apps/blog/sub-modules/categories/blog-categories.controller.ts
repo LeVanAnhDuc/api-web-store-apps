@@ -25,7 +25,7 @@ export class BlogCategoriesController {
 
   constructor(
     private readonly service: BlogCategoriesService,
-    private readonly auth: RequestHandler
+    private readonly authGuard: RequestHandler
   ) {
     this.initRoutes();
   }
@@ -39,7 +39,7 @@ export class BlogCategoriesController {
 
     this.router.post(
       "/",
-      this.auth,
+      this.authGuard,
       bodyPipe(createCategorySchema),
       asyncHandler(this.createCategory)
     );
