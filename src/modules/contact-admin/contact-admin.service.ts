@@ -5,14 +5,18 @@ import type {
   ContactStatus
 } from "@/types/modules/contact-admin";
 import type { ContactRepository } from "./repositories/contact.repository";
-import type { SubmitContactResponseDto } from "./dtos/submit-contact.dto";
-import { toSubmitContactResponseDto } from "./dtos/submit-contact.dto";
-import type { ContactListItemDto } from "./dtos/contact-list-item.dto";
-import { toContactListItemDto } from "./dtos/contact-list-item.dto";
-import type { ContactDetailItemDto } from "./dtos/contact-detail-item.dto";
-import { toContactDetailItemDto } from "./dtos/contact-detail-item.dto";
-import type { UpdateContactStatusDto } from "./dtos/update-contact-status.dto";
-import { toUpdateContactStatusDto } from "./dtos/update-contact-status.dto";
+import type {
+  SubmitContactResponseDto,
+  ContactListItemDto,
+  ContactDetailItemDto,
+  UpdateContactStatusDto
+} from "./dtos";
+import {
+  toSubmitContactResponseDto,
+  toContactListItemDto,
+  toContactDetailItemDto,
+  toUpdateContactStatusDto
+} from "./dtos";
 import { CONTACT_STATUSES } from "@/constants/modules/contact-admin";
 import { NotFoundError } from "@/config/responses/error";
 import { buildContactFilter } from "./contact-admin.helper";
