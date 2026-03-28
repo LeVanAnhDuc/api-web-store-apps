@@ -11,11 +11,11 @@ import {
   TooManyRequestsError,
   UnauthorizedError
 } from "@/config/responses/error";
-import type { AuthenticationRepository } from "@/repositories/authentication.repository";
-import type { UserRepository } from "@/repositories/user.repository";
+import type { AuthenticationRepository } from "@/modules/authen/repositories/authentication.repository";
+import type { UserRepository } from "@/modules/user/repositories/user.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import type { FailedAttemptsRepository } from "@/repositories/failed-attempts.repository";
-import type { UnlockAccountRepository } from "@/repositories/unlock-account.repository";
+import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
+import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
 import {
   sendEmailService,

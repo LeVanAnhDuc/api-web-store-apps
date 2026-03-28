@@ -1,4 +1,4 @@
-import type { BlogTagRepository } from "@/repositories/blog-tag.repository";
+import type { BlogTagRepository } from "../../repositories/blog-tag.repository";
 import type { BlogTagItem, TagQuery } from "@/types/modules/blog";
 import { ConflictRequestError } from "@/config/responses/error";
 

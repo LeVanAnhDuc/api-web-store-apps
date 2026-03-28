@@ -1,10 +1,10 @@
 import type { RedisClientType } from "redis";
-import type { AuthenticationRepository } from "@/repositories/authentication.repository";
+import type { AuthenticationRepository } from "@/modules/authen/repositories/authentication.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
-import { RedisOtpForgotPasswordRepository } from "@/repositories/otp-forgot-password.repository";
-import { RedisMagicLinkForgotPasswordRepository } from "@/repositories/magic-link-forgot-password.repository";
-import { RedisResetTokenRepository } from "@/repositories/reset-token.repository";
+import { RedisOtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
+import { RedisMagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
+import { RedisResetTokenRepository } from "./repositories/reset-token.repository";
 import { ForgotPasswordService } from "./forgot-password.service";
 import { ForgotPasswordController } from "./forgot-password.controller";
 

@@ -1,5 +1,5 @@
 import path from "path";
-import type { UserRepository } from "@/repositories/user.repository";
+import type { UserRepository } from "./repositories/user.repository";
 import type {
   UpdateProfileData,
   MyProfileResponse,

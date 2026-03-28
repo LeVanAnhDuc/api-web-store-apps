@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import type { CanActivate } from "@/core/interfaces/can-activate.interface";
-import type { AuthenticationRepository } from "@/repositories/authentication.repository";
+import type { AuthenticationRepository } from "@/modules/authen/repositories/authentication.repository";
 import { UnauthorizedError } from "@/config/responses/error";
 import { verifyAccessToken } from "@/utils/token";
 

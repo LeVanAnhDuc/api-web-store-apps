@@ -2,7 +2,7 @@ import slugify from "slugify";
 import { Types } from "mongoose";
 import path from "path";
 import fs from "fs";
-import type { BlogRepository } from "@/repositories/blog.repository";
+import type { BlogRepository } from "./repositories/blog.repository";
 import type {
   CreateBlogDto,
   UpdateBlogDto,

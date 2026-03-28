@@ -1,6 +1,6 @@
 import type { Schema } from "mongoose";
 import type { Request } from "express";
-import type { LoginHistoryRepository } from "@/repositories/login-history.repository";
+import type { LoginHistoryRepository } from "./repositories/login-history.repository";
 import type {
   LoginEventPayload,
   ClientType,

@@ -1,5 +1,5 @@
 import type { LoginHistoryAdminQuery } from "@/types/modules/login-history";
-import type { LoginHistoryFilter } from "@/repositories/login-history.repository";
+import type { LoginHistoryFilter } from "../repositories/login-history.repository";
 
 export const buildLoginHistoryFilter = (
   query: LoginHistoryAdminQuery,

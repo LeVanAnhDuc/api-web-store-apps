@@ -2,7 +2,7 @@ import type { AuthGuard } from "@/middlewares/auth.guard";
 import type { AdminGuard } from "@/middlewares/admin.guard";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import type { OptionalAuthGuard } from "@/middlewares/optional-auth.guard";
-import { MongoContactRepository } from "@/repositories/contact.repository";
+import { MongoContactRepository } from "./repositories/contact.repository";
 import { ContactAdminService } from "./contact-admin.service";
 import { ContactAdminController } from "./contact-admin.controller";
 

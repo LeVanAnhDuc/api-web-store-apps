@@ -19,10 +19,10 @@ import {
   BadRequestError,
   ConflictRequestError
 } from "@/config/responses/error";
-import type { AuthenticationRepository } from "@/repositories/authentication.repository";
-import type { UserRepository } from "@/repositories/user.repository";
-import type { OtpSignupRepository } from "@/repositories/otp-signup.repository";
-import type { SessionSignupRepository } from "@/repositories/session-signup.repository";
+import type { AuthenticationRepository } from "@/modules/authen/repositories/authentication.repository";
+import type { UserRepository } from "@/modules/user/repositories/user.repository";
+import type { OtpSignupRepository } from "./repositories/otp-signup.repository";
+import type { SessionSignupRepository } from "./repositories/session-signup.repository";
 import {
   sendEmailService,
   EmailType

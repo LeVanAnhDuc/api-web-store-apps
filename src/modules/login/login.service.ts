@@ -21,12 +21,12 @@ import {
   NotFoundError,
   UnauthorizedError
 } from "@/config/responses/error";
-import type { AuthenticationRepository } from "@/repositories/authentication.repository";
-import type { UserRepository } from "@/repositories/user.repository";
+import type { AuthenticationRepository } from "@/modules/authen/repositories/authentication.repository";
+import type { UserRepository } from "@/modules/user/repositories/user.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import type { OtpLoginRepository } from "@/repositories/otp-login.repository";
-import type { MagicLinkLoginRepository } from "@/repositories/magic-link-login.repository";
-import type { FailedAttemptsRepository } from "@/repositories/failed-attempts.repository";
+import type { OtpLoginRepository } from "./repositories/otp-login.repository";
+import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
+import type { FailedAttemptsRepository } from "./repositories/failed-attempts.repository";
 import {
   sendEmailService,
   EmailType

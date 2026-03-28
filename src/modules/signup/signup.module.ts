@@ -1,9 +1,9 @@
 import type { RedisClientType } from "redis";
-import type { AuthenticationRepository } from "@/repositories/authentication.repository";
-import type { UserRepository } from "@/repositories/user.repository";
+import type { AuthenticationRepository } from "@/modules/authen/repositories/authentication.repository";
+import type { UserRepository } from "@/modules/user/repositories/user.repository";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
-import { RedisOtpSignupRepository } from "@/repositories/otp-signup.repository";
-import { RedisSessionSignupRepository } from "@/repositories/session-signup.repository";
+import { RedisOtpSignupRepository } from "./repositories/otp-signup.repository";
+import { RedisSessionSignupRepository } from "./repositories/session-signup.repository";
 import { SignupService } from "./signup.service";
 import { SignupController } from "./signup.controller";
 

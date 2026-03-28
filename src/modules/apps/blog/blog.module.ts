@@ -1,8 +1,8 @@
 import type { AuthGuard } from "@/middlewares/auth.guard";
 import type { OptionalAuthGuard } from "@/middlewares/optional-auth.guard";
-import { MongoBlogRepository } from "@/repositories/blog.repository";
-import { MongoBlogTagRepository } from "@/repositories/blog-tag.repository";
-import { MongoBlogCategoryRepository } from "@/repositories/blog-category.repository";
+import { MongoBlogRepository } from "./repositories/blog.repository";
+import { MongoBlogTagRepository } from "./repositories/blog-tag.repository";
+import { MongoBlogCategoryRepository } from "./repositories/blog-category.repository";
 import { BlogService } from "./blog.service";
 import { BlogTagsService } from "./sub-modules/tags/blog-tags.service";
 import { BlogCategoriesService } from "./sub-modules/categories/blog-categories.service";

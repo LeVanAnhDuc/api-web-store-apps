@@ -14,11 +14,11 @@ import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
-import type { AuthenticationRepository } from "@/repositories/authentication.repository";
+import type { AuthenticationRepository } from "@/modules/authen/repositories/authentication.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import type { OtpForgotPasswordRepository } from "@/repositories/otp-forgot-password.repository";
-import type { MagicLinkForgotPasswordRepository } from "@/repositories/magic-link-forgot-password.repository";
-import type { ResetTokenRepository } from "@/repositories/reset-token.repository";
+import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
+import type { MagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
+import type { ResetTokenRepository } from "./repositories/reset-token.repository";
 import {
   sendEmailService,
   EmailType
