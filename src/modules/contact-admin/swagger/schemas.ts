@@ -56,10 +56,10 @@ export const contactAdminSwaggerSchemas: Record<
   SubmitContactResponse: {
     type: "object",
     properties: {
-      ticketNumber: {
+      id: {
         type: "string",
-        example: "TK-20260304-A1B2",
-        description: "Unique ticket number for tracking"
+        example: "507f1f77bcf86cd799439011",
+        description: "MongoDB _id of the created contact"
       }
     }
   }

@@ -23,12 +23,6 @@ const ContactAttachmentSchema = new Schema(
 
 const ContactSchema = new Schema<ContactDocument>(
   {
-    ticketNumber: {
-      type: String,
-      required: [true, "Ticket number is required"],
-      unique: true,
-      trim: true
-    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: USER,
@@ -102,7 +96,6 @@ const ContactSchema = new Schema<ContactDocument>(
   }
 );
 
-ContactSchema.index({ ticketNumber: 1 }, { unique: true });
 ContactSchema.index({ userId: 1 }, { sparse: true });
 ContactSchema.index({ status: 1 });
 ContactSchema.index({ createdAt: -1 });

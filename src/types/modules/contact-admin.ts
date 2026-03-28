@@ -22,7 +22,6 @@ export interface ContactAttachment {
 }
 
 export interface ContactDocument extends Document {
-  ticketNumber: string;
   userId?: Types.ObjectId;
   email?: string;
   subject: string;
@@ -51,7 +50,7 @@ export interface SubmitContactRequest extends Request {
 }
 
 export interface SubmitContactResponse {
-  ticketNumber: string;
+  id: string;
 }
 
 // ─── v2.0 Query Types ──────────────────────────────────────────────────────
@@ -63,7 +62,6 @@ export interface AdminContactsQuery {
   category?: ContactCategory;
   priority?: ContactPriority;
   email?: string;
-  ticketNumber?: string;
   userId?: string;
   search?: string;
   fromDate?: string;
@@ -91,7 +89,6 @@ export interface ContactAttachmentResponse {
 
 export interface ContactListItem {
   _id: string;
-  ticketNumber: string;
   email: string | null;
   subject: string;
   category: ContactCategory;
@@ -111,7 +108,6 @@ export interface ContactDetailItem extends ContactListItem {
 
 export interface UserContactItem {
   _id: string;
-  ticketNumber: string;
   subject: string;
   category: ContactCategory;
   priority: ContactPriority;

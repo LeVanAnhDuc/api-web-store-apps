@@ -16,9 +16,11 @@ import type {
 import type { HandlerResult } from "@/types/http";
 import type { ContactRepository } from "./repositories/contact.repository";
 import { CONTACT_STATUSES } from "@/constants/modules/contact-admin";
-import { CONTACT_CONFIG, USER_CONFIG } from "@/constants/config";
-import { BadRequestError, NotFoundError } from "@/config/responses/error";
+import { USER_CONFIG } from "@/constants/config";
+import { NotFoundError } from "@/config/responses/error";
 import { buildContactFilter } from "./internals/query-builder";
+// validators
+import { sanitizeText } from "@/validators/utils";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
@@ -31,34 +33,6 @@ const IMAGE_MIME_TYPES = new Set([
   "image/gif"
 ]);
 
-const TICKET_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-function generateRandomSuffix(length: number): string {
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += TICKET_CHARS[Math.floor(Math.random() * TICKET_CHARS.length)];
-  }
-  return result;
-}
-
-function generateTicketNumber(): string {
-  const date = new Date();
-  const dateStr = date.toISOString().slice(0, 10).replace(/-/g, "");
-  const suffix = generateRandomSuffix(CONTACT_CONFIG.TICKET_RANDOM_LENGTH);
-  return `TK-${dateStr}-${suffix}`;
-}
-
-function sanitizeText(text: string): string {
-  return text
-    .replace(/<[^>]*>/g, "")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#x27;/g, "'")
-    .trim();
-}
-
 export class ContactAdminService {
   constructor(private readonly contactRepo: ContactRepository) {}
 
@@ -67,28 +41,6 @@ export class ContactAdminService {
   ): Promise<HandlerResult<SubmitContactResponse>> {
     const { body, user, ip } = req;
     const files = (req.files as Express.Multer.File[]) ?? [];
-
-    let ticketNumber = "";
-    let attempts = 0;
-
-    while (attempts < CONTACT_CONFIG.TICKET_MAX_RETRIES) {
-      const candidate = generateTicketNumber();
-      const exists = await this.contactRepo.ticketExists(candidate);
-
-      if (!exists) {
-        ticketNumber = candidate;
-        break;
-      }
-
-      attempts++;
-    }
-
-    if (!ticketNumber) {
-      throw new BadRequestError(
-        "contactAdmin:errors.ticketGenerationFailed",
-        "TICKET_GENERATION_FAILED"
-      );
-    }
 
     const email = body.email || (user?.email ?? null);
     const userId = user?.userId ?? null;
@@ -101,8 +53,7 @@ export class ContactAdminService {
       path: file.path
     }));
 
-    await this.contactRepo.create({
-      ticketNumber,
+    const contact = await this.contactRepo.create({
       userId: userId as never,
       email: email ?? undefined,
       subject: sanitizeText(body.subject),
@@ -113,7 +64,7 @@ export class ContactAdminService {
     });
 
     return {
-      data: { ticketNumber },
+      data: { id: contact._id.toString() },
       message: "contactAdmin:success.submitted"
     };
   }
@@ -207,7 +158,6 @@ export class ContactAdminService {
 
     const items: UserContactItem[] = data.map((doc) => ({
       _id: doc._id.toString(),
-      ticketNumber: doc.ticketNumber,
       subject: doc.subject,
       category: doc.category,
       priority: doc.priority,
@@ -225,7 +175,6 @@ export class ContactAdminService {
   private mapToContactListItem(doc: ContactDocument): ContactListItem {
     return {
       _id: doc._id.toString(),
-      ticketNumber: doc.ticketNumber,
       email: doc.email ?? null,
       subject: doc.subject,
       category: doc.category,

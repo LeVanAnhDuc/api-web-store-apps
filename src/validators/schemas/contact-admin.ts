@@ -113,8 +113,6 @@ export const adminListContactsQuerySchema = Joi.object({
 
   email: Joi.string().trim().optional(),
 
-  ticketNumber: Joi.string().trim().optional(),
-
   userId: Joi.string()
     .pattern(OBJECTID_PATTERN)
     .optional()

@@ -16,7 +16,6 @@ interface PaginationOptions {
 
 export type ContactRepository = {
   create(data: Partial<ContactDocument>): Promise<ContactDocument>;
-  ticketExists(ticketNumber: string): Promise<boolean>;
   findAll(
     filter: FilterQuery<ContactDocument>,
     options: PaginationOptions
@@ -42,13 +41,6 @@ export class MongoContactRepository implements ContactRepository {
       const doc = await ContactModel.create(data);
       return doc as unknown as ContactDocument;
     });
-  }
-
-  async ticketExists(ticketNumber: string): Promise<boolean> {
-    return asyncDatabaseHandler(
-      "ticketExists",
-      async () => !!(await ContactModel.exists({ ticketNumber }))
-    );
   }
 
   async findAll(

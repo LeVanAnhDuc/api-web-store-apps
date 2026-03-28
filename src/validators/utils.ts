@@ -39,3 +39,13 @@ export const validateRequiredString = (
     throw new BadRequestError(`${fieldName} is required`);
   }
 };
+
+export const sanitizeText = (text: string): string =>
+  text
+    .replace(/<[^>]*>/g, "")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'")
+    .trim();

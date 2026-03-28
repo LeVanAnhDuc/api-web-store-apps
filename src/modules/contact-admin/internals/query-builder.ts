@@ -22,18 +22,11 @@ export const buildContactFilter = (
 
   // Partial match (case-insensitive regex)
   if (query.email) filter.email = { $regex: query.email, $options: "i" };
-  if (query.ticketNumber) {
-    filter.ticketNumber = { $regex: query.ticketNumber, $options: "i" };
-  }
 
-  // Text search: OR across subject, email, ticketNumber
+  // Text search: OR across subject, email
   if (query.search) {
     const searchRegex = { $regex: query.search, $options: "i" };
-    filter.$or = [
-      { subject: searchRegex },
-      { email: searchRegex },
-      { ticketNumber: searchRegex }
-    ];
+    filter.$or = [{ subject: searchRegex }, { email: searchRegex }];
   }
 
   // Date range
