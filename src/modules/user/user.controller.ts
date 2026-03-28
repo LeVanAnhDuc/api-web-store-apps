@@ -16,7 +16,7 @@ import {
   updateProfileSchema,
   getPublicProfileSchema
 } from "@/validators/schemas/user";
-import { uploadAvatar } from "@/middlewares/interceptors/file-upload";
+import { uploadAvatar } from "@/middlewares/interceptors/file-upload.interceptor";
 import { BadRequestError } from "@/config/responses/error";
 
 export class UserController {

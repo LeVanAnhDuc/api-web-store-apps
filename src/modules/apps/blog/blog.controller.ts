@@ -24,7 +24,7 @@ import {
   listBlogsQuerySchema,
   blogIdParamSchema
 } from "@/validators/schemas/blog";
-import { uploadBlogCover } from "@/middlewares/interceptors/file-upload";
+import { uploadBlogCover } from "@/middlewares/interceptors/file-upload.interceptor";
 
 interface AuthenticatedRequest extends Request {
   user: {
