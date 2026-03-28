@@ -5,7 +5,7 @@ import type { BlogTagsService } from "./blog-tags.service";
 import type { HandlerResult } from "@/types/http";
 import type { TagQuery } from "@/types/modules/blog";
 import { STATUS_CODES } from "@/config/http";
-import { asyncHandler } from "@/utils/async-handler";
+import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
 import { validate } from "@/validators/middleware";
 import { tagQuerySchema, createTagSchema } from "@/validators/schemas/blog";
 
@@ -37,7 +37,7 @@ export class BlogTagsController {
 
     this.router.post(
       "/",
-      this.auth.middleware,
+      asyncGuardHandler(this.auth),
       validate(createTagSchema, "body"),
       asyncHandler(this.createTag)
     );

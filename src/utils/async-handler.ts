@@ -1,5 +1,6 @@
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 import type { HandlerResult } from "@/types/http";
+import type { CanActivate } from "@/core/common";
 import { STATUS_CODES } from "@/config/http";
 import { DatabaseError } from "@/config/responses/error";
 
@@ -68,4 +69,28 @@ export const asyncMiddlewareHandler =
     middleware(req, res, next)
       .then(() => next())
       .catch((error) => next(error));
+  };
+
+// Wraps a guard that throws on failure — errors are forwarded to next(error)
+export const asyncGuardHandler =
+  (guard: CanActivate): RequestHandler =>
+  async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await guard.canActivate(req);
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+
+// Wraps an optional guard — errors are silently swallowed, always calls next()
+export const asyncOptionalGuardHandler =
+  (guard: CanActivate): RequestHandler =>
+  async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await guard.canActivate(req);
+    } catch {
+      // optional guard: ignore errors, always continue
+    }
+    next();
   };

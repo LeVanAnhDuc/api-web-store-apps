@@ -1,5 +1,5 @@
-import type { Request, Response, NextFunction, RequestHandler } from "express";
-import type { CanActivate } from "@/core/interfaces/can-activate.interface";
+import type { Request } from "express";
+import type { CanActivate } from "@/core/common";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import { UnauthorizedError } from "@/config/responses/error";
 import { verifyAccessToken } from "@/utils/token";
@@ -53,16 +53,5 @@ export class AuthGuard implements CanActivate {
     };
 
     return true;
-  }
-
-  get middleware(): RequestHandler {
-    return async (req: Request, _res: Response, next: NextFunction) => {
-      try {
-        await this.canActivate(req);
-        next();
-      } catch (error) {
-        next(error);
-      }
-    };
   }
 }

@@ -1,8 +1,9 @@
-import type { Request, Response, NextFunction, RequestHandler } from "express";
+import type { Request } from "express";
+import type { CanActivate } from "@/core/common";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import { verifyAccessToken } from "@/utils/token";
 
-export class OptionalAuthGuard {
+export class OptionalAuthGuard implements CanActivate {
   constructor(private readonly authService: AuthenticationService) {}
 
   async canActivate(req: Request): Promise<void> {
@@ -45,17 +46,6 @@ export class OptionalAuthGuard {
       email: payload.email || "",
       roles: payload.roles || "user",
       fullName: payload.fullName || ""
-    };
-  }
-
-  get middleware(): RequestHandler {
-    return async (req: Request, _res: Response, next: NextFunction) => {
-      try {
-        await this.canActivate(req);
-        next();
-      } catch {
-        next();
-      }
     };
   }
 }

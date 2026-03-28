@@ -10,7 +10,7 @@ import type {
 } from "@/types/modules/contact-admin";
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
-import { asyncHandler } from "@/utils/async-handler";
+import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
 import { validate } from "@/validators/middleware";
 import {
   submitContactSchema,
@@ -54,24 +54,24 @@ export class ContactAdminController {
   private initAdminRoutes() {
     this.adminRouter.get(
       "/",
-      this.auth.middleware,
-      this.adminGuard.middleware,
+      asyncGuardHandler(this.auth),
+      asyncGuardHandler(this.adminGuard),
       validate(adminListContactsQuerySchema, "query"),
       asyncHandler(this.getContactList)
     );
 
     this.adminRouter.get(
       "/:id",
-      this.auth.middleware,
-      this.adminGuard.middleware,
+      asyncGuardHandler(this.auth),
+      asyncGuardHandler(this.adminGuard),
       validate(contactIdParamSchema, "params"),
       asyncHandler(this.getContactDetail)
     );
 
     this.adminRouter.patch(
       "/:id/status",
-      this.auth.middleware,
-      this.adminGuard.middleware,
+      asyncGuardHandler(this.auth),
+      asyncGuardHandler(this.adminGuard),
       validate(contactIdParamSchema, "params"),
       validate(updateContactStatusSchema, "body"),
       asyncHandler(this.updateContactStatus)

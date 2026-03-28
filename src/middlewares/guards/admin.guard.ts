@@ -1,5 +1,5 @@
-import type { Request, Response, NextFunction, RequestHandler } from "express";
-import type { CanActivate } from "@/core/interfaces/can-activate.interface";
+import type { Request } from "express";
+import type { CanActivate } from "@/core/common";
 import { ForbiddenError } from "@/config/responses/error";
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
 
@@ -16,16 +16,5 @@ export class AdminGuard implements CanActivate {
     }
 
     return true;
-  }
-
-  get middleware(): RequestHandler {
-    return (req: Request, _res: Response, next: NextFunction) => {
-      try {
-        this.canActivate(req);
-        next();
-      } catch (error) {
-        next(error);
-      }
-    };
   }
 }

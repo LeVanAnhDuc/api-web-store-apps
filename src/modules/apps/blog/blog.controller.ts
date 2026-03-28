@@ -12,7 +12,11 @@ import type {
   BlogQuery
 } from "@/types/modules/blog";
 import { STATUS_CODES } from "@/config/http";
-import { asyncHandler } from "@/utils/async-handler";
+import {
+  asyncHandler,
+  asyncGuardHandler,
+  asyncOptionalGuardHandler
+} from "@/utils/async-handler";
 import { validate } from "@/validators/middleware";
 import {
   createBlogSchema,
@@ -61,7 +65,7 @@ export class BlogController {
     // Blog CRUD
     this.router.post(
       "/",
-      this.auth.middleware,
+      asyncGuardHandler(this.auth),
       uploadBlogCover,
       validate(createBlogSchema, "body"),
       asyncHandler(this.createBlog)
@@ -69,20 +73,20 @@ export class BlogController {
 
     this.router.get(
       "/",
-      this.optionalAuth.middleware,
+      asyncOptionalGuardHandler(this.optionalAuth),
       validate(listBlogsQuerySchema, "query"),
       asyncHandler(this.listBlogs)
     );
 
     this.router.get(
       "/:slug",
-      this.optionalAuth.middleware,
+      asyncOptionalGuardHandler(this.optionalAuth),
       asyncHandler(this.getBlogBySlug)
     );
 
     this.router.patch(
       "/:id",
-      this.auth.middleware,
+      asyncGuardHandler(this.auth),
       uploadBlogCover,
       validate(blogIdParamSchema, "params"),
       validate(updateBlogSchema, "body"),
@@ -91,7 +95,7 @@ export class BlogController {
 
     this.router.delete(
       "/:id",
-      this.auth.middleware,
+      asyncGuardHandler(this.auth),
       validate(blogIdParamSchema, "params"),
       asyncHandler(this.deleteBlog)
     );

@@ -10,7 +10,7 @@ import type {
 } from "@/types/modules/user";
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
-import { asyncHandler } from "@/utils/async-handler";
+import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
 import { validate } from "@/validators/middleware";
 import {
   updateProfileSchema,
@@ -33,14 +33,14 @@ export class UserController {
   private initRoutes() {
     this.router.get(
       "/me",
-      this.auth.middleware,
+      asyncGuardHandler(this.auth),
       asyncHandler(this.getMyProfile)
     );
 
     this.router.patch(
       "/me",
       this.rl.updateProfileByIp,
-      this.auth.middleware,
+      asyncGuardHandler(this.auth),
       validate(updateProfileSchema, "body"),
       asyncHandler(this.updateMyProfile)
     );
@@ -48,7 +48,7 @@ export class UserController {
     this.router.post(
       "/me/avatar",
       this.rl.uploadAvatarByIp,
-      this.auth.middleware,
+      asyncGuardHandler(this.auth),
       uploadAvatar,
       asyncHandler(this.uploadAvatarHandler)
     );

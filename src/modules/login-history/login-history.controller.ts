@@ -9,7 +9,7 @@ import type {
 } from "@/types/modules/login-history";
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
-import { asyncHandler } from "@/utils/async-handler";
+import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
 import { validate } from "@/validators/middleware";
 import {
   loginHistoryQuerySchema,
@@ -41,7 +41,7 @@ export class LoginHistoryController {
   private initUserRoutes(): void {
     this.userRouter.get(
       "/",
-      this.auth.middleware,
+      asyncGuardHandler(this.auth),
       validate(loginHistoryQuerySchema, "query"),
       asyncHandler(this.getMyHistory)
     );
@@ -50,8 +50,8 @@ export class LoginHistoryController {
   private initAdminRoutes(): void {
     this.adminRouter.get(
       "/",
-      this.auth.middleware,
-      this.adminGuard.middleware,
+      asyncGuardHandler(this.auth),
+      asyncGuardHandler(this.adminGuard),
       validate(loginHistoryAdminQuerySchema, "query"),
       asyncHandler(this.getAllHistory)
     );

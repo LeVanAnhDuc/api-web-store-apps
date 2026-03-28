@@ -3,7 +3,7 @@ import type { Request } from "express";
 import type { HandlerResult } from "@/types/http";
 import type { LogoutService } from "./logout.service";
 import type { AuthGuard } from "@/middlewares/guards/auth.guard";
-import { asyncHandler } from "@/utils/async-handler";
+import { asyncHandler, asyncGuardHandler } from "@/utils/async-handler";
 import { STATUS_CODES } from "@/config/http";
 import ENV from "@/config/env";
 import { REFRESH_TOKEN } from "@/constants/modules/token";
@@ -19,7 +19,11 @@ export class LogoutController {
   }
 
   private initRoutes() {
-    this.router.post("/", this.auth.middleware, asyncHandler(this.logout));
+    this.router.post(
+      "/",
+      asyncGuardHandler(this.auth),
+      asyncHandler(this.logout)
+    );
   }
 
   private logout = async (req: Request): Promise<HandlerResult> => {
