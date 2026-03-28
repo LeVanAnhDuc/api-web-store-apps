@@ -1,5 +1,5 @@
 import type { RedisClientType } from "redis";
-import RedisCache from "@/core/implements/RedisCache";
+import { buildKey } from "@/utils/common";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
@@ -9,28 +9,24 @@ import { FORGOT_PASSWORD } from "@/constants/redis/store";
 
 const KEY = FORGOT_PASSWORD.RESET_TOKEN;
 
-export class ResetTokenRepository extends RedisCache {
+export type ResetTokenRepository = {
+  readonly RESET_TOKEN_EXPIRY_SECONDS: number;
+  createToken(): string;
+  storeHashed(email: string, token: string): Promise<void>;
+  verify(email: string, token: string): Promise<boolean>;
+  clear(email: string): Promise<void>;
+  createAndStore(email: string): Promise<string>;
+};
+
+export class RedisResetTokenRepository implements ResetTokenRepository {
   readonly RESET_TOKEN_EXPIRY_SECONDS =
     FORGOT_PASSWORD_RESET_TOKEN_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 
-  constructor(client: RedisClientType) {
-    super(client, "ResetTokenRepository", {
-      cacheEnabled: true,
-      keyPrefix: ""
-    });
-  }
-
-  // ──────────────────────────────────────────────
-  // Key builders
-  // ──────────────────────────────────────────────
+  constructor(private readonly client: RedisClientType) {}
 
   private resetTokenKey(email: string): string {
-    return this.buildKey(KEY, email);
+    return buildKey(KEY, email);
   }
-
-  // ──────────────────────────────────────────────
-  // Token operations
-  // ──────────────────────────────────────────────
 
   createToken(): string {
     return generateSecureToken(FORGOT_PASSWORD_RESET_TOKEN_CONFIG.TOKEN_LENGTH);
@@ -55,10 +51,6 @@ export class ResetTokenRepository extends RedisCache {
     const key = this.resetTokenKey(email);
     await this.client.del(key);
   }
-
-  // ──────────────────────────────────────────────
-  // Composite operations
-  // ──────────────────────────────────────────────
 
   async createAndStore(email: string): Promise<string> {
     const token = this.createToken();

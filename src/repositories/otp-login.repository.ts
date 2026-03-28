@@ -1,5 +1,5 @@
 import type { RedisClientType } from "redis";
-import RedisCache from "@/core/implements/RedisCache";
+import { buildKey } from "@/utils/common";
 import { generateOtp } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
@@ -14,41 +14,52 @@ const KEYS = {
   RESEND_COUNT: LOGIN.OTP_RESEND_COUNT
 };
 
-export class OtpLoginRepository extends RedisCache {
+export type OtpLoginRepository = {
+  readonly OTP_EXPIRY_SECONDS: number;
+  readonly OTP_COOLDOWN_SECONDS: number;
+  createOtp(): string;
+  storeHashed(email: string, otp: string, expiry: number): Promise<void>;
+  clearOtp(email: string): Promise<void>;
+  verify(email: string, otp: string): Promise<boolean>;
+  checkCooldown(email: string): Promise<boolean>;
+  getCooldownRemaining(email: string): Promise<number>;
+  setCooldown(email: string, seconds: number): Promise<void>;
+  clearCooldown(email: string): Promise<void>;
+  incrementFailedAttempts(email: string): Promise<number>;
+  getFailedAttemptCount(email: string): Promise<number>;
+  clearFailedAttempts(email: string): Promise<void>;
+  isLocked(email: string): Promise<boolean>;
+  incrementResendCount(email: string, windowSeconds: number): Promise<number>;
+  getResendAttemptCount(email: string): Promise<number>;
+  clearResendCount(email: string): Promise<void>;
+  hasExceededResendLimit(email: string): Promise<boolean>;
+  createAndStoreOtp(email: string): Promise<string>;
+  setRateLimits(email: string): Promise<void>;
+  cleanupAll(email: string): Promise<void>;
+};
+
+export class RedisOtpLoginRepository implements OtpLoginRepository {
   readonly OTP_EXPIRY_SECONDS =
     LOGIN_OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
   readonly OTP_COOLDOWN_SECONDS = LOGIN_OTP_CONFIG.COOLDOWN_SECONDS;
 
-  constructor(client: RedisClientType) {
-    super(client, "OtpLoginRepository", {
-      cacheEnabled: true,
-      keyPrefix: ""
-    });
-  }
-
-  // ──────────────────────────────────────────────
-  // Key builders
-  // ──────────────────────────────────────────────
+  constructor(private readonly client: RedisClientType) {}
 
   private otpKey(email: string): string {
-    return this.buildKey(KEYS.OTP, email);
+    return buildKey(KEYS.OTP, email);
   }
 
   private cooldownKey(email: string): string {
-    return this.buildKey(KEYS.COOLDOWN, email);
+    return buildKey(KEYS.COOLDOWN, email);
   }
 
   private failedAttemptsKey(email: string): string {
-    return this.buildKey(KEYS.FAILED_ATTEMPTS, email);
+    return buildKey(KEYS.FAILED_ATTEMPTS, email);
   }
 
   private resendCountKey(email: string): string {
-    return this.buildKey(KEYS.RESEND_COUNT, email);
+    return buildKey(KEYS.RESEND_COUNT, email);
   }
-
-  // ──────────────────────────────────────────────
-  // OTP operations
-  // ──────────────────────────────────────────────
 
   createOtp(): string {
     return generateOtp(LOGIN_OTP_CONFIG.LENGTH);
@@ -74,10 +85,6 @@ export class OtpLoginRepository extends RedisCache {
     return isValidHashedValue(otp, hashedOtp);
   }
 
-  // ──────────────────────────────────────────────
-  // Cooldown operations
-  // ──────────────────────────────────────────────
-
   async checkCooldown(email: string): Promise<boolean> {
     const key = this.cooldownKey(email);
     const exists = await this.client.exists(key);
@@ -99,10 +106,6 @@ export class OtpLoginRepository extends RedisCache {
     const key = this.cooldownKey(email);
     await this.client.del(key);
   }
-
-  // ──────────────────────────────────────────────
-  // Failed attempts operations
-  // ──────────────────────────────────────────────
 
   async incrementFailedAttempts(email: string): Promise<number> {
     const key = this.failedAttemptsKey(email);
@@ -134,10 +137,6 @@ export class OtpLoginRepository extends RedisCache {
     return attempts >= LOGIN_OTP_CONFIG.MAX_FAILED_ATTEMPTS;
   }
 
-  // ──────────────────────────────────────────────
-  // Resend count operations
-  // ──────────────────────────────────────────────
-
   async incrementResendCount(
     email: string,
     windowSeconds: number
@@ -167,10 +166,6 @@ export class OtpLoginRepository extends RedisCache {
     const resendCount = await this.getResendAttemptCount(email);
     return resendCount >= LOGIN_OTP_CONFIG.MAX_RESEND_ATTEMPTS;
   }
-
-  // ──────────────────────────────────────────────
-  // Composite operations
-  // ──────────────────────────────────────────────
 
   async createAndStoreOtp(email: string): Promise<string> {
     const otp = this.createOtp();

@@ -3,9 +3,9 @@ import type { AuthenticationRepository } from "@/repositories/authentication.rep
 import type { UserRepository } from "@/repositories/user.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
-import { OtpLoginRepository } from "@/repositories/otp-login.repository";
-import { MagicLinkLoginRepository } from "@/repositories/magic-link-login.repository";
-import { FailedAttemptsRepository } from "@/repositories/failed-attempts.repository";
+import { RedisOtpLoginRepository } from "@/repositories/otp-login.repository";
+import { RedisMagicLinkLoginRepository } from "@/repositories/magic-link-login.repository";
+import { RedisFailedAttemptsRepository } from "@/repositories/failed-attempts.repository";
 import { LoginService } from "./login.service";
 import { LoginController } from "./login.controller";
 
@@ -16,9 +16,9 @@ export const createLoginModule = (
   loginHistorySvc: LoginHistoryService,
   rateLimiter: RateLimiterMiddleware
 ) => {
-  const otpLoginRepo = new OtpLoginRepository(redisClient);
-  const magicLinkLoginRepo = new MagicLinkLoginRepository(redisClient);
-  const failedAttemptsRepo = new FailedAttemptsRepository(redisClient);
+  const otpLoginRepo = new RedisOtpLoginRepository(redisClient);
+  const magicLinkLoginRepo = new RedisMagicLinkLoginRepository(redisClient);
+  const failedAttemptsRepo = new RedisFailedAttemptsRepository(redisClient);
 
   const loginService = new LoginService(
     authRepo,

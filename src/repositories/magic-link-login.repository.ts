@@ -1,5 +1,5 @@
 import type { RedisClientType } from "redis";
-import RedisCache from "@/core/implements/RedisCache";
+import { buildKey } from "@/utils/common";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
@@ -12,33 +12,36 @@ const KEYS = {
   COOLDOWN: LOGIN.MAGIC_LINK_COOLDOWN
 };
 
-export class MagicLinkLoginRepository extends RedisCache {
+export type MagicLinkLoginRepository = {
+  readonly MAGIC_LINK_EXPIRY_SECONDS: number;
+  readonly MAGIC_LINK_COOLDOWN_SECONDS: number;
+  createToken(): string;
+  storeHashed(email: string, token: string, expiry: number): Promise<void>;
+  verifyToken(email: string, token: string): Promise<boolean>;
+  clearToken(email: string): Promise<void>;
+  checkCooldown(email: string): Promise<boolean>;
+  getCooldownRemaining(email: string): Promise<number>;
+  setCooldown(email: string, seconds: number): Promise<void>;
+  clearCooldown(email: string): Promise<void>;
+  createAndStoreToken(email: string): Promise<string>;
+  setCooldownAfterSend(email: string): Promise<void>;
+  cleanupAll(email: string): Promise<void>;
+};
+
+export class RedisMagicLinkLoginRepository implements MagicLinkLoginRepository {
   readonly MAGIC_LINK_EXPIRY_SECONDS =
     MAGIC_LINK_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
   readonly MAGIC_LINK_COOLDOWN_SECONDS = MAGIC_LINK_CONFIG.COOLDOWN_SECONDS;
 
-  constructor(client: RedisClientType) {
-    super(client, "MagicLinkLoginRepository", {
-      cacheEnabled: true,
-      keyPrefix: ""
-    });
-  }
-
-  // ──────────────────────────────────────────────
-  // Key builders
-  // ──────────────────────────────────────────────
+  constructor(private readonly client: RedisClientType) {}
 
   private magicLinkKey(email: string): string {
-    return this.buildKey(KEYS.MAGIC_LINK, email);
+    return buildKey(KEYS.MAGIC_LINK, email);
   }
 
   private cooldownKey(email: string): string {
-    return this.buildKey(KEYS.COOLDOWN, email);
+    return buildKey(KEYS.COOLDOWN, email);
   }
-
-  // ──────────────────────────────────────────────
-  // Token operations
-  // ──────────────────────────────────────────────
 
   createToken(): string {
     return generateSecureToken(MAGIC_LINK_CONFIG.TOKEN_LENGTH);
@@ -68,10 +71,6 @@ export class MagicLinkLoginRepository extends RedisCache {
     await this.client.del(key);
   }
 
-  // ──────────────────────────────────────────────
-  // Cooldown operations
-  // ──────────────────────────────────────────────
-
   async checkCooldown(email: string): Promise<boolean> {
     const key = this.cooldownKey(email);
     const exists = await this.client.exists(key);
@@ -93,10 +92,6 @@ export class MagicLinkLoginRepository extends RedisCache {
     const key = this.cooldownKey(email);
     await this.client.del(key);
   }
-
-  // ──────────────────────────────────────────────
-  // Composite operations
-  // ──────────────────────────────────────────────
 
   async createAndStoreToken(email: string): Promise<string> {
     const token = this.createToken();

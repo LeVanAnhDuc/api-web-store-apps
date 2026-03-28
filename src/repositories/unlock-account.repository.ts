@@ -1,5 +1,5 @@
 import type { RedisClientType } from "redis";
-import RedisCache from "@/core/implements/RedisCache";
+import { buildKey } from "@/utils/common";
 import { LOGIN } from "@/constants/redis/store";
 
 const KEYS = {
@@ -12,36 +12,32 @@ const COOLDOWN_SECONDS = 60;
 const RATE_LIMIT_WINDOW_SECONDS = 3600;
 const MAX_REQUESTS_PER_HOUR = 3;
 
-export class UnlockAccountRepository extends RedisCache {
+export type UnlockAccountRepository = {
+  readonly COOLDOWN_SECONDS: number;
+  readonly MAX_REQUESTS_PER_HOUR: number;
+  getCooldownRemaining(email: string): Promise<number>;
+  setCooldown(email: string): Promise<void>;
+  incrementRequestCount(email: string): Promise<number>;
+  hasExceededRateLimit(requestCount: number): boolean;
+};
+
+export class RedisUnlockAccountRepository implements UnlockAccountRepository {
   readonly COOLDOWN_SECONDS = COOLDOWN_SECONDS;
   readonly MAX_REQUESTS_PER_HOUR = MAX_REQUESTS_PER_HOUR;
 
-  constructor(client: RedisClientType) {
-    super(client, "UnlockAccountRepository", {
-      cacheEnabled: true,
-      keyPrefix: ""
-    });
-  }
-
-  // ──────────────────────────────────────────────
-  // Key builders
-  // ──────────────────────────────────────────────
+  constructor(private readonly client: RedisClientType) {}
 
   private unlockTokenKey(email: string): string {
-    return this.buildKey(KEYS.UNLOCK_TOKEN, email);
+    return buildKey(KEYS.UNLOCK_TOKEN, email);
   }
 
   private cooldownKey(email: string): string {
-    return this.buildKey(KEYS.COOLDOWN, email);
+    return buildKey(KEYS.COOLDOWN, email);
   }
 
   private rateKey(email: string): string {
-    return this.buildKey(KEYS.RATE, email);
+    return buildKey(KEYS.RATE, email);
   }
-
-  // ──────────────────────────────────────────────
-  // Cooldown operations
-  // ──────────────────────────────────────────────
 
   async getCooldownRemaining(email: string): Promise<number> {
     const key = this.cooldownKey(email);
@@ -53,10 +49,6 @@ export class UnlockAccountRepository extends RedisCache {
     const key = this.cooldownKey(email);
     await this.client.setEx(key, COOLDOWN_SECONDS, "1");
   }
-
-  // ──────────────────────────────────────────────
-  // Rate limit operations
-  // ──────────────────────────────────────────────
 
   async incrementRequestCount(email: string): Promise<number> {
     const key = this.rateKey(email);

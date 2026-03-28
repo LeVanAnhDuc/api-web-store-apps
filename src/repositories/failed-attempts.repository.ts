@@ -1,5 +1,5 @@
 import type { RedisClientType } from "redis";
-import RedisCache from "@/core/implements/RedisCache";
+import { buildKey } from "@/utils/common";
 import { LOGIN_LOCKOUT } from "@/constants/config";
 import { LOGIN } from "@/constants/redis/store";
 
@@ -8,29 +8,28 @@ const KEYS = {
   LOCKOUT: LOGIN.LOCKOUT
 };
 
-export class FailedAttemptsRepository extends RedisCache {
-  constructor(client: RedisClientType) {
-    super(client, "FailedAttemptsRepository", {
-      cacheEnabled: true,
-      keyPrefix: ""
-    });
-  }
+export type FailedAttemptsRepository = {
+  readonly MAX_REQUESTS_PER_HOUR?: number;
+  getCount(email: string): Promise<number>;
+  trackAttempt(
+    email: string
+  ): Promise<{ attemptCount: number; lockoutSeconds: number }>;
+  resetAll(email: string): Promise<void>;
+  checkLockout(
+    email: string
+  ): Promise<{ isLocked: boolean; remainingSeconds: number }>;
+};
 
-  // ──────────────────────────────────────────────
-  // Key builders
-  // ──────────────────────────────────────────────
+export class RedisFailedAttemptsRepository implements FailedAttemptsRepository {
+  constructor(private readonly client: RedisClientType) {}
 
   private failedAttemptsKey(email: string): string {
-    return this.buildKey(KEYS.FAILED_ATTEMPTS, email);
+    return buildKey(KEYS.FAILED_ATTEMPTS, email);
   }
 
   private lockoutKey(email: string): string {
-    return this.buildKey(KEYS.LOCKOUT, email);
+    return buildKey(KEYS.LOCKOUT, email);
   }
-
-  // ──────────────────────────────────────────────
-  // Operations
-  // ──────────────────────────────────────────────
 
   async getCount(email: string): Promise<number> {
     const key = this.failedAttemptsKey(email);
@@ -82,10 +81,6 @@ export class FailedAttemptsRepository extends RedisCache {
 
     return { isLocked: false, remainingSeconds: 0 };
   }
-
-  // ──────────────────────────────────────────────
-  // Private helpers
-  // ──────────────────────────────────────────────
 
   private calculateLockoutDuration(attemptCount: number): number {
     const { LOCKOUT_DURATIONS, MAX_LOCKOUT_SECONDS } = LOGIN_LOCKOUT;

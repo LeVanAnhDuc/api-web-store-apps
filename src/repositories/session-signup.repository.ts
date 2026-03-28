@@ -1,5 +1,5 @@
 import type { RedisClientType } from "redis";
-import RedisCache from "@/core/implements/RedisCache";
+import { buildKey } from "@/utils/common";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { SESSION_CONFIG } from "@/constants/config";
 import { SIGNUP } from "@/constants/redis/store";
@@ -8,25 +8,19 @@ const KEYS = {
   SESSION: SIGNUP.SESSION
 };
 
-export class SessionSignupRepository extends RedisCache {
-  constructor(client: RedisClientType) {
-    super(client, "SessionSignupRepository", {
-      cacheEnabled: true,
-      keyPrefix: ""
-    });
-  }
+export type SessionSignupRepository = {
+  createToken(): string;
+  store(email: string, sessionId: string, expiry: number): Promise<void>;
+  verify(email: string, sessionId: string): Promise<boolean>;
+  clear(email: string): Promise<void>;
+};
 
-  // ──────────────────────────────────────────────
-  // Key builders
-  // ──────────────────────────────────────────────
+export class RedisSessionSignupRepository implements SessionSignupRepository {
+  constructor(private readonly client: RedisClientType) {}
 
   private sessionKey(email: string): string {
-    return this.buildKey(KEYS.SESSION, email);
+    return buildKey(KEYS.SESSION, email);
   }
-
-  // ──────────────────────────────────────────────
-  // Operations
-  // ──────────────────────────────────────────────
 
   createToken(): string {
     return generateSecureToken(SESSION_CONFIG.TOKEN_LENGTH);

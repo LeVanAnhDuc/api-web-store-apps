@@ -1,5 +1,5 @@
 import type { RedisClientType } from "redis";
-import RedisCache from "@/core/implements/RedisCache";
+import { buildKey } from "@/utils/common";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
@@ -13,38 +13,47 @@ const KEYS = {
   RESEND_COUNT: FORGOT_PASSWORD.MAGIC_LINK_RESEND_COUNT
 };
 
-export class MagicLinkForgotPasswordRepository extends RedisCache {
+export type MagicLinkForgotPasswordRepository = {
+  readonly MAGIC_LINK_EXPIRY_SECONDS: number;
+  readonly MAGIC_LINK_COOLDOWN_SECONDS: number;
+  createToken(): string;
+  storeHashed(email: string, token: string, expiry: number): Promise<void>;
+  verifyToken(email: string, token: string): Promise<boolean>;
+  clearToken(email: string): Promise<void>;
+  checkCooldown(email: string): Promise<boolean>;
+  getCooldownRemaining(email: string): Promise<number>;
+  setCooldown(email: string, seconds: number): Promise<void>;
+  clearCooldown(email: string): Promise<void>;
+  incrementResendCount(email: string, windowSeconds: number): Promise<number>;
+  getResendAttemptCount(email: string): Promise<number>;
+  clearResendCount(email: string): Promise<void>;
+  hasExceededResendLimit(email: string): Promise<boolean>;
+  createAndStoreToken(email: string): Promise<string>;
+  setRateLimits(email: string): Promise<void>;
+  cleanupAll(email: string): Promise<void>;
+};
+
+export class RedisMagicLinkForgotPasswordRepository
+  implements MagicLinkForgotPasswordRepository
+{
   readonly MAGIC_LINK_EXPIRY_SECONDS =
     FORGOT_PASSWORD_MAGIC_LINK_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
   readonly MAGIC_LINK_COOLDOWN_SECONDS =
     FORGOT_PASSWORD_MAGIC_LINK_CONFIG.COOLDOWN_SECONDS;
 
-  constructor(client: RedisClientType) {
-    super(client, "MagicLinkForgotPasswordRepository", {
-      cacheEnabled: true,
-      keyPrefix: ""
-    });
-  }
-
-  // ──────────────────────────────────────────────
-  // Key builders
-  // ──────────────────────────────────────────────
+  constructor(private readonly client: RedisClientType) {}
 
   private magicLinkKey(email: string): string {
-    return this.buildKey(KEYS.MAGIC_LINK, email);
+    return buildKey(KEYS.MAGIC_LINK, email);
   }
 
   private cooldownKey(email: string): string {
-    return this.buildKey(KEYS.COOLDOWN, email);
+    return buildKey(KEYS.COOLDOWN, email);
   }
 
   private resendCountKey(email: string): string {
-    return this.buildKey(KEYS.RESEND_COUNT, email);
+    return buildKey(KEYS.RESEND_COUNT, email);
   }
-
-  // ──────────────────────────────────────────────
-  // Token operations
-  // ──────────────────────────────────────────────
 
   createToken(): string {
     return generateSecureToken(FORGOT_PASSWORD_MAGIC_LINK_CONFIG.TOKEN_LENGTH);
@@ -74,10 +83,6 @@ export class MagicLinkForgotPasswordRepository extends RedisCache {
     await this.client.del(key);
   }
 
-  // ──────────────────────────────────────────────
-  // Cooldown operations
-  // ──────────────────────────────────────────────
-
   async checkCooldown(email: string): Promise<boolean> {
     const key = this.cooldownKey(email);
     const exists = await this.client.exists(key);
@@ -99,10 +104,6 @@ export class MagicLinkForgotPasswordRepository extends RedisCache {
     const key = this.cooldownKey(email);
     await this.client.del(key);
   }
-
-  // ──────────────────────────────────────────────
-  // Resend count operations
-  // ──────────────────────────────────────────────
 
   async incrementResendCount(
     email: string,
@@ -133,10 +134,6 @@ export class MagicLinkForgotPasswordRepository extends RedisCache {
     const resendCount = await this.getResendAttemptCount(email);
     return resendCount >= FORGOT_PASSWORD_MAGIC_LINK_CONFIG.MAX_RESEND_ATTEMPTS;
   }
-
-  // ──────────────────────────────────────────────
-  // Composite operations
-  // ──────────────────────────────────────────────
 
   async createAndStoreToken(email: string): Promise<string> {
     const token = this.createToken();

@@ -1,5 +1,5 @@
 import type { RedisClientType } from "redis";
-import RedisCache from "@/core/implements/RedisCache";
+import { buildKey } from "@/utils/common";
 import { generateOtp } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { OTP_CONFIG } from "@/constants/config";
@@ -12,37 +12,47 @@ const KEYS = {
   RESEND_COUNT: SIGNUP.OTP_RESEND_COUNT
 };
 
-export class OtpSignupRepository extends RedisCache {
-  constructor(client: RedisClientType) {
-    super(client, "OtpSignupRepository", {
-      cacheEnabled: true,
-      keyPrefix: ""
-    });
-  }
+export type OtpSignupRepository = {
+  createOtp(): string;
+  storeHashed(email: string, otp: string, expiry: number): Promise<void>;
+  clearOtp(email: string): Promise<void>;
+  verify(email: string, otp: string): Promise<boolean>;
+  checkCooldown(email: string): Promise<boolean>;
+  getCooldownRemaining(email: string): Promise<number>;
+  setCooldown(email: string, seconds: number): Promise<void>;
+  clearCooldown(email: string): Promise<void>;
+  incrementFailedAttempts(
+    email: string,
+    lockoutDurationMinutes: number
+  ): Promise<number>;
+  getFailedAttemptCount(email: string): Promise<number>;
+  clearFailedAttempts(email: string): Promise<void>;
+  isLocked(email: string, maxAttempts: number): Promise<boolean>;
+  incrementResendCount(email: string, windowSeconds: number): Promise<number>;
+  getResendAttemptCount(email: string): Promise<number>;
+  clearResendCount(email: string): Promise<void>;
+  hasExceededResendLimit(email: string, maxResends: number): Promise<boolean>;
+  cleanupOtpData(email: string): Promise<void>;
+};
 
-  // ──────────────────────────────────────────────
-  // Key builders
-  // ──────────────────────────────────────────────
+export class RedisOtpSignupRepository implements OtpSignupRepository {
+  constructor(private readonly client: RedisClientType) {}
 
   private otpKey(email: string): string {
-    return this.buildKey(KEYS.OTP, email);
+    return buildKey(KEYS.OTP, email);
   }
 
   private cooldownKey(email: string): string {
-    return this.buildKey(KEYS.COOLDOWN, email);
+    return buildKey(KEYS.COOLDOWN, email);
   }
 
   private failedAttemptsKey(email: string): string {
-    return this.buildKey(KEYS.FAILED_ATTEMPTS, email);
+    return buildKey(KEYS.FAILED_ATTEMPTS, email);
   }
 
   private resendCountKey(email: string): string {
-    return this.buildKey(KEYS.RESEND_COUNT, email);
+    return buildKey(KEYS.RESEND_COUNT, email);
   }
-
-  // ──────────────────────────────────────────────
-  // OTP operations
-  // ──────────────────────────────────────────────
 
   createOtp(): string {
     return generateOtp(OTP_CONFIG.LENGTH);
@@ -68,10 +78,6 @@ export class OtpSignupRepository extends RedisCache {
     return isValidHashedValue(otp, hashedOtp);
   }
 
-  // ──────────────────────────────────────────────
-  // Cooldown operations
-  // ──────────────────────────────────────────────
-
   async checkCooldown(email: string): Promise<boolean> {
     const key = this.cooldownKey(email);
     const exists = await this.client.exists(key);
@@ -93,10 +99,6 @@ export class OtpSignupRepository extends RedisCache {
     const key = this.cooldownKey(email);
     await this.client.del(key);
   }
-
-  // ──────────────────────────────────────────────
-  // Failed attempts operations
-  // ──────────────────────────────────────────────
 
   async incrementFailedAttempts(
     email: string,
@@ -127,10 +129,6 @@ export class OtpSignupRepository extends RedisCache {
     const attempts = await this.getFailedAttemptCount(email);
     return attempts >= maxAttempts;
   }
-
-  // ──────────────────────────────────────────────
-  // Resend count operations
-  // ──────────────────────────────────────────────
 
   async incrementResendCount(
     email: string,
@@ -164,10 +162,6 @@ export class OtpSignupRepository extends RedisCache {
     const resendCount = await this.getResendAttemptCount(email);
     return resendCount >= maxResends;
   }
-
-  // ──────────────────────────────────────────────
-  // Cleanup
-  // ──────────────────────────────────────────────
 
   async cleanupOtpData(email: string): Promise<void> {
     await Promise.all([
