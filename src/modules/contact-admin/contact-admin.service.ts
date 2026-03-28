@@ -1,16 +1,16 @@
 import type {
   SubmitContactBody,
   AdminContactsQuery,
-  ContactListItem,
   ContactDetailItem as ContactDetailItemType,
   PaginatedResult,
-  ContactDocument,
   ContactStatus
 } from "@/types/modules/contact-admin";
 import type { HandlerResult } from "@/types/http";
 import type { ContactRepository } from "./repositories/contact.repository";
 import type { SubmitContactResponseDto } from "./dto/submit-contact.dto";
 import { toSubmitContactResponseDto } from "./dto/submit-contact.dto";
+import type { ContactListItemDto } from "./dto/contact-list-item.dto";
+import { toContactListItemDto } from "./dto/contact-list-item.dto";
 import { CONTACT_STATUSES } from "@/constants/modules/contact-admin";
 import { NotFoundError } from "@/config/responses/error";
 import { buildContactFilter } from "./contact-admin.helper";
@@ -54,19 +54,23 @@ export class ContactAdminService {
     });
 
     return {
-      data: toSubmitContactResponseDto(contact),
-      message: "contactAdmin:success.submitted"
+      data: toSubmitContactResponseDto(contact)
     };
   }
 
   async getContactList(
     query: AdminContactsQuery
-  ): Promise<PaginatedResult<ContactListItem>> {
-    const page = query.page ?? DEFAULT_PAGE;
-    const limit = Math.min(query.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
+  ): Promise<PaginatedResult<ContactListItemDto>> {
+    const {
+      page = DEFAULT_PAGE,
+      limit: rawLimit = DEFAULT_LIMIT,
+      sortBy = "createdAt",
+      sortOrder: rawSortOrder = "desc"
+    } = query;
+
+    const limit = Math.min(rawLimit, MAX_LIMIT);
     const skip = (page - 1) * limit;
-    const sortBy = query.sortBy ?? "createdAt";
-    const sortOrder = query.sortOrder === "asc" ? 1 : -1;
+    const sortOrder = rawSortOrder === "asc" ? 1 : -1;
 
     const filter = buildContactFilter(query);
     const { data, total } = await this.contactRepo.findAll(filter, {
@@ -76,7 +80,7 @@ export class ContactAdminService {
     });
 
     return {
-      items: data.map((doc) => this.mapToContactListItem(doc)),
+      items: data.map(toContactListItemDto),
       meta: { total, page, limit, totalPages: Math.ceil(total / limit) }
     };
   }
@@ -92,7 +96,7 @@ export class ContactAdminService {
     }
 
     return {
-      ...this.mapToContactListItem(doc),
+      ...toContactListItemDto(doc),
       message: doc.message
     };
   }
@@ -100,7 +104,7 @@ export class ContactAdminService {
   async updateContactStatus(
     id: string,
     status: ContactStatus
-  ): Promise<ContactListItem> {
+  ): Promise<ContactListItemDto> {
     const updated = await this.contactRepo.updateStatus(id, status);
 
     if (!updated) {
@@ -110,18 +114,6 @@ export class ContactAdminService {
       );
     }
 
-    return this.mapToContactListItem(updated);
-  }
-
-  private mapToContactListItem(doc: ContactDocument): ContactListItem {
-    return {
-      _id: doc._id.toString(),
-      email: doc.email ?? null,
-      subject: doc.subject,
-      priority: doc.priority,
-      status: doc.status,
-      createdAt: doc.createdAt.toISOString(),
-      updatedAt: doc.updatedAt.toISOString()
-    };
+    return toContactListItemDto(updated);
   }
 }

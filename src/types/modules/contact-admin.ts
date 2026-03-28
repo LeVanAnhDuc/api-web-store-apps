@@ -45,6 +45,10 @@ export interface AdminContactsQuery {
   sortOrder?: "asc" | "desc";
 }
 
+export interface AdminContactsQueryRequest extends Omit<Request, "query"> {
+  query: AdminContactsQuery;
+}
+
 // ─── v2.0 Response Types ───────────────────────────────────────────────────
 
 export interface ContactListItem {

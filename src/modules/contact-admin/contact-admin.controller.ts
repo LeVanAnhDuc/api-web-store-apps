@@ -4,7 +4,7 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ContactAdminService } from "./contact-admin.service";
 import type {
   SubmitContactRequest,
-  AdminContactsQuery
+  AdminContactsQueryRequest
 } from "@/types/modules/contact-admin";
 import type { HandlerResult } from "@/types/http";
 import { STATUS_CODES } from "@/config/http";
@@ -79,15 +79,18 @@ export class ContactAdminController {
   private submit = async (
     req: SubmitContactRequest
   ): Promise<HandlerResult> => {
-    const { data, message } = await this.service.submitContact(req.body);
-    return { data, message, statusCode: STATUS_CODES.CREATED };
+    const { data } = await this.service.submitContact(req.body);
+    return {
+      data,
+      message: "contactAdmin:success.submitted",
+      statusCode: STATUS_CODES.CREATED
+    };
   };
 
   private getContactList = async (
-    req: AuthenticatedRequest
+    req: AdminContactsQueryRequest
   ): Promise<HandlerResult> => {
-    const query = req.query as unknown as AdminContactsQuery;
-    const data = await this.service.getContactList(query);
+    const data = await this.service.getContactList(req.query);
     return {
       data,
       message: "contactAdmin:success.getContactList",
