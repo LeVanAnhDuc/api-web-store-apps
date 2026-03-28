@@ -1,6 +1,9 @@
 import path from "path";
 import type { UserRepository } from "./repositories/user.repository";
 import type {
+  UserDocument,
+  CreateUserData,
+  UserRecord,
   UpdateProfileData,
   MyProfileResponse,
   PublicProfileResponse,
@@ -87,6 +90,18 @@ export class UserService {
       avatar: this.buildAvatarUrl(user.avatar ?? null),
       gender: user.gender ?? null
     };
+  }
+
+  async findByAuthId(authId: string): Promise<{
+    _id: UserDocument["_id"];
+    fullName: string;
+    avatar?: string | null;
+  } | null> {
+    return this.userRepo.findByAuthId(authId);
+  }
+
+  async createProfile(data: CreateUserData): Promise<UserRecord> {
+    return this.userRepo.createProfile(data);
   }
 
   private buildAvatarUrl(avatarPath: string | null): string | null {

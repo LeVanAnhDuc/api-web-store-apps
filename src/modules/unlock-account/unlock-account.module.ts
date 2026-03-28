@@ -1,8 +1,8 @@
 import type { RedisClientType } from "redis";
-import type { AuthenticationRepository } from "@/modules/authentication/repositories/authentication.repository";
-import type { UserRepository } from "@/modules/user/repositories/user.repository";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
+import type { LoginService } from "@/modules/login/login.service";
 import type { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
 import { RedisUnlockAccountRepository } from "./repositories/unlock-account.repository";
 import { UnlockAccountService } from "./unlock-account.service";
@@ -10,19 +10,19 @@ import { UnlockAccountController } from "./unlock-account.controller";
 
 export const createUnlockAccountModule = (
   redisClient: RedisClientType,
-  authRepo: AuthenticationRepository,
-  userRepo: UserRepository,
+  authService: AuthenticationService,
+  userService: UserService,
   loginHistorySvc: LoginHistoryService,
-  failedAttemptsRepo: FailedAttemptsRepository,
+  loginService: LoginService,
   rateLimiter: RateLimiterMiddleware
 ) => {
   const unlockAccountRepo = new RedisUnlockAccountRepository(redisClient);
 
   const unlockAccountService = new UnlockAccountService(
-    authRepo,
-    userRepo,
+    authService,
+    userService,
     loginHistorySvc,
-    failedAttemptsRepo,
+    loginService,
     unlockAccountRepo
   );
   const unlockAccountController = new UnlockAccountController(

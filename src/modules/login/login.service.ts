@@ -21,8 +21,8 @@ import {
   NotFoundError,
   UnauthorizedError
 } from "@/config/responses/error";
-import type { AuthenticationRepository } from "@/modules/authentication/repositories/authentication.repository";
-import type { UserRepository } from "@/modules/user/repositories/user.repository";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
@@ -40,8 +40,8 @@ import ENV from "@/config/env";
 
 export class LoginService {
   constructor(
-    private readonly authRepo: AuthenticationRepository,
-    private readonly userRepo: UserRepository,
+    private readonly authService: AuthenticationService,
+    private readonly userService: UserService,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly otpLoginRepo: OtpLoginRepository,
     private readonly magicLinkLoginRepo: MagicLinkLoginRepository,
@@ -58,7 +58,7 @@ export class LoginService {
 
     await this.ensureLoginNotLocked(email, t, language);
 
-    const auth = await this.authRepo.findByEmail(email);
+    const auth = await this.authService.findByEmail(email);
 
     this.ensureAccountExists(auth, email, req, t);
     this.ensureAccountActiveWithLogging(auth, email, req, t);
@@ -244,6 +244,20 @@ export class LoginService {
   }
 
   // ──────────────────────────────────────────────
+  // Public lockout operations (used by unlock-account module)
+  // ──────────────────────────────────────────────
+
+  async checkLockout(
+    email: string
+  ): Promise<{ isLocked: boolean; remainingSeconds: number }> {
+    return this.failedAttemptsRepo.checkLockout(email);
+  }
+
+  async resetFailedAttempts(email: string): Promise<void> {
+    return this.failedAttemptsRepo.resetAll(email);
+  }
+
+  // ──────────────────────────────────────────────
   // Login history helpers
   // ──────────────────────────────────────────────
 
@@ -265,7 +279,7 @@ export class LoginService {
       req
     });
 
-    const user = await this.userRepo.findByAuthId(auth._id.toString());
+    const user = await this.userService.findByAuthId(auth._id.toString());
 
     if (!user) {
       throw new NotFoundError("user:errors.notFound");
@@ -316,7 +330,7 @@ export class LoginService {
     email: string,
     t: TranslateFunction
   ): Promise<AuthenticationDocument> {
-    const auth = await this.authRepo.findByEmail(email);
+    const auth = await this.authService.findByEmail(email);
 
     if (!auth) {
       Logger.warn("Authentication not found", { email });

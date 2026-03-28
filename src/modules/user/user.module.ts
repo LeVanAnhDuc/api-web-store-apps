@@ -13,6 +13,7 @@ export const createUserModule = (
   const userController = new UserController(userService, auth, rateLimiter);
 
   return {
-    userRouter: userController.router
+    userRouter: userController.router,
+    userService
   };
 };

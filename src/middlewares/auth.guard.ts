@@ -1,11 +1,11 @@
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import type { CanActivate } from "@/core/interfaces/can-activate.interface";
-import type { AuthenticationRepository } from "@/modules/authentication/repositories/authentication.repository";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import { UnauthorizedError } from "@/config/responses/error";
 import { verifyAccessToken } from "@/utils/token";
 
 export class AuthGuard implements CanActivate {
-  constructor(private readonly authRepo: AuthenticationRepository) {}
+  constructor(private readonly authService: AuthenticationService) {}
 
   async canActivate(req: Request): Promise<boolean> {
     const { t } = req;
@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const authId = payload.authId || payload.userId;
-    const auth = await this.authRepo.findById(authId);
+    const auth = await this.authService.findById(authId);
 
     if (!auth) {
       throw new UnauthorizedError(t("common:errors.unauthorized"));

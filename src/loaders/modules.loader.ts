@@ -2,8 +2,7 @@ import { Router } from "express";
 import type { Express, Request, Response } from "express";
 import type { RedisClientType } from "redis";
 import { instanceRedis } from "@/database/redis";
-import { MongoAuthenticationRepository } from "@/modules/authentication/repositories/authentication.repository";
-import { MongoUserRepository } from "@/modules/user/repositories/user.repository";
+import { createAuthenticationModule } from "@/modules/authentication/authentication.module";
 import { AuthGuard } from "@/middlewares/auth.guard";
 import { AdminGuard } from "@/middlewares/admin.guard";
 import { RateLimiterMiddleware } from "@/middlewares/rate-limiter";
@@ -23,12 +22,13 @@ import { Logger } from "@/utils/logger";
 export const loadModules = (app: Express): void => {
   const redisClient = instanceRedis.getClient() as RedisClientType;
 
-  const authRepo = new MongoAuthenticationRepository();
-  const userRepo = new MongoUserRepository();
-  const auth = new AuthGuard(authRepo);
+  const { authService } = createAuthenticationModule();
+  const auth = new AuthGuard(authService);
   const adminGuard = new AdminGuard();
-  const optionalAuth = new OptionalAuthGuard(authRepo);
+  const optionalAuth = new OptionalAuthGuard(authService);
   const rateLimiter = new RateLimiterMiddleware(redisClient);
+
+  const { userRouter, userService } = createUserModule(auth, rateLimiter);
 
   const {
     loginHistoryService,
@@ -36,18 +36,18 @@ export const loadModules = (app: Express): void => {
     loginHistoryAdminRouter
   } = createLoginHistoryModule(auth, adminGuard);
 
-  const { loginRouter, failedAttemptsRepo } = createLoginModule(
+  const { loginRouter, loginService } = createLoginModule(
     redisClient,
-    authRepo,
-    userRepo,
+    authService,
+    userService,
     loginHistoryService,
     rateLimiter
   );
 
   const { signupRouter } = createSignupModule(
     redisClient,
-    authRepo,
-    userRepo,
+    authService,
+    userService,
     rateLimiter
   );
 
@@ -57,16 +57,16 @@ export const loadModules = (app: Express): void => {
 
   const { unlockAccountRouter } = createUnlockAccountModule(
     redisClient,
-    authRepo,
-    userRepo,
+    authService,
+    userService,
     loginHistoryService,
-    failedAttemptsRepo,
+    loginService,
     rateLimiter
   );
 
   const { forgotPasswordRouter } = createForgotPasswordModule(
     redisClient,
-    authRepo,
+    authService,
     loginHistoryService,
     rateLimiter
   );
@@ -76,8 +76,6 @@ export const loadModules = (app: Express): void => {
     contactAdminQueryAdminRouter,
     contactAdminQueryUserRouter
   } = createContactAdminModule(auth, adminGuard, rateLimiter, optionalAuth);
-
-  const { userRouter } = createUserModule(auth, rateLimiter);
 
   const { blogRouter } = createBlogModule(auth, optionalAuth);
 

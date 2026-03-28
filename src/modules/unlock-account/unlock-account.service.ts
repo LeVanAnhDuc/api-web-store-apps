@@ -11,10 +11,10 @@ import {
   TooManyRequestsError,
   UnauthorizedError
 } from "@/config/responses/error";
-import type { AuthenticationRepository } from "@/modules/authentication/repositories/authentication.repository";
-import type { UserRepository } from "@/modules/user/repositories/user.repository";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
+import type { LoginService } from "@/modules/login/login.service";
 import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
 import {
@@ -35,10 +35,10 @@ const ALL_CHARS =
 
 export class UnlockAccountService {
   constructor(
-    private readonly authRepo: AuthenticationRepository,
-    private readonly userRepo: UserRepository,
+    private readonly authService: AuthenticationService,
+    private readonly userService: UserService,
     private readonly loginHistoryService: LoginHistoryService,
-    private readonly failedAttemptsRepo: FailedAttemptsRepository,
+    private readonly loginService: LoginService,
     private readonly unlockAccountRepo: UnlockAccountRepository
   ) {}
 
@@ -52,7 +52,7 @@ export class UnlockAccountService {
     await this.checkCooldown(email, t);
     await this.checkRateLimit(email, t);
 
-    const auth = await this.authRepo.findByEmail(email);
+    const auth = await this.authService.findByEmail(email);
 
     if (!auth) {
       Logger.warn("Unlock request for non-existent email", { email });
@@ -68,7 +68,7 @@ export class UnlockAccountService {
       throw new BadRequestError(t("unlockAccount:errors.accountDisabled"));
     }
 
-    const { isLocked } = await this.failedAttemptsRepo.checkLockout(email);
+    const { isLocked } = await this.loginService.checkLockout(email);
     if (!isLocked) {
       Logger.info("Unlock request for non-locked account", {
         email,
@@ -83,7 +83,7 @@ export class UnlockAccountService {
       Date.now() + TEMP_PASSWORD_EXPIRY_MINUTES * 60 * 1000
     );
 
-    await this.authRepo.storeTempPassword(
+    await this.authService.storeTempPassword(
       auth._id.toString(),
       tempPasswordHash,
       tempPasswordExpAt
@@ -117,7 +117,7 @@ export class UnlockAccountService {
 
     Logger.info("Processing unlock verify", { email });
 
-    const auth = await this.authRepo.findByEmail(email);
+    const auth = await this.authService.findByEmail(email);
 
     if (!auth) {
       Logger.warn("Unlock verify failed - account not found", { email });
@@ -176,12 +176,12 @@ export class UnlockAccountService {
       authId: auth._id
     });
 
-    withRetry(() => this.failedAttemptsRepo.resetAll(email), {
+    withRetry(() => this.loginService.resetFailedAttempts(email), {
       operationName: "resetFailedAttemptsAfterUnlock",
       context: { email }
     });
 
-    await this.authRepo.markTempPasswordUsed(auth._id.toString());
+    await this.authService.markTempPasswordUsed(auth._id.toString());
 
     Logger.info("Temp password marked as used", {
       email,
@@ -200,7 +200,7 @@ export class UnlockAccountService {
       authId: auth._id
     });
 
-    const user = await this.userRepo.findByAuthId(auth._id.toString());
+    const user = await this.userService.findByAuthId(auth._id.toString());
 
     if (!user) {
       throw new NotFoundError("user:errors.notFound");

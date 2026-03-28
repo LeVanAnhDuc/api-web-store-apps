@@ -19,8 +19,8 @@ import {
   BadRequestError,
   ConflictRequestError
 } from "@/config/responses/error";
-import type { AuthenticationRepository } from "@/modules/authentication/repositories/authentication.repository";
-import type { UserRepository } from "@/modules/user/repositories/user.repository";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { OtpSignupRepository } from "./repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "./repositories/session-signup.repository";
 import {
@@ -42,8 +42,8 @@ const SESSION_EXPIRY_SECONDS =
 
 export class SignupService {
   constructor(
-    private readonly authRepo: AuthenticationRepository,
-    private readonly userRepo: UserRepository,
+    private readonly authService: AuthenticationService,
+    private readonly userService: UserService,
     private readonly otpSignupRepo: OtpSignupRepository,
     private readonly sessionSignupRepo: SessionSignupRepository
   ) {}
@@ -257,7 +257,7 @@ export class SignupService {
 
     Logger.info("CheckEmail initiated", { email });
 
-    const exists = await this.authRepo.emailExists(email);
+    const exists = await this.authService.emailExists(email);
 
     Logger.info("CheckEmail completed", { email });
 
@@ -276,7 +276,7 @@ export class SignupService {
     email: string,
     t: TranslateFunction
   ): Promise<void> {
-    const exists = await this.authRepo.emailExists(email);
+    const exists = await this.authService.emailExists(email);
 
     if (exists) {
       Logger.warn("Email already exists", { email });
@@ -384,13 +384,13 @@ export class SignupService {
     fullName: string;
   }> {
     const hashedPassword = hashValue(password);
-    const auth = await this.authRepo.create({ email, hashedPassword });
+    const auth = await this.authService.create({ email, hashedPassword });
     Logger.debug("Auth record created", {
       email,
       authId: auth._id.toString()
     });
 
-    const user = await this.userRepo.createProfile({
+    const user = await this.userService.createProfile({
       authId: auth._id,
       fullName,
       gender,

@@ -1,9 +1,9 @@
 import type { Request, Response, NextFunction, RequestHandler } from "express";
-import type { AuthenticationRepository } from "@/modules/authentication/repositories/authentication.repository";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import { verifyAccessToken } from "@/utils/token";
 
 export class OptionalAuthGuard {
-  constructor(private readonly authRepo: AuthenticationRepository) {}
+  constructor(private readonly authService: AuthenticationService) {}
 
   async canActivate(req: Request): Promise<void> {
     const authHeader = req.headers.authorization;
@@ -25,7 +25,7 @@ export class OptionalAuthGuard {
     }
 
     const authId = payload.authId || payload.userId;
-    const auth = await this.authRepo.findById(authId);
+    const auth = await this.authService.findById(authId);
 
     if (!auth) {
       return;

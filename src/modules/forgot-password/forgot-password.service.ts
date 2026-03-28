@@ -14,7 +14,7 @@ import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
-import type { AuthenticationRepository } from "@/modules/authentication/repositories/authentication.repository";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
 import type { MagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
@@ -35,7 +35,7 @@ import ENV from "@/config/env";
 
 export class ForgotPasswordService {
   constructor(
-    private readonly authRepo: AuthenticationRepository,
+    private readonly authService: AuthenticationService,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly otpRepo: OtpForgotPasswordRepository,
     private readonly magicLinkRepo: MagicLinkForgotPasswordRepository,
@@ -57,7 +57,7 @@ export class ForgotPasswordService {
     await this.ensureCooldownExpired(email, t);
     await this.ensureResendLimitNotExceeded(email, t);
 
-    const auth = await this.authRepo.findByEmail(email);
+    const auth = await this.authService.findByEmail(email);
 
     if (!auth || !auth.isActive) {
       Logger.info(
@@ -142,7 +142,7 @@ export class ForgotPasswordService {
     await this.ensureMagicLinkCooldownExpired(email, t);
     await this.ensureMagicLinkResendLimitNotExceeded(email, t);
 
-    const auth = await this.authRepo.findByEmail(email);
+    const auth = await this.authService.findByEmail(email);
 
     if (!auth || !auth.isActive) {
       Logger.info(
@@ -238,7 +238,7 @@ export class ForgotPasswordService {
     const auth = await this.ensureAuthExists(email, t);
 
     const hashedPassword = hashValue(newPassword);
-    await this.authRepo.updatePassword(auth._id.toString(), hashedPassword);
+    await this.authService.updatePassword(auth._id.toString(), hashedPassword);
 
     await this.resetTokenRepo.clear(email);
 
@@ -316,7 +316,7 @@ export class ForgotPasswordService {
     email: string,
     t: TranslateFunction
   ): Promise<AuthenticationDocument> {
-    const auth = await this.authRepo.findByEmail(email);
+    const auth = await this.authService.findByEmail(email);
 
     if (!auth) {
       Logger.warn("Forgot password - authentication not found", { email });
