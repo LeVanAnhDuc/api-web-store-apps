@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction, RequestHandler } from "express";
-import type { AuthenticationRepository } from "@/modules/authen/repositories/authentication.repository";
+import type { AuthenticationRepository } from "@/modules/authentication/repositories/authentication.repository";
 import { verifyAccessToken } from "@/utils/token";
 
 export class OptionalAuthGuard {

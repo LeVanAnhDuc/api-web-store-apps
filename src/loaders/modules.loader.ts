@@ -2,7 +2,7 @@ import { Router } from "express";
 import type { Express, Request, Response } from "express";
 import type { RedisClientType } from "redis";
 import { instanceRedis } from "@/database/redis";
-import { MongoAuthenticationRepository } from "@/modules/authen/repositories/authentication.repository";
+import { MongoAuthenticationRepository } from "@/modules/authentication/repositories/authentication.repository";
 import { MongoUserRepository } from "@/modules/user/repositories/user.repository";
 import { AuthGuard } from "@/middlewares/auth.guard";
 import { AdminGuard } from "@/middlewares/admin.guard";

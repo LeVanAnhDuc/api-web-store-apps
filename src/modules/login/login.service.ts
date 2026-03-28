@@ -21,7 +21,7 @@ import {
   NotFoundError,
   UnauthorizedError
 } from "@/config/responses/error";
-import type { AuthenticationRepository } from "@/modules/authen/repositories/authentication.repository";
+import type { AuthenticationRepository } from "@/modules/authentication/repositories/authentication.repository";
 import type { UserRepository } from "@/modules/user/repositories/user.repository";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpLoginRepository } from "./repositories/otp-login.repository";
