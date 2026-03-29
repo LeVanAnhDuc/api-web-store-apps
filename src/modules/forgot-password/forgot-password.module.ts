@@ -1,6 +1,5 @@
-// libs
-import type { RedisClientType } from "redis";
 // types
+import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { RateLimiterMiddleware } from "@/middlewares";
