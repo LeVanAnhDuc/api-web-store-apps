@@ -1,5 +1,4 @@
 import type { Request } from "express";
-import type { AuthTokensResponse } from "@/types/auth";
 import type { LOGIN_METHODS } from "@/constants/modules/login-history";
 import type { Schema } from "mongoose";
 import type {
@@ -9,18 +8,14 @@ import type {
 
 export type LoginMethod = (typeof LOGIN_METHODS)[keyof typeof LOGIN_METHODS];
 
-export type LoginResponse = AuthTokensResponse;
-
 export interface PasswordLoginBody {
   email: string;
   password: string;
 }
 
-export type PasswordLoginRequest = Request<
-  Record<string, never>,
-  unknown,
-  PasswordLoginBody
->;
+export interface PasswordLoginRequest extends Omit<Request, "body"> {
+  body: PasswordLoginBody;
+}
 
 export interface OtpSendBody {
   email: string;
@@ -31,23 +26,13 @@ export interface OtpVerifyBody {
   otp: string;
 }
 
-export interface OtpSendResponse {
-  success: boolean;
-  expiresIn: number;
-  cooldown: number;
+export interface OtpSendRequest extends Omit<Request, "body"> {
+  body: OtpSendBody;
 }
 
-export type OtpSendRequest = Request<
-  Record<string, never>,
-  unknown,
-  OtpSendBody
->;
-
-export type OtpVerifyRequest = Request<
-  Record<string, never>,
-  unknown,
-  OtpVerifyBody
->;
+export interface OtpVerifyRequest extends Omit<Request, "body"> {
+  body: OtpVerifyBody;
+}
 
 export interface MagicLinkSendBody {
   email: string;
@@ -58,23 +43,13 @@ export interface MagicLinkVerifyBody {
   token: string;
 }
 
-export interface MagicLinkSendResponse {
-  success: boolean;
-  expiresIn: number;
-  cooldown: number;
+export interface MagicLinkSendRequest extends Omit<Request, "body"> {
+  body: MagicLinkSendBody;
 }
 
-export type MagicLinkSendRequest = Request<
-  Record<string, never>,
-  unknown,
-  MagicLinkSendBody
->;
-
-export type MagicLinkVerifyRequest = Request<
-  Record<string, never>,
-  unknown,
-  MagicLinkVerifyBody
->;
+export interface MagicLinkVerifyRequest extends Omit<Request, "body"> {
+  body: MagicLinkVerifyBody;
+}
 
 export interface CreateLoginHistoryInput {
   userId: Schema.Types.ObjectId | string;

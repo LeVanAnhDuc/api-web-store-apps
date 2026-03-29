@@ -1,42 +1,47 @@
+// types
 import type {
-  PasswordLoginRequest,
-  LoginResponse,
-  LoginMethod,
-  OtpSendRequest,
-  OtpSendResponse,
-  OtpVerifyRequest,
-  MagicLinkSendRequest,
-  MagicLinkSendResponse,
-  MagicLinkVerifyRequest
+  PasswordLoginBody,
+  OtpSendBody,
+  OtpVerifyBody,
+  MagicLinkSendBody,
+  MagicLinkVerifyBody
 } from "@/types/modules/login";
-import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { Request } from "express";
-import { Logger } from "@/utils/logger";
-import { withRetry } from "@/utils/retry";
-import { generateAuthTokensResponse } from "@/utils/token";
-import { isValidHashedValue } from "@/utils/crypto/bcrypt";
-import { formatDuration } from "@/utils/date";
-import {
-  BadRequestError,
-  NotFoundError,
-  UnauthorizedError
-} from "@/config/responses/error";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
 import type { FailedAttemptsRepository } from "./repositories/failed-attempts.repository";
+import type { LoginResponseDto, OtpSendDto, MagicLinkSendDto } from "./dtos";
+// config
+import { BadRequestError } from "@/config/responses/error";
+import ENV from "@/config/env";
+// modules
 import {
   sendEmailService,
   EmailType
 } from "@/modules/send-email/send-email.module";
-import {
-  LOGIN_METHODS,
-  LOGIN_FAIL_REASONS
-} from "@/constants/modules/login-history";
+// others
+import { Logger } from "@/utils/logger";
+import { withRetry } from "@/utils/retry";
+import { LOGIN_METHODS } from "@/constants/modules/login-history";
 import { LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG } from "@/constants/config";
-import ENV from "@/config/env";
+import { toOtpSendDto, toMagicLinkSendDto } from "./dtos";
+import {
+  completeSuccessfulLogin,
+  ensureCooldownExpired,
+  ensureAuthenticationExists,
+  validateAuthenticationForLogin,
+  ensureLoginNotLocked,
+  ensureAccountExists,
+  ensureAccountActiveWithLogging,
+  ensureEmailVerifiedWithLogging,
+  verifyPasswordOrFail,
+  ensureOtpNotLocked,
+  handleInvalidOtp,
+  handleInvalidMagicLink
+} from "./login.helper";
 
 export class LoginService {
   constructor(
@@ -48,28 +53,52 @@ export class LoginService {
     private readonly failedAttemptsRepo: FailedAttemptsRepository
   ) {}
 
-  async passwordLogin(req: PasswordLoginRequest): Promise<LoginResponse> {
-    const { email, password } = req.body;
+  async passwordLogin(
+    body: PasswordLoginBody,
+    req: Request
+  ): Promise<LoginResponseDto> {
+    const { email, password } = body;
     const { language, t } = req;
 
     Logger.info("Password login initiated", { email });
 
-    await this.ensureLoginNotLocked(email, t, language);
+    await ensureLoginNotLocked(this.failedAttemptsRepo, email, t, language);
 
     const auth = await this.authService.findByEmail(email);
 
-    this.ensureAccountExists(auth, email, req, t);
-    this.ensureAccountActiveWithLogging(auth, email, req, t);
-    this.ensureEmailVerifiedWithLogging(auth, email, req, t);
+    ensureAccountExists(this.loginHistoryService, auth, email, req, t);
+    ensureAccountActiveWithLogging(
+      this.loginHistoryService,
+      auth,
+      email,
+      req,
+      t
+    );
+    ensureEmailVerifiedWithLogging(
+      this.loginHistoryService,
+      auth,
+      email,
+      req,
+      t
+    );
 
-    await this.verifyPasswordOrFail(auth, password, email, language, req, t);
+    await verifyPasswordOrFail(
+      this.failedAttemptsRepo,
+      this.loginHistoryService,
+      auth,
+      password,
+      email,
+      language,
+      req,
+      t
+    );
 
     withRetry(() => this.failedAttemptsRepo.resetAll(email), {
       operationName: "resetFailedLoginAttempts",
       context: { email }
     });
 
-    return this.completeSuccessfulLogin({
+    return completeSuccessfulLogin(this.loginHistoryService, this.userService, {
       email,
       auth,
       loginMethod: LOGIN_METHODS.PASSWORD,
@@ -77,20 +106,20 @@ export class LoginService {
     });
   }
 
-  async sendOtp(req: OtpSendRequest): Promise<OtpSendResponse> {
-    const { email } = req.body;
+  async sendOtp(body: OtpSendBody, req: Request): Promise<OtpSendDto> {
+    const { email } = body;
     const { language, t } = req;
 
     Logger.info("Login OTP send initiated", { email });
 
-    await this.ensureCooldownExpired(
+    await ensureCooldownExpired(
       this.otpLoginRepo,
       email,
       t,
       "Login OTP cooldown not expired",
       "login:errors.otpCooldown"
     );
-    await this.validateAuthenticationForLogin(email, t);
+    await validateAuthenticationForLogin(this.authService, email, t);
 
     const exceeded = await this.otpLoginRepo.hasExceededResendLimit(email);
     if (exceeded) {
@@ -117,33 +146,43 @@ export class LoginService {
       cooldown: this.otpLoginRepo.OTP_COOLDOWN_SECONDS
     });
 
-    return {
-      success: true,
-      expiresIn: this.otpLoginRepo.OTP_EXPIRY_SECONDS,
-      cooldown: this.otpLoginRepo.OTP_COOLDOWN_SECONDS
-    };
+    return toOtpSendDto(
+      this.otpLoginRepo.OTP_EXPIRY_SECONDS,
+      this.otpLoginRepo.OTP_COOLDOWN_SECONDS
+    );
   }
 
-  async verifyOtp(req: OtpVerifyRequest): Promise<LoginResponse> {
-    const { email, otp } = req.body;
+  async verifyOtp(
+    body: OtpVerifyBody,
+    req: Request
+  ): Promise<LoginResponseDto> {
+    const { email, otp } = body;
     const { t } = req;
 
     Logger.info("Login OTP verification initiated", { email });
 
-    await this.ensureOtpNotLocked(email, t);
+    await ensureOtpNotLocked(this.otpLoginRepo, email, t);
 
-    const auth = await this.ensureAuthenticationExists(email, t);
+    const auth = await ensureAuthenticationExists(this.authService, email, t);
 
     const isValid = await this.otpLoginRepo.verify(email, otp);
 
-    if (!isValid) await this.handleInvalidOtp(email, auth, t, req);
+    if (!isValid)
+      await handleInvalidOtp(
+        this.otpLoginRepo,
+        this.loginHistoryService,
+        email,
+        auth,
+        t,
+        req
+      );
 
     withRetry(() => this.otpLoginRepo.cleanupAll(email), {
       operationName: "cleanupLoginOtpData",
       context: { email }
     });
 
-    return this.completeSuccessfulLogin({
+    return completeSuccessfulLogin(this.loginHistoryService, this.userService, {
       email,
       auth,
       loginMethod: LOGIN_METHODS.OTP,
@@ -152,21 +191,22 @@ export class LoginService {
   }
 
   async sendMagicLink(
-    req: MagicLinkSendRequest
-  ): Promise<MagicLinkSendResponse> {
-    const { email } = req.body;
+    body: MagicLinkSendBody,
+    req: Request
+  ): Promise<MagicLinkSendDto> {
+    const { email } = body;
     const { language, t } = req;
 
     Logger.info("Magic link send initiated", { email });
 
-    await this.ensureCooldownExpired(
+    await ensureCooldownExpired(
       this.magicLinkLoginRepo,
       email,
       t,
       "Magic link cooldown not expired",
       "login:errors.magicLinkCooldown"
     );
-    await this.validateAuthenticationForLogin(email, t);
+    await validateAuthenticationForLogin(this.authService, email, t);
 
     const token = await this.magicLinkLoginRepo.createAndStoreToken(email);
 
@@ -188,31 +228,34 @@ export class LoginService {
       cooldown: this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
     });
 
-    return {
-      success: true,
-      expiresIn: this.magicLinkLoginRepo.MAGIC_LINK_EXPIRY_SECONDS,
-      cooldown: this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
-    };
+    return toMagicLinkSendDto(
+      this.magicLinkLoginRepo.MAGIC_LINK_EXPIRY_SECONDS,
+      this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
+    );
   }
 
-  async verifyMagicLink(req: MagicLinkVerifyRequest): Promise<LoginResponse> {
-    const { email, token } = req.body;
+  async verifyMagicLink(
+    body: MagicLinkVerifyBody,
+    req: Request
+  ): Promise<LoginResponseDto> {
+    const { email, token } = body;
     const { t } = req;
 
     Logger.info("Magic link verification initiated", { email });
 
-    const auth = await this.ensureAuthenticationExists(email, t);
+    const auth = await ensureAuthenticationExists(this.authService, email, t);
 
     const isValid = await this.magicLinkLoginRepo.verifyToken(email, token);
 
-    if (!isValid) this.handleInvalidMagicLink(email, auth, req, t);
+    if (!isValid)
+      handleInvalidMagicLink(this.loginHistoryService, email, auth, req, t);
 
     withRetry(() => this.magicLinkLoginRepo.cleanupAll(email), {
       operationName: "cleanupMagicLinkData",
       context: { email }
     });
 
-    return this.completeSuccessfulLogin({
+    return completeSuccessfulLogin(this.loginHistoryService, this.userService, {
       email,
       auth,
       loginMethod: LOGIN_METHODS.MAGIC_LINK,
@@ -232,329 +275,5 @@ export class LoginService {
 
   async resetFailedAttempts(email: string): Promise<void> {
     return this.failedAttemptsRepo.resetAll(email);
-  }
-
-  // ──────────────────────────────────────────────
-  // Login history helpers
-  // ──────────────────────────────────────────────
-
-  private async completeSuccessfulLogin({
-    email,
-    auth,
-    loginMethod,
-    req
-  }: {
-    email: string;
-    auth: AuthenticationDocument;
-    loginMethod: LoginMethod;
-    req: Request;
-  }): Promise<LoginResponse> {
-    this.loginHistoryService.recordSuccessfulLogin({
-      userId: auth._id,
-      usernameAttempted: email,
-      loginMethod,
-      req
-    });
-
-    const user = await this.userService.findByAuthId(auth._id.toString());
-
-    if (!user) {
-      throw new NotFoundError("user:errors.notFound");
-    }
-
-    Logger.info("Login successful", {
-      email,
-      userId: user._id.toString(),
-      method: loginMethod
-    });
-
-    return generateAuthTokensResponse({
-      userId: user._id.toString(),
-      authId: auth._id.toString(),
-      email: auth.email,
-      roles: auth.roles,
-      fullName: user.fullName,
-      avatar: user.avatar ?? null
-    });
-  }
-
-  // ──────────────────────────────────────────────
-  // Shared validators
-  // ──────────────────────────────────────────────
-
-  private async ensureCooldownExpired<
-    T extends {
-      checkCooldown: (email: string) => Promise<boolean>;
-      getCooldownRemaining: (email: string) => Promise<number>;
-    }
-  >(
-    store: T,
-    email: string,
-    t: TranslateFunction,
-    logMessage: string,
-    errorKey: "login:errors.otpCooldown" | "login:errors.magicLinkCooldown"
-  ): Promise<void> {
-    const canSend = await store.checkCooldown(email);
-
-    if (!canSend) {
-      const remaining = await store.getCooldownRemaining(email);
-      Logger.warn(logMessage, { email, remaining });
-      throw new BadRequestError(t(errorKey, { seconds: remaining }));
-    }
-  }
-
-  private async ensureAuthenticationExists(
-    email: string,
-    t: TranslateFunction
-  ): Promise<AuthenticationDocument> {
-    const auth = await this.authService.findByEmail(email);
-
-    if (!auth) {
-      Logger.warn("Authentication not found", { email });
-      throw new UnauthorizedError(t("login:errors.invalidEmail"));
-    }
-
-    return auth;
-  }
-
-  private async validateAuthenticationForLogin(
-    email: string,
-    t: TranslateFunction
-  ): Promise<void> {
-    const auth = await this.ensureAuthenticationExists(email, t);
-
-    if (!auth.isActive) {
-      Logger.warn("Account inactive", { email });
-      throw new UnauthorizedError(t("login:errors.accountInactive"));
-    }
-
-    if (!auth.verifiedEmail) {
-      Logger.warn("Email not verified", { email });
-      throw new UnauthorizedError(t("login:errors.emailNotVerified"));
-    }
-  }
-
-  // ──────────────────────────────────────────────
-  // Password login validators & helpers
-  // ──────────────────────────────────────────────
-
-  private async ensureLoginNotLocked(
-    email: string,
-    t: PasswordLoginRequest["t"],
-    language: string
-  ): Promise<void> {
-    const { isLocked, remainingSeconds } =
-      await this.failedAttemptsRepo.checkLockout(email);
-
-    if (!isLocked) return;
-
-    const attemptCount = await this.failedAttemptsRepo.getCount(email);
-    const timeMessage = formatDuration(remainingSeconds, language);
-
-    Logger.warn("Login blocked - account locked", {
-      email,
-      attemptCount,
-      remainingSeconds
-    });
-
-    throw new BadRequestError(
-      t("login:errors.accountLocked", {
-        attempts: attemptCount,
-        time: timeMessage
-      })
-    );
-  }
-
-  private ensureAccountExists(
-    auth: AuthenticationDocument | null,
-    email: string,
-    req: PasswordLoginRequest,
-    t: PasswordLoginRequest["t"]
-  ): asserts auth is AuthenticationDocument {
-    if (auth) return;
-
-    this.loginHistoryService.recordFailedLogin({
-      userId: null,
-      usernameAttempted: email,
-      loginMethod: LOGIN_METHODS.PASSWORD,
-      failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS,
-      req
-    });
-
-    Logger.warn("Login failed - email not found", { email });
-    throw new UnauthorizedError(t("login:errors.invalidCredentials"));
-  }
-
-  private ensureAccountActiveWithLogging(
-    auth: AuthenticationDocument,
-    email: string,
-    req: PasswordLoginRequest,
-    t: PasswordLoginRequest["t"]
-  ): void {
-    if (auth.isActive) return;
-
-    this.loginHistoryService.recordFailedLogin({
-      userId: auth._id,
-      usernameAttempted: email,
-      loginMethod: LOGIN_METHODS.PASSWORD,
-      failReason: LOGIN_FAIL_REASONS.ACCOUNT_INACTIVE,
-      req
-    });
-
-    Logger.warn("Account inactive", { email });
-    throw new UnauthorizedError(t("login:errors.accountInactive"));
-  }
-
-  private ensureEmailVerifiedWithLogging(
-    auth: AuthenticationDocument,
-    email: string,
-    req: PasswordLoginRequest,
-    t: PasswordLoginRequest["t"]
-  ): void {
-    if (auth.verifiedEmail) return;
-
-    this.loginHistoryService.recordFailedLogin({
-      userId: auth._id,
-      usernameAttempted: email,
-      loginMethod: LOGIN_METHODS.PASSWORD,
-      failReason: LOGIN_FAIL_REASONS.EMAIL_NOT_VERIFIED,
-      req
-    });
-
-    Logger.warn("Email not verified", { email });
-    throw new UnauthorizedError(t("login:errors.emailNotVerified"));
-  }
-
-  private async verifyPasswordOrFail(
-    auth: AuthenticationDocument,
-    password: string,
-    email: string,
-    language: string,
-    req: PasswordLoginRequest,
-    t: PasswordLoginRequest["t"]
-  ): Promise<void> {
-    const passwordValid = isValidHashedValue(password, auth.password);
-
-    if (passwordValid) return;
-
-    const { attemptCount, lockoutSeconds } =
-      await this.trackFailedPasswordAttempt(email, auth, req);
-
-    if (attemptCount >= 5 && lockoutSeconds > 0) {
-      const timeMessage = formatDuration(lockoutSeconds, language);
-      throw new BadRequestError(
-        t("login:errors.accountLocked", {
-          attempts: attemptCount,
-          time: timeMessage
-        })
-      );
-    }
-
-    throw new UnauthorizedError(t("login:errors.invalidCredentials"));
-  }
-
-  private async trackFailedPasswordAttempt(
-    email: string,
-    auth: AuthenticationDocument,
-    req: PasswordLoginRequest
-  ): Promise<{ attemptCount: number; lockoutSeconds: number }> {
-    const { attemptCount, lockoutSeconds } =
-      await this.failedAttemptsRepo.trackAttempt(email);
-
-    this.loginHistoryService.recordFailedLogin({
-      userId: auth._id,
-      usernameAttempted: email,
-      loginMethod: LOGIN_METHODS.PASSWORD,
-      failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS,
-      req
-    });
-
-    Logger.warn("Login failed - invalid password", { email, attemptCount });
-    return { attemptCount, lockoutSeconds };
-  }
-
-  // ──────────────────────────────────────────────
-  // OTP validators & helpers
-  // ──────────────────────────────────────────────
-
-  private async ensureOtpNotLocked(
-    email: string,
-    t: TranslateFunction
-  ): Promise<void> {
-    const isLocked = await this.otpLoginRepo.isLocked(email);
-
-    if (!isLocked) return;
-
-    const attempts = await this.otpLoginRepo.getFailedAttemptCount(email);
-    Logger.warn("Login OTP verification locked", { email, attempts });
-
-    throw new BadRequestError(
-      t("login:errors.otpLocked", {
-        minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-      })
-    );
-  }
-
-  private async handleInvalidOtp(
-    email: string,
-    auth: AuthenticationDocument,
-    t: TranslateFunction,
-    req: OtpVerifyRequest
-  ): Promise<never> {
-    const attempts = await this.trackFailedOtpAttempt(email, auth, req);
-    const remaining = LOGIN_OTP_CONFIG.MAX_FAILED_ATTEMPTS - attempts;
-
-    if (remaining <= 0) {
-      throw new BadRequestError(
-        t("login:errors.otpLocked", {
-          minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-        })
-      );
-    }
-
-    throw new UnauthorizedError(
-      t("login:errors.invalidOtpWithRemaining", { remaining })
-    );
-  }
-
-  private async trackFailedOtpAttempt(
-    email: string,
-    auth: AuthenticationDocument,
-    req: OtpVerifyRequest
-  ): Promise<number> {
-    const attempts = await this.otpLoginRepo.incrementFailedAttempts(email);
-
-    this.loginHistoryService.recordFailedLogin({
-      userId: auth._id,
-      usernameAttempted: email,
-      loginMethod: LOGIN_METHODS.OTP,
-      failReason: LOGIN_FAIL_REASONS.INVALID_OTP,
-      req
-    });
-
-    Logger.warn("Login OTP verification failed", { email, attempts });
-    return attempts;
-  }
-
-  // ──────────────────────────────────────────────
-  // Magic link helpers
-  // ──────────────────────────────────────────────
-
-  private handleInvalidMagicLink(
-    email: string,
-    auth: AuthenticationDocument,
-    req: MagicLinkVerifyRequest,
-    t: TranslateFunction
-  ): never {
-    this.loginHistoryService.recordFailedLogin({
-      userId: auth._id,
-      usernameAttempted: email,
-      loginMethod: LOGIN_METHODS.MAGIC_LINK,
-      failReason: LOGIN_FAIL_REASONS.INVALID_MAGIC_LINK,
-      req
-    });
-
-    Logger.warn("Magic link verification failed - invalid token", { email });
-    throw new UnauthorizedError(t("login:errors.invalidMagicLink"));
   }
 }
