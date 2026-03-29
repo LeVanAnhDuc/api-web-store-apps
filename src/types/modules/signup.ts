@@ -1,6 +1,5 @@
 import type { Request } from "express";
 import type { Gender } from "@/types/modules/user";
-import type { AuthTokensResponse } from "@/types/auth";
 
 export interface SendOtpBody {
   email: string;
@@ -31,62 +30,23 @@ export interface CheckEmailParams {
   [key: string]: string;
 }
 
-export interface SendOtpResponse {
-  success: true;
-  expiresIn: number;
-  cooldownSeconds: number;
-}
-
-export interface VerifyOtpResponse {
-  success: true;
-  sessionToken: string;
-  expiresIn: number;
-}
-
-export interface VerifyOtpErrorData {
-  remainingAttempts: number;
-}
-
-export interface ResendOtpResponse {
-  success: true;
-  expiresIn: number;
-  cooldownSeconds: number;
-  resendCount: number;
-  maxResends: number;
-  remainingResends: number;
-}
-
-export interface CompleteSignupResponse {
-  success: true;
-  user: {
-    id: string;
-    email: string;
-    fullName: string;
-  };
-  tokens: AuthTokensResponse;
-}
-
-export interface CheckEmailResponse {
-  available: boolean;
-}
-
-export interface SendOtpRequest extends Request {
+export interface SendOtpRequest extends Omit<Request, "body"> {
   body: SendOtpBody;
 }
 
-export interface VerifyOtpRequest extends Request {
+export interface VerifyOtpRequest extends Omit<Request, "body"> {
   body: VerifyOtpBody;
 }
 
-export interface ResendOtpRequest extends Request {
+export interface ResendOtpRequest extends Omit<Request, "body"> {
   body: ResendOtpBody;
 }
 
-export interface CompleteSignupRequest extends Request {
+export interface CompleteSignupRequest extends Omit<Request, "body"> {
   body: CompleteSignupBody;
 }
 
-export interface CheckEmailRequest extends Request {
+export interface CheckEmailRequest extends Omit<Request, "params"> {
   params: CheckEmailParams;
 }
 

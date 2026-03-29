@@ -16,12 +16,12 @@ export class SignupController {
   constructor(private readonly service: SignupService) {}
 
   sendOtp = async (req: SendOtpRequest, res: Response): Promise<void> => {
-    const data = await this.service.sendOtp(req);
+    const data = await this.service.sendOtp(req.body, req);
     new OkSuccess({ data, message: "signup:success.otpSent" }).send(req, res);
   };
 
   verifyOtp = async (req: VerifyOtpRequest, res: Response): Promise<void> => {
-    const data = await this.service.verifyOtp(req);
+    const data = await this.service.verifyOtp(req.body, req);
     new OkSuccess({ data, message: "signup:success.otpVerified" }).send(
       req,
       res
@@ -29,7 +29,7 @@ export class SignupController {
   };
 
   resendOtp = async (req: ResendOtpRequest, res: Response): Promise<void> => {
-    const data = await this.service.resendOtp(req);
+    const data = await this.service.resendOtp(req.body, req);
     new OkSuccess({ data, message: "signup:success.otpResent" }).send(req, res);
   };
 
@@ -37,7 +37,7 @@ export class SignupController {
     req: CompleteSignupRequest,
     res: Response
   ): Promise<void> => {
-    const data = await this.service.completeSignup(req);
+    const data = await this.service.completeSignup(req.body, req);
     new CreatedSuccess({
       data,
       message: "signup:success.signupCompleted"
@@ -45,7 +45,7 @@ export class SignupController {
   };
 
   checkEmail = async (req: CheckEmailRequest, res: Response): Promise<void> => {
-    const data = await this.service.checkEmail(req);
+    const data = await this.service.checkEmail(req.params);
     new OkSuccess({ data }).send(req, res);
   };
 }
