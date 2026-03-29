@@ -8,7 +8,7 @@ type ControllerFn = (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<void>;
+) => Promise<void> | void;
 
 export const asyncHandler =
   (fn: ControllerFn) =>

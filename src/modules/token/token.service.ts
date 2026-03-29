@@ -1,14 +1,17 @@
-import type { Request } from "express";
-import type { RefreshTokenResponse } from "@/types/modules/token";
+// types
+import type { RefreshTokenDto } from "./dtos";
+// config
+import { UnauthorizedError, ForbiddenError } from "@/config/responses/error";
+// others
 import { generateAuthTokensResponse, verifyRefreshToken } from "@/utils/token";
 import { Logger } from "@/utils/logger";
-import { UnauthorizedError, ForbiddenError } from "@/config/responses/error";
+import { toRefreshTokenDto } from "./dtos";
 
 export class TokenService {
-  refreshAccessToken(req: Request): RefreshTokenResponse {
-    const { t } = req;
-
-    const refreshToken = req.cookies?.refreshToken;
+  refreshAccessToken(
+    refreshToken: string | undefined,
+    t: TranslateFunction
+  ): RefreshTokenDto {
     if (!refreshToken) {
       Logger.warn("Token refresh failed - no refresh token in cookie");
       throw new UnauthorizedError(t("login:errors.refreshTokenRequired"));
@@ -26,7 +29,7 @@ export class TokenService {
 
     Logger.info("Token refresh successful", { userId: tokenPayload.userId });
 
-    return generateAuthTokensResponse({
+    const tokens = generateAuthTokensResponse({
       userId: tokenPayload.userId,
       authId: tokenPayload.authId,
       email: tokenPayload.email,
@@ -34,5 +37,7 @@ export class TokenService {
       fullName: tokenPayload.fullName,
       avatar: tokenPayload.avatar
     });
+
+    return toRefreshTokenDto(tokens);
   }
 }
