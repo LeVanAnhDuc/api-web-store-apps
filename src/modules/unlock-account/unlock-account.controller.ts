@@ -16,11 +16,7 @@ export class UnlockAccountController {
   constructor(private readonly service: UnlockAccountService) {}
 
   unlockRequest = async (req: UnlockRequest, res: Response): Promise<void> => {
-    const data = await this.service.unlockRequest(
-      req.body.email,
-      req.t,
-      req.language
-    );
+    const data = await this.service.unlockRequest(req.body, req);
     new OkSuccess({
       data,
       message: "unlockAccount:success.unlockEmailSent"
@@ -31,7 +27,7 @@ export class UnlockAccountController {
     req: UnlockVerifyRequest,
     res: Response
   ): Promise<void> => {
-    const data = await this.service.unlockVerify(req);
+    const data = await this.service.unlockVerify(req.body, req);
     const { refreshToken, ...responseData } = data;
 
     if (refreshToken) {
