@@ -53,3 +53,17 @@ export const HTTP_HEADERS = {
   CLIENT_TYPE: "x-client-type",
   X_FORWARDED_FOR: "x-forwarded-for"
 } as const;
+
+export const LOCALHOST_VALUES = ["localhost", "0.0.0.0"] as const;
+
+export const PRIVATE_IP_PATTERNS = [
+  /^127\./, // Loopback
+  /^10\./, // Private Class A
+  /^172\.(1[6-9]|2[0-9]|3[0-1])\./, // Private Class B
+  /^192\.168\./, // Private Class C
+  /^169\.254\./, // Link-local
+  /^::1$/, // IPv6 loopback
+  /^fe80:/, // IPv6 link-local
+  /^fc00:/, // IPv6 private
+  /^fd00:/ // IPv6 private
+] as const;

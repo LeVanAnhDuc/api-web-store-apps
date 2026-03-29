@@ -1,4 +1,5 @@
 import type { Schema, Document } from "mongoose";
+import type { Request } from "express";
 import type { LoginMethod } from "@/types/modules/login";
 import type {
   LOGIN_STATUSES,
@@ -6,7 +7,6 @@ import type {
   DEVICE_TYPES,
   CLIENT_TYPES
 } from "@/constants/modules/login-history";
-import type { Request } from "express";
 
 export interface PaginationParams {
   page: number;
@@ -40,30 +40,6 @@ export interface LoginHistoryAdminQuery extends LoginHistoryQuery {
     | "usernameAttempted";
 }
 
-export interface LoginHistoryItem {
-  _id: string;
-  method: LoginMethod;
-  status: LoginStatus;
-  failReason: LoginFailReason | null;
-  ip: string;
-  country: string;
-  city: string;
-  deviceType: DeviceType;
-  os: string;
-  browser: string;
-  clientType: ClientType;
-  createdAt: string;
-}
-
-export interface LoginHistoryAdminItem extends LoginHistoryItem {
-  userId: string | null;
-  usernameAttempted: string;
-  userAgent: string;
-  timezoneOffset: string | null;
-  isAnomaly: boolean;
-  anomalyReasons: string[];
-}
-
 export interface PaginatedResult<T> {
   items: T[];
   meta: {
@@ -72,6 +48,20 @@ export interface PaginatedResult<T> {
     limit: number;
     totalPages: number;
   };
+}
+
+export interface MyHistoryRequest extends Omit<Request, "query" | "user"> {
+  user: {
+    userId: string;
+    authId: string;
+    email: string;
+    roles: string;
+  };
+  query: LoginHistoryQuery;
+}
+
+export interface AllHistoryRequest extends Omit<Request, "query"> {
+  query: LoginHistoryAdminQuery;
 }
 
 export type LoginStatus = (typeof LOGIN_STATUSES)[keyof typeof LOGIN_STATUSES];

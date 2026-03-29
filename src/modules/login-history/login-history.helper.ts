@@ -1,15 +1,25 @@
+// libs
 import type { Request } from "express";
 import { UAParser } from "ua-parser-js";
-import Logger from "@/utils/logger";
 import geoip from "geoip-lite";
+// types
+import type {
+  ClientType,
+  DeviceType,
+  LoginHistoryAdminQuery
+} from "@/types/modules/login-history";
+import type { LoginHistoryFilter } from "./repositories/login-history.repository";
+// others
 import {
   CLIENT_TYPES,
   DEVICE_TYPES,
   GEO_DEFAULTS,
   USER_AGENT_DEFAULTS,
-  HTTP_HEADERS
+  HTTP_HEADERS,
+  LOCALHOST_VALUES,
+  PRIVATE_IP_PATTERNS
 } from "@/constants/modules/login-history";
-import type { ClientType, DeviceType } from "@/types/modules/login-history";
+import { Logger } from "@/utils/logger";
 
 // ──────────────────────────────────────────────
 // extractIp
@@ -91,7 +101,7 @@ export const parseUserAgent = (
       os: `${os}${osVersion}`,
       browser: `${browser}${browserVersion}`
     };
-  } catch (error) {
+  } catch {
     return {
       deviceType: DEVICE_TYPES.UNKNOWN,
       os: USER_AGENT_DEFAULTS.UNKNOWN_OS,
@@ -103,20 +113,6 @@ export const parseUserAgent = (
 // ──────────────────────────────────────────────
 // geoipLookup
 // ──────────────────────────────────────────────
-
-const LOCALHOST_VALUES = ["localhost", "0.0.0.0"] as const;
-
-const PRIVATE_IP_PATTERNS = [
-  /^127\./, // Loopback
-  /^10\./, // Private Class A
-  /^172\.(1[6-9]|2[0-9]|3[0-1])\./, // Private Class B
-  /^192\.168\./, // Private Class C
-  /^169\.254\./, // Link-local
-  /^::1$/, // IPv6 loopback
-  /^fe80:/, // IPv6 link-local
-  /^fc00:/, // IPv6 private
-  /^fd00:/ // IPv6 private
-] as const;
 
 export const geoipLookup = (
   ip: string
@@ -206,4 +202,32 @@ export const determineClientType = (clientTypeHeader?: string): ClientType => {
     return CLIENT_TYPES.MOBILE_ANDROID;
 
   return CLIENT_TYPES.WEB;
+};
+
+// ──────────────────────────────────────────────
+// buildLoginHistoryFilter
+// ──────────────────────────────────────────────
+
+export const buildLoginHistoryFilter = (
+  query: LoginHistoryAdminQuery,
+  userId?: string
+): LoginHistoryFilter => {
+  const filter: LoginHistoryFilter = {};
+
+  if (userId) filter.userId = userId;
+  else if (query.userId) filter.userId = query.userId;
+
+  if (query.status) filter.status = query.status;
+  if (query.method) filter.method = query.method;
+  if (query.deviceType) filter.deviceType = query.deviceType;
+  if (query.clientType) filter.clientType = query.clientType;
+  if (query.country) filter.country = query.country;
+  if (query.city) filter.city = query.city;
+  if (query.os) filter.os = query.os;
+  if (query.browser) filter.browser = query.browser;
+  if (query.ip) filter.ip = query.ip;
+  if (query.fromDate) filter.fromDate = new Date(query.fromDate);
+  if (query.toDate) filter.toDate = new Date(query.toDate);
+
+  return filter;
 };

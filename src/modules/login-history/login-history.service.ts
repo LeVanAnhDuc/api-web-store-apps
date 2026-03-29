@@ -1,30 +1,31 @@
+// types
 import type { Schema } from "mongoose";
 import type { Request } from "express";
 import type { LoginHistoryRepository } from "./repositories/login-history.repository";
 import type {
   LoginEventPayload,
   ClientType,
-  LoginFailReason,
   LoginHistoryQuery,
   LoginHistoryAdminQuery,
-  LoginHistoryItem,
-  LoginHistoryAdminItem,
   PaginatedResult
 } from "@/types/modules/login-history";
 import type { LoginMethod } from "@/types/modules/login";
+import type { MyHistoryItemDto, AllHistoryItemDto } from "./dtos";
+// others
 import {
   LOGIN_STATUSES,
   HTTP_HEADERS
 } from "@/constants/modules/login-history";
-import Logger from "@/utils/logger";
+import { Logger } from "@/utils/logger";
+import { toMyHistoryItemDto, toAllHistoryItemDto } from "./dtos";
 import {
   extractIp,
   parseUserAgent,
   geoipLookup,
   determineClientType,
-  maskIp
-} from "./internals/helpers";
-import { buildLoginHistoryFilter } from "./internals/query-builder";
+  buildLoginHistoryFilter
+} from "./login-history.helper";
+import type { LoginFailReason } from "@/types/modules/login-history";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
@@ -79,12 +80,16 @@ export class LoginHistoryService {
   async getMyLoginHistory(
     userId: string,
     query: LoginHistoryQuery
-  ): Promise<PaginatedResult<LoginHistoryItem>> {
-    const page = query.page ?? DEFAULT_PAGE;
-    const limit = Math.min(query.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
+  ): Promise<PaginatedResult<MyHistoryItemDto>> {
+    const {
+      page = DEFAULT_PAGE,
+      limit: rawLimit = DEFAULT_LIMIT,
+      sortBy = "createdAt",
+      sortOrder: rawSortOrder
+    } = query;
+    const limit = Math.min(rawLimit, MAX_LIMIT);
     const skip = (page - 1) * limit;
-    const sortBy = query.sortBy ?? "createdAt";
-    const sortOrder = query.sortOrder === "asc" ? 1 : -1;
+    const sortOrder = rawSortOrder === "asc" ? 1 : -1;
 
     const filter = buildLoginHistoryFilter(
       query as LoginHistoryAdminQuery,
@@ -96,23 +101,8 @@ export class LoginHistoryService {
       sort: { [sortBy]: sortOrder }
     });
 
-    const items: LoginHistoryItem[] = data.map((record) => ({
-      _id: record._id.toString(),
-      method: record.method,
-      status: record.status,
-      failReason: record.failReason ?? null,
-      ip: maskIp(record.ip),
-      country: record.country,
-      city: record.city,
-      deviceType: record.deviceType,
-      os: record.os,
-      browser: record.browser,
-      clientType: record.clientType,
-      createdAt: record.createdAt.toISOString()
-    }));
-
     return {
-      items,
+      items: data.map(toMyHistoryItemDto),
       meta: {
         total,
         page,
@@ -124,12 +114,16 @@ export class LoginHistoryService {
 
   async getAllLoginHistory(
     query: LoginHistoryAdminQuery
-  ): Promise<PaginatedResult<LoginHistoryAdminItem>> {
-    const page = query.page ?? DEFAULT_PAGE;
-    const limit = Math.min(query.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
+  ): Promise<PaginatedResult<AllHistoryItemDto>> {
+    const {
+      page = DEFAULT_PAGE,
+      limit: rawLimit = DEFAULT_LIMIT,
+      sortBy = "createdAt",
+      sortOrder: rawSortOrder
+    } = query;
+    const limit = Math.min(rawLimit, MAX_LIMIT);
     const skip = (page - 1) * limit;
-    const sortBy = query.sortBy ?? "createdAt";
-    const sortOrder = query.sortOrder === "asc" ? 1 : -1;
+    const sortOrder = rawSortOrder === "asc" ? 1 : -1;
 
     const filter = buildLoginHistoryFilter(query);
     const { data, total } = await this.loginHistoryRepo.findAll(filter, {
@@ -138,29 +132,8 @@ export class LoginHistoryService {
       sort: { [sortBy]: sortOrder }
     });
 
-    const items: LoginHistoryAdminItem[] = data.map((record) => ({
-      _id: record._id.toString(),
-      method: record.method,
-      status: record.status,
-      failReason: record.failReason ?? null,
-      ip: record.ip,
-      country: record.country,
-      city: record.city,
-      deviceType: record.deviceType,
-      os: record.os,
-      browser: record.browser,
-      clientType: record.clientType,
-      createdAt: record.createdAt.toISOString(),
-      userId: record.userId ? record.userId.toString() : null,
-      usernameAttempted: record.usernameAttempted,
-      userAgent: record.userAgent,
-      timezoneOffset: record.timezoneOffset,
-      isAnomaly: record.isAnomaly,
-      anomalyReasons: record.anomalyReasons
-    }));
-
     return {
-      items,
+      items: data.map(toAllHistoryItemDto),
       meta: {
         total,
         page,
