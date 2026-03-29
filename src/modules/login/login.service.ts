@@ -8,7 +8,6 @@ import type {
 } from "@/types/modules/login";
 import type { Request } from "express";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
@@ -44,7 +43,6 @@ import {
 export class LoginService {
   constructor(
     private readonly authService: AuthenticationService,
-    private readonly userService: UserService,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly otpLoginRepo: OtpLoginRepository,
     private readonly magicLinkLoginRepo: MagicLinkLoginRepository,
@@ -97,7 +95,7 @@ export class LoginService {
       context: { email }
     });
 
-    return completeSuccessfulLogin(this.loginHistoryService, this.userService, {
+    return completeSuccessfulLogin(this.loginHistoryService, this.authService, {
       email,
       auth,
       loginMethod: LOGIN_METHODS.PASSWORD,
@@ -181,7 +179,7 @@ export class LoginService {
       context: { email }
     });
 
-    return completeSuccessfulLogin(this.loginHistoryService, this.userService, {
+    return completeSuccessfulLogin(this.loginHistoryService, this.authService, {
       email,
       auth,
       loginMethod: LOGIN_METHODS.OTP,
@@ -254,7 +252,7 @@ export class LoginService {
       context: { email }
     });
 
-    return completeSuccessfulLogin(this.loginHistoryService, this.userService, {
+    return completeSuccessfulLogin(this.loginHistoryService, this.authService, {
       email,
       auth,
       loginMethod: LOGIN_METHODS.MAGIC_LINK,

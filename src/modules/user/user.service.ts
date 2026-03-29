@@ -1,111 +1,77 @@
+// libs
 import path from "path";
-import type { UserRepository } from "./repositories/user.repository";
+// types
 import type {
-  UserDocument,
   CreateUserData,
   UserRecord,
-  UpdateProfileData,
-  MyProfileResponse,
-  PublicProfileResponse,
-  UploadAvatarResponse
+  UpdateProfileData
 } from "@/types/modules/user";
-import { NotFoundError } from "@/config/responses/error";
-import { USER_CONFIG } from "@/constants/config";
+import type { UserRepository } from "./repositories/user.repository";
+import type { MyProfileDto, PublicProfileDto, UploadAvatarDto } from "./dtos";
+// config
+import { BadRequestError, NotFoundError } from "@/config/responses/error";
+// others
+import { toMyProfileDto, toPublicProfileDto, toUploadAvatarDto } from "./dtos";
+import { buildAvatarUrl } from "./user.helper";
 
 export class UserService {
   constructor(private readonly userRepo: UserRepository) {}
 
-  async getMyProfile(
-    userId: string,
-    email: string
-  ): Promise<MyProfileResponse> {
+  async getMyProfile(userId: string, email: string): Promise<MyProfileDto> {
     const user = await this.userRepo.findById(userId);
 
     if (!user) {
       throw new NotFoundError("user:errors.notFound");
     }
 
-    return {
-      _id: String(user._id),
-      fullName: user.fullName,
-      phone: user.phone ?? null,
-      avatar: this.buildAvatarUrl(user.avatar ?? null),
-      address: user.address ?? null,
-      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.toISOString() : null,
-      gender: user.gender ?? null,
-      email,
-      createdAt: user.createdAt.toISOString()
-    };
+    return toMyProfileDto(user, email, buildAvatarUrl(user.avatar ?? null));
   }
 
   async updateMyProfile(
     userId: string,
     email: string,
     data: Partial<UpdateProfileData>
-  ): Promise<MyProfileResponse> {
+  ): Promise<MyProfileDto> {
     const user = await this.userRepo.updateById(userId, data);
 
     if (!user) {
       throw new NotFoundError("user:errors.notFound");
     }
 
-    return {
-      _id: String(user._id),
-      fullName: user.fullName,
-      phone: user.phone ?? null,
-      avatar: this.buildAvatarUrl(user.avatar ?? null),
-      address: user.address ?? null,
-      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.toISOString() : null,
-      gender: user.gender ?? null,
-      email,
-      createdAt: user.createdAt.toISOString()
-    };
+    return toMyProfileDto(user, email, buildAvatarUrl(user.avatar ?? null));
   }
 
   async updateAvatar(
     userId: string,
-    filePath: string
-  ): Promise<UploadAvatarResponse> {
+    filePath?: string
+  ): Promise<UploadAvatarDto> {
+    if (!filePath) {
+      throw new BadRequestError(
+        "user:errors.noFileUploaded",
+        "NO_FILE_UPLOADED"
+      );
+    }
+
     const normalizedPath = path
       .relative(process.cwd(), filePath)
       .replace(/\\/g, "/");
 
     await this.userRepo.updateAvatar(userId, normalizedPath);
 
-    return {
-      avatarUrl: this.buildAvatarUrl(normalizedPath) as string
-    };
+    return toUploadAvatarDto(buildAvatarUrl(normalizedPath) as string);
   }
 
-  async getPublicProfile(userId: string): Promise<PublicProfileResponse> {
+  async getPublicProfile(userId: string): Promise<PublicProfileDto> {
     const user = await this.userRepo.findPublicById(userId);
 
     if (!user) {
       throw new NotFoundError("user:errors.notFound");
     }
 
-    return {
-      _id: String(user._id),
-      fullName: user.fullName,
-      avatar: this.buildAvatarUrl(user.avatar ?? null),
-      gender: user.gender ?? null
-    };
-  }
-
-  async findByAuthId(authId: string): Promise<{
-    _id: UserDocument["_id"];
-    fullName: string;
-    avatar?: string | null;
-  } | null> {
-    return this.userRepo.findByAuthId(authId);
+    return toPublicProfileDto(user, buildAvatarUrl(user.avatar ?? null));
   }
 
   async createProfile(data: CreateUserData): Promise<UserRecord> {
     return this.userRepo.createProfile(data);
-  }
-
-  private buildAvatarUrl(avatarPath: string | null): string | null {
-    if (!avatarPath) return null;
-    return `${USER_CONFIG.BASE_URL}/${avatarPath}`;
   }
 }

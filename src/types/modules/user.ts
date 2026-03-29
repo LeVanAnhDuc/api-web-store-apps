@@ -44,43 +44,20 @@ export interface PublicUserRecord {
   gender?: Gender;
 }
 
-export interface MyProfileResponse {
-  _id: string;
-  fullName: string;
-  phone: string | null;
-  avatar: string | null;
-  address: string | null;
-  dateOfBirth: string | null;
-  gender: string | null;
-  email: string;
-  createdAt: string;
-}
-
-export interface PublicProfileResponse {
-  _id: string;
-  fullName: string;
-  avatar: string | null;
-  gender: string | null;
-}
-
-export interface UploadAvatarResponse {
-  avatarUrl: string;
-}
-
-export interface GetMyProfileRequest extends Request {
+export interface GetMyProfileRequest extends Omit<Request, "user"> {
   user: JwtTokenPayload;
 }
 
-export interface UpdateProfileRequest extends Request {
+export interface UpdateProfileRequest extends Omit<Request, "user" | "body"> {
   user: JwtTokenPayload;
   body: UpdateProfileData;
 }
 
-export interface UploadAvatarRequest extends Request {
+export interface UploadAvatarRequest extends Omit<Request, "user"> {
   user: JwtTokenPayload;
   file?: Express.Multer.File;
 }
 
-export interface GetPublicProfileRequest extends Request {
+export interface GetPublicProfileRequest extends Omit<Request, "params"> {
   params: { id: string };
 }

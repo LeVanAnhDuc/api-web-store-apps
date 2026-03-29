@@ -3,8 +3,10 @@ import type {
   AuthenticationRecord,
   CreateAuthenticationData
 } from "@/types/modules/authentication";
+import type { UserDocument } from "@/types/modules/user";
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
 import AuthenticationModel from "@/models/authentication";
+import UserModel from "@/models/user";
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 export type AuthenticationRepository = {
@@ -19,6 +21,11 @@ export type AuthenticationRepository = {
   ): Promise<void>;
   markTempPasswordUsed(authId: string): Promise<void>;
   updatePassword(authId: string, hashedPassword: string): Promise<void>;
+  findUserByAuthId(authId: string): Promise<{
+    _id: UserDocument["_id"];
+    fullName: string;
+    avatar?: string | null;
+  } | null>;
 };
 
 export class MongoAuthenticationRepository implements AuthenticationRepository {
@@ -91,6 +98,23 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
         password: hashedPassword,
         passwordChangedAt: new Date()
       }).exec()
+    );
+  }
+
+  async findUserByAuthId(authId: string): Promise<{
+    _id: UserDocument["_id"];
+    fullName: string;
+    avatar?: string | null;
+  } | null> {
+    return asyncDatabaseHandler("findUserByAuthId", () =>
+      UserModel.findOne({ authId })
+        .select("_id fullName avatar")
+        .lean<{
+          _id: UserDocument["_id"];
+          fullName: string;
+          avatar?: string | null;
+        }>()
+        .exec()
     );
   }
 }

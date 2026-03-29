@@ -3,6 +3,7 @@ import type {
   AuthenticationRecord,
   CreateAuthenticationData
 } from "@/types/modules/authentication";
+import type { UserDocument } from "@/types/modules/user";
 import { Logger } from "@/utils/logger";
 import {
   validateEmail,
@@ -115,6 +116,21 @@ export class AuthenticationService {
         authId,
         error
       });
+      throw error;
+    }
+  }
+
+  async findUserByAuthId(authId: string): Promise<{
+    _id: UserDocument["_id"];
+    fullName: string;
+    avatar?: string | null;
+  } | null> {
+    validateObjectId(authId, "authId");
+
+    try {
+      return await this.authRepo.findUserByAuthId(authId);
+    } catch (error) {
+      Logger.error("Failed to find user by auth ID", { authId, error });
       throw error;
     }
   }

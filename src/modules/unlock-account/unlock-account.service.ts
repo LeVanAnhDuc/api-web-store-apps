@@ -5,7 +5,6 @@ import type {
   UnlockVerifyBody
 } from "@/types/modules/unlock-account";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/login.service";
 import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
@@ -35,7 +34,6 @@ import {
 export class UnlockAccountService {
   constructor(
     private readonly authService: AuthenticationService,
-    private readonly userService: UserService,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly loginService: LoginService,
     private readonly unlockAccountRepo: UnlockAccountRepository,
@@ -150,7 +148,7 @@ export class UnlockAccountService {
       req
     });
 
-    const user = await this.userService.findByAuthId(auth._id.toString());
+    const user = await this.authService.findUserByAuthId(auth._id.toString());
 
     if (!user) {
       throw new NotFoundError("user:errors.notFound");

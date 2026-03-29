@@ -3,7 +3,6 @@ import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { LoginMethod } from "@/types/modules/login";
 import type { Request } from "express";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { FailedAttemptsRepository } from "./repositories/failed-attempts.repository";
@@ -32,7 +31,7 @@ import { toLoginResponseDto } from "./dtos";
 
 export async function completeSuccessfulLogin(
   loginHistoryService: LoginHistoryService,
-  userService: UserService,
+  authService: AuthenticationService,
   {
     email,
     auth,
@@ -52,7 +51,7 @@ export async function completeSuccessfulLogin(
     req
   });
 
-  const user = await userService.findByAuthId(auth._id.toString());
+  const user = await authService.findUserByAuthId(auth._id.toString());
 
   if (!user) {
     throw new NotFoundError("user:errors.notFound");

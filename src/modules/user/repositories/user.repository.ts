@@ -17,11 +17,6 @@ export type UserRepository = {
   ): Promise<UserDocument | null>;
   updateAvatar(userId: string, avatarPath: string): Promise<void>;
   findPublicById(userId: string): Promise<PublicUserRecord | null>;
-  findByAuthId(authId: string): Promise<{
-    _id: UserDocument["_id"];
-    fullName: string;
-    avatar?: string | null;
-  } | null>;
 };
 
 export class MongoUserRepository implements UserRepository {
@@ -70,23 +65,6 @@ export class MongoUserRepository implements UserRepository {
       UserModel.findById(userId)
         .select("fullName avatar gender")
         .lean<PublicUserRecord>()
-        .exec()
-    );
-  }
-
-  async findByAuthId(authId: string): Promise<{
-    _id: UserDocument["_id"];
-    fullName: string;
-    avatar?: string | null;
-  } | null> {
-    return asyncDatabaseHandler("findByAuthId", () =>
-      UserModel.findOne({ authId })
-        .select("_id fullName avatar")
-        .lean<{
-          _id: UserDocument["_id"];
-          fullName: string;
-          avatar?: string | null;
-        }>()
         .exec()
     );
   }

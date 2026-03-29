@@ -1,71 +1,19 @@
-// libs
-import { Router } from "express";
-import type { RequestHandler, Response } from "express";
-
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
-import type { UserService } from "./user.service";
+import type { Response } from "express";
 import type {
   GetMyProfileRequest,
   UpdateProfileRequest,
   UploadAvatarRequest,
   GetPublicProfileRequest
 } from "@/types/modules/user";
-
+import type { UserService } from "./user.service";
 // config
 import { OkSuccess } from "@/config/responses/success";
-import { BadRequestError } from "@/config/responses/error";
-
-// utils
-import { asyncHandler } from "@/utils/async-handler";
-
-// middlewares
-import { bodyPipe, paramsPipe, uploadAvatar } from "@/middlewares";
-
-// validators
-import {
-  updateProfileSchema,
-  getPublicProfileSchema
-} from "@/validators/schemas/user";
 
 export class UserController {
-  public readonly router = Router();
+  constructor(private readonly service: UserService) {}
 
-  constructor(
-    private readonly service: UserService,
-    private readonly authGuard: RequestHandler,
-    private readonly rl: RateLimiterMiddleware
-  ) {
-    this.initRoutes();
-  }
-
-  private initRoutes() {
-    this.router.get("/me", this.authGuard, asyncHandler(this.getMyProfile));
-
-    this.router.patch(
-      "/me",
-      this.rl.updateProfileByIp,
-      this.authGuard,
-      bodyPipe(updateProfileSchema),
-      asyncHandler(this.updateMyProfile)
-    );
-
-    this.router.post(
-      "/me/avatar",
-      this.rl.uploadAvatarByIp,
-      this.authGuard,
-      uploadAvatar,
-      asyncHandler(this.uploadAvatarHandler)
-    );
-
-    this.router.get(
-      "/:id",
-      paramsPipe(getPublicProfileSchema),
-      asyncHandler(this.getPublicProfile)
-    );
-  }
-
-  private getMyProfile = async (
+  getMyProfile = async (
     req: GetMyProfileRequest,
     res: Response
   ): Promise<void> => {
@@ -74,7 +22,7 @@ export class UserController {
     new OkSuccess({ data, message: "user:success.getProfile" }).send(req, res);
   };
 
-  private updateMyProfile = async (
+  updateMyProfile = async (
     req: UpdateProfileRequest,
     res: Response
   ): Promise<void> => {
@@ -86,26 +34,19 @@ export class UserController {
     );
   };
 
-  private uploadAvatarHandler = async (
+  uploadAvatarHandler = async (
     req: UploadAvatarRequest,
     res: Response
   ): Promise<void> => {
-    if (!req.file) {
-      throw new BadRequestError(
-        "user:errors.noFileUploaded",
-        "NO_FILE_UPLOADED"
-      );
-    }
-
     const { userId } = req.user;
-    const data = await this.service.updateAvatar(userId, req.file.path);
+    const data = await this.service.updateAvatar(userId, req.file?.path);
     new OkSuccess({ data, message: "user:success.uploadAvatar" }).send(
       req,
       res
     );
   };
 
-  private getPublicProfile = async (
+  getPublicProfile = async (
     req: GetPublicProfileRequest,
     res: Response
   ): Promise<void> => {
