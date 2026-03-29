@@ -48,9 +48,7 @@ export class LoginService {
     private readonly failedAttemptsRepo: FailedAttemptsRepository
   ) {}
 
-  async passwordLogin(
-    req: PasswordLoginRequest
-  ): Promise<Partial<ResponsePattern<LoginResponse>>> {
+  async passwordLogin(req: PasswordLoginRequest): Promise<LoginResponse> {
     const { email, password } = req.body;
     const { language, t } = req;
 
@@ -71,20 +69,15 @@ export class LoginService {
       context: { email }
     });
 
-    return {
-      message: t("login:success.loginSuccessful"),
-      data: await this.completeSuccessfulLogin({
-        email,
-        auth,
-        loginMethod: LOGIN_METHODS.PASSWORD,
-        req
-      })
-    };
+    return this.completeSuccessfulLogin({
+      email,
+      auth,
+      loginMethod: LOGIN_METHODS.PASSWORD,
+      req
+    });
   }
 
-  async sendOtp(
-    req: OtpSendRequest
-  ): Promise<Partial<ResponsePattern<OtpSendResponse>>> {
+  async sendOtp(req: OtpSendRequest): Promise<OtpSendResponse> {
     const { email } = req.body;
     const { language, t } = req;
 
@@ -125,18 +118,13 @@ export class LoginService {
     });
 
     return {
-      message: t("login:success.otpSent"),
-      data: {
-        success: true,
-        expiresIn: this.otpLoginRepo.OTP_EXPIRY_SECONDS,
-        cooldown: this.otpLoginRepo.OTP_COOLDOWN_SECONDS
-      }
+      success: true,
+      expiresIn: this.otpLoginRepo.OTP_EXPIRY_SECONDS,
+      cooldown: this.otpLoginRepo.OTP_COOLDOWN_SECONDS
     };
   }
 
-  async verifyOtp(
-    req: OtpVerifyRequest
-  ): Promise<Partial<ResponsePattern<LoginResponse>>> {
+  async verifyOtp(req: OtpVerifyRequest): Promise<LoginResponse> {
     const { email, otp } = req.body;
     const { t } = req;
 
@@ -155,20 +143,17 @@ export class LoginService {
       context: { email }
     });
 
-    return {
-      message: t("login:success.loginSuccessful"),
-      data: await this.completeSuccessfulLogin({
-        email,
-        auth,
-        loginMethod: LOGIN_METHODS.OTP,
-        req
-      })
-    };
+    return this.completeSuccessfulLogin({
+      email,
+      auth,
+      loginMethod: LOGIN_METHODS.OTP,
+      req
+    });
   }
 
   async sendMagicLink(
     req: MagicLinkSendRequest
-  ): Promise<Partial<ResponsePattern<MagicLinkSendResponse>>> {
+  ): Promise<MagicLinkSendResponse> {
     const { email } = req.body;
     const { language, t } = req;
 
@@ -204,18 +189,13 @@ export class LoginService {
     });
 
     return {
-      message: t("login:success.magicLinkSent"),
-      data: {
-        success: true,
-        expiresIn: this.magicLinkLoginRepo.MAGIC_LINK_EXPIRY_SECONDS,
-        cooldown: this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
-      }
+      success: true,
+      expiresIn: this.magicLinkLoginRepo.MAGIC_LINK_EXPIRY_SECONDS,
+      cooldown: this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
     };
   }
 
-  async verifyMagicLink(
-    req: MagicLinkVerifyRequest
-  ): Promise<Partial<ResponsePattern<LoginResponse>>> {
+  async verifyMagicLink(req: MagicLinkVerifyRequest): Promise<LoginResponse> {
     const { email, token } = req.body;
     const { t } = req;
 
@@ -232,15 +212,12 @@ export class LoginService {
       context: { email }
     });
 
-    return {
-      message: t("login:success.loginSuccessful"),
-      data: await this.completeSuccessfulLogin({
-        email,
-        auth,
-        loginMethod: LOGIN_METHODS.MAGIC_LINK,
-        req
-      })
-    };
+    return this.completeSuccessfulLogin({
+      email,
+      auth,
+      loginMethod: LOGIN_METHODS.MAGIC_LINK,
+      req
+    });
   }
 
   // ──────────────────────────────────────────────

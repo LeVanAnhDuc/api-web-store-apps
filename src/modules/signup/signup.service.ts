@@ -48,9 +48,7 @@ export class SignupService {
     private readonly sessionSignupRepo: SessionSignupRepository
   ) {}
 
-  async sendOtp(
-    req: SendOtpRequest
-  ): Promise<Partial<ResponsePattern<SendOtpResponse>>> {
+  async sendOtp(req: SendOtpRequest): Promise<SendOtpResponse> {
     const { email } = req.body;
     const { language, t } = req;
 
@@ -76,18 +74,13 @@ export class SignupService {
     });
 
     return {
-      message: t("signup:success.otpSent"),
-      data: {
-        success: true,
-        expiresIn: OTP_EXPIRY_SECONDS,
-        cooldownSeconds: OTP_COOLDOWN_SECONDS
-      }
+      success: true,
+      expiresIn: OTP_EXPIRY_SECONDS,
+      cooldownSeconds: OTP_COOLDOWN_SECONDS
     };
   }
 
-  async verifyOtp(
-    req: VerifyOtpRequest
-  ): Promise<Partial<ResponsePattern<VerifyOtpResponse>>> {
+  async verifyOtp(req: VerifyOtpRequest): Promise<VerifyOtpResponse> {
     const { email, otp } = req.body;
     const { t } = req;
 
@@ -117,18 +110,13 @@ export class SignupService {
     });
 
     return {
-      message: t("signup:success.otpVerified"),
-      data: {
-        success: true,
-        sessionToken,
-        expiresIn: SESSION_EXPIRY_SECONDS
-      }
+      success: true,
+      sessionToken,
+      expiresIn: SESSION_EXPIRY_SECONDS
     };
   }
 
-  async resendOtp(
-    req: ResendOtpRequest
-  ): Promise<Partial<ResponsePattern<ResendOtpResponse>>> {
+  async resendOtp(req: ResendOtpRequest): Promise<ResendOtpResponse> {
     const { email } = req.body;
     const { language, t } = req;
 
@@ -179,21 +167,18 @@ export class SignupService {
     });
 
     return {
-      message: t("signup:success.otpResent"),
-      data: {
-        success: true,
-        expiresIn: OTP_EXPIRY_SECONDS,
-        cooldownSeconds: OTP_COOLDOWN_SECONDS,
-        resendCount: currentResendCount,
-        maxResends: MAX_RESEND_COUNT,
-        remainingResends: MAX_RESEND_COUNT - currentResendCount
-      }
+      success: true,
+      expiresIn: OTP_EXPIRY_SECONDS,
+      cooldownSeconds: OTP_COOLDOWN_SECONDS,
+      resendCount: currentResendCount,
+      maxResends: MAX_RESEND_COUNT,
+      remainingResends: MAX_RESEND_COUNT - currentResendCount
     };
   }
 
   async completeSignup(
     req: CompleteSignupRequest
-  ): Promise<Partial<ResponsePattern<CompleteSignupResponse>>> {
+  ): Promise<CompleteSignupResponse> {
     const { email, password, fullName, gender, dateOfBirth, sessionToken } =
       req.body;
     const { t } = req;
@@ -237,22 +222,17 @@ export class SignupService {
     });
 
     return {
-      message: t("signup:success.signupCompleted"),
-      data: {
-        success: true,
-        user: {
-          id: account.userId.toString(),
-          email: account.email,
-          fullName: account.fullName
-        },
-        tokens
-      }
+      success: true,
+      user: {
+        id: account.userId.toString(),
+        email: account.email,
+        fullName: account.fullName
+      },
+      tokens
     };
   }
 
-  async checkEmail(
-    req: CheckEmailRequest
-  ): Promise<Partial<ResponsePattern<CheckEmailResponse>>> {
+  async checkEmail(req: CheckEmailRequest): Promise<CheckEmailResponse> {
     const { email } = req.params;
 
     Logger.info("CheckEmail initiated", { email });
@@ -261,11 +241,7 @@ export class SignupService {
 
     Logger.info("CheckEmail completed", { email });
 
-    return {
-      data: {
-        available: !exists
-      }
-    };
+    return { available: !exists };
   }
 
   // ──────────────────────────────────────────────

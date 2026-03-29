@@ -46,9 +46,7 @@ export class ForgotPasswordService {
   // Send OTP
   // ──────────────────────────────────────────────
 
-  async sendOtp(
-    req: FPOtpSendRequest
-  ): Promise<Partial<ResponsePattern<FPOtpSendResponse>>> {
+  async sendOtp(req: FPOtpSendRequest): Promise<FPOtpSendResponse> {
     const { email } = req.body;
     const { language, t } = req;
 
@@ -64,7 +62,7 @@ export class ForgotPasswordService {
         "Forgot password OTP - email not found or inactive (fake success)",
         { email }
       );
-      return this.buildOtpSendResponse(t);
+      return this.buildOtpSendResponse();
     }
 
     const otp = await this.otpRepo.createAndStoreOtp(email);
@@ -86,16 +84,14 @@ export class ForgotPasswordService {
       cooldown: this.otpRepo.OTP_COOLDOWN_SECONDS
     });
 
-    return this.buildOtpSendResponse(t);
+    return this.buildOtpSendResponse();
   }
 
   // ──────────────────────────────────────────────
   // Verify OTP
   // ──────────────────────────────────────────────
 
-  async verifyOtp(
-    req: FPOtpVerifyRequest
-  ): Promise<Partial<ResponsePattern<FPVerifyResponse>>> {
+  async verifyOtp(req: FPOtpVerifyRequest): Promise<FPVerifyResponse> {
     const { email, otp } = req.body;
     const { t } = req;
 
@@ -118,13 +114,7 @@ export class ForgotPasswordService {
 
     Logger.info("Forgot password OTP verified successfully", { email });
 
-    return {
-      message: t("forgotPassword:success.otpVerified"),
-      data: {
-        success: true,
-        resetToken
-      }
-    };
+    return { success: true, resetToken };
   }
 
   // ──────────────────────────────────────────────
@@ -133,7 +123,7 @@ export class ForgotPasswordService {
 
   async sendMagicLink(
     req: FPMagicLinkSendRequest
-  ): Promise<Partial<ResponsePattern<FPMagicLinkSendResponse>>> {
+  ): Promise<FPMagicLinkSendResponse> {
     const { email } = req.body;
     const { language, t } = req;
 
@@ -149,7 +139,7 @@ export class ForgotPasswordService {
         "Forgot password magic link - email not found or inactive (fake success)",
         { email }
       );
-      return this.buildMagicLinkSendResponse(t);
+      return this.buildMagicLinkSendResponse();
     }
 
     const token = await this.magicLinkRepo.createAndStoreToken(email);
@@ -175,7 +165,7 @@ export class ForgotPasswordService {
       cooldown: this.magicLinkRepo.MAGIC_LINK_COOLDOWN_SECONDS
     });
 
-    return this.buildMagicLinkSendResponse(t);
+    return this.buildMagicLinkSendResponse();
   }
 
   // ──────────────────────────────────────────────
@@ -184,7 +174,7 @@ export class ForgotPasswordService {
 
   async verifyMagicLink(
     req: FPMagicLinkVerifyRequest
-  ): Promise<Partial<ResponsePattern<FPVerifyResponse>>> {
+  ): Promise<FPVerifyResponse> {
     const { email, token } = req.body;
     const { t } = req;
 
@@ -205,13 +195,7 @@ export class ForgotPasswordService {
 
     Logger.info("Forgot password magic link verified successfully", { email });
 
-    return {
-      message: t("forgotPassword:success.magicLinkVerified"),
-      data: {
-        success: true,
-        resetToken
-      }
-    };
+    return { success: true, resetToken };
   }
 
   // ──────────────────────────────────────────────
@@ -220,7 +204,7 @@ export class ForgotPasswordService {
 
   async resetPassword(
     req: FPResetPasswordRequest
-  ): Promise<Partial<ResponsePattern<FPResetPasswordResponse>>> {
+  ): Promise<FPResetPasswordResponse> {
     const { email, resetToken, newPassword } = req.body;
     const { t } = req;
 
@@ -251,28 +235,18 @@ export class ForgotPasswordService {
 
     Logger.info("Forgot password reset completed successfully", { email });
 
-    return {
-      message: t("forgotPassword:success.passwordReset"),
-      data: {
-        success: true
-      }
-    };
+    return { success: true };
   }
 
   // ──────────────────────────────────────────────
   // Private helpers — OTP send
   // ──────────────────────────────────────────────
 
-  private buildOtpSendResponse(
-    t: TranslateFunction
-  ): Partial<ResponsePattern<FPOtpSendResponse>> {
+  private buildOtpSendResponse(): FPOtpSendResponse {
     return {
-      message: t("forgotPassword:success.otpSent"),
-      data: {
-        success: true,
-        expiresIn: this.otpRepo.OTP_EXPIRY_SECONDS,
-        cooldown: this.otpRepo.OTP_COOLDOWN_SECONDS
-      }
+      success: true,
+      expiresIn: this.otpRepo.OTP_EXPIRY_SECONDS,
+      cooldown: this.otpRepo.OTP_COOLDOWN_SECONDS
     };
   }
 
@@ -395,16 +369,11 @@ export class ForgotPasswordService {
   // Private helpers — Magic Link send
   // ──────────────────────────────────────────────
 
-  private buildMagicLinkSendResponse(
-    t: TranslateFunction
-  ): Partial<ResponsePattern<FPMagicLinkSendResponse>> {
+  private buildMagicLinkSendResponse(): FPMagicLinkSendResponse {
     return {
-      message: t("forgotPassword:success.magicLinkSent"),
-      data: {
-        success: true,
-        expiresIn: this.magicLinkRepo.MAGIC_LINK_EXPIRY_SECONDS,
-        cooldown: this.magicLinkRepo.MAGIC_LINK_COOLDOWN_SECONDS
-      }
+      success: true,
+      expiresIn: this.magicLinkRepo.MAGIC_LINK_EXPIRY_SECONDS,
+      cooldown: this.magicLinkRepo.MAGIC_LINK_COOLDOWN_SECONDS
     };
   }
 

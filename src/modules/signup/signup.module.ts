@@ -1,11 +1,15 @@
+// libs
 import type { RedisClientType } from "redis";
+// types
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
 import type { RateLimiterMiddleware } from "@/middlewares";
+// others
 import { RedisOtpSignupRepository } from "./repositories/otp-signup.repository";
 import { RedisSessionSignupRepository } from "./repositories/session-signup.repository";
 import { SignupService } from "./signup.service";
 import { SignupController } from "./signup.controller";
+import { createSignupRoutes } from "./signup.routes";
 
 export const createSignupModule = (
   redisClient: RedisClientType,
@@ -22,10 +26,10 @@ export const createSignupModule = (
     otpSignupRepo,
     sessionSignupRepo
   );
-  const signupController = new SignupController(signupService, rateLimiter);
+  const signupController = new SignupController(signupService);
 
   return {
-    signupRouter: signupController.router,
+    signupRouter: createSignupRoutes(signupController, rateLimiter),
     signupService
   };
 };

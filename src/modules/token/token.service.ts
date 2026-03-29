@@ -5,9 +5,7 @@ import { Logger } from "@/utils/logger";
 import { UnauthorizedError, ForbiddenError } from "@/config/responses/error";
 
 export class TokenService {
-  refreshAccessToken(
-    req: Request
-  ): Partial<ResponsePattern<RefreshTokenResponse>> {
+  refreshAccessToken(req: Request): RefreshTokenResponse {
     const { t } = req;
 
     const refreshToken = req.cookies?.refreshToken;
@@ -28,16 +26,13 @@ export class TokenService {
 
     Logger.info("Token refresh successful", { userId: tokenPayload.userId });
 
-    return {
-      message: t("login:success.tokenRefreshed"),
-      data: generateAuthTokensResponse({
-        userId: tokenPayload.userId,
-        authId: tokenPayload.authId,
-        email: tokenPayload.email,
-        roles: tokenPayload.roles,
-        fullName: tokenPayload.fullName,
-        avatar: tokenPayload.avatar
-      })
-    };
+    return generateAuthTokensResponse({
+      userId: tokenPayload.userId,
+      authId: tokenPayload.authId,
+      email: tokenPayload.email,
+      roles: tokenPayload.roles,
+      fullName: tokenPayload.fullName,
+      avatar: tokenPayload.avatar
+    });
   }
 }

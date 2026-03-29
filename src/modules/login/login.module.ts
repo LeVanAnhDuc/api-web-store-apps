@@ -1,13 +1,17 @@
+// libs
 import type { RedisClientType } from "redis";
+// types
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { RateLimiterMiddleware } from "@/middlewares";
+// others
 import { RedisOtpLoginRepository } from "./repositories/otp-login.repository";
 import { RedisMagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
 import { RedisFailedAttemptsRepository } from "./repositories/failed-attempts.repository";
 import { LoginService } from "./login.service";
 import { LoginController } from "./login.controller";
+import { createLoginRoutes } from "./login.routes";
 
 export const createLoginModule = (
   redisClient: RedisClientType,
@@ -28,10 +32,10 @@ export const createLoginModule = (
     magicLinkLoginRepo,
     failedAttemptsRepo
   );
-  const loginController = new LoginController(loginService, rateLimiter);
+  const loginController = new LoginController(loginService);
 
   return {
-    loginRouter: loginController.router,
+    loginRouter: createLoginRoutes(loginController, rateLimiter),
     loginService
   };
 };

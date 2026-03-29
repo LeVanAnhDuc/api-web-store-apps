@@ -1,12 +1,16 @@
+// libs
 import type { RedisClientType } from "redis";
+// types
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { RateLimiterMiddleware } from "@/middlewares";
+// others
 import { RedisOtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
 import { RedisMagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
 import { RedisResetTokenRepository } from "./repositories/reset-token.repository";
 import { ForgotPasswordService } from "./forgot-password.service";
 import { ForgotPasswordController } from "./forgot-password.controller";
+import { createForgotPasswordRoutes } from "./forgot-password.routes";
 
 export const createForgotPasswordModule = (
   redisClient: RedisClientType,
@@ -26,11 +30,13 @@ export const createForgotPasswordModule = (
     resetTokenRepo
   );
   const forgotPasswordController = new ForgotPasswordController(
-    forgotPasswordService,
-    rateLimiter
+    forgotPasswordService
   );
 
   return {
-    forgotPasswordRouter: forgotPasswordController.router
+    forgotPasswordRouter: createForgotPasswordRoutes(
+      forgotPasswordController,
+      rateLimiter
+    )
   };
 };
