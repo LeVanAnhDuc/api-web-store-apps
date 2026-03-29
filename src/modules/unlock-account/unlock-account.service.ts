@@ -16,12 +16,13 @@ import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/login.service";
 import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
-import { LOGIN_METHODS } from "@/constants/modules/login-history";
-import {
-  sendEmailService,
-  EmailType
-} from "@/modules/send-email/send-email.module";
+import type { SendEmailService } from "@/services/email/email.service";
+// config
 import ENV from "@/config/env";
+// core
+import { EmailType } from "@/services/email/email.types";
+// others
+import { LOGIN_METHODS } from "@/constants/modules/login-history";
 
 const TEMP_PASSWORD_EXPIRY_MINUTES = 15;
 const TEMP_PASSWORD_LENGTH = 16;
@@ -39,7 +40,8 @@ export class UnlockAccountService {
     private readonly userService: UserService,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly loginService: LoginService,
-    private readonly unlockAccountRepo: UnlockAccountRepository
+    private readonly unlockAccountRepo: UnlockAccountRepository,
+    private readonly emailService: SendEmailService
   ) {}
 
   async unlockRequest(
@@ -95,7 +97,7 @@ export class UnlockAccountService {
       expiresAt: tempPasswordExpAt
     });
 
-    sendEmailService.send(EmailType.UNLOCK_TEMP_PASSWORD, {
+    this.emailService.send(EmailType.UNLOCK_TEMP_PASSWORD, {
       email,
       data: {
         tempPassword,

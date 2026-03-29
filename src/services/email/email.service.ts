@@ -1,16 +1,19 @@
+// libs
 import { render } from "@react-email/render";
+// types
+import type { EmailTransport } from "@/services/cores/NodemailerTransport";
+import type {
+  ForgotPasswordOtpData,
+  LoginOtpData,
+  MagicLinkData,
+  SendEmailOptions,
+  SignupOtpData,
+  UnlockTempPasswordData
+} from "./email.types";
+// others
 import { Logger } from "@/utils/logger";
-import type { EmailTransport } from "@/core/EmailTransport";
-import {
-  EmailType,
-  type SendEmailOptions,
-  type LoginOtpData,
-  type SignupOtpData,
-  type MagicLinkData,
-  type UnlockTempPasswordData,
-  type ForgotPasswordOtpData
-} from "./send-email.types";
-import { getEmailT } from "./send-email.i18n";
+import { EmailType } from "./email.types";
+import { getEmailT } from "./email.helper";
 import { LoginOtpEmail } from "./templates/login-otp";
 import { SignupOtpEmail } from "./templates/signup-otp";
 import { MagicLinkEmail } from "./templates/magic-link";

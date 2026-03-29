@@ -14,14 +14,12 @@ import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
 import type { FailedAttemptsRepository } from "./repositories/failed-attempts.repository";
 import type { LoginResponseDto, OtpSendDto, MagicLinkSendDto } from "./dtos";
+import type { SendEmailService } from "@/services/email/email.service";
 // config
 import { BadRequestError } from "@/config/responses/error";
 import ENV from "@/config/env";
-// modules
-import {
-  sendEmailService,
-  EmailType
-} from "@/modules/send-email/send-email.module";
+// core
+import { EmailType } from "@/services/email/email.types";
 // others
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
@@ -50,7 +48,8 @@ export class LoginService {
     private readonly loginHistoryService: LoginHistoryService,
     private readonly otpLoginRepo: OtpLoginRepository,
     private readonly magicLinkLoginRepo: MagicLinkLoginRepository,
-    private readonly failedAttemptsRepo: FailedAttemptsRepository
+    private readonly failedAttemptsRepo: FailedAttemptsRepository,
+    private readonly emailService: SendEmailService
   ) {}
 
   async passwordLogin(
@@ -134,7 +133,7 @@ export class LoginService {
       context: { email }
     });
 
-    sendEmailService.send(EmailType.LOGIN_OTP, {
+    this.emailService.send(EmailType.LOGIN_OTP, {
       email,
       data: { otp, expiryMinutes: LOGIN_OTP_CONFIG.EXPIRY_MINUTES },
       locale: language as I18n.Locale
@@ -216,7 +215,7 @@ export class LoginService {
     });
 
     const magicLinkUrl = `${ENV.CLIENT_URL}/login/verify-magic-link?token=${token}&email=${encodeURIComponent(email)}`;
-    sendEmailService.send(EmailType.MAGIC_LINK, {
+    this.emailService.send(EmailType.MAGIC_LINK, {
       email,
       data: { magicLinkUrl, expiryMinutes: MAGIC_LINK_CONFIG.EXPIRY_MINUTES },
       locale: language as I18n.Locale

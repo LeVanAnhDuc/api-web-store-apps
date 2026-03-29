@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { Express, Request, Response } from "express";
 import type { RedisClientType } from "redis";
 import { instanceRedis } from "@/database/redis";
+import { createEmailModule } from "@/services/email/email.module";
 import { createAuthenticationModule } from "@/modules/authentication/authentication.module";
 import {
   authGuard,
@@ -25,6 +26,7 @@ import { Logger } from "@/utils/logger";
 export const loadModules = (app: Express): void => {
   const redisClient = instanceRedis.getClient() as RedisClientType;
 
+  const { emailService } = createEmailModule();
   const { authService } = createAuthenticationModule();
   const auth = authGuard(authService);
   const optionalAuth = optionalAuthGuard(authService);
@@ -43,6 +45,7 @@ export const loadModules = (app: Express): void => {
     authService,
     userService,
     loginHistoryService,
+    emailService,
     rateLimiter
   );
 
@@ -50,6 +53,7 @@ export const loadModules = (app: Express): void => {
     redisClient,
     authService,
     userService,
+    emailService,
     rateLimiter
   );
 
@@ -63,6 +67,7 @@ export const loadModules = (app: Express): void => {
     userService,
     loginHistoryService,
     loginService,
+    emailService,
     rateLimiter
   );
 
@@ -70,6 +75,7 @@ export const loadModules = (app: Express): void => {
     redisClient,
     authService,
     loginHistoryService,
+    emailService,
     rateLimiter
   );
 

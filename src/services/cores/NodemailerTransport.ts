@@ -1,9 +1,29 @@
+// libs
 import nodemailer from "nodemailer";
+// types
 import type { Transporter } from "nodemailer";
-import { Logger } from "@/utils/logger";
+// config
 import config from "@/config/env";
-import type { EmailSendOptions } from "@/core/EmailTransport";
-import { EmailTransport } from "@/core/EmailTransport";
+// others
+import { Logger } from "@/utils/logger";
+
+export interface EmailSendOptions {
+  to: string;
+  subject: string;
+  htmlContent: string;
+}
+
+export abstract class EmailTransport {
+  protected isInitialized: boolean = false;
+
+  abstract sendRawEmail(options: EmailSendOptions): Promise<void>;
+
+  abstract initialize(): Promise<void>;
+
+  abstract cleanup(): Promise<void>;
+
+  abstract get isConnected(): boolean;
+}
 
 const EMAIL_SERVICE = {
   PROVIDER: "gmail"

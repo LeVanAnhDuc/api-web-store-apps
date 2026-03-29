@@ -2,6 +2,7 @@
 import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
+import type { SendEmailService } from "@/services/email/email.service";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // others
 import { RedisOtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
@@ -15,6 +16,7 @@ export const createForgotPasswordModule = (
   redisClient: RedisClientType,
   authService: AuthenticationService,
   loginHistorySvc: LoginHistoryService,
+  emailService: SendEmailService,
   rateLimiter: RateLimiterMiddleware
 ) => {
   const otpRepo = new RedisOtpForgotPasswordRepository(redisClient);
@@ -26,7 +28,8 @@ export const createForgotPasswordModule = (
     loginHistorySvc,
     otpRepo,
     magicLinkRepo,
-    resetTokenRepo
+    resetTokenRepo,
+    emailService
   );
   const forgotPasswordController = new ForgotPasswordController(
     forgotPasswordService

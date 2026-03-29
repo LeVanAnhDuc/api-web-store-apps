@@ -4,16 +4,15 @@ import type {
   FPMagicLinkVerifyRequest
 } from "@/types/modules/forgot-password";
 import type { AuthenticationDocument } from "@/types/modules/authentication";
+import type { SendEmailService } from "@/services/email/email.service";
 // config
 import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
 import ENV from "@/config/env";
+// core
+import { EmailType } from "@/services/email/email.types";
 // modules
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import {
-  sendEmailService,
-  EmailType
-} from "@/modules/send-email/send-email.module";
 // others
 import { Logger } from "@/utils/logger";
 import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
@@ -159,12 +158,13 @@ async function trackFailedOtpAttempt(
 // ──────────────────────────────────────────────
 
 export function sendMagicLinkEmail(
+  emailService: SendEmailService,
   email: string,
   token: string,
   language: string
 ): void {
   const magicLinkUrl = `${ENV.CLIENT_URL}/reset-password?email=${encodeURIComponent(email)}&token=${token}&method=magic-link`;
-  sendEmailService.send(EmailType.MAGIC_LINK, {
+  emailService.send(EmailType.MAGIC_LINK, {
     email,
     data: {
       magicLinkUrl,

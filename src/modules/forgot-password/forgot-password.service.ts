@@ -6,12 +6,14 @@ import type {
   FPMagicLinkVerifyRequest,
   FPResetPasswordRequest
 } from "@/types/modules/forgot-password";
+import type { SendEmailService } from "@/services/email/email.service";
 // config
 import { UnauthorizedError } from "@/config/responses/error";
+// core
+import { EmailType } from "@/services/email/email.types";
 // modules
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import { EmailType, sendEmailService } from "../send-email/send-email.module";
 // others
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
@@ -53,7 +55,8 @@ export class ForgotPasswordService {
     private readonly loginHistoryService: LoginHistoryService,
     private readonly otpRepo: OtpForgotPasswordRepository,
     private readonly magicLinkRepo: MagicLinkForgotPasswordRepository,
-    private readonly resetTokenRepo: ResetTokenRepository
+    private readonly resetTokenRepo: ResetTokenRepository,
+    private readonly emailService: SendEmailService
   ) {}
 
   async sendOtp(req: FPOtpSendRequest): Promise<SendOtpResponseDto> {
@@ -85,7 +88,7 @@ export class ForgotPasswordService {
       context: { email }
     });
 
-    sendEmailService.send(EmailType.FORGOT_PASSWORD_OTP, {
+    this.emailService.send(EmailType.FORGOT_PASSWORD_OTP, {
       email,
       data: { otp, expiryMinutes: FORGOT_PASSWORD_OTP_CONFIG.EXPIRY_MINUTES },
       locale: language as I18n.Locale
@@ -168,7 +171,7 @@ export class ForgotPasswordService {
       context: { email }
     });
 
-    sendMagicLinkEmail(email, token, language);
+    sendMagicLinkEmail(this.emailService, email, token, language);
 
     Logger.info("Forgot password magic link send completed", {
       email,

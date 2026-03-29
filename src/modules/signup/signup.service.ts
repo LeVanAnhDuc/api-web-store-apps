@@ -23,10 +23,10 @@ import type { AuthenticationService } from "@/modules/authentication/authenticat
 import type { UserService } from "@/modules/user/user.service";
 import type { OtpSignupRepository } from "./repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "./repositories/session-signup.repository";
-import {
-  sendEmailService,
-  EmailType
-} from "@/modules/send-email/send-email.module";
+import type { SendEmailService } from "@/services/email/email.service";
+// core
+import { EmailType } from "@/services/email/email.types";
+// others
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
 import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/config";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
@@ -45,7 +45,8 @@ export class SignupService {
     private readonly authService: AuthenticationService,
     private readonly userService: UserService,
     private readonly otpSignupRepo: OtpSignupRepository,
-    private readonly sessionSignupRepo: SessionSignupRepository
+    private readonly sessionSignupRepo: SessionSignupRepository,
+    private readonly emailService: SendEmailService
   ) {}
 
   async sendOtp(req: SendOtpRequest): Promise<SendOtpResponse> {
@@ -61,7 +62,7 @@ export class SignupService {
 
     await this.otpSignupRepo.setCooldown(email, OTP_COOLDOWN_SECONDS);
 
-    sendEmailService.send(EmailType.SIGNUP_OTP, {
+    this.emailService.send(EmailType.SIGNUP_OTP, {
       email,
       data: { otp, expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES },
       locale: language as I18n.Locale
@@ -153,7 +154,7 @@ export class SignupService {
       windowSeconds: RESEND_WINDOW_SECONDS
     });
 
-    sendEmailService.send(EmailType.SIGNUP_OTP, {
+    this.emailService.send(EmailType.SIGNUP_OTP, {
       email,
       data: { otp, expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES },
       locale: language as I18n.Locale

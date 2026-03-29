@@ -1,3 +1,4 @@
+// others
 import enTranslations from "@/i18n/locales/en/sendEmail.json";
 import viTranslations from "@/i18n/locales/vi/sendEmail.json";
 

@@ -1,16 +1,16 @@
 import { Text } from "@react-email/components";
-import type { SignupOtpData } from "../send-email.types";
-import { getEmailT } from "../send-email.i18n";
+import type { LoginOtpData } from "../email.types";
+import { getEmailT } from "../email.helper";
 import { EmailLayout } from "./components/email-layout";
 import { OtpBlock } from "./components/otp-block";
 import { InfoBox } from "./components/info-box";
 
-export const SignupOtpEmail = (
-  { otp, expiryMinutes }: SignupOtpData,
+export const LoginOtpEmail = (
+  { otp, expiryMinutes }: LoginOtpData,
   locale?: I18n.Locale
 ) => {
   const strings = getEmailT(locale);
-  const { signupOtp: s, common } = strings;
+  const { loginOtp: s, common } = strings;
 
   return (
     <EmailLayout title={s.title} footerText={common.footer}>

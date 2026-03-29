@@ -1,6 +1,6 @@
 import { Section, Text } from "@react-email/components";
-import type { UnlockTempPasswordData } from "../send-email.types";
-import { getEmailT } from "../send-email.i18n";
+import type { UnlockTempPasswordData } from "../email.types";
+import { getEmailT } from "../email.helper";
 import { EmailLayout } from "./components/email-layout";
 import { CtaButton } from "./components/cta-button";
 import { InfoBox } from "./components/info-box";
