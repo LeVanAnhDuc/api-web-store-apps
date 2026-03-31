@@ -12,7 +12,6 @@ const BlogCategorySchema = new Schema<BlogCategoryDocument>(
     name: {
       type: String,
       required: [true, "Category name is required"],
-      unique: true,
       trim: true,
       lowercase: true,
       maxlength: [50, "Category name must not exceed 50 characters"]

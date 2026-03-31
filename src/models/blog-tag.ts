@@ -12,7 +12,6 @@ const BlogTagSchema = new Schema<BlogTagDocument>(
     name: {
       type: String,
       required: [true, "Tag name is required"],
-      unique: true,
       trim: true,
       lowercase: true,
       maxlength: [50, "Tag name must not exceed 50 characters"]

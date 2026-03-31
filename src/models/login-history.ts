@@ -10,9 +10,9 @@ import {
   LOGIN_FAIL_REASONS,
   DEVICE_TYPES,
   CLIENT_TYPES,
-  GEO_DEFAULTS
+  GEO_DEFAULTS,
+  LOGIN_HISTORY_CONFIG
 } from "@/constants/modules/login-history";
-import { LOGIN_HISTORY_CONFIG } from "@/constants/modules/login-history";
 
 const { LOGIN_HISTORY, AUTHENTICATION } = MODEL_NAMES;
 
@@ -93,7 +93,14 @@ const LoginHistorySchema = new Schema<LoginHistoryDocument>(
     },
     anomalyReasons: {
       type: [String],
-      default: []
+      default: [],
+      validate: [
+        {
+          validator: (v: unknown[]) =>
+            v.length <= LOGIN_HISTORY_CONFIG.MAX_ANOMALY_REASONS,
+          message: `Anomaly reasons must not exceed ${LOGIN_HISTORY_CONFIG.MAX_ANOMALY_REASONS} items`
+        }
+      ]
     }
   },
   {

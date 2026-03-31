@@ -10,5 +10,7 @@ export const BLOG_COVER_TYPE = {
 
 export const BLOG_CONFIG = {
   COVER_MAX_SIZE_BYTES: 5 * 1024 * 1024, // 5MB
-  COVER_UPLOAD_DIR: "uploads/blogs"
+  COVER_UPLOAD_DIR: "uploads/blogs",
+  MAX_TAGS: 30,
+  MAX_CATEGORIES: 10
 } as const;

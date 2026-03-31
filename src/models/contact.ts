@@ -3,7 +3,7 @@ import { Schema, model, type Model } from "mongoose";
 // types
 import type { ContactDocument } from "@/types/modules/contact-admin";
 // validators
-import { CONTACT_CONFIG } from "@/validators/constants";
+import { CONTACT_CONFIG, EMAIL_FORMAT_PATTERN } from "@/validators/constants";
 // others
 import {
   CONTACT_PRIORITIES,
@@ -20,7 +20,8 @@ const ContactSchema = new Schema<ContactDocument>(
       required: false,
       trim: true,
       lowercase: true,
-      default: null
+      default: null,
+      match: [EMAIL_FORMAT_PATTERN, "Invalid email format"]
     },
     subject: {
       type: String,

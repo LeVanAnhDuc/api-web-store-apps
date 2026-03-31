@@ -3,7 +3,11 @@ import { Schema, model, type Model } from "mongoose";
 // types
 import type { BlogDocument } from "@/types/modules/blog";
 // others
-import { BLOG_VISIBILITY, BLOG_COVER_TYPE } from "@/constants/modules/blog";
+import {
+  BLOG_VISIBILITY,
+  BLOG_COVER_TYPE,
+  BLOG_CONFIG
+} from "@/constants/modules/blog";
 import { MODEL_NAMES } from "@/constants/models";
 
 const { BLOG, USER, BLOG_TAG, BLOG_CATEGORY } = MODEL_NAMES;
@@ -56,12 +60,24 @@ const BlogSchema = new Schema<BlogDocument>(
     tags: {
       type: [Schema.Types.ObjectId],
       ref: BLOG_TAG,
-      default: []
+      default: [],
+      validate: [
+        {
+          validator: (v: unknown[]) => v.length <= BLOG_CONFIG.MAX_TAGS,
+          message: `Tags must not exceed ${BLOG_CONFIG.MAX_TAGS} items`
+        }
+      ]
     },
     categories: {
       type: [Schema.Types.ObjectId],
       ref: BLOG_CATEGORY,
-      default: []
+      default: [],
+      validate: [
+        {
+          validator: (v: unknown[]) => v.length <= BLOG_CONFIG.MAX_CATEGORIES,
+          message: `Categories must not exceed ${BLOG_CONFIG.MAX_CATEGORIES} items`
+        }
+      ]
     },
     visibility: {
       type: String,
