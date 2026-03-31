@@ -1,74 +1,29 @@
-// libs
-import { Router } from "express";
-import type { Request, RequestHandler, Response } from "express";
-
 // types
+import type { Response } from "express";
 import type { BlogCategoriesService } from "./blog-categories.service";
-import type { TagQuery } from "@/types/modules/blog";
-
+import type {
+  SearchCategoriesRequest,
+  CreateCategoryRequest
+} from "@/types/modules/blog";
 // config
 import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
 
-// utils
-import { asyncHandler } from "@/utils/async-handler";
-
-// middlewares
-import { bodyPipe, queryPipe } from "@/middlewares";
-
-// validators
-import {
-  tagQuerySchema,
-  createCategorySchema
-} from "@/validators/schemas/blog";
-
-interface AuthenticatedRequest extends Request {
-  user: {
-    userId: string;
-    authId: string;
-    email: string;
-    roles: string;
-  };
-}
-
 export class BlogCategoriesController {
-  public readonly router = Router();
+  constructor(private readonly service: BlogCategoriesService) {}
 
-  constructor(
-    private readonly service: BlogCategoriesService,
-    private readonly authGuard: RequestHandler
-  ) {
-    this.initRoutes();
-  }
-
-  private initRoutes() {
-    this.router.get(
-      "/",
-      queryPipe(tagQuerySchema),
-      asyncHandler(this.searchCategories)
-    );
-
-    this.router.post(
-      "/",
-      this.authGuard,
-      bodyPipe(createCategorySchema),
-      asyncHandler(this.createCategory)
-    );
-  }
-
-  private searchCategories = async (
-    req: Request,
+  searchCategories = async (
+    req: SearchCategoriesRequest,
     res: Response
   ): Promise<void> => {
-    const query = req.query as unknown as TagQuery;
-    const data = await this.service.searchCategories(query);
+    const data = await this.service.searchCategories(req.query);
     new OkSuccess({ data, message: "blog:success.categoriesFound" }).send(
       req,
       res
     );
   };
 
-  private createCategory = async (
-    req: AuthenticatedRequest,
+  createCategory = async (
+    req: CreateCategoryRequest,
     res: Response
   ): Promise<void> => {
     const data = await this.service.createCategory(req.body.name);

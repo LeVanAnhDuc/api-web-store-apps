@@ -1,10 +1,10 @@
+// types
+import type { Request } from "express";
 import type { Document, Types } from "mongoose";
 import type {
   BLOG_VISIBILITY,
   BLOG_COVER_TYPE
 } from "@/constants/modules/blog";
-
-// ─── Enum value types ──────────────────────────────────────────────────────
 
 export type BlogVisibility =
   (typeof BLOG_VISIBILITY)[keyof typeof BLOG_VISIBILITY];
@@ -131,4 +131,55 @@ export interface PaginatedResult<T> {
     limit: number;
     totalPages: number;
   };
+}
+
+// ─── Typed Request interfaces ─────────────────────────────────────────────
+
+export interface CreateBlogRequest extends Omit<Request, "body" | "user"> {
+  body: CreateBlogDto;
+  user: JwtUserPayload;
+  file?: Express.Multer.File;
+}
+
+export interface ListBlogsRequest extends Omit<Request, "query"> {
+  query: BlogQuery;
+}
+
+export interface GetBlogBySlugRequest extends Omit<Request, "params"> {
+  params: { slug: string };
+}
+
+export interface UpdateBlogRequest
+  extends Omit<Request, "params" | "body" | "user"> {
+  params: { id: string };
+  body: UpdateBlogDto;
+  user: JwtUserPayload;
+  file?: Express.Multer.File;
+}
+
+export interface DeleteBlogRequest extends Omit<Request, "params" | "user"> {
+  params: { id: string };
+  user: JwtUserPayload;
+}
+
+export interface BlogIdParamRequest extends Omit<Request, "params"> {
+  params: { id: string };
+}
+
+export interface SearchTagsRequest extends Omit<Request, "query"> {
+  query: TagQuery;
+}
+
+export interface CreateTagRequest extends Omit<Request, "body" | "user"> {
+  body: CreateTagDto;
+  user: JwtUserPayload;
+}
+
+export interface SearchCategoriesRequest extends Omit<Request, "query"> {
+  query: TagQuery;
+}
+
+export interface CreateCategoryRequest extends Omit<Request, "body" | "user"> {
+  body: CreateCategoryDto;
+  user: JwtUserPayload;
 }

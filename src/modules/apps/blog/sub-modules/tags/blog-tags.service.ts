@@ -1,27 +1,27 @@
+// types
 import type { BlogTagRepository } from "../../repositories/blog-tag.repository";
-import type { BlogTagItem, TagQuery } from "@/types/modules/blog";
+import type { TagQuery } from "@/types/modules/blog";
+import type { TagItemDto } from "../../dtos";
+// config
 import { ConflictRequestError } from "@/config/responses/error";
+// others
+import { toTagItemDto } from "../../dtos";
 
 export class BlogTagsService {
   constructor(private readonly tagRepo: BlogTagRepository) {}
 
-  async searchTags(query: TagQuery): Promise<BlogTagItem[]> {
+  async searchTags(query: TagQuery): Promise<TagItemDto[]> {
     const limit = query.limit ?? 10;
 
-    let docs;
-    if (!query.search || query.search.trim() === "") {
-      docs = await this.tagRepo.findPopular(limit);
-    } else {
-      docs = await this.tagRepo.search(query.search.trim(), limit);
-    }
+    const docs =
+      !query.search || query.search.trim() === ""
+        ? await this.tagRepo.findPopular(limit)
+        : await this.tagRepo.search(query.search.trim(), limit);
 
-    return docs.map((doc) => ({
-      id: (doc._id as unknown as { toString(): string }).toString(),
-      name: doc.name
-    }));
+    return docs.map(toTagItemDto);
   }
 
-  async createTag(name: string): Promise<BlogTagItem> {
+  async createTag(name: string): Promise<TagItemDto> {
     const normalized = name.toLowerCase().trim();
     const existing = await this.tagRepo.findByName(normalized);
 
@@ -33,10 +33,6 @@ export class BlogTagsService {
     }
 
     const doc = await this.tagRepo.create(normalized);
-
-    return {
-      id: (doc._id as unknown as { toString(): string }).toString(),
-      name: doc.name
-    };
+    return toTagItemDto(doc);
   }
 }

@@ -1,27 +1,27 @@
+// types
 import type { BlogCategoryRepository } from "../../repositories/blog-category.repository";
-import type { BlogTagItem, TagQuery } from "@/types/modules/blog";
+import type { TagQuery } from "@/types/modules/blog";
+import type { CategoryItemDto } from "../../dtos";
+// config
 import { ConflictRequestError } from "@/config/responses/error";
+// others
+import { toCategoryItemDto } from "../../dtos";
 
 export class BlogCategoriesService {
   constructor(private readonly categoryRepo: BlogCategoryRepository) {}
 
-  async searchCategories(query: TagQuery): Promise<BlogTagItem[]> {
+  async searchCategories(query: TagQuery): Promise<CategoryItemDto[]> {
     const limit = query.limit ?? 10;
 
-    let docs;
-    if (!query.search || query.search.trim() === "") {
-      docs = await this.categoryRepo.findPopular(limit);
-    } else {
-      docs = await this.categoryRepo.search(query.search.trim(), limit);
-    }
+    const docs =
+      !query.search || query.search.trim() === ""
+        ? await this.categoryRepo.findPopular(limit)
+        : await this.categoryRepo.search(query.search.trim(), limit);
 
-    return docs.map((doc) => ({
-      id: (doc._id as unknown as { toString(): string }).toString(),
-      name: doc.name
-    }));
+    return docs.map(toCategoryItemDto);
   }
 
-  async createCategory(name: string): Promise<BlogTagItem> {
+  async createCategory(name: string): Promise<CategoryItemDto> {
     const normalized = name.toLowerCase().trim();
     const existing = await this.categoryRepo.findByName(normalized);
 
@@ -33,10 +33,6 @@ export class BlogCategoriesService {
     }
 
     const doc = await this.categoryRepo.create(normalized);
-
-    return {
-      id: (doc._id as unknown as { toString(): string }).toString(),
-      name: doc.name
-    };
+    return toCategoryItemDto(doc);
   }
 }
