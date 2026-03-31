@@ -35,5 +35,6 @@ coverage
 
 # claude
 .claude
+.mcp.json
 
 coverage
