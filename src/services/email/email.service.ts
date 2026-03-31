@@ -12,6 +12,8 @@ import type {
 } from "./email.types";
 // others
 import { Logger } from "@/utils/logger";
+import { withRetry } from "@/utils/retry";
+import { CircuitBreaker, CircuitOpenError } from "@/utils/circuit-breaker";
 import { EmailType } from "./email.types";
 import { getEmailT } from "./email.helper";
 import { LoginOtpEmail } from "./templates/login-otp";
@@ -20,16 +22,33 @@ import { MagicLinkEmail } from "./templates/magic-link";
 import { UnlockTempPasswordEmail } from "./templates/unlock-temp-password";
 import { ForgotPasswordOtpEmail } from "./templates/forgot-password-otp";
 
+const CIRCUIT_BREAKER_CONFIG = {
+  FAILURE_THRESHOLD: 5,
+  RESET_TIMEOUT_MS: 30000
+} as const;
+
 export class SendEmailService {
-  constructor(private readonly transport: EmailTransport) {}
+  private readonly circuitBreaker: CircuitBreaker;
+
+  constructor(private readonly transport: EmailTransport) {
+    this.circuitBreaker = new CircuitBreaker({
+      name: "email-smtp",
+      failureThreshold: CIRCUIT_BREAKER_CONFIG.FAILURE_THRESHOLD,
+      resetTimeoutMs: CIRCUIT_BREAKER_CONFIG.RESET_TIMEOUT_MS
+    });
+  }
 
   send<T extends EmailType>(type: T, options: SendEmailOptions<T>): void {
-    this.sendAsync(type, options).catch((error) => {
-      Logger.error(`${type} email delivery failed`, {
-        email: options.email,
-        error: error instanceof Error ? error.message : "Unknown error"
-      });
-    });
+    withRetry(
+      () => this.circuitBreaker.execute(() => this.sendAsync(type, options)),
+      {
+        maxAttempts: 3,
+        initialDelayMs: 2000,
+        operationName: `email:${type}`,
+        context: { email: options.email },
+        shouldRetry: (error) => !(error instanceof CircuitOpenError)
+      }
+    );
   }
 
   private async sendAsync<T extends EmailType>(

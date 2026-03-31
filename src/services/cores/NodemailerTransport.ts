@@ -39,6 +39,12 @@ const EMAIL_RATE_LIMIT = {
   DELTA_MS: 1000
 } as const;
 
+const EMAIL_TIMEOUT = {
+  CONNECTION_MS: 10000,
+  GREETING_MS: 10000,
+  SOCKET_MS: 30000
+} as const;
+
 export class NodemailerTransport extends EmailTransport {
   private static instance: NodemailerTransport | null = null;
   private transporter: Transporter | null = null;
@@ -66,7 +72,10 @@ export class NodemailerTransport extends EmailTransport {
       maxConnections: EMAIL_POOL.MAX_CONNECTIONS,
       maxMessages: EMAIL_POOL.MAX_MESSAGES_PER_CONNECTION,
       rateDelta: EMAIL_RATE_LIMIT.DELTA_MS,
-      rateLimit: EMAIL_RATE_LIMIT.PER_SECOND
+      rateLimit: EMAIL_RATE_LIMIT.PER_SECOND,
+      connectionTimeout: EMAIL_TIMEOUT.CONNECTION_MS,
+      greetingTimeout: EMAIL_TIMEOUT.GREETING_MS,
+      socketTimeout: EMAIL_TIMEOUT.SOCKET_MS
     });
 
     this.isInitialized = true;

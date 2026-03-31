@@ -40,6 +40,7 @@ declare global {
 
   namespace Express {
     interface Request {
+      requestId: string;
       language: string;
       t: TranslateFunction;
       user?: JwtUserPayload;

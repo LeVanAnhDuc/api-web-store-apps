@@ -6,6 +6,7 @@ import type { RedisClientType } from "redis";
 // services
 import { createEmailModule } from "@/services/email/email.module";
 // database
+import { instanceMongoDB } from "@/database/mongodb";
 import { instanceRedis } from "@/database/redis";
 // modules
 import { createAuthenticationModule } from "@/modules/authentication/authentication.module";
@@ -102,10 +103,31 @@ export const loadModules = (app: Express): void => {
   v1Router.use("/users", userRouter);
   v1Router.use("/apps/blogs", blogRouter);
 
-  app.get("/health", (_req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({ status: "healthy", timestamp: new Date().toISOString() });
+  app.get("/health", async (_req: Request, res: Response) => {
+    try {
+      const mongoHealthy = instanceMongoDB.isHealthy();
+      const redisHealth = await instanceRedis.healthCheck();
+      const allHealthy = mongoHealthy && redisHealth.isHealthy;
+
+      res.status(allHealthy ? 200 : 503).json({
+        status: allHealthy ? "healthy" : "degraded",
+        timestamp: new Date().toISOString(),
+        services: {
+          mongodb: {
+            status: mongoHealthy ? "up" : "down"
+          },
+          redis: {
+            status: redisHealth.isHealthy ? "up" : "down",
+            latency_ms: redisHealth.latency ?? null
+          }
+        }
+      });
+    } catch {
+      res.status(503).json({
+        status: "unhealthy",
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 
   app.use("/api/v1", v1Router);

@@ -77,7 +77,6 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/ua-parser-js": "^0.7.39",
-    "@types/uuid": "^11.0.0",
     "@types/winston": "^2.4.4",
     "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",

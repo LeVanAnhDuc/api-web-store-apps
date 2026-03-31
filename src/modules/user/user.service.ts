@@ -6,6 +6,7 @@ import type {
   UserRecord,
   UpdateProfileData
 } from "@/types/modules/user";
+import type { ClientSession } from "mongoose";
 import type { UserRepository } from "./repositories/user.repository";
 import type { MyProfileDto, PublicProfileDto, UploadAvatarDto } from "./dtos";
 // config
@@ -72,7 +73,10 @@ export class UserService {
     return toPublicProfileDto(user, buildAvatarUrl(user.avatar ?? null));
   }
 
-  async createProfile(data: CreateUserData): Promise<UserRecord> {
-    return this.userRepo.createProfile(data);
+  async createProfile(
+    data: CreateUserData,
+    session?: ClientSession
+  ): Promise<UserRecord> {
+    return this.userRepo.createProfile(data, session);
   }
 }

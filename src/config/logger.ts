@@ -27,10 +27,12 @@ const consoleFormat = format.combine(
   format.timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSS" }),
   format.colorize({ all: true }),
   format.printf((info) => {
-    const { timestamp, level, message, ...meta } = info;
+    const { timestamp, level, message, service, requestId, ...meta } = info;
+    const prefix = [service, requestId].filter(Boolean).join(" ");
+    const prefixStr = prefix ? ` [${prefix}]` : "";
     const metaString =
       Object.keys(meta).length > 0 ? ` ${JSON.stringify(meta)}` : "";
-    return `${timestamp} [${level}]: ${message}${metaString}`;
+    return `${timestamp} [${level}]${prefixStr}: ${message}${metaString}`;
   })
 );
 
@@ -61,6 +63,7 @@ const combinedFileRotateTransport = new DailyRotateFile({
 const logger = createLogger({
   level: ENV.LOG_LEVEL,
   levels: LEVELS,
+  defaultMeta: { service: "web-app-store-server" },
   exitOnError: false,
   transports: [errorFileRotateTransport, combinedFileRotateTransport]
 });

@@ -5,6 +5,7 @@ import type {
   CreateAuthenticationData
 } from "@/types/modules/authentication";
 import type { UserDocument } from "@/types/modules/user";
+import type { ClientSession } from "mongoose";
 // models
 import AuthenticationModel from "@/models/authentication";
 import UserModel from "@/models/user";
@@ -16,14 +17,21 @@ export type AuthenticationRepository = {
   findByEmail(email: string): Promise<AuthenticationDocument | null>;
   findById(authId: string): Promise<AuthenticationDocument | null>;
   emailExists(email: string): Promise<boolean>;
-  create(data: CreateAuthenticationData): Promise<AuthenticationRecord>;
+  create(
+    data: CreateAuthenticationData,
+    session?: ClientSession
+  ): Promise<AuthenticationRecord>;
   storeTempPassword(
     authId: string,
     tempPasswordHash: string,
     tempPasswordExpAt: Date
   ): Promise<void>;
   markTempPasswordUsed(authId: string): Promise<void>;
-  updatePassword(authId: string, hashedPassword: string): Promise<void>;
+  updatePassword(
+    authId: string,
+    hashedPassword: string,
+    session?: ClientSession
+  ): Promise<void>;
   findUserByAuthId(authId: string): Promise<{
     _id: UserDocument["_id"];
     fullName: string;
@@ -53,15 +61,23 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
     );
   }
 
-  async create(data: CreateAuthenticationData): Promise<AuthenticationRecord> {
+  async create(
+    data: CreateAuthenticationData,
+    session?: ClientSession
+  ): Promise<AuthenticationRecord> {
     return asyncDatabaseHandler("create", async () => {
-      const authentication = await AuthenticationModel.create({
-        email: data.email,
-        password: data.hashedPassword,
-        verifiedEmail: true,
-        roles: AUTHENTICATION_ROLES.USER,
-        isActive: true
-      });
+      const [authentication] = await AuthenticationModel.create(
+        [
+          {
+            email: data.email,
+            password: data.hashedPassword,
+            verifiedEmail: true,
+            roles: AUTHENTICATION_ROLES.USER,
+            isActive: true
+          }
+        ],
+        { session }
+      );
 
       return {
         _id: authentication._id,
@@ -95,12 +111,20 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
     );
   }
 
-  async updatePassword(authId: string, hashedPassword: string): Promise<void> {
+  async updatePassword(
+    authId: string,
+    hashedPassword: string,
+    session?: ClientSession
+  ): Promise<void> {
     await asyncDatabaseHandler("updatePassword", () =>
-      AuthenticationModel.findByIdAndUpdate(authId, {
-        password: hashedPassword,
-        passwordChangedAt: new Date()
-      }).exec()
+      AuthenticationModel.findByIdAndUpdate(
+        authId,
+        {
+          password: hashedPassword,
+          passwordChangedAt: new Date()
+        },
+        { session }
+      ).exec()
     );
   }
 

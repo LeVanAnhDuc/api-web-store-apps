@@ -1,3 +1,5 @@
+// libs
+import mongoose from "mongoose";
 // types
 import type { Gender } from "@/types/modules/user";
 import type { Schema } from "mongoose";
@@ -143,23 +145,40 @@ export async function createUserAccount(
   email: string;
   fullName: string;
 }> {
-  const hashedPassword = hashValue(password);
-  const auth = await authService.create({ email, hashedPassword });
-  Logger.debug("Auth record created", {
-    email,
-    authId: auth._id.toString()
-  });
+  const session = await mongoose.startSession();
 
-  const user = await userService.createProfile({
-    authId: auth._id,
-    fullName,
-    gender,
-    dateOfBirth: new Date(dateOfBirth)
-  });
-  Logger.info("User profile created", {
-    userId: user._id.toString(),
-    authId: auth._id.toString()
-  });
+  try {
+    const result = await session.withTransaction(async () => {
+      const hashedPassword = hashValue(password);
+      const auth = await authService.create({ email, hashedPassword }, session);
+      Logger.debug("Auth record created", {
+        email,
+        authId: auth._id.toString()
+      });
 
-  return { authId: auth._id, userId: user._id, email, fullName };
+      const user = await userService.createProfile(
+        {
+          authId: auth._id,
+          fullName,
+          gender,
+          dateOfBirth: new Date(dateOfBirth)
+        },
+        session
+      );
+      Logger.info("User profile created", {
+        userId: user._id.toString(),
+        authId: auth._id.toString()
+      });
+
+      return { authId: auth._id, userId: user._id, email, fullName };
+    });
+
+    if (!result) {
+      throw new Error("Signup transaction was aborted");
+    }
+
+    return result;
+  } finally {
+    await session.endSession();
+  }
 }

@@ -11,6 +11,7 @@ export const requestLogger = (
   const startTime = Date.now();
 
   Logger.http(`${req.method} ${req.originalUrl}`, {
+    requestId: req.requestId,
     ip: req.ip,
     userAgent: req.get("user-agent"),
     body: req.body,
@@ -19,9 +20,10 @@ export const requestLogger = (
   });
 
   res.on("finish", () => {
-    const duration = Date.now() - startTime;
+    const duration_ms = Date.now() - startTime;
     Logger.http(`${req.method} ${req.originalUrl} - ${res.statusCode}`, {
-      duration: `${duration}ms`,
+      requestId: req.requestId,
+      duration_ms,
       statusCode: res.statusCode
     });
   });

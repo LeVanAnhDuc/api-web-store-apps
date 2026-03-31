@@ -5,6 +5,7 @@ import type {
   CreateAuthenticationData
 } from "@/types/modules/authentication";
 import type { UserDocument } from "@/types/modules/user";
+import type { ClientSession } from "mongoose";
 import type { AuthenticationRepository } from "./repositories/authentication.repository";
 // validators
 import {
@@ -51,12 +52,15 @@ export class AuthenticationService {
     }
   }
 
-  async create(data: CreateAuthenticationData): Promise<AuthenticationRecord> {
+  async create(
+    data: CreateAuthenticationData,
+    session?: ClientSession
+  ): Promise<AuthenticationRecord> {
     validateEmail(data.email);
     validateRequiredString(data.hashedPassword, "hashedPassword");
 
     try {
-      const record = await this.authRepo.create(data);
+      const record = await this.authRepo.create(data, session);
       Logger.info("New authentication record created", {
         authId: record._id.toString(),
         email: record.email
@@ -71,12 +75,16 @@ export class AuthenticationService {
     }
   }
 
-  async updatePassword(authId: string, hashedPassword: string): Promise<void> {
+  async updatePassword(
+    authId: string,
+    hashedPassword: string,
+    session?: ClientSession
+  ): Promise<void> {
     validateObjectId(authId, "authId");
     validateRequiredString(hashedPassword, "hashedPassword");
 
     try {
-      await this.authRepo.updatePassword(authId, hashedPassword);
+      await this.authRepo.updatePassword(authId, hashedPassword, session);
       Logger.info("Password updated", { authId });
     } catch (error) {
       Logger.error("Failed to update password", { authId, error });

@@ -6,13 +6,17 @@ import type {
   UpdateProfileData,
   PublicUserRecord
 } from "@/types/modules/user";
+import type { ClientSession } from "mongoose";
 // models
 import UserModel from "@/models/user";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 export type UserRepository = {
-  createProfile(data: CreateUserData): Promise<UserRecord>;
+  createProfile(
+    data: CreateUserData,
+    session?: ClientSession
+  ): Promise<UserRecord>;
   findById(userId: string): Promise<UserDocument | null>;
   updateById(
     userId: string,
@@ -23,14 +27,22 @@ export type UserRepository = {
 };
 
 export class MongoUserRepository implements UserRepository {
-  async createProfile(data: CreateUserData): Promise<UserRecord> {
+  async createProfile(
+    data: CreateUserData,
+    session?: ClientSession
+  ): Promise<UserRecord> {
     return asyncDatabaseHandler("createProfile", async () => {
-      const user = await UserModel.create({
-        authId: data.authId,
-        fullName: data.fullName,
-        gender: data.gender,
-        dateOfBirth: data.dateOfBirth
-      });
+      const [user] = await UserModel.create(
+        [
+          {
+            authId: data.authId,
+            fullName: data.fullName,
+            gender: data.gender,
+            dateOfBirth: data.dateOfBirth
+          }
+        ],
+        { session }
+      );
 
       return { _id: user._id, fullName: user.fullName };
     });
