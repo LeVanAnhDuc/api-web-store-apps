@@ -30,3 +30,10 @@ export interface AuthenticationRecord {
   email: string;
   roles: string;
 }
+
+export interface AuthTokensResponse {
+  accessToken: string;
+  refreshToken: string;
+  idToken: string;
+  expiresIn: number;
+}

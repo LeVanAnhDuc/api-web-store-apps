@@ -21,7 +21,7 @@ import {
   BadRequestError
 } from "@/config/responses/error";
 import { buildBlogFilter, buildBlogSort } from "./internals/query-builder";
-import { USER_CONFIG } from "@/constants/config";
+import { USER_CONFIG } from "@/constants/modules/user";
 
 interface RequestUser {
   userId: string;

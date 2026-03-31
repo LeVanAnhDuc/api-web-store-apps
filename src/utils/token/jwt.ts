@@ -1,8 +1,9 @@
 import jwt, { type Secret } from "jsonwebtoken";
-import type { TPayload, TExpiresIn, AuthTokens } from "@/types/jwt";
 import { ForbiddenError } from "@/config/responses/error";
 import ENV from "@/config/env";
 import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/constants/modules/token";
+import type { StringValue } from "ms";
+import type { AuthTokensResponse } from "@/types/modules/authentication";
 
 const TOKEN_TYPES = {
   ACCESS: "ACCESS",
@@ -11,6 +12,9 @@ const TOKEN_TYPES = {
 } as const;
 
 type TokenType = (typeof TOKEN_TYPES)[keyof typeof TOKEN_TYPES];
+
+type TPayload = string | Buffer | object;
+type TExpiresIn = StringValue | number;
 
 interface TokenConfig {
   secret: Secret;
@@ -63,7 +67,9 @@ export const generateRefreshToken = (payload: TPayload): string =>
 export const generateIdToken = (payload: TPayload): string =>
   generateToken(payload, TOKEN_TYPES.ID_TOKEN);
 
-export const generateAuthTokens = (payload: TPayload): AuthTokens => ({
+export const generateAuthTokens = (
+  payload: TPayload
+): Omit<AuthTokensResponse, "expiresIn"> => ({
   accessToken: generateAccessToken(payload),
   refreshToken: generateRefreshToken(payload),
   idToken: generateIdToken(payload)

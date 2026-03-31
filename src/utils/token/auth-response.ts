@@ -1,4 +1,4 @@
-import type { AuthTokensResponse } from "@/types/auth";
+import type { AuthTokensResponse } from "@/types/modules/authentication";
 import { generateAuthTokens } from "./jwt";
 import { TOKEN_EXPIRY } from "@/constants/modules/token";
 

@@ -1,7 +1,7 @@
 import type { RedisClientType } from "redis";
 import { buildKey } from "@/utils/common";
 import { generateSecureToken } from "@/utils/crypto/otp";
-import { SESSION_CONFIG } from "@/constants/config";
+import { SESSION_CONFIG } from "@/constants/modules/signup";
 import { SIGNUP } from "@/constants/redis/store";
 
 const KEYS = {

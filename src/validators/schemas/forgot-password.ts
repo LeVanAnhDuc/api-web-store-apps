@@ -3,7 +3,7 @@ import { emailSchema, otpSchema, passwordSchema } from "./base";
 import {
   FORGOT_PASSWORD_MAGIC_LINK_CONFIG,
   FORGOT_PASSWORD_RESET_TOKEN_CONFIG
-} from "@/constants/config";
+} from "@/constants/modules/forgot-password";
 
 export const fpOtpSendSchema = Joi.object({
   email: emailSchema.required()

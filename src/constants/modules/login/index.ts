@@ -1,0 +1,31 @@
+export const LOGIN_LOCKOUT = {
+  FREE_ATTEMPTS: 4,
+
+  LOCKOUT_DURATIONS: {
+    5: 30,
+    6: 60,
+    7: 120,
+    8: 240,
+    9: 480,
+    10: 1800
+  } as const,
+
+  MAX_LOCKOUT_SECONDS: 1800,
+  RESET_WINDOW_SECONDS: 1800
+} as const;
+
+export const LOGIN_OTP_CONFIG = {
+  LENGTH: 6,
+  EXPIRY_MINUTES: 5,
+  COOLDOWN_SECONDS: 60,
+  MAX_FAILED_ATTEMPTS: 5,
+  MAX_RESEND_ATTEMPTS: 3,
+  LOCKOUT_DURATION_MINUTES: 15
+} as const;
+
+export const MAGIC_LINK_CONFIG = {
+  TOKEN_LENGTH: 64,
+  EXPIRY_MINUTES: 15,
+  COOLDOWN_SECONDS: 60,
+  MAX_RESEND_ATTEMPTS: 3
+} as const;

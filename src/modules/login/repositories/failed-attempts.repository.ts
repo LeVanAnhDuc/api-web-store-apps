@@ -1,6 +1,6 @@
 import type { RedisClientType } from "redis";
 import { buildKey } from "@/utils/common";
-import { LOGIN_LOCKOUT } from "@/constants/config";
+import { LOGIN_LOCKOUT } from "@/constants/modules/login";
 import { LOGIN } from "@/constants/redis/store";
 
 const KEYS = {

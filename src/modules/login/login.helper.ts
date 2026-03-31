@@ -22,7 +22,7 @@ import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS
 } from "@/constants/modules/login-history";
-import { LOGIN_OTP_CONFIG } from "@/constants/config";
+import { LOGIN_OTP_CONFIG } from "@/constants/modules/login";
 import { toLoginResponseDto } from "./dtos";
 
 // ──────────────────────────────────────────────

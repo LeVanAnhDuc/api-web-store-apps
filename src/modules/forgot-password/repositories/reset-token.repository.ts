@@ -3,7 +3,7 @@ import { buildKey } from "@/utils/common";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
-import { FORGOT_PASSWORD_RESET_TOKEN_CONFIG } from "@/constants/config";
+import { FORGOT_PASSWORD_RESET_TOKEN_CONFIG } from "@/constants/modules/forgot-password";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 import { FORGOT_PASSWORD } from "@/constants/redis/store";
 

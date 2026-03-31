@@ -1,5 +1,5 @@
 // others
-import { USER_CONFIG } from "@/constants/config";
+import { USER_CONFIG } from "@/constants/modules/user";
 
 export function buildAvatarUrl(avatarPath: string | null): string | null {
   if (!avatarPath) return null;

@@ -9,11 +9,7 @@ export const loadAll = async (app: Express): Promise<void> => {
   try {
     await loadDatabase();
     await loadRedis();
-
-    // Modules (including rate limiters) use Redis - must initialize after Redis connects
     loadModules(app);
-
-    // Error handlers must be registered AFTER all routes
     loadErrorHandlers(app);
 
     Logger.info("All loaders initialized successfully");

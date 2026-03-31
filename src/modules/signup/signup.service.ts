@@ -26,7 +26,7 @@ import { EmailType } from "@/services/email/email.types";
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
-import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/config";
+import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/modules/signup";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
 import {
   toSendOtpDto,

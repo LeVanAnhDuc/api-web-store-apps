@@ -24,7 +24,7 @@ import {
 import {
   FORGOT_PASSWORD_OTP_CONFIG,
   FORGOT_PASSWORD_MAGIC_LINK_CONFIG
-} from "@/constants/config";
+} from "@/constants/modules/forgot-password";
 
 // ──────────────────────────────────────────────
 // OTP send helpers

@@ -7,3 +7,8 @@ export const BLOG_COVER_TYPE = {
   UPLOAD: "upload",
   URL: "url"
 } as const;
+
+export const BLOG_CONFIG = {
+  COVER_MAX_SIZE_BYTES: 5 * 1024 * 1024, // 5MB
+  COVER_UPLOAD_DIR: "uploads/blogs"
+} as const;

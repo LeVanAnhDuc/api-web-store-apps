@@ -4,7 +4,8 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import type { Request, RequestHandler } from "express";
 import { BadRequestError } from "@/config/responses/error";
-import { USER_CONFIG, BLOG_CONFIG } from "@/constants/config";
+import { USER_CONFIG } from "@/constants/modules/user";
+import { BLOG_CONFIG } from "@/constants/modules/blog";
 
 // Detect actual MIME type from file magic bytes (first 12 bytes).
 // Multer's file.mimetype comes from the HTTP Content-Type header and can be

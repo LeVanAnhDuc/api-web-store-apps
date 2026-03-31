@@ -1,5 +1,5 @@
 // types
-import type { AuthTokensResponse } from "@/types/auth";
+import type { AuthTokensResponse } from "@/types/modules/authentication";
 import type { Schema } from "mongoose";
 
 export interface CompleteSignupDto {

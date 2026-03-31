@@ -23,7 +23,7 @@ import { EmailType } from "@/services/email/email.types";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
-import { LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG } from "@/constants/config";
+import { LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG } from "@/constants/modules/login";
 import { toOtpSendDto, toMagicLinkSendDto } from "./dtos";
 import {
   completeSuccessfulLogin,

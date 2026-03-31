@@ -9,7 +9,7 @@ import {
   CLIENT_TYPES,
   GEO_DEFAULTS
 } from "@/constants/modules/login-history";
-import { LOGIN_HISTORY_CONFIG } from "@/constants/config";
+import { LOGIN_HISTORY_CONFIG } from "@/constants/modules/login-history";
 
 const { LOGIN_HISTORY, AUTHENTICATION } = MODEL_NAMES;
 

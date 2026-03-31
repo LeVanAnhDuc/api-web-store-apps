@@ -1,3 +1,9 @@
+import {
+  SECONDS_PER_MINUTE,
+  MINUTES_PER_HOUR,
+  HOURS_PER_DAY
+} from "@/constants/time";
+
 export const LOGIN_METHODS = {
   PASSWORD: "password",
   OTP: "otp",
@@ -52,6 +58,11 @@ export const HTTP_HEADERS = {
   USER_AGENT: "user-agent",
   CLIENT_TYPE: "x-client-type",
   X_FORWARDED_FOR: "x-forwarded-for"
+} as const;
+
+export const LOGIN_HISTORY_CONFIG = {
+  RETENTION_DAYS: 90,
+  TTL_SECONDS: 90 * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE
 } as const;
 
 export const LOCALHOST_VALUES = ["localhost", "0.0.0.0"] as const;
