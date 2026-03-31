@@ -1,8 +1,10 @@
-import type { Request, Response, NextFunction } from "express";
+// libs
 import mongoose from "mongoose";
+// types
+import type { Request, Response, NextFunction } from "express";
+// config
 import { BadRequestError } from "@/config/responses/error";
 
-// Mapping of Mongoose validation paths to i18next translation keys
 const VALIDATION_KEY_MAP: Record<string, I18n.Key> = {
   email: "validation:email.required",
   password: "validation:password.required",

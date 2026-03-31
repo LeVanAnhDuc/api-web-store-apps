@@ -1,12 +1,15 @@
+// types
 import type {
   AuthenticationDocument,
   AuthenticationRecord,
   CreateAuthenticationData
 } from "@/types/modules/authentication";
 import type { UserDocument } from "@/types/modules/user";
-import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
+// models
 import AuthenticationModel from "@/models/authentication";
 import UserModel from "@/models/user";
+// others
+import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 export type AuthenticationRepository = {

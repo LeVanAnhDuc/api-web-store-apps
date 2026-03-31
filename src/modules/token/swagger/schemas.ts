@@ -1,3 +1,4 @@
+// types
 import type { OpenAPIV3 } from "openapi-types";
 
 const RefreshTokenResponseSchema: OpenAPIV3.SchemaObject = {

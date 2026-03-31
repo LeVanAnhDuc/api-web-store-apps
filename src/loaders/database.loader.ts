@@ -1,4 +1,6 @@
+// database
 import instanceMongoDB from "@/database/mongodb";
+// others
 import { Logger } from "@/utils/logger";
 
 export const loadDatabase = async (): Promise<void> => {

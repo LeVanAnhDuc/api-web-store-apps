@@ -1,6 +1,5 @@
-// libs
-import type { Response } from "express";
 // types
+import type { Response } from "express";
 import type {
   FPOtpSendRequest,
   FPOtpVerifyRequest,

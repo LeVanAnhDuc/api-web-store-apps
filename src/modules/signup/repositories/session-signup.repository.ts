@@ -1,4 +1,6 @@
+// types
 import type { RedisClientType } from "redis";
+// others
 import { buildKey } from "@/utils/common";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { SESSION_CONFIG } from "@/constants/modules/signup";

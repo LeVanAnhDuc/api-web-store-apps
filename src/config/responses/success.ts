@@ -1,4 +1,4 @@
-// libs
+// types
 import type { Response } from "express";
 // config
 import { STATUS_CODES } from "@/config/http";

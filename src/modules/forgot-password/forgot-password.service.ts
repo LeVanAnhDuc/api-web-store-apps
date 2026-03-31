@@ -7,27 +7,11 @@ import type {
   FPResetPasswordRequest
 } from "@/types/modules/forgot-password";
 import type { SendEmailService } from "@/services/email/email.service";
-// config
-import { UnauthorizedError } from "@/config/responses/error";
-// core
-import { EmailType } from "@/services/email/email.types";
-// modules
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-// others
-import { Logger } from "@/utils/logger";
-import { withRetry } from "@/utils/retry";
-import { hashValue } from "@/utils/crypto/bcrypt";
 import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
 import type { MagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
 import type { ResetTokenRepository } from "./repositories/reset-token.repository";
-import {
-  toSendOtpResponseDto,
-  toVerifyOtpResponseDto,
-  toSendMagicLinkResponseDto,
-  toVerifyMagicLinkResponseDto,
-  toResetPasswordResponseDto
-} from "./dtos";
 import type {
   SendOtpResponseDto,
   VerifyOtpResponseDto,
@@ -35,6 +19,22 @@ import type {
   VerifyMagicLinkResponseDto,
   ResetPasswordResponseDto
 } from "./dtos";
+// config
+import { UnauthorizedError } from "@/config/responses/error";
+// services
+import { EmailType } from "@/services/email/email.types";
+// dtos
+import {
+  toSendOtpResponseDto,
+  toVerifyOtpResponseDto,
+  toSendMagicLinkResponseDto,
+  toVerifyMagicLinkResponseDto,
+  toResetPasswordResponseDto
+} from "./dtos";
+// others
+import { Logger } from "@/utils/logger";
+import { withRetry } from "@/utils/retry";
+import { hashValue } from "@/utils/crypto/bcrypt";
 import {
   ensureOtpCooldownExpired,
   ensureOtpResendLimitNotExceeded,

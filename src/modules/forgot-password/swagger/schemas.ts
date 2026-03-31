@@ -1,5 +1,8 @@
+// libs
 import j2s from "joi-to-swagger";
+// types
 import type { OpenAPIV3 } from "openapi-types";
+// validators
 import {
   fpOtpSendSchema,
   fpOtpVerifySchema,

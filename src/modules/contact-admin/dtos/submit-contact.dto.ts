@@ -1,3 +1,4 @@
+// types
 import type {
   ContactPriority,
   ContactStatus,

@@ -1,12 +1,16 @@
+// libs
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
-import { requestLogger } from "@/middlewares";
-import { i18nMiddleware } from "./i18n";
+// config
 import { setupSwagger } from "@/config/swagger.setup";
 import config from "@/config/env";
+// middlewares
+import { requestLogger } from "@/middlewares";
+// others
+import { i18nMiddleware } from "./i18n";
 
 const app = express();
 

@@ -1,11 +1,15 @@
+// libs
 import Joi from "joi";
-import { GENDERS } from "@/constants/modules/user";
+// types
+import type { UpdateProfileData } from "@/types/modules/user";
+// validators
 import {
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN,
   SAFE_ADDRESS_PATTERN
 } from "@/validators/constants";
-import type { UpdateProfileData } from "@/types/modules/user";
+// others
+import { GENDERS } from "@/constants/modules/user";
 
 const GENDER_VALUES = Object.values(GENDERS);
 const ADDRESS_MAX_LENGTH = 500;

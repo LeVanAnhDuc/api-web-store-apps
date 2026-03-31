@@ -1,9 +1,12 @@
+// libs
 import mongoose from "mongoose";
+// types
 import type {
   ConnectionStateValue,
   MongoConfig,
   ConnectionMetrics
 } from "@/types/mongodb";
+// others
 import { Logger } from "@/utils/logger";
 import { CONNECTION_STATES } from "@/constants/database";
 import { buildMongoConfig, MAX_RECONNECT_ATTEMPTS } from "./mongodb.config";

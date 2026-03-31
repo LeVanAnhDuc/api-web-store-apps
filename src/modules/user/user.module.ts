@@ -1,8 +1,9 @@
 // types
 import type { RequestHandler } from "express";
 import type { RateLimiterMiddleware } from "@/middlewares";
-// others
+// repositories
 import { MongoUserRepository } from "./repositories/user.repository";
+// others
 import { UserService } from "./user.service";
 import { UserController } from "./user.controller";
 import { createUserRoutes } from "./user.routes";

@@ -1,5 +1,8 @@
+// libs
 import { Schema, model, type Model } from "mongoose";
+// types
 import type { LoginHistoryDocument } from "@/types/modules/login-history";
+// others
 import { MODEL_NAMES } from "@/constants/models";
 import {
   LOGIN_METHODS,

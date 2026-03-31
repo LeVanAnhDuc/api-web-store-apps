@@ -1,6 +1,6 @@
+// types
 import type { OpenAPIV3 } from "openapi-types";
-import ENV from "../env";
-import { commonSchemas, commonResponses } from "./common.schemas";
+// modules
 import { loginSwaggerSchemas, loginPaths } from "@/modules/login/swagger";
 import { signupSwaggerSchemas, signupPaths } from "@/modules/signup/swagger";
 import { logoutSwaggerSchemas, logoutPaths } from "@/modules/logout/swagger";
@@ -14,6 +14,9 @@ import {
   contactAdminPaths
 } from "@/modules/contact-admin/swagger";
 import { userSwaggerSchemas, userPaths } from "@/modules/user/swagger";
+// others
+import ENV from "../env";
+import { commonSchemas, commonResponses } from "./common.schemas";
 
 const PORT = ENV.APP_PORT || 3000;
 

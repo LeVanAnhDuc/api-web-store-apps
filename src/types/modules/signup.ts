@@ -1,3 +1,4 @@
+// types
 import type { Request } from "express";
 import type { Gender } from "@/types/modules/user";
 

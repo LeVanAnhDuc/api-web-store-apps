@@ -2,6 +2,7 @@
 // Importing all translations from index to automatically pick up new namespaces
 // This ensures type-safety is derived from actual JSON files (single source of truth)
 
+// types
 import type * as Resources from "../i18n/locales/en";
 import type { SUPPORTED_LOCALES } from "../i18n/locales.config";
 

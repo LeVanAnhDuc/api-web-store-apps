@@ -1,4 +1,6 @@
+// types
 import type { AuthTokensResponse } from "@/types/modules/authentication";
+// others
 import { generateAuthTokens } from "./jwt";
 import { TOKEN_EXPIRY } from "@/constants/modules/token";
 

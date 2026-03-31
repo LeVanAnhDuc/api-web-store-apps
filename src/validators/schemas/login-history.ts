@@ -1,4 +1,6 @@
+// libs
 import Joi from "joi";
+// others
 import {
   LOGIN_STATUSES,
   LOGIN_METHODS,

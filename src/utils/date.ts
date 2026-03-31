@@ -1,4 +1,6 @@
+// validators
 import { AGE_VALIDATION } from "@/validators/constants";
+// others
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 
 export const getDateOfBirthBounds = (): {

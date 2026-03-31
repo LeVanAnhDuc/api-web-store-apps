@@ -1,3 +1,4 @@
+// libs
 import {
   Html,
   Head,
@@ -6,6 +7,7 @@ import {
   Section,
   Text
 } from "@react-email/components";
+// types
 import type { ReactNode } from "react";
 
 export const EmailLayout = ({

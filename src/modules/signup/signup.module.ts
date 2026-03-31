@@ -1,13 +1,13 @@
-// libs
-import type { RedisClientType } from "redis";
 // types
+import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
 import type { SendEmailService } from "@/services/email/email.service";
 import type { RateLimiterMiddleware } from "@/middlewares";
-// others
+// repositories
 import { RedisOtpSignupRepository } from "./repositories/otp-signup.repository";
 import { RedisSessionSignupRepository } from "./repositories/session-signup.repository";
+// others
 import { SignupService } from "./signup.service";
 import { SignupController } from "./signup.controller";
 import { createSignupRoutes } from "./signup.routes";

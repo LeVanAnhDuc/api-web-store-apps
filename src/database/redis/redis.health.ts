@@ -1,4 +1,6 @@
+// types
 import type { createClient } from "redis";
+// others
 import { Logger } from "@/utils/logger";
 
 export interface RedisHealthStatus {

@@ -15,13 +15,14 @@ import ENV from "@/config/env";
 import { BadRequestError, NotFoundError } from "@/config/responses/error";
 // services
 import { EmailType } from "@/services/email/email.types";
+// dtos
+import { toUnlockRequestDto, toUnlockVerifyDto } from "./dtos";
 // others
 import { Logger } from "@/utils/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { withRetry } from "@/utils/retry";
 import { generateAuthTokensResponse } from "@/utils/token";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
-import { toUnlockRequestDto, toUnlockVerifyDto } from "./dtos";
 import {
   checkCooldown,
   checkRateLimit,

@@ -11,13 +11,15 @@ import type {
 } from "@/types/modules/login-history";
 import type { LoginMethod } from "@/types/modules/login";
 import type { MyHistoryItemDto, AllHistoryItemDto } from "./dtos";
+import type { LoginFailReason } from "@/types/modules/login-history";
+// dtos
+import { toMyHistoryItemDto, toAllHistoryItemDto } from "./dtos";
 // others
 import {
   LOGIN_STATUSES,
   HTTP_HEADERS
 } from "@/constants/modules/login-history";
 import { Logger } from "@/utils/logger";
-import { toMyHistoryItemDto, toAllHistoryItemDto } from "./dtos";
 import {
   extractIp,
   parseUserAgent,
@@ -25,7 +27,6 @@ import {
   determineClientType,
   buildLoginHistoryFilter
 } from "./login-history.helper";
-import type { LoginFailReason } from "@/types/modules/login-history";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;

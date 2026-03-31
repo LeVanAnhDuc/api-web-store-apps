@@ -1,3 +1,4 @@
+// types
 import type { OpenAPIV3 } from "openapi-types";
 
 export const userPaths: OpenAPIV3.PathsObject = {

@@ -13,6 +13,8 @@ import {
   NotFoundError,
   UnauthorizedError
 } from "@/config/responses/error";
+// dtos
+import { toLoginResponseDto } from "./dtos";
 // others
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
@@ -23,11 +25,6 @@ import {
   LOGIN_FAIL_REASONS
 } from "@/constants/modules/login-history";
 import { LOGIN_OTP_CONFIG } from "@/constants/modules/login";
-import { toLoginResponseDto } from "./dtos";
-
-// ──────────────────────────────────────────────
-// Login completion
-// ──────────────────────────────────────────────
 
 export async function completeSuccessfulLogin(
   loginHistoryService: LoginHistoryService,

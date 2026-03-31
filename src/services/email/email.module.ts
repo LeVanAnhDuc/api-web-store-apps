@@ -1,4 +1,4 @@
-// core
+// services
 import { NodemailerTransport } from "@/services/cores/NodemailerTransport";
 // others
 import { SendEmailService } from "./email.service";

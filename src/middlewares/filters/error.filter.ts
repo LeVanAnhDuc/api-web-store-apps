@@ -1,4 +1,6 @@
+// types
 import type { NextFunction, Request, Response } from "express";
+// config
 import { ErrorResponse, ValidationError } from "@/config/responses/error";
 import { STATUS_CODES } from "@/config/http";
 

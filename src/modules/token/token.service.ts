@@ -2,10 +2,11 @@
 import type { RefreshTokenDto } from "./dtos";
 // config
 import { UnauthorizedError, ForbiddenError } from "@/config/responses/error";
+// dtos
+import { toRefreshTokenDto } from "./dtos";
 // others
 import { generateAuthTokensResponse, verifyRefreshToken } from "@/utils/token";
 import { Logger } from "@/utils/logger";
-import { toRefreshTokenDto } from "./dtos";
 
 export class TokenService {
   refreshAccessToken(

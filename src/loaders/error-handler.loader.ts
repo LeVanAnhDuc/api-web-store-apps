@@ -1,4 +1,6 @@
+// types
 import type { Express } from "express";
+// middlewares
 import {
   handleNotFound,
   handleError,

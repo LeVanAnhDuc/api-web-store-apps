@@ -1,3 +1,4 @@
+// types
 import type { Request } from "express";
 import type { LOGIN_METHODS } from "@/constants/modules/login-history";
 import type { Schema } from "mongoose";

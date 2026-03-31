@@ -1,4 +1,6 @@
+// types
 import type { OpenAPIV3 } from "openapi-types";
+
 const LogoutResponseSchema: OpenAPIV3.SchemaObject = {
   type: "object",
   properties: {

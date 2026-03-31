@@ -1,5 +1,8 @@
+// libs
 import { Schema, model, type Model } from "mongoose";
+// types
 import type { BlogDocument } from "@/types/modules/blog";
+// others
 import { BLOG_VISIBILITY, BLOG_COVER_TYPE } from "@/constants/modules/blog";
 import { MODEL_NAMES } from "@/constants/models";
 

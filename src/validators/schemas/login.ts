@@ -1,4 +1,6 @@
+// libs
 import Joi from "joi";
+// others
 import { emailSchema, otpSchema } from "./base";
 import { MAGIC_LINK_CONFIG } from "@/constants/modules/login";
 

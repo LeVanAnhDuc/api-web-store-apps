@@ -1,3 +1,4 @@
+// types
 import type {
   UserDocument,
   CreateUserData,
@@ -5,7 +6,9 @@ import type {
   UpdateProfileData,
   PublicUserRecord
 } from "@/types/modules/user";
+// models
 import UserModel from "@/models/user";
+// others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 export type UserRepository = {

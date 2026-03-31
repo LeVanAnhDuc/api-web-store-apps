@@ -1,6 +1,5 @@
-// libs
-import type { Response } from "express";
 // types
+import type { Response } from "express";
 import type { LogoutRequest } from "@/types/modules/logout";
 import type { LogoutService } from "./logout.service";
 // config

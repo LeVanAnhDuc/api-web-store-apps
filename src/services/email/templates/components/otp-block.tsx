@@ -1,3 +1,4 @@
+// libs
 import { Section, Text } from "@react-email/components";
 
 export const OtpBlock = ({

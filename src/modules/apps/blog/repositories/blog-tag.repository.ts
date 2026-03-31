@@ -1,5 +1,8 @@
-import BlogTagModel from "@/models/blog-tag";
+// types
 import type { BlogTagDocument } from "@/types/modules/blog";
+// models
+import BlogTagModel from "@/models/blog-tag";
+// others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 export type BlogTagRepository = {

@@ -1,3 +1,4 @@
+// config
 import ENV from "@/config/env";
 
 export const GENDERS = {

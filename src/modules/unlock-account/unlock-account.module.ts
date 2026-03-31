@@ -1,13 +1,13 @@
-// libs
-import type { RedisClientType } from "redis";
 // types
+import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/login.service";
 import type { SendEmailService } from "@/services/email/email.service";
 import type { RateLimiterMiddleware } from "@/middlewares";
-// others
+// repositories
 import { RedisUnlockAccountRepository } from "./repositories/unlock-account.repository";
+// others
 import { UnlockAccountService } from "./unlock-account.service";
 import { UnlockAccountController } from "./unlock-account.controller";
 import { createUnlockAccountRoutes } from "./unlock-account.routes";

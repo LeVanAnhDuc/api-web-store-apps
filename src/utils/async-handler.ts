@@ -1,6 +1,5 @@
-// libs
+// types
 import type { NextFunction, Request, Response } from "express";
-
 // config
 import { DatabaseError } from "@/config/responses/error";
 

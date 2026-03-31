@@ -17,14 +17,15 @@ import type { SendEmailService } from "@/services/email/email.service";
 // config
 import { BadRequestError } from "@/config/responses/error";
 import ENV from "@/config/env";
-// core
+// services
 import { EmailType } from "@/services/email/email.types";
+// dtos
+import { toOtpSendDto, toMagicLinkSendDto } from "./dtos";
 // others
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
 import { LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG } from "@/constants/modules/login";
-import { toOtpSendDto, toMagicLinkSendDto } from "./dtos";
 import {
   completeSuccessfulLogin,
   ensureCooldownExpired,

@@ -1,5 +1,8 @@
+// libs
 import { Section, Text } from "@react-email/components";
+// types
 import type { UnlockTempPasswordData } from "../email.types";
+// others
 import { getEmailT } from "../email.helper";
 import { EmailLayout } from "./components/email-layout";
 import { CtaButton } from "./components/cta-button";

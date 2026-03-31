@@ -1,3 +1,4 @@
+// types
 import type { OpenAPIV3 } from "openapi-types";
 
 export const logoutPaths: OpenAPIV3.PathsObject = {

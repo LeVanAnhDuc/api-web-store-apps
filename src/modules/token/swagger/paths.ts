@@ -1,3 +1,4 @@
+// types
 import type { OpenAPIV3 } from "openapi-types";
 
 export const tokenPaths: OpenAPIV3.PathsObject = {

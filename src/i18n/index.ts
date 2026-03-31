@@ -1,3 +1,4 @@
+// others
 import i18next from "./config";
 import { i18nMiddleware } from "./middleware";
 

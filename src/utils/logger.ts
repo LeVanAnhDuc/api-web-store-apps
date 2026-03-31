@@ -1,3 +1,4 @@
+// config
 import logger from "@/config/logger";
 
 export class Logger {

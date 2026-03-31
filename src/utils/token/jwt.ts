@@ -1,9 +1,13 @@
+// libs
 import jwt, { type Secret } from "jsonwebtoken";
-import { ForbiddenError } from "@/config/responses/error";
-import ENV from "@/config/env";
-import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/constants/modules/token";
+// types
 import type { StringValue } from "ms";
 import type { AuthTokensResponse } from "@/types/modules/authentication";
+// config
+import { ForbiddenError } from "@/config/responses/error";
+import ENV from "@/config/env";
+// others
+import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/constants/modules/token";
 
 const TOKEN_TYPES = {
   ACCESS: "ACCESS",

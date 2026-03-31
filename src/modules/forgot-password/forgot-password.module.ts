@@ -4,10 +4,11 @@ import type { AuthenticationService } from "@/modules/authentication/authenticat
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { SendEmailService } from "@/services/email/email.service";
 import type { RateLimiterMiddleware } from "@/middlewares";
-// others
+// repositories
 import { RedisOtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
 import { RedisMagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
 import { RedisResetTokenRepository } from "./repositories/reset-token.repository";
+// others
 import { ForgotPasswordService } from "./forgot-password.service";
 import { ForgotPasswordController } from "./forgot-password.controller";
 import { createForgotPasswordRoutes } from "./forgot-password.routes";

@@ -1,3 +1,4 @@
+// types
 import type { OpenAPIV3 } from "openapi-types";
 
 export const commonSchemas: Record<string, OpenAPIV3.SchemaObject> = {

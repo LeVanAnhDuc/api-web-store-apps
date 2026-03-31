@@ -1,8 +1,5 @@
+// types
 import type { Request } from "express";
-
-// ──────────────────────────────────────────────
-// OTP Send
-// ──────────────────────────────────────────────
 
 export interface FPOtpSendBody {
   email: string;

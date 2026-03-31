@@ -1,5 +1,8 @@
-import BlogCategoryModel from "@/models/blog-category";
+// types
 import type { BlogCategoryDocument } from "@/types/modules/blog";
+// models
+import BlogCategoryModel from "@/models/blog-category";
+// others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 export type BlogCategoryRepository = {

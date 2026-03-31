@@ -1,10 +1,14 @@
+// libs
 import { Types } from "mongoose";
+// types
 import type { FilterQuery } from "mongoose";
 import type {
   CreateLoginHistoryData,
   LoginHistoryDocument
 } from "@/types/modules/login-history";
+// models
 import LoginHistoryModel from "@/models/login-history";
+// others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 export type LoginHistoryFilter = {

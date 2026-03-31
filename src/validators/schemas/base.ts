@@ -1,5 +1,6 @@
+// libs
 import Joi from "joi";
-import { GENDERS } from "@/constants/modules/user";
+// validators
 import {
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN,
@@ -10,6 +11,8 @@ import {
   PASSWORD_VALIDATION,
   SAFE_EMAIL_PATTERN
 } from "@/validators/constants";
+// others
+import { GENDERS } from "@/constants/modules/user";
 import { getDateOfBirthBounds } from "@/utils/date";
 
 const GENDER_VALUES = Object.values(GENDERS);

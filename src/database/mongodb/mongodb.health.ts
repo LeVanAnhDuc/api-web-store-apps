@@ -1,10 +1,13 @@
+// libs
 import mongoose from "mongoose";
+// types
 import type {
   ConnectionStateValue,
   ConnectionMetrics,
   DatabaseStats,
   MongoConfig
 } from "@/types/mongodb";
+// others
 import { CONNECTION_STATES } from "@/constants/database";
 
 export const isHealthy = (state: ConnectionStateValue): boolean =>

@@ -1,5 +1,8 @@
+// libs
 import { Text } from "@react-email/components";
+// types
 import type { SignupOtpData } from "../email.types";
+// others
 import { getEmailT } from "../email.helper";
 import { EmailLayout } from "./components/email-layout";
 import { OtpBlock } from "./components/otp-block";

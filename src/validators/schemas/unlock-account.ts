@@ -1,4 +1,6 @@
+// libs
 import Joi from "joi";
+// others
 import { emailSchema } from "./base";
 
 export const unlockRequestSchema = Joi.object({

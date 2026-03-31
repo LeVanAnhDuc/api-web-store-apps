@@ -1,4 +1,6 @@
+// libs
 import { Section, Text } from "@react-email/components";
+// types
 import type { ReactNode } from "react";
 
 type InfoBoxVariant = "warning" | "danger" | "info";

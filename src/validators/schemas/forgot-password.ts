@@ -1,4 +1,6 @@
+// libs
 import Joi from "joi";
+// others
 import { emailSchema, otpSchema, passwordSchema } from "./base";
 import {
   FORGOT_PASSWORD_MAGIC_LINK_CONFIG,

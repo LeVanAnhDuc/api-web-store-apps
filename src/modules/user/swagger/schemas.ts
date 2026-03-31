@@ -1,3 +1,4 @@
+// types
 import type { OpenAPIV3 } from "openapi-types";
 
 const UserProfileResponseSchema: OpenAPIV3.SchemaObject = {

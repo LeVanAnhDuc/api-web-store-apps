@@ -1,7 +1,7 @@
 // libs
 import { Router } from "express";
-import type { RequestHandler } from "express";
 // types
+import type { RequestHandler } from "express";
 import type { LogoutController } from "./logout.controller";
 // others
 import { asyncHandler } from "@/utils/async-handler";

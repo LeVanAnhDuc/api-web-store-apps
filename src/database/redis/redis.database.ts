@@ -1,5 +1,8 @@
+// libs
 import { ConnectionTimeoutError, createClient } from "redis";
+// config
 import { RedisError } from "@/config/responses/error";
+// others
 import { Logger } from "@/utils/logger";
 import { buildRedisConfig } from "./redis.config";
 import { setupEventHandlers } from "./redis.events";

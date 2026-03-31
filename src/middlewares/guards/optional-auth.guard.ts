@@ -1,7 +1,7 @@
 // types
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-// utils
+// others
 import { verifyAccessToken } from "@/utils/token";
 
 export const optionalAuthGuard =

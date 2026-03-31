@@ -1,3 +1,4 @@
+// config
 import { REASON_PHRASES, STATUS_CODES } from "@/config/http";
 
 export class ErrorResponse extends Error {

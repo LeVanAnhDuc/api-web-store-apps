@@ -21,13 +21,9 @@ import type {
 } from "./dtos";
 // config
 import { BadRequestError } from "@/config/responses/error";
-// others
+// services
 import { EmailType } from "@/services/email/email.types";
-import { Logger } from "@/utils/logger";
-import { generateAuthTokensResponse } from "@/utils/token";
-import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
-import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/modules/signup";
-import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
+// dtos
 import {
   toSendOtpDto,
   toVerifyOtpDto,
@@ -35,6 +31,12 @@ import {
   toCompleteSignupDto,
   toCheckEmailDto
 } from "./dtos";
+// others
+import { Logger } from "@/utils/logger";
+import { generateAuthTokensResponse } from "@/utils/token";
+import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
+import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/modules/signup";
+import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
 import {
   ensureEmailAvailable,
   ensureCooldownExpired,

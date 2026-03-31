@@ -1,4 +1,6 @@
+// types
 import type { RedisClientType } from "redis";
+// others
 import { buildKey } from "@/utils/common";
 import { LOGIN } from "@/constants/redis/store";
 

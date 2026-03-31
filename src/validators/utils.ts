@@ -1,5 +1,8 @@
+// libs
 import { Types } from "mongoose";
+// config
 import { BadRequestError } from "@/config/responses/error";
+// others
 import { EMAIL_FORMAT_PATTERN, EMAIL_VALIDATION } from "./constants";
 
 export const validateEmail = (email: string): void => {

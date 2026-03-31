@@ -1,15 +1,14 @@
+// libs
 import { Router } from "express";
+// types
 import type { Express, Request, Response } from "express";
 import type { RedisClientType } from "redis";
-import { instanceRedis } from "@/database/redis";
+// services
 import { createEmailModule } from "@/services/email/email.module";
+// database
+import { instanceRedis } from "@/database/redis";
+// modules
 import { createAuthenticationModule } from "@/modules/authentication/authentication.module";
-import {
-  authGuard,
-  adminGuard,
-  optionalAuthGuard,
-  RateLimiterMiddleware
-} from "@/middlewares";
 import { createLoginHistoryModule } from "@/modules/login-history/login-history.module";
 import { createLoginModule } from "@/modules/login/login.module";
 import { createSignupModule } from "@/modules/signup/signup.module";
@@ -20,7 +19,14 @@ import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-pas
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
 import { createUserModule } from "@/modules/user/user.module";
 import { createBlogModule } from "@/modules/apps/blog/blog.module";
-
+// middlewares
+import {
+  authGuard,
+  adminGuard,
+  optionalAuthGuard,
+  RateLimiterMiddleware
+} from "@/middlewares";
+// others
 import { Logger } from "@/utils/logger";
 
 export const loadModules = (app: Express): void => {

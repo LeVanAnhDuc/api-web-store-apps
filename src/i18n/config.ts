@@ -1,7 +1,8 @@
+// libs
 import i18next from "i18next";
 import Backend from "i18next-fs-backend";
 import { join } from "path";
-
+// others
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "./locales.config";
 
 const DEFAULT_NAMESPACE = "common" as const;

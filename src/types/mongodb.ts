@@ -1,3 +1,4 @@
+// types
 import type { ConnectOptions } from "mongoose";
 import type { CONNECTION_STATES } from "@/constants/database";
 

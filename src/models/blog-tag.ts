@@ -1,5 +1,8 @@
+// libs
 import { Schema, model, type Model } from "mongoose";
+// types
 import type { BlogTagDocument } from "@/types/modules/blog";
+// others
 import { MODEL_NAMES } from "@/constants/models";
 
 const { BLOG_TAG } = MODEL_NAMES;

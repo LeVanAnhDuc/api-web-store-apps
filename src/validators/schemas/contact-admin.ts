@@ -1,11 +1,15 @@
+// libs
 import Joi from "joi";
+// types
+import type { SubmitContactBody } from "@/types/modules/contact-admin";
+// validators
+import { CONTACT_CONFIG } from "@/validators/constants";
+// others
 import {
   CONTACT_PRIORITIES,
   CONTACT_STATUSES
 } from "@/constants/modules/contact-admin";
-import { CONTACT_CONFIG } from "@/validators/constants";
 import { emailSchema } from "./base";
-import type { SubmitContactBody } from "@/types/modules/contact-admin";
 
 const PRIORITY_VALUES = Object.values(CONTACT_PRIORITIES);
 const STATUS_VALUES = Object.values(CONTACT_STATUSES);

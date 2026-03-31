@@ -1,5 +1,8 @@
-import type { Application } from "express";
+// libs
 import swaggerUi from "swagger-ui-express";
+// types
+import type { Application } from "express";
+// others
 import { openApiSpec } from "./swagger";
 
 export const setupSwagger = (app: Application): void => {

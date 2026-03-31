@@ -1,4 +1,6 @@
+// types
 import type { Express } from "express";
+// others
 import { loadDatabase, closeDatabase } from "./database.loader";
 import { loadRedis, closeRedis } from "./redis.loader";
 import { loadModules } from "./modules.loader";

@@ -1,7 +1,10 @@
+// types
 import type { Types } from "mongoose";
 import type { FilterQuery, SortOrder } from "mongoose";
-import BlogModel from "@/models/blog";
 import type { BlogDocument, UpdateBlogDto } from "@/types/modules/blog";
+// models
+import BlogModel from "@/models/blog";
+// others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 interface FindOptions {

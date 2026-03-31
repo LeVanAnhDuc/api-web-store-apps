@@ -1,4 +1,13 @@
+// libs
 import Joi from "joi";
+// types
+import type {
+  SendOtpBody,
+  VerifyOtpBody,
+  CompleteSignupBody,
+  CheckEmailParams
+} from "@/types/modules/signup";
+// others
 import { SESSION_CONFIG } from "@/constants/modules/signup";
 import {
   emailSchema,
@@ -8,12 +17,6 @@ import {
   genderSchema,
   dateOfBirthSchema
 } from "./base";
-import type {
-  SendOtpBody,
-  VerifyOtpBody,
-  CompleteSignupBody,
-  CheckEmailParams
-} from "@/types/modules/signup";
 
 export const sendOtpSchema: Joi.ObjectSchema<SendOtpBody> = Joi.object({
   email: emailSchema.required()

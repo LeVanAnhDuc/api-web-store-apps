@@ -3,7 +3,7 @@ import type { Request, Response, NextFunction, RequestHandler } from "express";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 // config
 import { UnauthorizedError } from "@/config/responses/error";
-// utils
+// others
 import { verifyAccessToken } from "@/utils/token";
 
 export const authGuard =

@@ -1,7 +1,7 @@
 // libs
 import { Router } from "express";
-import type { RequestHandler } from "express";
 // types
+import type { RequestHandler } from "express";
 import type { LoginHistoryController } from "./login-history.controller";
 // middlewares
 import { queryPipe } from "@/middlewares";

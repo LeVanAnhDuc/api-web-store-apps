@@ -1,9 +1,9 @@
-// libs
-import type { RequestHandler } from "express";
 // types
+import type { RequestHandler } from "express";
 import type { RateLimiterMiddleware } from "@/middlewares";
-// others
+// repositories
 import { MongoContactRepository } from "./repositories/contact.repository";
+// others
 import { ContactAdminService } from "./contact-admin.service";
 import { ContactAdminController } from "./contact-admin.controller";
 import {

@@ -1,5 +1,8 @@
+// libs
 import j2s from "joi-to-swagger";
+// types
 import type { OpenAPIV3 } from "openapi-types";
+// validators
 import {
   sendOtpSchema,
   resendOtpSchema,
@@ -7,6 +10,7 @@ import {
   completeSignupSchema,
   checkEmailSchema
 } from "@/validators/schemas/signup";
+
 const { swagger: SendOtpRequestSchema } = j2s(sendOtpSchema);
 const { swagger: ResendOtpRequestSchema } = j2s(resendOtpSchema);
 const { swagger: VerifyOtpRequestSchema } = j2s(verifyOtpSchema);

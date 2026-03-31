@@ -1,15 +1,16 @@
+// libs
 import multer, { type FileFilterCallback } from "multer";
 import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
+// types
 import type { Request, RequestHandler } from "express";
+// config
 import { BadRequestError } from "@/config/responses/error";
+// others
 import { USER_CONFIG } from "@/constants/modules/user";
 import { BLOG_CONFIG } from "@/constants/modules/blog";
 
-// Detect actual MIME type from file magic bytes (first 12 bytes).
-// Multer's file.mimetype comes from the HTTP Content-Type header and can be
-// spoofed by the client. Reading the actual file bytes prevents MIME faking.
 function detectImageMimeType(filePath: string): string | null {
   try {
     const fd = fs.openSync(filePath, "r");

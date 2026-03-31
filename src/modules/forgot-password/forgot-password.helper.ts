@@ -5,18 +5,17 @@ import type {
 } from "@/types/modules/forgot-password";
 import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { SendEmailService } from "@/services/email/email.service";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
+import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
+import type { MagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
 // config
 import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
 import ENV from "@/config/env";
-// core
+// services
 import { EmailType } from "@/services/email/email.types";
-// modules
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 // others
 import { Logger } from "@/utils/logger";
-import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
-import type { MagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
 import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS
@@ -25,10 +24,6 @@ import {
   FORGOT_PASSWORD_OTP_CONFIG,
   FORGOT_PASSWORD_MAGIC_LINK_CONFIG
 } from "@/constants/modules/forgot-password";
-
-// ──────────────────────────────────────────────
-// OTP send helpers
-// ──────────────────────────────────────────────
 
 export async function ensureOtpCooldownExpired(
   otpRepo: OtpForgotPasswordRepository,

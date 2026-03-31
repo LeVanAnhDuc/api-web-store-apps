@@ -1,6 +1,8 @@
+// libs
 import { format, addColors, createLogger, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import path from "path";
+// config
 import ENV from "@/config/env";
 
 const LEVELS = {

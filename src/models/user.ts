@@ -1,11 +1,15 @@
+// libs
 import { Schema, model, type Model } from "mongoose";
+// types
 import type { UserDocument } from "@/types/modules/user";
-import { GENDERS } from "@/constants/modules/user";
+// validators
 import {
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN,
   SAFE_ADDRESS_PATTERN
 } from "@/validators/constants";
+// others
+import { GENDERS } from "@/constants/modules/user";
 import { MODEL_NAMES } from "@/constants/models";
 
 const { USER, AUTHENTICATION } = MODEL_NAMES;

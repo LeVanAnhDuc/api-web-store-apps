@@ -1,4 +1,4 @@
-// libs
+// types
 import type { RequestHandler } from "express";
 // others
 import { LogoutService } from "./logout.service";

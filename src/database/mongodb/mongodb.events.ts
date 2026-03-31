@@ -1,5 +1,7 @@
+// types
 import type { Connection } from "mongoose";
 import type { ConnectionStateValue } from "@/types/mongodb";
+// others
 import { Logger } from "@/utils/logger";
 import { CONNECTION_STATES } from "@/constants/database";
 

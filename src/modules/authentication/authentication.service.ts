@@ -1,16 +1,19 @@
+// types
 import type {
   AuthenticationDocument,
   AuthenticationRecord,
   CreateAuthenticationData
 } from "@/types/modules/authentication";
 import type { UserDocument } from "@/types/modules/user";
-import { Logger } from "@/utils/logger";
+import type { AuthenticationRepository } from "./repositories/authentication.repository";
+// validators
 import {
   validateEmail,
   validateObjectId,
   validateRequiredString
 } from "@/validators/utils";
-import type { AuthenticationRepository } from "./repositories/authentication.repository";
+// others
+import { Logger } from "@/utils/logger";
 
 export class AuthenticationService {
   constructor(private readonly authRepo: AuthenticationRepository) {}

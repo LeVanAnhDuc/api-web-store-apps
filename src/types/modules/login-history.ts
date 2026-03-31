@@ -1,3 +1,4 @@
+// types
 import type { Schema, Document } from "mongoose";
 import type { Request } from "express";
 import type { LoginMethod } from "@/types/modules/login";

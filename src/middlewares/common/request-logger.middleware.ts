@@ -1,4 +1,6 @@
+// types
 import type { Request, Response, NextFunction } from "express";
+// others
 import { Logger } from "@/utils/logger";
 
 export const requestLogger = (

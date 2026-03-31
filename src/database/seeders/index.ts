@@ -1,4 +1,6 @@
+// database
 import instanceMongoDB from "@/database/mongodb";
+// others
 import { Logger } from "@/utils/logger";
 import { seedUsers, clearUsers } from "./user.seeder";
 

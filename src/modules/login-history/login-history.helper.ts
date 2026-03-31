@@ -1,8 +1,8 @@
 // libs
-import type { Request } from "express";
 import { UAParser } from "ua-parser-js";
 import geoip from "geoip-lite";
 // types
+import type { Request } from "express";
 import type {
   ClientType,
   DeviceType,
@@ -20,10 +20,6 @@ import {
   PRIVATE_IP_PATTERNS
 } from "@/constants/modules/login-history";
 import { Logger } from "@/utils/logger";
-
-// ──────────────────────────────────────────────
-// extractIp
-// ──────────────────────────────────────────────
 
 const COMMA_SEPARATOR = ",";
 const FIRST_IP_INDEX = 0;

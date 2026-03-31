@@ -10,8 +10,9 @@ import type { UserRepository } from "./repositories/user.repository";
 import type { MyProfileDto, PublicProfileDto, UploadAvatarDto } from "./dtos";
 // config
 import { BadRequestError, NotFoundError } from "@/config/responses/error";
-// others
+// dtos
 import { toMyProfileDto, toPublicProfileDto, toUploadAvatarDto } from "./dtos";
+// others
 import { buildAvatarUrl } from "./user.helper";
 
 export class UserService {

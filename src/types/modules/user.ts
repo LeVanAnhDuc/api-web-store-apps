@@ -1,3 +1,4 @@
+// types
 import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { GENDERS } from "@/constants/modules/user";
