@@ -1,105 +1,332 @@
-# API-express-learn
+# Apartment App — Server
 
-## 1. Giới thiệu
+A RESTful API server for apartment/property management with JWT authentication, email services, job queues, and comprehensive error handling.
 
-API được viết bằng TS compile qua JS
+## Tech Stack
 
-### 📚 Tài liệu chi tiết
+| Layer           | Technology                             |
+| --------------- | -------------------------------------- |
+| Runtime         | Node.js + Express                      |
+| Language        | TypeScript                             |
+| Database        | MongoDB (Mongoose 8)                   |
+| Cache / Queue   | Redis (node-redis) + BullMQ            |
+| Authentication  | JWT (access + refresh tokens) + bcrypt |
+| Validation      | Joi 17                                 |
+| Email           | Nodemailer + React Email templates     |
+| Documentation   | Swagger UI (OpenAPI)                   |
+| Logging         | Winston (daily rotate files)           |
+| Testing         | Jest 30 + ts-jest                      |
+| Package Manager | Yarn                                   |
 
-Xem thêm các tài liệu kỹ thuật chi tiết trong folder [`.doc/`](./.doc/):
+## Prerequisites
 
-- 🏗️ [**PROJECT OVERVIEW**](./.doc/PROJECT_OVERVIEW.md) - Tổng quan architecture, coding standards (MUST READ!)
-- 📝 [Logger System Guide](./.doc/logger.md) - Hướng dẫn sử dụng Winston Logger
-- ⚙️ [Nodemon Configuration Guide](./.doc/nodemon-config.md) - Giải thích chi tiết cấu hình Nodemon
-- 🛠️ [Code Quality Tools Guide](./.doc/code-quality-tools.md) - Hướng dẫn ESLint, Prettier, Husky, Lint-staged
+- **Node.js** >= 18
+- **Yarn** (classic)
+- **MongoDB** — local instance or remote connection string
+- **Redis** — required for rate limiting, caching, and job queues
 
-## 2. Cài đặt dự án (require: Mongo, Node)
+## Getting Started
 
-### Bước 1: Cài đặt dependencies
+### 1. Install dependencies
 
 ```bash
 yarn install
 ```
 
-### Bước 2: Cấu hình môi trường
+### 2. Configure environment variables
 
-- Tạo file `.env` và cấu hình các biến môi trường cần thiết
+Create a `.env` file in the project root:
 
-### Bước 3: Chạy server development
+```env
+# ──── Server ────
+APP_PORT=5000
+NODE_ENV=development
+CLIENT_URL=http://localhost:3000
+CORS_ORIGINS=http://localhost:3000
+
+# ──── MongoDB ────
+DB_URL=mongodb://localhost:27017
+DB_NAME=Apartment_App
+
+# ──── Redis ────
+REDIS_URL=redis://:password@host:port
+REDIS_HOST=your-redis-host
+REDIS_PORT=6379
+REDIS_USERNAME=default
+REDIS_PASSWORD=your-redis-password
+
+# ──── JWT Secrets ────
+JWT_ACCESS_SECRET=your-access-secret
+JWT_REFRESH_SECRET=your-refresh-secret
+JWT_ID_SECRET=your-id-secret
+
+# ──── Email (Gmail SMTP) ────
+USERNAME_EMAIL=your-email@gmail.com
+PASSWORD_EMAIL=your-app-password
+
+# ──── Logging ────
+LOG_LEVEL=http
+```
+
+> **Note:** All environment variables are accessed through `src/config/env.ts`. Never read `process.env` directly in application code.
+
+### 3. Seed the database (optional)
+
+```bash
+yarn seed
+```
+
+To remove seeded data:
+
+```bash
+yarn seed:clear
+```
+
+### 4. Start the development server
 
 ```bash
 yarn dev
 ```
 
-### Bước 4: Truy cập
+The server runs at **http://localhost:5000** by default.
 
-- Server đã được chạy với host là: "localhost:3000"
-
-## 3. Các lệnh khả dụng
-
-### Development
+**Recommended workflow** (two terminals):
 
 ```bash
-yarn dev          # Chạy server với nodemon (fast reload, no type checking)
-yarn dev:check    # Watch mode type checking (chạy trong terminal riêng)
-yarn type-check   # Kiểm tra TypeScript types một lần
-```
-
-**💡 Workflow khuyến nghị:**
-
-```bash
-# Terminal 1: Development server (fast reload)
+# Terminal 1 — Development server (fast reload via nodemon)
 yarn dev
 
-# Terminal 2 (optional): Type checking watch mode
+# Terminal 2 — TypeScript type checking (watch mode)
 yarn dev:check
 ```
 
-Nodemon đã được tối ưu với:
+Nodemon is configured with `--transpile-only` for fast restarts (1s delay to avoid rapid reloads). Type `rs` in the terminal to force a restart.
 
-- Fast restart với `--transpile-only`
-- Delay 1000ms tránh restart nhiều lần
-- Gõ `rs` trong terminal để force restart
-- Auto clear console và hiển thị emoji khi restart/crash
+## Available Scripts
 
-### Production & Code Quality
+| Command              | Description                                 |
+| -------------------- | ------------------------------------------- |
+| `yarn dev`           | Start dev server with nodemon (fast reload) |
+| `yarn dev:check`     | TypeScript watch mode (separate terminal)   |
+| `yarn type-check`    | One-time TypeScript validation              |
+| `yarn build`         | Compile TypeScript to `dist/`               |
+| `yarn start`         | Build and run production server             |
+| `yarn lint`          | Run ESLint                                  |
+| `yarn lint:fix`      | Auto-fix lint errors                        |
+| `yarn format`        | Format code with Prettier                   |
+| `yarn test`          | Run Jest tests                              |
+| `yarn test:coverage` | Run tests with coverage report              |
+| `yarn test:watch`    | Jest in watch mode                          |
+| `yarn seed`          | Populate database with seed data            |
+| `yarn seed:clear`    | Remove seeded data                          |
 
-```bash
-yarn build        # Build TypeScript sang JavaScript
-yarn start        # Build và chạy production server
-yarn lint         # Kiểm tra code với ESLint
-yarn lint:fix     # Tự động fix các lỗi ESLint có thể sửa được
-yarn format       # Format code với Prettier
-yarn format:check # Kiểm tra format code mà không thay đổi files
+## Project Structure
+
+```
+src/
+├── server.ts                  # Entry point — boots the app with graceful shutdown
+├── app.ts                     # Express app setup (CORS, Helmet, body parser, i18n)
+├── config/                    # Global configuration
+│   ├── env.ts                 # Environment variable access (single source of truth)
+│   ├── logger.ts              # Winston logger setup
+│   ├── cookie.ts              # Cookie configuration
+│   └── responses/             # Standardized success/error response classes
+├── database/                  # Database connections and seeders
+│   ├── mongodb/               # MongoDB connection (Mongoose)
+│   ├── redis/                 # Redis connection (node-redis)
+│   └── seeders/               # Database seed scripts
+├── loaders/                   # Boot sequence orchestrator
+├── models/                    # Mongoose schemas and models
+├── modules/                   # Feature modules (see API Endpoints below)
+│   ├── authentication/        # Core auth logic, JWT, guards
+│   ├── signup/                # User registration
+│   ├── login/                 # Login with device tracking
+│   ├── logout/                # Session invalidation
+│   ├── token/                 # Token refresh
+│   ├── forgot-password/       # Password reset flow
+│   ├── unlock-account/        # Account unlock after failed attempts
+│   ├── login-history/         # Login history tracking
+│   ├── user/                  # User profile management
+│   ├── contact-admin/         # Contact form submissions
+│   └── blog/                  # Blog/content management
+├── services/                  # Cross-cutting services
+│   ├── email/                 # Email service (Nodemailer + React Email)
+│   └── queue/                 # BullMQ job queue
+├── middlewares/               # Express middleware
+│   ├── guards/                # Auth guards (authGuard, adminGuard)
+│   ├── pipes/                 # Validation pipes (body, params, query)
+│   ├── RateLimiterMiddleware/ # Redis-backed rate limiting
+│   └── error-handler/         # Global error handler
+├── validators/                # Joi schemas and validation constants
+├── types/                     # TypeScript type definitions
+├── constants/                 # App-wide constants
+├── i18n/                      # Internationalization (i18next)
+└── utils/                     # Utilities (logger, retry, circuit-breaker)
 ```
 
-> **Lưu ý:** Dự án này sử dụng Yarn. Vui lòng chỉ commit `yarn.lock` và không commit `package-lock.json`.
+### Module Structure
 
-## 4. Code Quality & Git Hooks
+Each feature module follows a consistent pattern:
 
-Dự án đã được cấu hình với:
+```
+modules/{feature}/
+├── {feature}.module.ts        # Factory — wires dependencies, exports routes
+├── {feature}.controller.ts    # Request handlers
+├── {feature}.routes.ts        # Express router with validation middleware
+├── {feature}.service.ts       # Business logic
+├── {feature}.helper.ts        # Module-specific helpers (optional)
+├── dtos/                      # Data Transfer Objects (optional)
+├── repositories/              # Data access layer (optional)
+└── swagger/                   # OpenAPI docs for the module (optional)
+```
 
-- **ESLint**: Kiểm tra code quality và enforce coding standards
-- **Prettier**: Tự động format code
-- **Husky**: Git hooks để đảm bảo code quality trước khi commit
-- **Lint-staged**: Tự động lint và format code khi commit
+## API Endpoints
 
-Khi commit code, husky sẽ tự động:
+### Health Check
 
-1. Chạy ESLint và tự động fix các lỗi có thể sửa được
-2. Format code với Prettier
-3. Chỉ cho phép commit nếu không có lỗi
+| Method | Endpoint  | Description              |
+| ------ | --------- | ------------------------ |
+| GET    | `/health` | MongoDB and Redis status |
 
-## 5. Công nghệ sử dụng trong dự án
+### Authentication
 
-- Ngôn ngữ lập trình: TypeScript
-- BE: Node(Express), bcrypt, jsonwebtoken, class-transformer, class-transformer, helmet, lodash, mongoose.
-- DataBase: MongoDB.
+| Method | Endpoint                       | Description                  |
+| ------ | ------------------------------ | ---------------------------- |
+| POST   | `/api/v1/auth/signup`          | Register a new user          |
+| POST   | `/api/v1/auth/signup/verify`   | Verify signup OTP            |
+| POST   | `/api/v1/auth/login`           | Log in (email/password)      |
+| POST   | `/api/v1/auth/logout`          | Log out (invalidate session) |
+| POST   | `/api/v1/auth/token`           | Refresh access token         |
+| POST   | `/api/v1/auth/forgot-password` | Request password reset       |
+| POST   | `/api/v1/auth/unlock`          | Unlock locked account        |
 
-### Những thứ đã làm được trong dự án
+### User
 
-- API CRUD todo
-- API login, register, refresh-token
-- Validate data trước khi vào controller bằng DTO, class-validator, class-transformer
-- Mô hình MVC
-- Cấu hình webpack cơ bản
+| Method | Endpoint           | Description              |
+| ------ | ------------------ | ------------------------ |
+| GET    | `/api/v1/users/me` | Get current user profile |
+| PATCH  | `/api/v1/users/me` | Update current user      |
+
+### Login History
+
+| Method | Endpoint                      | Description                  |
+| ------ | ----------------------------- | ---------------------------- |
+| GET    | `/api/v1/login-history`       | Get user's own login history |
+| GET    | `/api/v1/admin/login-history` | Get all users' login history |
+
+### Contact Admin
+
+| Method | Endpoint                     | Description                     |
+| ------ | ---------------------------- | ------------------------------- |
+| POST   | `/api/v1/contact`            | Submit a contact form           |
+| GET    | `/api/v1/admin/contacts`     | List all contacts (admin only)  |
+| GET    | `/api/v1/admin/contacts/:id` | Get contact detail (admin only) |
+
+### Blog
+
+| Method | Endpoint                 | Description      |
+| ------ | ------------------------ | ---------------- |
+| GET    | `/api/v1/apps/blogs`     | List blog posts  |
+| POST   | `/api/v1/apps/blogs`     | Create blog post |
+| GET    | `/api/v1/apps/blogs/:id` | Get blog post    |
+| PATCH  | `/api/v1/apps/blogs/:id` | Update blog post |
+| DELETE | `/api/v1/apps/blogs/:id` | Delete blog post |
+
+> Full interactive API documentation is available at **`/api-docs`** (Swagger UI) when the server is running.
+
+## Architecture
+
+### Boot Sequence
+
+```
+server.ts → loadAll(app):
+  1. loadDatabase()      — connect to MongoDB
+  2. loadRedis()         — connect to Redis
+  3. loadServices()      — create cross-cutting services (email, etc.)
+  4. loadQueues()        — create BullMQ queues/workers, mount Bull Board
+  5. loadModules()       — wire feature modules, mount routes
+  6. loadErrorHandlers() — 404 handler → Mongoose error parser → global error handler
+```
+
+### Request Lifecycle
+
+```
+Incoming Request
+  → CORS → Helmet → Body Parser → Cookie Parser → i18n Middleware
+  → Rate Limiter → Validation Pipe (bodyPipe / paramsPipe / queryPipe)
+  → asyncHandler(controller)
+  → Success: res.json({ timestamp, route, message, data })
+  → Error:   next(error) → Global Error Handler → standardized error response
+```
+
+### Graceful Shutdown
+
+On `SIGINT` or `SIGTERM`, the server:
+
+1. Stops accepting new connections
+2. Waits up to 30 seconds for in-flight requests to complete
+3. Closes BullMQ queues, MongoDB, and Redis connections
+4. Exits the process
+
+## Key Features
+
+### Authentication & Security
+
+- **JWT tokens** — access + refresh tokens stored in HttpOnly secure cookies
+- **Auth guards** — `authGuard()`, `adminGuard()`, `optionalAuthGuard()` middleware
+- **Password hashing** — bcrypt with configurable salt rounds
+- **Rate limiting** — Redis-backed, per-module limits (login, signup, forgot-password)
+- **Security headers** — Helmet middleware enabled by default
+- **Account locking** — automatic lock after repeated failed login attempts
+
+### Email Service
+
+- **Templates** — React Email components (OTP, magic link, password reset, etc.)
+- **Resilience** — circuit breaker (5 failures → 30s cooldown) + exponential backoff retry
+- **Queue mode** — sends via BullMQ when Redis is available; falls back to direct send
+- **Dead Letter Queue** — failed emails are preserved for inspection
+- **Monitoring** — Bull Board dashboard at `/admin/queues`
+
+### Logging & Observability
+
+- **Winston** — structured logging with daily rotating files in `logs/`
+- **Request tracking** — unique `requestId` per request for tracing
+- **Log levels** — configurable via `LOG_LEVEL` env variable
+- **Health endpoint** — `/health` reports MongoDB and Redis status with latency
+
+### Error Handling
+
+All errors are caught by `asyncHandler` and processed by the global error handler into a consistent JSON format.
+
+| Error Class               | HTTP Status |
+| ------------------------- | ----------- |
+| `BadRequestError`         | 400         |
+| `ValidationError`         | 400         |
+| `UnauthorizedError`       | 401         |
+| `ForbiddenError`          | 403         |
+| `NotFoundError`           | 404         |
+| `ConflictRequestError`    | 409         |
+| `TooManyRequestsError`    | 429         |
+| `ServiceUnavailableError` | 503         |
+
+## Code Quality
+
+- **ESLint** — code quality and coding standards enforcement
+- **Prettier** — automatic code formatting
+- **Husky** — pre-commit hooks
+- **lint-staged** — auto-lint and format on commit
+
+> **Important:** This project uses Yarn. Only commit `yarn.lock` — do not commit `package-lock.json`.
+
+## Documentation
+
+Detailed technical documentation is available in the [`.doc/`](./.doc/) directory:
+
+- [Project Overview](./.doc/PROJECT_OVERVIEW.md) — architecture and coding standards
+- [Logger System Guide](./.doc/logger.md) — Winston logger usage
+- [Nodemon Configuration](./.doc/nodemon-config.md) — development server setup
+- [Code Quality Tools](./.doc/code-quality-tools.md) — ESLint, Prettier, Husky, lint-staged
+
+## License
+
+This project is private and not licensed for public distribution.
