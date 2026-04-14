@@ -2,6 +2,7 @@
 import type { RedisClientType } from "redis";
 // others
 import { buildKey } from "@/utils/common";
+import { getSecondsUntilMidnightUTC } from "@/utils/date";
 import { LOGIN_LOCKOUT } from "@/constants/modules/login";
 import { LOGIN } from "@/constants/redis/store";
 
@@ -48,10 +49,11 @@ export class RedisFailedAttemptsRepository implements FailedAttemptsRepository {
     const attemptCount = await this.client.incr(attemptsKey);
 
     if (attemptCount === 1) {
-      await this.client.expire(attemptsKey, LOGIN_LOCKOUT.RESET_WINDOW_SECONDS);
+      await this.client.expire(attemptsKey, getSecondsUntilMidnightUTC());
     }
 
-    const lockoutSeconds = this.calculateLockoutDuration(attemptCount);
+    const { MAX_ATTEMPTS, LOCKOUT_SECONDS } = LOGIN_LOCKOUT;
+    const lockoutSeconds = attemptCount >= MAX_ATTEMPTS ? LOCKOUT_SECONDS : 0;
 
     if (lockoutSeconds > 0) {
       await this.client.setEx(
@@ -82,17 +84,5 @@ export class RedisFailedAttemptsRepository implements FailedAttemptsRepository {
     }
 
     return { isLocked: false, remainingSeconds: 0 };
-  }
-
-  private calculateLockoutDuration(attemptCount: number): number {
-    const { LOCKOUT_DURATIONS, MAX_LOCKOUT_SECONDS } = LOGIN_LOCKOUT;
-
-    if (attemptCount >= 10) {
-      return MAX_LOCKOUT_SECONDS;
-    }
-
-    return (
-      LOCKOUT_DURATIONS[attemptCount as keyof typeof LOCKOUT_DURATIONS] || 0
-    );
   }
 }

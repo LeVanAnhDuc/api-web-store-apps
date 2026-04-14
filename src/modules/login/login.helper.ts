@@ -24,7 +24,7 @@ import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS
 } from "@/constants/modules/login-history";
-import { LOGIN_OTP_CONFIG } from "@/constants/modules/login";
+import { LOGIN_LOCKOUT, LOGIN_OTP_CONFIG } from "@/constants/modules/login";
 
 export async function completeSuccessfulLogin(
   loginHistoryService: LoginHistoryService,
@@ -247,7 +247,7 @@ export async function verifyPasswordOrFail(
     req
   );
 
-  if (attemptCount >= 5 && lockoutSeconds > 0) {
+  if (attemptCount >= LOGIN_LOCKOUT.MAX_ATTEMPTS && lockoutSeconds > 0) {
     const timeMessage = formatDuration(lockoutSeconds, language);
     throw new BadRequestError(
       t("login:errors.accountLocked", {
