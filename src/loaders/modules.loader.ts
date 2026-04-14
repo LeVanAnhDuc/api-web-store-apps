@@ -3,8 +3,7 @@ import { Router } from "express";
 // types
 import type { Express, Request, Response } from "express";
 import type { RedisClientType } from "redis";
-// services
-import { createEmailModule } from "@/services/email/email.module";
+import type { AppServices } from "./services.loader";
 // database
 import { instanceMongoDB } from "@/database/mongodb";
 import { instanceRedis } from "@/database/redis";
@@ -30,10 +29,10 @@ import {
 // others
 import { Logger } from "@/utils/logger";
 
-export const loadModules = (app: Express): void => {
+export const loadModules = (app: Express, services: AppServices): void => {
   const redisClient = instanceRedis.getClient() as RedisClientType;
+  const { emailService } = services;
 
-  const { emailService } = createEmailModule();
   const { authService } = createAuthenticationModule();
   const auth = authGuard(authService);
   const optionalAuth = optionalAuthGuard(authService);
