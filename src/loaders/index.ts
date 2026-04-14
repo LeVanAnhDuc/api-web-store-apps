@@ -6,6 +6,7 @@ import { loadRedis, closeRedis } from "./redis.loader";
 import { loadServices } from "./services.loader";
 import { loadQueues, closeAllQueues } from "./queue.loader";
 import { loadModules } from "./modules.loader";
+import { loadHealthCheck } from "./health.loader";
 import { loadErrorHandlers } from "./error-handler.loader";
 import { Logger } from "@/utils/logger";
 
@@ -17,6 +18,7 @@ export const loadAll = async (app: Express): Promise<void> => {
     const services = loadServices();
     loadQueues(app, services);
     loadModules(app, services);
+    loadHealthCheck(app);
 
     loadErrorHandlers(app);
 

@@ -73,6 +73,15 @@ export class TooManyRequestsError extends ErrorResponse {
   }
 }
 
+export class InternalServerError extends ErrorResponse {
+  constructor(
+    message = REASON_PHRASES.INTERNAL_SERVER_ERROR,
+    code = "INTERNAL_SERVER_ERROR"
+  ) {
+    super({ message, status: STATUS_CODES.INTERNAL_SERVER_ERROR, code });
+  }
+}
+
 export class ServiceUnavailableError extends ErrorResponse {
   constructor(
     message = REASON_PHRASES.SERVICE_UNAVAILABLE,
