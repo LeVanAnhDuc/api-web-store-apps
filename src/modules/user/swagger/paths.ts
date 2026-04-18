@@ -167,31 +167,28 @@ Upload a new avatar image for the authenticated user.
                 noFile: {
                   summary: "No file uploaded",
                   value: {
+                    code: "BAD_REQUEST",
+                    message: "No file uploaded",
                     timestamp: "2026-01-01T00:00:00.000Z",
-                    route: "/api/v1/users/me/avatar",
-                    error: { code: "BAD_REQUEST", message: "No file uploaded" }
+                    path: "/api/v1/users/me/avatar"
                   }
                 },
                 tooLarge: {
                   summary: "File too large",
                   value: {
+                    code: "BAD_REQUEST",
+                    message: "File too large. Max size is 10MB",
                     timestamp: "2026-01-01T00:00:00.000Z",
-                    route: "/api/v1/users/me/avatar",
-                    error: {
-                      code: "BAD_REQUEST",
-                      message: "File too large. Max size is 10MB"
-                    }
+                    path: "/api/v1/users/me/avatar"
                   }
                 },
                 unsupportedType: {
                   summary: "Unsupported file type",
                   value: {
+                    code: "BAD_REQUEST",
+                    message: "File type not supported",
                     timestamp: "2026-01-01T00:00:00.000Z",
-                    route: "/api/v1/users/me/avatar",
-                    error: {
-                      code: "BAD_REQUEST",
-                      message: "File type not supported"
-                    }
+                    path: "/api/v1/users/me/avatar"
                   }
                 }
               }
@@ -265,12 +262,10 @@ Get the public profile of any user by their ID. Does not require authentication.
             "application/json": {
               schema: { $ref: "#/components/schemas/ErrorResponse" },
               example: {
+                code: "BAD_REQUEST",
+                message: "Invalid user ID format",
                 timestamp: "2026-01-01T00:00:00.000Z",
-                route: "/api/v1/users/abc123",
-                error: {
-                  code: "BAD_REQUEST",
-                  message: "Invalid user ID format"
-                }
+                path: "/api/v1/users/abc123"
               }
             }
           }

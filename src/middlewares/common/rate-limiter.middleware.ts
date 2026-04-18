@@ -270,12 +270,14 @@ export class RateLimiterMiddleware {
       const { t } = req;
       const error = new TooManyRequestsError(t(messageKey));
 
-      res.status(error.status).json({
-        timestamp: new Date().toISOString(),
-        route: req.originalUrl,
+      const body: ErrorPattern = {
+        code: error.code,
         message: error.message,
-        error: error.error
-      });
+        timestamp: new Date().toISOString(),
+        path: req.originalUrl
+      };
+
+      res.status(error.status).json(body);
     };
   }
 }

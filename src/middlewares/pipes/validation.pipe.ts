@@ -1,8 +1,9 @@
 // types
 import type { Request, Response, NextFunction } from "express";
 import type { Schema } from "joi";
+import type { ValidationErrorItem } from "@/types/common";
 // config
-import { ValidationError, type FieldError } from "@/config/responses/error";
+import { ValidationError } from "@/config/responses/error";
 
 const validationPipe =
   (source: "body" | "params" | "query", schema: Schema) =>
@@ -15,14 +16,15 @@ const validationPipe =
       });
 
       if (error) {
-        const fields: FieldError[] = error.details.map((detail) => ({
+        const errors: ValidationErrorItem[] = error.details.map((detail) => ({
           field: detail.path.join("."),
+          reason: detail.type,
           message: req.t(detail.message as I18n.Key)
         }));
 
         const mainMessage = req.t("common:errors.validationFailed");
 
-        throw new ValidationError(mainMessage, fields);
+        throw new ValidationError(mainMessage, errors);
       }
 
       req[source] = value;

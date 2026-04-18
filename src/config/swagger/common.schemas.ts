@@ -27,26 +27,27 @@ export const commonSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ErrorResponse: {
     type: "object",
     properties: {
+      code: {
+        type: "string",
+        example: "BAD_REQUEST"
+      },
+      message: {
+        type: "string",
+        example: "Error message"
+      },
       timestamp: {
         type: "string",
         format: "date-time",
         example: "2025-01-15T10:30:00.000Z"
       },
-      route: {
+      path: {
         type: "string",
         example: "/api/v1/auth/login"
       },
-      error: {
-        type: "object",
-        properties: {
-          code: {
-            type: "string",
-            example: "BAD_REQUEST"
-          },
-          message: {
-            type: "string",
-            example: "Error message"
-          }
+      errors: {
+        type: "array",
+        items: {
+          $ref: "#/components/schemas/ValidationErrorItem"
         }
       }
     }
@@ -55,41 +56,40 @@ export const commonSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ValidationErrorResponse: {
     type: "object",
     properties: {
+      code: {
+        type: "string",
+        example: "VALIDATION_ERROR"
+      },
+      message: {
+        type: "string",
+        example: "Validation failed"
+      },
       timestamp: {
         type: "string",
         format: "date-time"
       },
-      route: {
+      path: {
         type: "string"
       },
-      error: {
-        type: "object",
-        properties: {
-          code: {
-            type: "string",
-            example: "VALIDATION_ERROR"
-          },
-          message: {
-            type: "string",
-            example: "Validation failed"
-          },
-          fields: {
-            type: "array",
-            items: {
-              $ref: "#/components/schemas/FieldError"
-            }
-          }
+      errors: {
+        type: "array",
+        items: {
+          $ref: "#/components/schemas/ValidationErrorItem"
         }
       }
     }
   },
 
-  FieldError: {
+  ValidationErrorItem: {
     type: "object",
     properties: {
       field: {
         type: "string",
         example: "email"
+      },
+      reason: {
+        type: "string",
+        example: "any.required"
       },
       message: {
         type: "string",
@@ -161,12 +161,10 @@ export const commonResponses: Record<
           $ref: "#/components/schemas/ErrorResponse"
         },
         example: {
+          code: "CONFLICT",
+          message: "Email already registered",
           timestamp: "2025-01-15T10:30:00.000Z",
-          route: "/api/v1/auth/signup/send-otp",
-          error: {
-            code: "CONFLICT",
-            message: "Email already registered"
-          }
+          path: "/api/v1/auth/signup/send-otp"
         }
       }
     }
@@ -179,12 +177,10 @@ export const commonResponses: Record<
           $ref: "#/components/schemas/ErrorResponse"
         },
         example: {
+          code: "TOO_MANY_REQUESTS",
+          message: "Rate limit exceeded. Try again later.",
           timestamp: "2025-01-15T10:30:00.000Z",
-          route: "/api/v1/auth/login",
-          error: {
-            code: "TOO_MANY_REQUESTS",
-            message: "Rate limit exceeded. Try again later."
-          }
+          path: "/api/v1/auth/login"
         }
       }
     }

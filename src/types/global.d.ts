@@ -1,3 +1,5 @@
+import type { ValidationErrorItem } from "@/types/common";
+
 declare global {
   interface TranslateFunction {
     (key: I18n.Key, options?: Record<string, unknown>): string;
@@ -16,12 +18,11 @@ declare global {
   }
 
   interface ErrorPattern {
+    code: string;
+    message: string;
     timestamp: string;
-    route: string;
-    error: {
-      code: string;
-      message: string;
-    };
+    path: string;
+    errors?: ValidationErrorItem[];
   }
 
   interface JwtUserPayload {

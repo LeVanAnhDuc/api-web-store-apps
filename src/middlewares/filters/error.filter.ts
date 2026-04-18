@@ -1,7 +1,7 @@
 // types
 import type { NextFunction, Request, Response } from "express";
 // config
-import { ErrorResponse, ValidationError } from "@/config/responses/error";
+import { ErrorResponse } from "@/config/responses/error";
 import { STATUS_CODES } from "@/config/http";
 
 export const handleNotFound = (
@@ -26,42 +26,24 @@ export const handleError = (
   res: Response,
   _next: NextFunction
 ) => {
-  if (err instanceof ValidationError) {
-    const {
-      error,
-      fields,
-      route = req.originalUrl,
-      status,
-      timestamp = new Date().toISOString()
-    } = err;
-
-    return res.status(status).json({
-      timestamp,
-      route,
-      error: {
-        ...error,
-        fields
-      }
-    });
-  }
-
   if (err instanceof ErrorResponse) {
-    const {
-      error,
-      route = req.originalUrl,
-      status,
-      timestamp = new Date().toISOString()
-    } = err;
+    const body: ErrorPattern = {
+      code: err.code,
+      message: err.message,
+      timestamp: new Date().toISOString(),
+      path: req.originalUrl,
+      ...(err.errors.length > 0 && { errors: err.errors })
+    };
 
-    return res.status(status).json({ timestamp, route, error });
+    return res.status(err.status).json(body);
   }
 
-  return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+  const body: ErrorPattern = {
+    code: "INTERNAL_SERVER_ERROR",
+    message: req.t("common:errors.internalServer"),
     timestamp: new Date().toISOString(),
-    route: req.originalUrl,
-    error: {
-      code: "INTERNAL_SERVER_ERROR",
-      message: req.t("common:errors.internalServer")
-    }
-  });
+    path: req.originalUrl
+  };
+
+  return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json(body);
 };

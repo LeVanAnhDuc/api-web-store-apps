@@ -1,27 +1,28 @@
+// types
+import type { ValidationErrorItem } from "@/types/common";
 // config
 import { REASON_PHRASES, STATUS_CODES } from "@/config/http";
 
 export class ErrorResponse extends Error {
   readonly status: number;
-  readonly timestamp: string;
-  readonly route: string;
-  readonly error: { code?: string; message: string };
+  readonly code: string;
+  readonly errors: ValidationErrorItem[];
 
   constructor({
     status = STATUS_CODES.INTERNAL_SERVER_ERROR,
     code = "INTERNAL_SERVER_ERROR",
-    message = "An unexpected error occurred"
+    message = "An unexpected error occurred",
+    errors = []
   }: {
     status: number;
     message: string;
     code?: string;
+    errors?: ValidationErrorItem[];
   }) {
     super(message);
     this.status = status;
-    this.error = {
-      code,
-      message
-    };
+    this.code = code;
+    this.errors = errors;
   }
 }
 
@@ -107,24 +108,12 @@ export class DatabaseError extends ErrorResponse {
   }
 }
 
-/**
- * Validation Error with field-level error details
- * Used for form validation failures
- */
-export interface FieldError {
-  field: string;
-  message: string;
-}
-
 export class ValidationError extends ErrorResponse {
-  readonly fields: FieldError[];
-
   constructor(
     message = REASON_PHRASES.BAD_REQUEST,
-    fields: FieldError[] = [],
+    errors: ValidationErrorItem[] = [],
     code = "VALIDATION_ERROR"
   ) {
-    super({ message, status: STATUS_CODES.BAD_REQUEST, code });
-    this.fields = fields;
+    super({ message, status: STATUS_CODES.BAD_REQUEST, code, errors });
   }
 }

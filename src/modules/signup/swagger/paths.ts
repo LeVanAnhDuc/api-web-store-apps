@@ -114,23 +114,19 @@ Step 2 of signup flow. Verifies the OTP code submitted by user.
                 invalidOtp: {
                   summary: "Invalid OTP",
                   value: {
+                    code: "BAD_REQUEST",
+                    message: "Invalid OTP. 4 attempts remaining.",
                     timestamp: "2025-01-15T10:30:00.000Z",
-                    route: "/api/v1/auth/signup/verify-otp",
-                    error: {
-                      code: "BAD_REQUEST",
-                      message: "Invalid OTP. 4 attempts remaining."
-                    }
+                    path: "/api/v1/auth/signup/verify-otp"
                   }
                 },
                 accountLocked: {
                   summary: "Account locked",
                   value: {
+                    code: "BAD_REQUEST",
+                    message: "Account locked. Try again in 15 minutes.",
                     timestamp: "2025-01-15T10:30:00.000Z",
-                    route: "/api/v1/auth/signup/verify-otp",
-                    error: {
-                      code: "BAD_REQUEST",
-                      message: "Account locked. Try again in 15 minutes."
-                    }
+                    path: "/api/v1/auth/signup/verify-otp"
                   }
                 }
               }
