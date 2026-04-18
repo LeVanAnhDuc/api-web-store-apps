@@ -10,7 +10,8 @@ import type { SessionSignupRepository } from "./repositories/session-signup.repo
 // config
 import {
   BadRequestError,
-  ConflictRequestError
+  ConflictRequestError,
+  InternalServerError
 } from "@/config/responses/error";
 // others
 import { Logger } from "@/utils/logger";
@@ -174,7 +175,7 @@ export async function createUserAccount(
     });
 
     if (!result) {
-      throw new Error("Signup transaction was aborted");
+      throw new InternalServerError("Signup transaction was aborted");
     }
 
     return result;

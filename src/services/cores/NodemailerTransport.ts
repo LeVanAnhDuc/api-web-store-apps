@@ -4,6 +4,7 @@ import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 // config
 import config from "@/config/env";
+import { ServiceUnavailableError } from "@/config/responses/error";
 // others
 import { Logger } from "@/utils/logger";
 
@@ -83,7 +84,7 @@ export class NodemailerTransport extends EmailTransport {
 
   async sendRawEmail(options: EmailSendOptions): Promise<void> {
     if (!this.transporter) {
-      throw new Error("Email transport not initialized");
+      throw new ServiceUnavailableError("Email transport not initialized");
     }
 
     await this.transporter.sendMail({

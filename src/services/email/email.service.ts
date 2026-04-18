@@ -12,6 +12,8 @@ import type {
   SignupOtpData,
   UnlockTempPasswordData
 } from "./email.types";
+// config
+import { InternalServerError } from "@/config/responses/error";
 // others
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
@@ -136,7 +138,7 @@ export class SendEmailService {
           ForgotPasswordOtpEmail(options.data as ForgotPasswordOtpData, locale)
         );
       default:
-        throw new Error(`Unknown email type: ${type}`);
+        throw new InternalServerError(`Unknown email template: ${type}`);
     }
   }
 
@@ -155,7 +157,7 @@ export class SendEmailService {
       case EmailType.FORGOT_PASSWORD_OTP:
         return strings.forgotPasswordOtp.title;
       default:
-        throw new Error(`Unknown email type: ${type}`);
+        throw new InternalServerError(`Unknown email template: ${type}`);
     }
   }
 }
