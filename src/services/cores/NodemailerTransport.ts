@@ -18,17 +18,12 @@ export abstract class EmailTransport {
   protected isInitialized: boolean = false;
 
   abstract sendRawEmail(options: EmailSendOptions): Promise<void>;
-
   abstract initialize(): Promise<void>;
-
   abstract cleanup(): Promise<void>;
-
   abstract get isConnected(): boolean;
 }
 
-const EMAIL_SERVICE = {
-  PROVIDER: "gmail"
-} as const;
+const EMAIL_SERVICE_PROVIDER = "gmail";
 
 const EMAIL_POOL = {
   MAX_CONNECTIONS: 5,
@@ -47,39 +42,37 @@ const EMAIL_TIMEOUT = {
 } as const;
 
 export class NodemailerTransport extends EmailTransport {
-  private static instance: NodemailerTransport | null = null;
   private transporter: Transporter | null = null;
 
-  public static getInstance(): NodemailerTransport {
-    if (!NodemailerTransport.instance) {
-      NodemailerTransport.instance = new NodemailerTransport();
-      NodemailerTransport.instance.initialize().catch((error) => {
-        Logger.error("Failed to initialize email transport", error);
-      });
-    }
-    return NodemailerTransport.instance;
+  constructor() {
+    super();
+    this.initialize();
   }
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
 
-    this.transporter = nodemailer.createTransport({
-      service: EMAIL_SERVICE.PROVIDER,
-      auth: {
-        user: config.USERNAME_EMAIL,
-        pass: config.PASSWORD_EMAIL
-      },
-      pool: true,
-      maxConnections: EMAIL_POOL.MAX_CONNECTIONS,
-      maxMessages: EMAIL_POOL.MAX_MESSAGES_PER_CONNECTION,
-      rateDelta: EMAIL_RATE_LIMIT.DELTA_MS,
-      rateLimit: EMAIL_RATE_LIMIT.PER_SECOND,
-      connectionTimeout: EMAIL_TIMEOUT.CONNECTION_MS,
-      greetingTimeout: EMAIL_TIMEOUT.GREETING_MS,
-      socketTimeout: EMAIL_TIMEOUT.SOCKET_MS
-    });
+    try {
+      this.transporter = nodemailer.createTransport({
+        service: EMAIL_SERVICE_PROVIDER,
+        auth: {
+          user: config.USERNAME_EMAIL,
+          pass: config.PASSWORD_EMAIL
+        },
+        pool: true,
+        maxConnections: EMAIL_POOL.MAX_CONNECTIONS,
+        maxMessages: EMAIL_POOL.MAX_MESSAGES_PER_CONNECTION,
+        rateDelta: EMAIL_RATE_LIMIT.DELTA_MS,
+        rateLimit: EMAIL_RATE_LIMIT.PER_SECOND,
+        connectionTimeout: EMAIL_TIMEOUT.CONNECTION_MS,
+        greetingTimeout: EMAIL_TIMEOUT.GREETING_MS,
+        socketTimeout: EMAIL_TIMEOUT.SOCKET_MS
+      });
 
-    this.isInitialized = true;
+      this.isInitialized = true;
+    } catch (error) {
+      Logger.error("Failed to initialize email transport", error);
+    }
   }
 
   async sendRawEmail(options: EmailSendOptions): Promise<void> {

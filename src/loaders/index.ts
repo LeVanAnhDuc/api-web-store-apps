@@ -19,7 +19,6 @@ export const loadAll = async (app: Express): Promise<void> => {
     loadQueues(app, services);
     loadModules(app, services);
     loadHealthCheck(app);
-
     loadErrorHandlers(app);
 
     Logger.info("All loaders initialized successfully");
