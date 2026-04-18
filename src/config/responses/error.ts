@@ -96,11 +96,10 @@ export class DatabaseError extends ErrorResponse {
   override readonly cause: unknown;
 
   constructor(operation: string, cause: unknown) {
-    const message = cause instanceof Error ? cause.message : String(cause);
     super({
       status: STATUS_CODES.INTERNAL_SERVER_ERROR,
       code: "DATABASE_ERROR",
-      message
+      message: REASON_PHRASES.INTERNAL_SERVER_ERROR
     });
     this.name = "DatabaseError";
     this.operation = operation;

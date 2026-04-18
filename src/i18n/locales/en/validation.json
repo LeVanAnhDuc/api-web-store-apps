@@ -23,11 +23,7 @@
     "invalid": "Full name can only contain letters, spaces, hyphens, apostrophes, and periods"
   },
   "phone": {
-    "required": "Phone number is required",
     "invalid": "Please provide a valid phone number"
-  },
-  "address": {
-    "maxLength": "Address must not exceed 500 characters"
   },
   "gender": {
     "required": "Gender is required",
@@ -38,9 +34,5 @@
     "invalid": "Please provide a valid date of birth",
     "tooYoung": "You must be at least 13 years old",
     "tooOld": "Date of birth cannot be more than 120 years ago"
-  },
-  "authId": {
-    "required": "Auth ID is required"
-  },
-  "required": "{{field}} is required"
+  }
 }

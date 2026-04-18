@@ -16,4 +16,3 @@ export * from "./interceptors/file-upload.interceptor";
 
 // filters
 export * from "./filters/error.filter";
-export * from "./filters/mongoose-error.filter";

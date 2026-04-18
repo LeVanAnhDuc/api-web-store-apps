@@ -23,11 +23,7 @@
     "invalid": "Họ và tên chỉ được chứa chữ cái, khoảng trắng, dấu gạch ngang, dấu nháy đơn và dấu chấm"
   },
   "phone": {
-    "required": "Số điện thoại là bắt buộc",
     "invalid": "Số điện thoại không hợp lệ"
-  },
-  "address": {
-    "maxLength": "Địa chỉ không được vượt quá 500 ký tự"
   },
   "gender": {
     "required": "Giới tính là bắt buộc",
@@ -38,9 +34,5 @@
     "invalid": "Ngày sinh không hợp lệ",
     "tooYoung": "Bạn phải từ 13 tuổi trở lên",
     "tooOld": "Ngày sinh không thể quá 120 năm trước"
-  },
-  "authId": {
-    "required": "Auth ID là bắt buộc"
-  },
-  "required": "{{field}} là bắt buộc"
+  }
 }

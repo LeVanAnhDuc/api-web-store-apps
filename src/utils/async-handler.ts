@@ -2,6 +2,8 @@
 import type { NextFunction, Request, Response } from "express";
 // config
 import { DatabaseError } from "@/config/responses/error";
+// others
+import Logger from "@/utils/logger";
 
 type ControllerFn = (
   req: Request,
@@ -26,6 +28,7 @@ export async function asyncDatabaseHandler<T>(
   try {
     return await fn();
   } catch (error) {
+    Logger.error(`Database operation failed: ${operation}`, error);
     throw new DatabaseError(operation, error);
   }
 }
