@@ -28,9 +28,10 @@ import {
   checkRateLimit,
   ensureAuthExists,
   ensureTempPasswordValid,
-  generateTempPassword,
-  TEMP_PASSWORD_EXPIRY_MINUTES
+  generateTempPassword
 } from "./unlock-account.helper";
+
+const TEMP_PASSWORD_EXPIRY_MINUTES = 15;
 
 export class UnlockAccountService {
   constructor(

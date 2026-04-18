@@ -14,17 +14,6 @@ import {
 import { Logger } from "@/utils/logger";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 
-const TEMP_PASSWORD_LENGTH = 16;
-const MIN_PASSWORD_LENGTH = 12;
-const UPPERCASE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const LOWERCASE_CHARS = "abcdefghijklmnopqrstuvwxyz";
-const NUMBER_CHARS = "0123456789";
-const SPECIAL_CHARS = "!@#$%^&*";
-const ALL_CHARS =
-  UPPERCASE_CHARS + LOWERCASE_CHARS + NUMBER_CHARS + SPECIAL_CHARS;
-
-export const TEMP_PASSWORD_EXPIRY_MINUTES = 15;
-
 // ──────────────────────────────────────────────
 // Validation helpers
 // ──────────────────────────────────────────────
@@ -144,14 +133,13 @@ function shuffleString(str: string): string {
   return chars.join("");
 }
 
-export function generateTempPassword(
-  length: number = TEMP_PASSWORD_LENGTH
-): string {
-  if (length < MIN_PASSWORD_LENGTH) {
-    throw new Error(
-      `Temporary password length must be at least ${MIN_PASSWORD_LENGTH} characters`
-    );
-  }
+export function generateTempPassword(length: number = 16): string {
+  const UPPERCASE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const LOWERCASE_CHARS = "abcdefghijklmnopqrstuvwxyz";
+  const NUMBER_CHARS = "0123456789";
+  const SPECIAL_CHARS = "!@#$%^&*";
+  const ALL_CHARS =
+    UPPERCASE_CHARS + LOWERCASE_CHARS + NUMBER_CHARS + SPECIAL_CHARS;
 
   const passwordChars: string[] = [
     getRandomChar(UPPERCASE_CHARS),
