@@ -46,16 +46,16 @@ export interface PublicUserRecord {
 }
 
 export interface GetMyProfileRequest extends Omit<Request, "user"> {
-  user: JwtTokenPayload;
+  user: RequestUserPayload;
 }
 
 export interface UpdateProfileRequest extends Omit<Request, "user" | "body"> {
-  user: JwtTokenPayload;
+  user: RequestUserPayload;
   body: UpdateProfileData;
 }
 
 export interface UploadAvatarRequest extends Omit<Request, "user"> {
-  user: JwtTokenPayload;
+  user: RequestUserPayload;
   file?: Express.Multer.File;
 }
 

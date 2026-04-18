@@ -137,7 +137,7 @@ export interface PaginatedResult<T> {
 
 export interface CreateBlogRequest extends Omit<Request, "body" | "user"> {
   body: CreateBlogDto;
-  user: JwtUserPayload;
+  user: RequestUserPayload;
   file?: Express.Multer.File;
 }
 
@@ -153,13 +153,13 @@ export interface UpdateBlogRequest
   extends Omit<Request, "params" | "body" | "user"> {
   params: { id: string };
   body: UpdateBlogDto;
-  user: JwtUserPayload;
+  user: RequestUserPayload;
   file?: Express.Multer.File;
 }
 
 export interface DeleteBlogRequest extends Omit<Request, "params" | "user"> {
   params: { id: string };
-  user: JwtUserPayload;
+  user: RequestUserPayload;
 }
 
 export interface BlogIdParamRequest extends Omit<Request, "params"> {
@@ -172,7 +172,7 @@ export interface SearchTagsRequest extends Omit<Request, "query"> {
 
 export interface CreateTagRequest extends Omit<Request, "body" | "user"> {
   body: CreateTagDto;
-  user: JwtUserPayload;
+  user: RequestUserPayload;
 }
 
 export interface SearchCategoriesRequest extends Omit<Request, "query"> {
@@ -181,5 +181,5 @@ export interface SearchCategoriesRequest extends Omit<Request, "query"> {
 
 export interface CreateCategoryRequest extends Omit<Request, "body" | "user"> {
   body: CreateCategoryDto;
-  user: JwtUserPayload;
+  user: RequestUserPayload;
 }

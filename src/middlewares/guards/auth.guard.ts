@@ -30,17 +30,16 @@ export const authGuard =
         );
       }
 
-      const payload = verifyAccessToken<JwtTokenPayload>(token);
+      const payload = verifyAccessToken(token);
 
-      if (!payload || !payload.userId) {
+      if (!payload || !payload.sub || !payload.authId) {
         throw new UnauthorizedError(
           t("common:errors.invalidToken"),
           ERROR_CODES.AUTH_INVALID_TOKEN
         );
       }
 
-      const authId = payload.authId || payload.userId;
-      const auth = await authService.findById(authId);
+      const auth = await authService.findById(payload.authId);
 
       if (!auth) {
         throw new UnauthorizedError(
@@ -61,10 +60,9 @@ export const authGuard =
       }
 
       req.user = {
-        userId: payload.userId,
-        authId,
-        email: payload.email || "",
-        roles: payload.roles || "user"
+        sub: payload.sub,
+        authId: payload.authId,
+        roles: payload.roles
       };
 
       next();

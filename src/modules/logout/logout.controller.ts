@@ -12,7 +12,7 @@ export class LogoutController {
   constructor(private readonly service: LogoutService) {}
 
   logout = async (req: LogoutRequest, res: Response): Promise<void> => {
-    await this.service.logout(req.user!.userId);
+    await this.service.logout(req.user!.sub);
 
     res.clearCookie(REFRESH_TOKEN, REFRESH_TOKEN_COOKIE_OPTIONS);
 

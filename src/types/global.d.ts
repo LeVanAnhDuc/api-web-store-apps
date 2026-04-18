@@ -26,26 +26,40 @@ declare global {
     errors?: ValidationErrorItem[];
   }
 
-  interface JwtUserPayload {
-    userId: string;
-    authId: string;
-    email: string;
-    roles: string;
-    fullName: string;
-    avatar?: string | null;
-  }
-
-  interface JwtTokenPayload extends JwtUserPayload {
+  interface BaseTokenClaims {
     iat?: number;
     exp?: number;
   }
+
+  interface AccessTokenPayload extends BaseTokenClaims {
+    sub: string;
+    authId: string;
+    roles: string;
+  }
+
+  interface IdTokenPayload extends BaseTokenClaims {
+    sub: string;
+    name: string;
+    email: string;
+    picture: string | null;
+  }
+
+  interface RefreshTokenPayload extends BaseTokenClaims {
+    sub: string;
+    authId: string;
+  }
+
+  type RequestUserPayload = Pick<
+    AccessTokenPayload,
+    "sub" | "authId" | "roles"
+  >;
 
   namespace Express {
     interface Request {
       requestId: string;
       language: string;
       t: TranslateFunction;
-      user?: JwtUserPayload;
+      user?: RequestUserPayload;
     }
   }
 }

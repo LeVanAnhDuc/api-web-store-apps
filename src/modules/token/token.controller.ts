@@ -7,8 +7,8 @@ import { OkSuccess } from "@/config/responses/success";
 export class TokenController {
   constructor(private readonly service: TokenService) {}
 
-  refreshToken = (req: Request, res: Response): void => {
-    const data = this.service.refreshAccessToken(
+  refreshToken = async (req: Request, res: Response): Promise<void> => {
+    const data = await this.service.refreshAccessToken(
       req.cookies?.refreshToken,
       req.t
     );

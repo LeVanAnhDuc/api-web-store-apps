@@ -16,7 +16,7 @@ export class BlogController {
 
   createBlog = async (req: CreateBlogRequest, res: Response): Promise<void> => {
     const data = await this.service.createBlog(
-      req.user.userId,
+      req.user.sub,
       req.body,
       req.file
     );
@@ -42,7 +42,7 @@ export class BlogController {
   updateBlog = async (req: UpdateBlogRequest, res: Response): Promise<void> => {
     const data = await this.service.updateBlog(
       req.params.id,
-      req.user.userId,
+      req.user.sub,
       req.body,
       req.file
     );

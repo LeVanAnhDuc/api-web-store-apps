@@ -15,10 +15,7 @@ export class LoginHistoryController {
     req: MyHistoryRequest,
     res: Response
   ): Promise<void> => {
-    const data = await this.service.getMyLoginHistory(
-      req.user.userId,
-      req.query
-    );
+    const data = await this.service.getMyLoginHistory(req.user.sub, req.query);
     new OkSuccess({ data, message: "loginHistory:success.getMyHistory" }).send(
       req,
       res

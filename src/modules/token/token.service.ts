@@ -1,5 +1,6 @@
 // types
 import type { RefreshTokenDto } from "./dtos";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 // config
 import { UnauthorizedError, ForbiddenError } from "@/config/responses/error";
 // dtos
@@ -10,10 +11,12 @@ import { generateAuthTokensResponse, verifyRefreshToken } from "@/utils/token";
 import { Logger } from "@/utils/logger";
 
 export class TokenService {
-  refreshAccessToken(
+  constructor(private readonly authService: AuthenticationService) {}
+
+  async refreshAccessToken(
     refreshToken: string | undefined,
     t: TranslateFunction
-  ): RefreshTokenDto {
+  ): Promise<RefreshTokenDto> {
     if (!refreshToken) {
       Logger.warn("Token refresh failed - no refresh token in cookie");
       throw new UnauthorizedError(
@@ -22,30 +25,71 @@ export class TokenService {
       );
     }
 
+    let payload: RefreshTokenPayload;
     try {
-      const tokenPayload = verifyRefreshToken<JwtTokenPayload>(refreshToken);
-
-      const authTokensResponse = generateAuthTokensResponse({
-        userId: tokenPayload.userId,
-        authId: tokenPayload.authId,
-        email: tokenPayload.email,
-        roles: tokenPayload.roles,
-        fullName: tokenPayload.fullName,
-        avatar: tokenPayload.avatar
-      });
-
-      Logger.info("Token refresh successful", { userId: tokenPayload.userId });
-
-      return toRefreshTokenDto(authTokensResponse);
+      payload = verifyRefreshToken(refreshToken);
     } catch (error) {
       Logger.warn("Token refresh failed - invalid refresh token", {
         error: error instanceof Error ? error.message : "Unknown error"
       });
-
       throw new ForbiddenError(
         t("login:errors.invalidRefreshToken"),
         ERROR_CODES.REFRESH_TOKEN_INVALID
       );
     }
+
+    const auth = await this.authService.findById(payload.authId);
+
+    if (!auth || !auth.isActive) {
+      Logger.warn("Token refresh rejected - account missing or inactive", {
+        authId: payload.authId
+      });
+      throw new ForbiddenError(
+        t("login:errors.invalidRefreshToken"),
+        ERROR_CODES.REFRESH_TOKEN_INVALID
+      );
+    }
+
+    if (
+      auth.passwordChangedAt &&
+      payload.iat &&
+      payload.iat < Math.floor(auth.passwordChangedAt.getTime() / 1000)
+    ) {
+      Logger.warn(
+        "Token refresh rejected - password changed after token issued",
+        {
+          authId: payload.authId
+        }
+      );
+      throw new ForbiddenError(
+        t("forgotPassword:errors.passwordChangedPleaseLogin"),
+        ERROR_CODES.AUTH_PASSWORD_CHANGED
+      );
+    }
+
+    const user = await this.authService.findUserByAuthId(auth._id.toString());
+
+    if (!user) {
+      Logger.warn("Token refresh rejected - user profile not found", {
+        authId: payload.authId
+      });
+      throw new ForbiddenError(
+        t("login:errors.invalidRefreshToken"),
+        ERROR_CODES.REFRESH_TOKEN_INVALID
+      );
+    }
+
+    const authTokensResponse = generateAuthTokensResponse({
+      userId: user._id.toString(),
+      authId: auth._id.toString(),
+      email: auth.email,
+      roles: auth.roles,
+      fullName: user.fullName,
+      avatar: user.avatar ?? null
+    });
+
+    Logger.info("Token refresh successful", { userId: user._id.toString() });
+
+    return toRefreshTokenDto(authTokensResponse);
   }
 }

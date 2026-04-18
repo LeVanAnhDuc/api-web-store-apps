@@ -9,10 +9,7 @@ import type { BlogDocument, BlogQuery } from "@/types/modules/blog";
 // others
 import { BLOG_COVER_TYPE, BLOG_VISIBILITY } from "@/constants/modules/blog";
 
-interface RequestUser {
-  userId: string;
-  roles: string;
-}
+type RequestUser = Pick<RequestUserPayload, "sub" | "roles">;
 
 // ─── Slug ─────────────────────────────────────────────────────────────────
 
@@ -74,7 +71,7 @@ export const buildBlogFilter = (
   } else {
     if (query.visibility === BLOG_VISIBILITY.PRIVATE) {
       filter.visibility = BLOG_VISIBILITY.PRIVATE;
-      filter.authorId = new Types.ObjectId(user.userId);
+      filter.authorId = new Types.ObjectId(user.sub);
     } else if (query.visibility === BLOG_VISIBILITY.PUBLIC) {
       filter.visibility = BLOG_VISIBILITY.PUBLIC;
     } else {
@@ -82,7 +79,7 @@ export const buildBlogFilter = (
         { visibility: BLOG_VISIBILITY.PUBLIC },
         {
           visibility: BLOG_VISIBILITY.PRIVATE,
-          authorId: new Types.ObjectId(user.userId)
+          authorId: new Types.ObjectId(user.sub)
         }
       ];
     }

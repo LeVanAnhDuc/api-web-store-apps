@@ -17,8 +17,8 @@ const TOKEN_TYPES = {
 } as const;
 
 type TokenType = (typeof TOKEN_TYPES)[keyof typeof TOKEN_TYPES];
+type VerifiableTokenType = Exclude<TokenType, typeof TOKEN_TYPES.ID_TOKEN>;
 
-type TPayload = string | Buffer | object;
 type TExpiresIn = StringValue | number;
 
 interface TokenConfig {
@@ -51,12 +51,12 @@ const ERROR_CODE_MAP: Record<string, string> = {
   [TOKEN_ERRORS.TOKEN_EXPIRED_ERROR]: ERROR_CODES.JWT_EXPIRED
 };
 
-const generateToken = (payload: TPayload, type: TokenType): string => {
+const signToken = (payload: object, type: TokenType): string => {
   const { secret, expiresIn } = TOKEN_CONFIGS[type];
   return jwt.sign(payload, secret, { expiresIn });
 };
 
-const verifyToken = <T = TPayload>(token: string, type: TokenType): T => {
+const verifyToken = <T>(token: string, type: VerifiableTokenType): T => {
   try {
     const { secret } = TOKEN_CONFIGS[type];
     return jwt.verify(token, secret) as T;
@@ -69,28 +69,50 @@ const verifyToken = <T = TPayload>(token: string, type: TokenType): T => {
   }
 };
 
-export const generateAccessToken = (payload: TPayload): string =>
-  generateToken(payload, TOKEN_TYPES.ACCESS);
+type AccessTokenInput = Omit<AccessTokenPayload, keyof BaseTokenClaims>;
+type IdTokenInput = Omit<IdTokenPayload, keyof BaseTokenClaims>;
+type RefreshTokenInput = Omit<RefreshTokenPayload, keyof BaseTokenClaims>;
 
-export const generateRefreshToken = (payload: TPayload): string =>
-  generateToken(payload, TOKEN_TYPES.REFRESH);
+export interface AuthTokenSource {
+  sub: string;
+  authId: string;
+  email: string;
+  roles: string;
+  name: string;
+  picture?: string | null;
+}
 
-export const generateIdToken = (payload: TPayload): string =>
-  generateToken(payload, TOKEN_TYPES.ID_TOKEN);
+export const generateAccessToken = (payload: AccessTokenInput): string =>
+  signToken(payload, TOKEN_TYPES.ACCESS);
+
+export const generateRefreshToken = (payload: RefreshTokenInput): string =>
+  signToken(payload, TOKEN_TYPES.REFRESH);
+
+export const generateIdToken = (payload: IdTokenInput): string =>
+  signToken(payload, TOKEN_TYPES.ID_TOKEN);
 
 export const generateAuthTokens = (
-  payload: TPayload
+  source: AuthTokenSource
 ): Omit<AuthTokensResponse, "expiresIn"> => ({
-  accessToken: generateAccessToken(payload),
-  refreshToken: generateRefreshToken(payload),
-  idToken: generateIdToken(payload)
+  accessToken: generateAccessToken({
+    sub: source.sub,
+    authId: source.authId,
+    roles: source.roles
+  }),
+  refreshToken: generateRefreshToken({
+    sub: source.sub,
+    authId: source.authId
+  }),
+  idToken: generateIdToken({
+    sub: source.sub,
+    name: source.name,
+    email: source.email,
+    picture: source.picture ?? null
+  })
 });
 
-export const verifyAccessToken = <T = TPayload>(token: string): T =>
+export const verifyAccessToken = <T = AccessTokenPayload>(token: string): T =>
   verifyToken<T>(token, TOKEN_TYPES.ACCESS);
 
-export const verifyRefreshToken = <T = TPayload>(token: string): T =>
+export const verifyRefreshToken = <T = RefreshTokenPayload>(token: string): T =>
   verifyToken<T>(token, TOKEN_TYPES.REFRESH);
-
-export const verifyIdToken = <T = TPayload>(token: string): T =>
-  verifyToken<T>(token, TOKEN_TYPES.ID_TOKEN);

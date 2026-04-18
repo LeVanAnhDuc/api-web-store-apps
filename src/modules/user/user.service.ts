@@ -9,6 +9,7 @@ import type {
 import type { ClientSession } from "mongoose";
 import type { UserRepository } from "./repositories/user.repository";
 import type { MyProfileDto, PublicProfileDto, UploadAvatarDto } from "./dtos";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 // config
 import { BadRequestError, NotFoundError } from "@/config/responses/error";
 // dtos
@@ -18,36 +19,53 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { buildAvatarUrl } from "./user.helper";
 
 export class UserService {
-  constructor(private readonly userRepo: UserRepository) {}
+  constructor(
+    private readonly userRepo: UserRepository,
+    private readonly authService: AuthenticationService
+  ) {}
 
-  async getMyProfile(userId: string, email: string): Promise<MyProfileDto> {
-    const user = await this.userRepo.findById(userId);
+  async getMyProfile(userId: string, authId: string): Promise<MyProfileDto> {
+    const [user, auth] = await Promise.all([
+      this.userRepo.findById(userId),
+      this.authService.findById(authId)
+    ]);
 
-    if (!user) {
+    if (!user || !auth) {
       throw new NotFoundError(
         "user:errors.notFound",
         ERROR_CODES.USER_NOT_FOUND
       );
     }
 
-    return toMyProfileDto(user, email, buildAvatarUrl(user.avatar ?? null));
+    return toMyProfileDto(
+      user,
+      auth.email,
+      buildAvatarUrl(user.avatar ?? null)
+    );
   }
 
   async updateMyProfile(
     userId: string,
-    email: string,
+    authId: string,
     data: Partial<UpdateProfileData>
   ): Promise<MyProfileDto> {
-    const user = await this.userRepo.updateById(userId, data);
+    const [user, auth] = await Promise.all([
+      this.userRepo.updateById(userId, data),
+      this.authService.findById(authId)
+    ]);
 
-    if (!user) {
+    if (!user || !auth) {
       throw new NotFoundError(
         "user:errors.notFound",
         ERROR_CODES.USER_NOT_FOUND
       );
     }
 
-    return toMyProfileDto(user, email, buildAvatarUrl(user.avatar ?? null));
+    return toMyProfileDto(
+      user,
+      auth.email,
+      buildAvatarUrl(user.avatar ?? null)
+    );
   }
 
   async updateAvatar(

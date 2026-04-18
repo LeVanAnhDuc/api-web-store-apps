@@ -20,14 +20,13 @@ export const optionalAuthGuard =
         return next();
       }
 
-      const payload = verifyAccessToken<JwtTokenPayload>(token);
+      const payload = verifyAccessToken(token);
 
-      if (!payload || !payload.userId) {
+      if (!payload || !payload.sub || !payload.authId) {
         return next();
       }
 
-      const authId = payload.authId || payload.userId;
-      const auth = await authService.findById(authId);
+      const auth = await authService.findById(payload.authId);
 
       if (!auth) {
         return next();
@@ -42,11 +41,9 @@ export const optionalAuthGuard =
       }
 
       req.user = {
-        userId: payload.userId,
-        authId,
-        email: payload.email || "",
-        roles: payload.roles || "user",
-        fullName: payload.fullName || ""
+        sub: payload.sub,
+        authId: payload.authId,
+        roles: payload.roles
       };
 
       next();

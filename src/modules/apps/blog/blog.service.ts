@@ -29,10 +29,7 @@ import {
   buildBlogSort
 } from "./blog.helper";
 
-interface RequestUser {
-  userId: string;
-  roles: string;
-}
+type RequestUser = Pick<RequestUserPayload, "sub" | "roles">;
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
@@ -121,7 +118,7 @@ export class BlogService {
     }
 
     if (doc.visibility === BLOG_VISIBILITY.PRIVATE) {
-      const isOwner = user?.userId === doc.authorId.toString();
+      const isOwner = user?.sub === doc.authorId.toString();
       const isAdmin = user?.roles === "admin";
       if (!isOwner && !isAdmin) {
         throw new NotFoundError(
@@ -212,7 +209,7 @@ export class BlogService {
       }
       await this.blogRepo.hardDelete(id);
     } else {
-      if (existing.authorId.toString() !== user.userId) {
+      if (existing.authorId.toString() !== user.sub) {
         throw new ForbiddenError(
           "blog:errors.forbidden",
           ERROR_CODES.BLOG_FORBIDDEN
