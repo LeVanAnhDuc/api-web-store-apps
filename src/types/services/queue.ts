@@ -1,5 +1,5 @@
 // types
-import type { EmailType } from "@/services/email/email.types";
+import type { EmailType } from "./email";
 
 export interface EmailJobData {
   type: EmailType;

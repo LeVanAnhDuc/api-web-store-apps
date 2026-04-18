@@ -2,7 +2,7 @@
 import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import type { SendEmailService } from "@/services/email/email.service";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
 import { RedisOtpLoginRepository } from "./repositories/otp-login.repository";
@@ -17,7 +17,7 @@ export const createLoginModule = (
   redisClient: RedisClientType,
   authService: AuthenticationService,
   loginHistorySvc: LoginHistoryService,
-  emailService: SendEmailService,
+  emailDispatcher: EmailDispatcher,
   rateLimiter: RateLimiterMiddleware
 ) => {
   const otpLoginRepo = new RedisOtpLoginRepository(redisClient);
@@ -30,7 +30,7 @@ export const createLoginModule = (
     otpLoginRepo,
     magicLinkLoginRepo,
     failedAttemptsRepo,
-    emailService
+    emailDispatcher
   );
   const loginController = new LoginController(loginService);
 

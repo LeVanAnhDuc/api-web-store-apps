@@ -4,7 +4,7 @@ import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { ExpressAdapter } from "@bull-board/express";
 // types
 import type { SendEmailService } from "@/services/email/email.service";
-import type { EmailJobData } from "./queue.types";
+import type { EmailJobData } from "@/types/services/queue";
 // others
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";

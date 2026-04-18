@@ -8,16 +8,15 @@ import type { AuthenticationService } from "@/modules/authentication/authenticat
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/login.service";
 import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
-import type { SendEmailService } from "@/services/email/email.service";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { UnlockRequestDto, UnlockVerifyDto } from "./dtos";
 // config
 import ENV from "@/config/env";
 import { BadRequestError, NotFoundError } from "@/config/responses/error";
-// services
-import { EmailType } from "@/services/email/email.types";
 // dtos
 import { toUnlockRequestDto, toUnlockVerifyDto } from "./dtos";
 // others
+import { EmailType } from "@/types/services/email";
 import { Logger } from "@/utils/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { withRetry } from "@/utils/retry";
@@ -39,7 +38,7 @@ export class UnlockAccountService {
     private readonly loginHistoryService: LoginHistoryService,
     private readonly loginService: LoginService,
     private readonly unlockAccountRepo: UnlockAccountRepository,
-    private readonly emailService: SendEmailService
+    private readonly emailDispatcher: EmailDispatcher
   ) {}
 
   async unlockRequest(
@@ -97,7 +96,7 @@ export class UnlockAccountService {
       expiresAt: tempPasswordExpAt
     });
 
-    this.emailService.send(EmailType.UNLOCK_TEMP_PASSWORD, {
+    this.emailDispatcher.send(EmailType.UNLOCK_TEMP_PASSWORD, {
       email,
       data: {
         tempPassword,

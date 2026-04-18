@@ -1,7 +1,7 @@
 // types
 import type { Job } from "bullmq";
 import type { SendEmailService } from "@/services/email/email.service";
-import type { EmailJobData } from "../queue.types";
+import type { EmailJobData } from "@/types/services/queue";
 // others
 import { Logger } from "@/utils/logger";
 

@@ -2,8 +2,6 @@
 import { render } from "@react-email/render";
 // types
 import type { EmailTransport } from "@/services/cores/NodemailerTransport";
-import type { QueueService } from "@/services/queue/queue.service";
-import type { EmailJobData } from "@/services/queue/queue.types";
 import type {
   ForgotPasswordOtpData,
   LoginOtpData,
@@ -11,14 +9,14 @@ import type {
   SendEmailOptions,
   SignupOtpData,
   UnlockTempPasswordData
-} from "./email.types";
+} from "@/types/services/email";
 // config
 import { InternalServerError } from "@/config/responses/error";
 // others
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { CircuitBreaker, CircuitOpenError } from "@/utils/circuit-breaker";
-import { EmailType } from "./email.types";
+import { EmailType } from "@/types/services/email";
 import { getEmailT } from "./email.helper";
 import { LoginOtpEmail } from "./templates/login-otp";
 import { SignupOtpEmail } from "./templates/signup-otp";
@@ -33,7 +31,6 @@ const CIRCUIT_BREAKER_CONFIG = {
 
 export class SendEmailService {
   private readonly circuitBreaker: CircuitBreaker;
-  private emailQueue: QueueService<EmailJobData> | null = null;
 
   constructor(private readonly transport: EmailTransport) {
     this.circuitBreaker = new CircuitBreaker({
@@ -43,48 +40,7 @@ export class SendEmailService {
     });
   }
 
-  setQueue(queue: QueueService<EmailJobData> | null): void {
-    this.emailQueue = queue;
-
-    if (queue) {
-      Logger.info("Email service: queue mode enabled");
-    }
-  }
-
   send<T extends EmailType>(type: T, options: SendEmailOptions<T>): void {
-    if (this.emailQueue) {
-      // EmailDataMap values are plain objects — safe to serialize for Redis job queue
-
-      const jobData: EmailJobData = {
-        type,
-        email: options.email,
-        data: options.data as unknown as Record<string, unknown>,
-        locale: options.locale
-      };
-      this.emailQueue.addJob(type, jobData);
-    } else {
-      this.sendWithRetry(type, options);
-    }
-  }
-
-  /**
-   * Direct send for queue worker — circuit breaker protects, BullMQ handles retry.
-   * Accepts deserialized job data where TypeScript generics are lost during Redis serialization.
-   */
-  async executeSend(
-    type: EmailType,
-    options: { email: string; data: Record<string, unknown>; locale?: string }
-  ): Promise<void> {
-    // Job data was serialized from SendEmailOptions<T> — structure is preserved through Redis
-    const typedOptions = options as unknown as SendEmailOptions<EmailType>;
-
-    await this.circuitBreaker.execute(() => this.sendAsync(type, typedOptions));
-  }
-
-  private sendWithRetry<T extends EmailType>(
-    type: T,
-    options: SendEmailOptions<T>
-  ): void {
     withRetry(
       () => this.circuitBreaker.execute(() => this.sendAsync(type, options)),
       {
@@ -95,6 +51,15 @@ export class SendEmailService {
         shouldRetry: (error) => !(error instanceof CircuitOpenError)
       }
     );
+  }
+
+  async executeSend(
+    type: EmailType,
+    options: { email: string; data: Record<string, unknown>; locale?: string }
+  ): Promise<void> {
+    const typedOptions = options as unknown as SendEmailOptions<EmailType>;
+
+    await this.circuitBreaker.execute(() => this.sendAsync(type, typedOptions));
   }
 
   private async sendAsync<T extends EmailType>(

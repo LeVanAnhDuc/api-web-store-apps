@@ -1,7 +1,7 @@
 // libs
 import { Text } from "@react-email/components";
 // types
-import type { ForgotPasswordOtpData } from "../email.types";
+import type { ForgotPasswordOtpData } from "@/types/services/email";
 // others
 import { getEmailT } from "../email.helper";
 import { EmailLayout } from "./components/email-layout";

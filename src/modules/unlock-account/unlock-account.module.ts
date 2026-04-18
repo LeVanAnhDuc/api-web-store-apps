@@ -3,7 +3,7 @@ import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/login.service";
-import type { SendEmailService } from "@/services/email/email.service";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
 import { RedisUnlockAccountRepository } from "./repositories/unlock-account.repository";
@@ -17,7 +17,7 @@ export const createUnlockAccountModule = (
   authService: AuthenticationService,
   loginHistorySvc: LoginHistoryService,
   loginService: LoginService,
-  emailService: SendEmailService,
+  emailDispatcher: EmailDispatcher,
   rateLimiter: RateLimiterMiddleware
 ) => {
   const unlockAccountRepo = new RedisUnlockAccountRepository(redisClient);
@@ -27,7 +27,7 @@ export const createUnlockAccountModule = (
     loginHistorySvc,
     loginService,
     unlockAccountRepo,
-    emailService
+    emailDispatcher
   );
   const unlockAccountController = new UnlockAccountController(
     unlockAccountService

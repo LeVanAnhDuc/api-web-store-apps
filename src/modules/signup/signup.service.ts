@@ -9,7 +9,7 @@ import type {
 import type { Request } from "express";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
-import type { SendEmailService } from "@/services/email/email.service";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { OtpSignupRepository } from "./repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "./repositories/session-signup.repository";
 import type {
@@ -21,8 +21,6 @@ import type {
 } from "./dtos";
 // config
 import { BadRequestError } from "@/config/responses/error";
-// services
-import { EmailType } from "@/services/email/email.types";
 // dtos
 import {
   toSendOtpDto,
@@ -32,6 +30,7 @@ import {
   toCheckEmailDto
 } from "./dtos";
 // others
+import { EmailType } from "@/types/services/email";
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
@@ -60,7 +59,7 @@ export class SignupService {
     private readonly userService: UserService,
     private readonly otpSignupRepo: OtpSignupRepository,
     private readonly sessionSignupRepo: SessionSignupRepository,
-    private readonly emailService: SendEmailService
+    private readonly emailDispatcher: EmailDispatcher
   ) {}
 
   async sendOtp(body: SendOtpBody, req: Request): Promise<SendOtpDto> {
@@ -80,7 +79,7 @@ export class SignupService {
 
     await this.otpSignupRepo.setCooldown(email, OTP_COOLDOWN_SECONDS);
 
-    this.emailService.send(EmailType.SIGNUP_OTP, {
+    this.emailDispatcher.send(EmailType.SIGNUP_OTP, {
       email,
       data: { otp, expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES },
       locale: language as I18n.Locale
@@ -172,7 +171,7 @@ export class SignupService {
       windowSeconds: RESEND_WINDOW_SECONDS
     });
 
-    this.emailService.send(EmailType.SIGNUP_OTP, {
+    this.emailDispatcher.send(EmailType.SIGNUP_OTP, {
       email,
       data: { otp, expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES },
       locale: language as I18n.Locale

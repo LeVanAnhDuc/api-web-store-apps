@@ -3,7 +3,7 @@ import { Router } from "express";
 // types
 import type { Express } from "express";
 import type { RedisClientType } from "redis";
-import type { AppServices } from "./services.loader";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 // database
 import { instanceRedis } from "@/database/redis";
 // modules
@@ -69,9 +69,11 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   app.use("/api/v1", v1Router);
 };
 
-export const loadModules = (app: Express, services: AppServices): void => {
+export const loadModules = (
+  app: Express,
+  emailDispatcher: EmailDispatcher
+): void => {
   const redisClient = instanceRedis.getClient() as RedisClientType;
-  const { emailService } = services;
 
   // --- Shared infrastructure ---
   const { authService } = createAuthenticationModule();
@@ -92,7 +94,7 @@ export const loadModules = (app: Express, services: AppServices): void => {
     redisClient,
     authService,
     loginHistoryService,
-    emailService,
+    emailDispatcher,
     rateLimiter
   );
 
@@ -100,7 +102,7 @@ export const loadModules = (app: Express, services: AppServices): void => {
     redisClient,
     authService,
     userService,
-    emailService,
+    emailDispatcher,
     rateLimiter
   );
 
@@ -112,7 +114,7 @@ export const loadModules = (app: Express, services: AppServices): void => {
     authService,
     loginHistoryService,
     loginService,
-    emailService,
+    emailDispatcher,
     rateLimiter
   );
 
@@ -120,7 +122,7 @@ export const loadModules = (app: Express, services: AppServices): void => {
     redisClient,
     authService,
     loginHistoryService,
-    emailService,
+    emailDispatcher,
     rateLimiter
   );
 

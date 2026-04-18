@@ -1,7 +1,7 @@
 // libs
 import { Text } from "@react-email/components";
 // types
-import type { LoginOtpData } from "../email.types";
+import type { LoginOtpData } from "@/types/services/email";
 // others
 import { getEmailT } from "../email.helper";
 import { EmailLayout } from "./components/email-layout";

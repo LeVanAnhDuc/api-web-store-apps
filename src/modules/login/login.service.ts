@@ -13,15 +13,14 @@ import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
 import type { FailedAttemptsRepository } from "./repositories/failed-attempts.repository";
 import type { LoginResponseDto, OtpSendDto, MagicLinkSendDto } from "./dtos";
-import type { SendEmailService } from "@/services/email/email.service";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 // config
 import { BadRequestError } from "@/config/responses/error";
 import ENV from "@/config/env";
-// services
-import { EmailType } from "@/services/email/email.types";
 // dtos
 import { toOtpSendDto, toMagicLinkSendDto } from "./dtos";
 // others
+import { EmailType } from "@/types/services/email";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
@@ -48,7 +47,7 @@ export class LoginService {
     private readonly otpLoginRepo: OtpLoginRepository,
     private readonly magicLinkLoginRepo: MagicLinkLoginRepository,
     private readonly failedAttemptsRepo: FailedAttemptsRepository,
-    private readonly emailService: SendEmailService
+    private readonly emailDispatcher: EmailDispatcher
   ) {}
 
   async passwordLogin(
@@ -132,7 +131,7 @@ export class LoginService {
       context: { email }
     });
 
-    this.emailService.send(EmailType.LOGIN_OTP, {
+    this.emailDispatcher.send(EmailType.LOGIN_OTP, {
       email,
       data: { otp, expiryMinutes: LOGIN_OTP_CONFIG.EXPIRY_MINUTES },
       locale: language as I18n.Locale
@@ -214,7 +213,7 @@ export class LoginService {
     });
 
     const magicLinkUrl = `${ENV.CLIENT_URL}/login/verify-magic-link?token=${token}&email=${encodeURIComponent(email)}`;
-    this.emailService.send(EmailType.MAGIC_LINK, {
+    this.emailDispatcher.send(EmailType.MAGIC_LINK, {
       email,
       data: { magicLinkUrl, expiryMinutes: MAGIC_LINK_CONFIG.EXPIRY_MINUTES },
       locale: language as I18n.Locale

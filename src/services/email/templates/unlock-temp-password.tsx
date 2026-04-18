@@ -1,7 +1,7 @@
 // libs
 import { Section, Text } from "@react-email/components";
 // types
-import type { UnlockTempPasswordData } from "../email.types";
+import type { UnlockTempPasswordData } from "@/types/services/email";
 // others
 import { getEmailT } from "../email.helper";
 import { EmailLayout } from "./components/email-layout";

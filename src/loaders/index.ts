@@ -1,5 +1,7 @@
 // types
 import type { Express } from "express";
+// services
+import { EmailDispatcher } from "@/services/email/email.dispatcher";
 // others
 import { loadDatabase, closeDatabase } from "./database.loader";
 import { loadRedis, closeRedis } from "./redis.loader";
@@ -15,9 +17,10 @@ export const loadAll = async (app: Express): Promise<void> => {
     await loadDatabase();
     await loadRedis();
 
-    const services = loadServices();
-    loadQueues(app, services);
-    loadModules(app, services);
+    const { emailService } = loadServices();
+    const { emailQueue } = loadQueues(app, emailService);
+    const emailDispatcher = new EmailDispatcher(emailService, emailQueue);
+    loadModules(app, emailDispatcher);
     loadHealthCheck(app);
     loadErrorHandlers(app);
 

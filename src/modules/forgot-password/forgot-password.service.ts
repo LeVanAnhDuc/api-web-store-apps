@@ -6,7 +6,7 @@ import type {
   FPMagicLinkVerifyRequest,
   FPResetPasswordRequest
 } from "@/types/modules/forgot-password";
-import type { SendEmailService } from "@/services/email/email.service";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
@@ -21,8 +21,6 @@ import type {
 } from "./dtos";
 // config
 import { UnauthorizedError } from "@/config/responses/error";
-// services
-import { EmailType } from "@/services/email/email.types";
 // dtos
 import {
   toSendOtpResponseDto,
@@ -32,6 +30,7 @@ import {
   toResetPasswordResponseDto
 } from "./dtos";
 // others
+import { EmailType } from "@/types/services/email";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { hashValue } from "@/utils/crypto/bcrypt";
@@ -56,7 +55,7 @@ export class ForgotPasswordService {
     private readonly otpRepo: OtpForgotPasswordRepository,
     private readonly magicLinkRepo: MagicLinkForgotPasswordRepository,
     private readonly resetTokenRepo: ResetTokenRepository,
-    private readonly emailService: SendEmailService
+    private readonly emailDispatcher: EmailDispatcher
   ) {}
 
   async sendOtp(req: FPOtpSendRequest): Promise<SendOtpResponseDto> {
@@ -88,7 +87,7 @@ export class ForgotPasswordService {
       context: { email }
     });
 
-    this.emailService.send(EmailType.FORGOT_PASSWORD_OTP, {
+    this.emailDispatcher.send(EmailType.FORGOT_PASSWORD_OTP, {
       email,
       data: { otp, expiryMinutes: FORGOT_PASSWORD_OTP_CONFIG.EXPIRY_MINUTES },
       locale: language as I18n.Locale
@@ -171,7 +170,7 @@ export class ForgotPasswordService {
       context: { email }
     });
 
-    sendMagicLinkEmail(this.emailService, email, token, language);
+    sendMagicLinkEmail(this.emailDispatcher, email, token, language);
 
     Logger.info("Forgot password magic link send completed", {
       email,
