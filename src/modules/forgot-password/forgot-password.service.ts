@@ -31,6 +31,7 @@ import {
 } from "./dtos";
 // others
 import { EmailType } from "@/types/services/email";
+import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { hashValue } from "@/utils/crypto/bcrypt";
@@ -231,7 +232,10 @@ export class ForgotPasswordService {
       Logger.warn("Forgot password reset - invalid or expired reset token", {
         email
       });
-      throw new UnauthorizedError(t("forgotPassword:errors.invalidResetToken"));
+      throw new UnauthorizedError(
+        t("forgotPassword:errors.invalidResetToken"),
+        ERROR_CODES.FORGOT_PASSWORD_INVALID_RESET_TOKEN
+      );
     }
 
     const auth = await ensureAuthExists(this.authService, email, t);

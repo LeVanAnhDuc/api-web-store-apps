@@ -21,6 +21,7 @@ import ENV from "@/config/env";
 import { toOtpSendDto, toMagicLinkSendDto } from "./dtos";
 // others
 import { EmailType } from "@/types/services/email";
+import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
@@ -114,14 +115,18 @@ export class LoginService {
       email,
       t,
       "Login OTP cooldown not expired",
-      "login:errors.otpCooldown"
+      "login:errors.otpCooldown",
+      ERROR_CODES.LOGIN_OTP_COOLDOWN
     );
     await validateAuthenticationForLogin(this.authService, email, t);
 
     const exceeded = await this.otpLoginRepo.hasExceededResendLimit(email);
     if (exceeded) {
       Logger.warn("Login OTP resend limit exceeded", { email });
-      throw new BadRequestError(t("login:errors.otpResendLimitExceeded"));
+      throw new BadRequestError(
+        t("login:errors.otpResendLimitExceeded"),
+        ERROR_CODES.LOGIN_OTP_RESEND_LIMIT
+      );
     }
 
     const otp = await this.otpLoginRepo.createAndStoreOtp(email);
@@ -201,7 +206,8 @@ export class LoginService {
       email,
       t,
       "Magic link cooldown not expired",
-      "login:errors.magicLinkCooldown"
+      "login:errors.magicLinkCooldown",
+      ERROR_CODES.LOGIN_MAGIC_LINK_COOLDOWN
     );
     await validateAuthenticationForLogin(this.authService, email, t);
 

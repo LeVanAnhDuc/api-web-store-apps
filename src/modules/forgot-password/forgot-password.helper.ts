@@ -14,6 +14,7 @@ import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
 import ENV from "@/config/env";
 // others
 import { EmailType } from "@/types/services/email";
+import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import {
   LOGIN_METHODS,
@@ -38,7 +39,8 @@ export async function ensureOtpCooldownExpired(
       remaining
     });
     throw new BadRequestError(
-      t("forgotPassword:errors.otpCooldown", { seconds: remaining })
+      t("forgotPassword:errors.otpCooldown", { seconds: remaining }),
+      ERROR_CODES.FORGOT_PASSWORD_OTP_COOLDOWN
     );
   }
 }
@@ -53,7 +55,8 @@ export async function ensureOtpResendLimitNotExceeded(
   if (exceeded) {
     Logger.warn("Forgot password OTP resend limit exceeded", { email });
     throw new BadRequestError(
-      t("forgotPassword:errors.otpResendLimitExceeded")
+      t("forgotPassword:errors.otpResendLimitExceeded"),
+      ERROR_CODES.FORGOT_PASSWORD_OTP_RESEND_LIMIT
     );
   }
 }
@@ -71,7 +74,10 @@ export async function ensureAuthExists(
 
   if (!auth) {
     Logger.warn("Forgot password - authentication not found", { email });
-    throw new UnauthorizedError(t("common:errors.unauthorized"));
+    throw new UnauthorizedError(
+      t("common:errors.unauthorized"),
+      ERROR_CODES.FORGOT_PASSWORD_AUTH_NOT_FOUND
+    );
   }
 
   return auth;
@@ -92,7 +98,8 @@ export async function ensureOtpNotLocked(
   throw new BadRequestError(
     t("forgotPassword:errors.otpLocked", {
       minutes: FORGOT_PASSWORD_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-    })
+    }),
+    ERROR_CODES.FORGOT_PASSWORD_OTP_LOCKED
   );
 }
 
@@ -117,12 +124,14 @@ export async function handleInvalidOtp(
     throw new BadRequestError(
       t("forgotPassword:errors.otpLocked", {
         minutes: FORGOT_PASSWORD_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-      })
+      }),
+      ERROR_CODES.FORGOT_PASSWORD_OTP_LOCKED
     );
   }
 
   throw new UnauthorizedError(
-    t("forgotPassword:errors.invalidOtpWithRemaining", { remaining })
+    t("forgotPassword:errors.invalidOtpWithRemaining", { remaining }),
+    ERROR_CODES.FORGOT_PASSWORD_OTP_INVALID
   );
 }
 
@@ -182,7 +191,8 @@ export async function ensureMagicLinkCooldownExpired(
       remaining
     });
     throw new BadRequestError(
-      t("forgotPassword:errors.magicLinkCooldown", { seconds: remaining })
+      t("forgotPassword:errors.magicLinkCooldown", { seconds: remaining }),
+      ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_COOLDOWN
     );
   }
 }
@@ -197,7 +207,8 @@ export async function ensureMagicLinkResendLimitNotExceeded(
   if (exceeded) {
     Logger.warn("Forgot password magic link resend limit exceeded", { email });
     throw new BadRequestError(
-      t("forgotPassword:errors.magicLinkResendLimitExceeded")
+      t("forgotPassword:errors.magicLinkResendLimitExceeded"),
+      ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_RESEND_LIMIT
     );
   }
 }
@@ -222,5 +233,8 @@ export function handleInvalidMagicLink(
   });
 
   Logger.warn("Forgot password magic link verification failed", { email });
-  throw new UnauthorizedError(t("forgotPassword:errors.invalidMagicLink"));
+  throw new UnauthorizedError(
+    t("forgotPassword:errors.invalidMagicLink"),
+    ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_INVALID
+  );
 }

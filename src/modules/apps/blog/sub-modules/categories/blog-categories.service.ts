@@ -5,6 +5,7 @@ import type { CategoryItemDto } from "../../dtos";
 // config
 import { ConflictRequestError } from "@/config/responses/error";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { toCategoryItemDto } from "../../dtos";
 
 export class BlogCategoriesService {
@@ -28,7 +29,7 @@ export class BlogCategoriesService {
     if (existing) {
       throw new ConflictRequestError(
         "blog:errors.categoryAlreadyExists",
-        "CATEGORY_ALREADY_EXISTS"
+        ERROR_CODES.BLOG_CATEGORY_EXISTS
       );
     }
 

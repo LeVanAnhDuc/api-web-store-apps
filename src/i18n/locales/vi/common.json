@@ -5,6 +5,7 @@
     "invalidToken": "Token không hợp lệ",
     "tokenExpired": "Token đã hết hạn",
     "validationFailed": "Dữ liệu không hợp lệ",
-    "unauthorized": "Không có quyền truy cập"
+    "unauthorized": "Không có quyền truy cập",
+    "forbidden": "Truy cập bị từ chối"
   }
 }

@@ -14,6 +14,7 @@ import {
   InternalServerError
 } from "@/config/responses/error";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { OTP_CONFIG } from "@/constants/modules/signup";
@@ -34,7 +35,10 @@ export async function ensureEmailAvailable(
 
   if (exists) {
     Logger.warn("Email already exists", { email });
-    throw new ConflictRequestError(t("signup:errors.emailAlreadyExists"));
+    throw new ConflictRequestError(
+      t("signup:errors.emailAlreadyExists"),
+      ERROR_CODES.SIGNUP_EMAIL_EXISTS
+    );
   }
 }
 
@@ -49,7 +53,8 @@ export async function ensureCooldownExpired(
     const remaining = await otpSignupRepo.getCooldownRemaining(email);
     Logger.warn("OTP cooldown not expired", { email, remaining });
     throw new BadRequestError(
-      t("signup:errors.resendCoolDown", { seconds: remaining })
+      t("signup:errors.resendCoolDown", { seconds: remaining }),
+      ERROR_CODES.SIGNUP_OTP_COOLDOWN
     );
   }
 }
@@ -99,11 +104,15 @@ export async function verifyOtpOrFail(
 
     if (remaining > 0) {
       throw new BadRequestError(
-        t("signup:errors.invalidOtpWithRemaining", { remaining })
+        t("signup:errors.invalidOtpWithRemaining", { remaining }),
+        ERROR_CODES.SIGNUP_OTP_INVALID
       );
     }
 
-    throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
+    throw new BadRequestError(
+      t("signup:errors.otpAttemptsExceeded"),
+      ERROR_CODES.SIGNUP_OTP_LOCKED
+    );
   }
 }
 

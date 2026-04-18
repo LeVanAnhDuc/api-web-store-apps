@@ -5,6 +5,7 @@ import type { TagItemDto } from "../../dtos";
 // config
 import { ConflictRequestError } from "@/config/responses/error";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { toTagItemDto } from "../../dtos";
 
 export class BlogTagsService {
@@ -28,7 +29,7 @@ export class BlogTagsService {
     if (existing) {
       throw new ConflictRequestError(
         "blog:errors.tagAlreadyExists",
-        "TAG_ALREADY_EXISTS"
+        ERROR_CODES.BLOG_TAG_EXISTS
       );
     }
 

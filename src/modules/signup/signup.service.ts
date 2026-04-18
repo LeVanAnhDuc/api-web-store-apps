@@ -31,6 +31,7 @@ import {
 } from "./dtos";
 // others
 import { EmailType } from "@/types/services/email";
+import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
@@ -109,7 +110,10 @@ export class SignupService {
         email,
         maxAttempts: MAX_FAILED_ATTEMPTS
       });
-      throw new BadRequestError(t("signup:errors.otpAttemptsExceeded"));
+      throw new BadRequestError(
+        t("signup:errors.otpAttemptsExceeded"),
+        ERROR_CODES.SIGNUP_OTP_LOCKED
+      );
     }
 
     await verifyOtpOrFail(this.otpSignupRepo, email, otp, t);
@@ -147,7 +151,10 @@ export class SignupService {
         email,
         maxResends: MAX_RESEND_COUNT
       });
-      throw new BadRequestError(t("signup:errors.resendLimitExceeded"));
+      throw new BadRequestError(
+        t("signup:errors.resendLimitExceeded"),
+        ERROR_CODES.SIGNUP_RESEND_LIMIT
+      );
     }
 
     await ensureEmailAvailable(this.authService, email, t);
@@ -205,7 +212,10 @@ export class SignupService {
     const isValid = await this.sessionSignupRepo.verify(email, sessionToken);
     if (!isValid) {
       Logger.warn("Invalid or expired signup session", { email });
-      throw new BadRequestError(t("signup:errors.invalidSession"));
+      throw new BadRequestError(
+        t("signup:errors.invalidSession"),
+        ERROR_CODES.SIGNUP_SESSION_INVALID
+      );
     }
 
     await ensureEmailAvailable(this.authService, email, t);

@@ -14,6 +14,7 @@ import { BadRequestError, NotFoundError } from "@/config/responses/error";
 // dtos
 import { toMyProfileDto, toPublicProfileDto, toUploadAvatarDto } from "./dtos";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { buildAvatarUrl } from "./user.helper";
 
 export class UserService {
@@ -23,7 +24,10 @@ export class UserService {
     const user = await this.userRepo.findById(userId);
 
     if (!user) {
-      throw new NotFoundError("user:errors.notFound");
+      throw new NotFoundError(
+        "user:errors.notFound",
+        ERROR_CODES.USER_NOT_FOUND
+      );
     }
 
     return toMyProfileDto(user, email, buildAvatarUrl(user.avatar ?? null));
@@ -37,7 +41,10 @@ export class UserService {
     const user = await this.userRepo.updateById(userId, data);
 
     if (!user) {
-      throw new NotFoundError("user:errors.notFound");
+      throw new NotFoundError(
+        "user:errors.notFound",
+        ERROR_CODES.USER_NOT_FOUND
+      );
     }
 
     return toMyProfileDto(user, email, buildAvatarUrl(user.avatar ?? null));
@@ -50,7 +57,7 @@ export class UserService {
     if (!filePath) {
       throw new BadRequestError(
         "user:errors.noFileUploaded",
-        "NO_FILE_UPLOADED"
+        ERROR_CODES.USER_NO_FILE_UPLOADED
       );
     }
 
@@ -67,7 +74,10 @@ export class UserService {
     const user = await this.userRepo.findPublicById(userId);
 
     if (!user) {
-      throw new NotFoundError("user:errors.notFound");
+      throw new NotFoundError(
+        "user:errors.notFound",
+        ERROR_CODES.USER_NOT_FOUND
+      );
     }
 
     return toPublicProfileDto(user, buildAvatarUrl(user.avatar ?? null));

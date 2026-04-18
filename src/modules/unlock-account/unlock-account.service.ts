@@ -17,6 +17,7 @@ import { BadRequestError, NotFoundError } from "@/config/responses/error";
 import { toUnlockRequestDto, toUnlockVerifyDto } from "./dtos";
 // others
 import { EmailType } from "@/types/services/email";
+import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { withRetry } from "@/utils/retry";
@@ -66,7 +67,10 @@ export class UnlockAccountService {
         email,
         authId: auth._id
       });
-      throw new BadRequestError(t("unlockAccount:errors.accountDisabled"));
+      throw new BadRequestError(
+        t("unlockAccount:errors.accountDisabled"),
+        ERROR_CODES.UNLOCK_ACCOUNT_DISABLED
+      );
     }
 
     const { isLocked } = await this.loginService.checkLockout(email);
@@ -75,7 +79,10 @@ export class UnlockAccountService {
         email,
         authId: auth._id
       });
-      throw new BadRequestError(t("unlockAccount:errors.accountNotLocked"));
+      throw new BadRequestError(
+        t("unlockAccount:errors.accountNotLocked"),
+        ERROR_CODES.UNLOCK_ACCOUNT_NOT_LOCKED
+      );
     }
 
     const tempPassword = generateTempPassword();
@@ -152,7 +159,10 @@ export class UnlockAccountService {
     const user = await this.authService.findUserByAuthId(auth._id.toString());
 
     if (!user) {
-      throw new NotFoundError("user:errors.notFound");
+      throw new NotFoundError(
+        "user:errors.notFound",
+        ERROR_CODES.UNLOCK_USER_NOT_FOUND
+      );
     }
 
     Logger.info("Unlock successful - tokens generated", {

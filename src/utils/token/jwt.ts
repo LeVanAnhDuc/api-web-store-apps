@@ -7,6 +7,7 @@ import type { AuthTokensResponse } from "@/types/modules/authentication";
 import { ForbiddenError } from "@/config/responses/error";
 import ENV from "@/config/env";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/constants/modules/token";
 
 const TOKEN_TYPES = {
@@ -45,6 +46,11 @@ const ERROR_TRANSLATION_KEYS: Record<string, I18n.Key> = {
   [TOKEN_ERRORS.TOKEN_EXPIRED_ERROR]: "common:errors.tokenExpired"
 };
 
+const ERROR_CODE_MAP: Record<string, string> = {
+  [TOKEN_ERRORS.JSON_WEB_TOKEN_ERROR]: ERROR_CODES.JWT_INVALID,
+  [TOKEN_ERRORS.TOKEN_EXPIRED_ERROR]: ERROR_CODES.JWT_EXPIRED
+};
+
 const generateToken = (payload: TPayload, type: TokenType): string => {
   const { secret, expiresIn } = TOKEN_CONFIGS[type];
   return jwt.sign(payload, secret, { expiresIn });
@@ -58,7 +64,8 @@ const verifyToken = <T = TPayload>(token: string, type: TokenType): T => {
     const errorName = error instanceof Error ? error.name : "UnknownError";
     const translationKey =
       ERROR_TRANSLATION_KEYS[errorName] ?? "common:errors.invalidToken";
-    throw new ForbiddenError(translationKey);
+    const errorCode = ERROR_CODE_MAP[errorName] ?? ERROR_CODES.JWT_INVALID;
+    throw new ForbiddenError(translationKey, errorCode);
   }
 };
 

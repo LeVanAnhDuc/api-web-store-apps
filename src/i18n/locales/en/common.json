@@ -5,6 +5,7 @@
     "invalidToken": "Invalid token",
     "tokenExpired": "Token expired",
     "validationFailed": "Validation failed",
-    "unauthorized": "Unauthorized access"
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Forbidden access"
   }
 }

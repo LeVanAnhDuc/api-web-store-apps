@@ -16,6 +16,7 @@ import {
 // dtos
 import { toLoginResponseDto } from "./dtos";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
@@ -51,7 +52,10 @@ export async function completeSuccessfulLogin(
   const user = await authService.findUserByAuthId(auth._id.toString());
 
   if (!user) {
-    throw new NotFoundError("user:errors.notFound");
+    throw new NotFoundError(
+      "user:errors.notFound",
+      ERROR_CODES.LOGIN_USER_NOT_FOUND
+    );
   }
 
   Logger.info("Login successful", {
@@ -86,14 +90,15 @@ export async function ensureCooldownExpired<
   email: string,
   t: TranslateFunction,
   logMessage: string,
-  errorKey: "login:errors.otpCooldown" | "login:errors.magicLinkCooldown"
+  errorKey: "login:errors.otpCooldown" | "login:errors.magicLinkCooldown",
+  code: string
 ): Promise<void> {
   const canSend = await store.checkCooldown(email);
 
   if (!canSend) {
     const remaining = await store.getCooldownRemaining(email);
     Logger.warn(logMessage, { email, remaining });
-    throw new BadRequestError(t(errorKey, { seconds: remaining }));
+    throw new BadRequestError(t(errorKey, { seconds: remaining }), code);
   }
 }
 
@@ -106,7 +111,10 @@ export async function ensureAuthenticationExists(
 
   if (!auth) {
     Logger.warn("Authentication not found", { email });
-    throw new UnauthorizedError(t("login:errors.invalidEmail"));
+    throw new UnauthorizedError(
+      t("login:errors.invalidEmail"),
+      ERROR_CODES.LOGIN_INVALID_EMAIL
+    );
   }
 
   return auth;
@@ -121,12 +129,18 @@ export async function validateAuthenticationForLogin(
 
   if (!auth.isActive) {
     Logger.warn("Account inactive", { email });
-    throw new UnauthorizedError(t("login:errors.accountInactive"));
+    throw new UnauthorizedError(
+      t("login:errors.accountInactive"),
+      ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
+    );
   }
 
   if (!auth.verifiedEmail) {
     Logger.warn("Email not verified", { email });
-    throw new UnauthorizedError(t("login:errors.emailNotVerified"));
+    throw new UnauthorizedError(
+      t("login:errors.emailNotVerified"),
+      ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
+    );
   }
 }
 
@@ -158,7 +172,8 @@ export async function ensureLoginNotLocked(
     t("login:errors.accountLocked", {
       attempts: attemptCount,
       time: timeMessage
-    })
+    }),
+    ERROR_CODES.LOGIN_ACCOUNT_LOCKED
   );
 }
 
@@ -180,7 +195,10 @@ export function ensureAccountExists(
   });
 
   Logger.warn("Login failed - email not found", { email });
-  throw new UnauthorizedError(t("login:errors.invalidCredentials"));
+  throw new UnauthorizedError(
+    t("login:errors.invalidCredentials"),
+    ERROR_CODES.LOGIN_INVALID_CREDENTIALS
+  );
 }
 
 export function ensureAccountActiveWithLogging(
@@ -201,7 +219,10 @@ export function ensureAccountActiveWithLogging(
   });
 
   Logger.warn("Account inactive", { email });
-  throw new UnauthorizedError(t("login:errors.accountInactive"));
+  throw new UnauthorizedError(
+    t("login:errors.accountInactive"),
+    ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
+  );
 }
 
 export function ensureEmailVerifiedWithLogging(
@@ -222,7 +243,10 @@ export function ensureEmailVerifiedWithLogging(
   });
 
   Logger.warn("Email not verified", { email });
-  throw new UnauthorizedError(t("login:errors.emailNotVerified"));
+  throw new UnauthorizedError(
+    t("login:errors.emailNotVerified"),
+    ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
+  );
 }
 
 export async function verifyPasswordOrFail(
@@ -253,11 +277,15 @@ export async function verifyPasswordOrFail(
       t("login:errors.accountLocked", {
         attempts: attemptCount,
         time: timeMessage
-      })
+      }),
+      ERROR_CODES.LOGIN_ACCOUNT_LOCKED
     );
   }
 
-  throw new UnauthorizedError(t("login:errors.invalidCredentials"));
+  throw new UnauthorizedError(
+    t("login:errors.invalidCredentials"),
+    ERROR_CODES.LOGIN_INVALID_CREDENTIALS
+  );
 }
 
 async function trackFailedPasswordAttempt(
@@ -301,7 +329,8 @@ export async function ensureOtpNotLocked(
   throw new BadRequestError(
     t("login:errors.otpLocked", {
       minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-    })
+    }),
+    ERROR_CODES.LOGIN_OTP_LOCKED
   );
 }
 
@@ -326,12 +355,14 @@ export async function handleInvalidOtp(
     throw new BadRequestError(
       t("login:errors.otpLocked", {
         minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-      })
+      }),
+      ERROR_CODES.LOGIN_OTP_LOCKED
     );
   }
 
   throw new UnauthorizedError(
-    t("login:errors.invalidOtpWithRemaining", { remaining })
+    t("login:errors.invalidOtpWithRemaining", { remaining }),
+    ERROR_CODES.LOGIN_OTP_INVALID
   );
 }
 
@@ -376,5 +407,8 @@ export function handleInvalidMagicLink(
   });
 
   Logger.warn("Magic link verification failed - invalid token", { email });
-  throw new UnauthorizedError(t("login:errors.invalidMagicLink"));
+  throw new UnauthorizedError(
+    t("login:errors.invalidMagicLink"),
+    ERROR_CODES.LOGIN_MAGIC_LINK_INVALID
+  );
 }

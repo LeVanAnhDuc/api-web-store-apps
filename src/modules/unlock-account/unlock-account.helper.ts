@@ -11,6 +11,7 @@ import {
   UnauthorizedError
 } from "@/config/responses/error";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 
@@ -31,7 +32,8 @@ export async function checkCooldown(
       remainingSeconds: remaining
     });
     throw new BadRequestError(
-      t("unlockAccount:errors.unlockCooldown", { seconds: remaining })
+      t("unlockAccount:errors.unlockCooldown", { seconds: remaining }),
+      ERROR_CODES.UNLOCK_COOLDOWN
     );
   }
 }
@@ -48,7 +50,10 @@ export async function checkRateLimit(
       email,
       requestCount
     });
-    throw new TooManyRequestsError(t("unlockAccount:errors.unlockRateLimit"));
+    throw new TooManyRequestsError(
+      t("unlockAccount:errors.unlockRateLimit"),
+      ERROR_CODES.UNLOCK_RATE_LIMIT
+    );
   }
 
   Logger.info("Unlock rate limit check passed", {
@@ -67,7 +72,10 @@ export async function ensureAuthExists(
 
   if (!auth) {
     Logger.warn("Unlock verify failed - account not found", { email });
-    throw new UnauthorizedError(t("unlockAccount:errors.invalidTempPassword"));
+    throw new UnauthorizedError(
+      t("unlockAccount:errors.invalidTempPassword"),
+      ERROR_CODES.UNLOCK_AUTH_NOT_FOUND
+    );
   }
 
   return auth;
@@ -83,7 +91,10 @@ export async function ensureTempPasswordValid(
       email: auth.email,
       authId: auth._id
     });
-    throw new UnauthorizedError(t("unlockAccount:errors.invalidTempPassword"));
+    throw new UnauthorizedError(
+      t("unlockAccount:errors.invalidTempPassword"),
+      ERROR_CODES.UNLOCK_INVALID_TEMP_PASSWORD
+    );
   }
 
   if (!auth.tempPasswordExpAt || auth.tempPasswordExpAt < new Date()) {
@@ -92,7 +103,10 @@ export async function ensureTempPasswordValid(
       authId: auth._id,
       expiredAt: auth.tempPasswordExpAt
     });
-    throw new UnauthorizedError(t("unlockAccount:errors.tempPasswordExpired"));
+    throw new UnauthorizedError(
+      t("unlockAccount:errors.tempPasswordExpired"),
+      ERROR_CODES.UNLOCK_TEMP_PASSWORD_EXPIRED
+    );
   }
 
   if (auth.tempPasswordUsed) {
@@ -100,7 +114,10 @@ export async function ensureTempPasswordValid(
       email: auth.email,
       authId: auth._id
     });
-    throw new UnauthorizedError(t("unlockAccount:errors.invalidTempPassword"));
+    throw new UnauthorizedError(
+      t("unlockAccount:errors.invalidTempPassword"),
+      ERROR_CODES.UNLOCK_INVALID_TEMP_PASSWORD
+    );
   }
 
   const isValid = await isValidHashedValue(tempPassword, auth.tempPasswordHash);
@@ -109,7 +126,10 @@ export async function ensureTempPasswordValid(
       email: auth.email,
       authId: auth._id
     });
-    throw new UnauthorizedError(t("unlockAccount:errors.invalidTempPassword"));
+    throw new UnauthorizedError(
+      t("unlockAccount:errors.invalidTempPassword"),
+      ERROR_CODES.UNLOCK_INVALID_TEMP_PASSWORD
+    );
   }
 }
 

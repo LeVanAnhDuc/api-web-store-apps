@@ -18,6 +18,7 @@ import {
 // dtos
 import { toBlogListItemDto, toBlogDetailDto, toDeleteBlogDto } from "./dtos";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { BLOG_COVER_TYPE, BLOG_VISIBILITY } from "@/constants/modules/blog";
 import {
   generateBaseSlug,
@@ -48,7 +49,7 @@ export class BlogService {
     if (file && dto.coverUrl) {
       throw new BadRequestError(
         "blog:errors.coverConflict",
-        "COVER_IMAGE_CONFLICT"
+        ERROR_CODES.BLOG_COVER_IMAGE_CONFLICT
       );
     }
 
@@ -113,14 +114,20 @@ export class BlogService {
     const doc = await this.blogRepo.findBySlug(slug);
 
     if (!doc) {
-      throw new NotFoundError("blog:errors.notFound", "BLOG_NOT_FOUND");
+      throw new NotFoundError(
+        "blog:errors.notFound",
+        ERROR_CODES.BLOG_NOT_FOUND
+      );
     }
 
     if (doc.visibility === BLOG_VISIBILITY.PRIVATE) {
       const isOwner = user?.userId === doc.authorId.toString();
       const isAdmin = user?.roles === "admin";
       if (!isOwner && !isAdmin) {
-        throw new NotFoundError("blog:errors.notFound", "BLOG_NOT_FOUND");
+        throw new NotFoundError(
+          "blog:errors.notFound",
+          ERROR_CODES.BLOG_NOT_FOUND
+        );
       }
     }
 
@@ -136,11 +143,17 @@ export class BlogService {
     const existing = await this.blogRepo.findById(id);
 
     if (!existing) {
-      throw new NotFoundError("blog:errors.notFound", "BLOG_NOT_FOUND");
+      throw new NotFoundError(
+        "blog:errors.notFound",
+        ERROR_CODES.BLOG_NOT_FOUND
+      );
     }
 
     if (existing.authorId.toString() !== userId) {
-      throw new ForbiddenError("blog:errors.forbidden", "FORBIDDEN");
+      throw new ForbiddenError(
+        "blog:errors.forbidden",
+        ERROR_CODES.BLOG_FORBIDDEN
+      );
     }
 
     const coverResult = resolveCoverImage(file, dto.coverUrl, dto.removeCover);
@@ -174,7 +187,10 @@ export class BlogService {
     );
 
     if (!updated) {
-      throw new NotFoundError("blog:errors.notFound", "BLOG_NOT_FOUND");
+      throw new NotFoundError(
+        "blog:errors.notFound",
+        ERROR_CODES.BLOG_NOT_FOUND
+      );
     }
 
     return toBlogDetailDto(updated as unknown as Record<string, unknown>);
@@ -184,7 +200,10 @@ export class BlogService {
     const existing = await this.blogRepo.findById(id);
 
     if (!existing) {
-      throw new NotFoundError("blog:errors.notFound", "BLOG_NOT_FOUND");
+      throw new NotFoundError(
+        "blog:errors.notFound",
+        ERROR_CODES.BLOG_NOT_FOUND
+      );
     }
 
     if (user.roles === "admin") {
@@ -194,7 +213,10 @@ export class BlogService {
       await this.blogRepo.hardDelete(id);
     } else {
       if (existing.authorId.toString() !== user.userId) {
-        throw new ForbiddenError("blog:errors.forbidden", "FORBIDDEN");
+        throw new ForbiddenError(
+          "blog:errors.forbidden",
+          ERROR_CODES.BLOG_FORBIDDEN
+        );
       }
       await this.blogRepo.softDelete(id);
     }

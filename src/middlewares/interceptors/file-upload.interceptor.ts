@@ -8,6 +8,7 @@ import type { Request, RequestHandler } from "express";
 // config
 import { BadRequestError } from "@/config/responses/error";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { USER_CONFIG } from "@/constants/modules/user";
 import { BLOG_CONFIG } from "@/constants/modules/blog";
 
@@ -118,7 +119,7 @@ const avatarFileFilter = (
     cb(
       new BadRequestError(
         "user:errors.fileTypeNotSupported",
-        "FILE_TYPE_NOT_SUPPORTED"
+        ERROR_CODES.FILE_TYPE_NOT_SUPPORTED
       )
     );
     return;
@@ -147,7 +148,7 @@ export const uploadAvatar: RequestHandler = (req, res, next) => {
           next(
             new BadRequestError(
               "user:errors.fileTypeNotSupported",
-              "FILE_TYPE_NOT_SUPPORTED"
+              ERROR_CODES.FILE_TYPE_NOT_SUPPORTED
             )
           );
           return;
@@ -159,11 +160,19 @@ export const uploadAvatar: RequestHandler = (req, res, next) => {
 
     if (err instanceof multer.MulterError) {
       if (err.code === "LIMIT_FILE_SIZE") {
-        next(new BadRequestError("user:errors.fileTooLarge", "FILE_TOO_LARGE"));
+        next(
+          new BadRequestError(
+            "user:errors.fileTooLarge",
+            ERROR_CODES.FILE_TOO_LARGE
+          )
+        );
         return;
       }
       next(
-        new BadRequestError("user:errors.fileUploadFailed", "FILE_UPLOAD_ERROR")
+        new BadRequestError(
+          "user:errors.fileUploadFailed",
+          ERROR_CODES.FILE_UPLOAD_ERROR
+        )
       );
       return;
     }
@@ -219,7 +228,7 @@ const blogCoverFileFilter = (
     cb(
       new BadRequestError(
         "blog:errors.fileTypeNotSupported",
-        "FILE_TYPE_NOT_SUPPORTED"
+        ERROR_CODES.FILE_TYPE_NOT_SUPPORTED
       )
     );
     return;
@@ -246,11 +255,19 @@ export const uploadBlogCover: RequestHandler = (req, res, next) => {
 
     if (err instanceof multer.MulterError) {
       if (err.code === "LIMIT_FILE_SIZE") {
-        next(new BadRequestError("blog:errors.fileTooLarge", "FILE_TOO_LARGE"));
+        next(
+          new BadRequestError(
+            "blog:errors.fileTooLarge",
+            ERROR_CODES.FILE_TOO_LARGE
+          )
+        );
         return;
       }
       next(
-        new BadRequestError("blog:errors.fileUploadFailed", "FILE_UPLOAD_ERROR")
+        new BadRequestError(
+          "blog:errors.fileUploadFailed",
+          ERROR_CODES.FILE_UPLOAD_ERROR
+        )
       );
       return;
     }

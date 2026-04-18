@@ -3,6 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 // config
 import { ForbiddenError } from "@/config/responses/error";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
 
 export const adminGuard = (
@@ -14,11 +15,17 @@ export const adminGuard = (
     const { t } = req;
 
     if (!req.user) {
-      throw new ForbiddenError(t("common:errors.forbidden"));
+      throw new ForbiddenError(
+        t("common:errors.forbidden"),
+        ERROR_CODES.AUTH_ADMIN_ONLY
+      );
     }
 
     if (req.user.roles !== AUTHENTICATION_ROLES.ADMIN) {
-      throw new ForbiddenError(t("common:errors.forbidden"));
+      throw new ForbiddenError(
+        t("common:errors.forbidden"),
+        ERROR_CODES.AUTH_ADMIN_ONLY
+      );
     }
 
     next();

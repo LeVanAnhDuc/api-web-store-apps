@@ -25,6 +25,7 @@ import {
   toUpdateContactStatusDto
 } from "./dtos";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { CONTACT_STATUSES } from "@/constants/modules/contact-admin";
 import { buildContactFilter } from "./contact-admin.helper";
 
@@ -99,7 +100,7 @@ export class ContactAdminService {
     if (!doc) {
       throw new NotFoundError(
         "contactAdmin:errors.notFound",
-        "CONTACT_NOT_FOUND"
+        ERROR_CODES.CONTACT_NOT_FOUND
       );
     }
 
@@ -115,7 +116,7 @@ export class ContactAdminService {
     if (!updated) {
       throw new NotFoundError(
         "contactAdmin:errors.notFound",
-        "CONTACT_NOT_FOUND"
+        ERROR_CODES.CONTACT_NOT_FOUND
       );
     }
 

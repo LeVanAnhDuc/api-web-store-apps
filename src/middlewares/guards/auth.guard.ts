@@ -4,6 +4,7 @@ import type { AuthenticationService } from "@/modules/authentication/authenticat
 // config
 import { UnauthorizedError } from "@/config/responses/error";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { verifyAccessToken } from "@/utils/token";
 
 export const authGuard =
@@ -14,26 +15,38 @@ export const authGuard =
       const authHeader = req.headers.authorization;
 
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        throw new UnauthorizedError(t("common:errors.unauthorized"));
+        throw new UnauthorizedError(
+          t("common:errors.unauthorized"),
+          ERROR_CODES.AUTH_MISSING_TOKEN
+        );
       }
 
       const token = authHeader.substring(7);
 
       if (!token) {
-        throw new UnauthorizedError(t("common:errors.unauthorized"));
+        throw new UnauthorizedError(
+          t("common:errors.unauthorized"),
+          ERROR_CODES.AUTH_MISSING_TOKEN
+        );
       }
 
       const payload = verifyAccessToken<JwtTokenPayload>(token);
 
       if (!payload || !payload.userId) {
-        throw new UnauthorizedError(t("common:errors.invalidToken"));
+        throw new UnauthorizedError(
+          t("common:errors.invalidToken"),
+          ERROR_CODES.AUTH_INVALID_TOKEN
+        );
       }
 
       const authId = payload.authId || payload.userId;
       const auth = await authService.findById(authId);
 
       if (!auth) {
-        throw new UnauthorizedError(t("common:errors.unauthorized"));
+        throw new UnauthorizedError(
+          t("common:errors.unauthorized"),
+          ERROR_CODES.AUTH_NOT_FOUND
+        );
       }
 
       if (
@@ -42,7 +55,8 @@ export const authGuard =
         payload.iat < Math.floor(auth.passwordChangedAt.getTime() / 1000)
       ) {
         throw new UnauthorizedError(
-          t("forgotPassword:errors.passwordChangedPleaseLogin")
+          t("forgotPassword:errors.passwordChangedPleaseLogin"),
+          ERROR_CODES.AUTH_PASSWORD_CHANGED
         );
       }
 

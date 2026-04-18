@@ -3,11 +3,15 @@ import { Types } from "mongoose";
 // config
 import { BadRequestError } from "@/config/responses/error";
 // others
+import { ERROR_CODES } from "@/constants/error-code";
 import { EMAIL_FORMAT_PATTERN, EMAIL_VALIDATION } from "./constants";
 
 export const validateEmail = (email: string): void => {
   if (!email || typeof email !== "string") {
-    throw new BadRequestError("Email is required");
+    throw new BadRequestError(
+      "Email is required",
+      ERROR_CODES.VALIDATION_EMAIL_REQUIRED
+    );
   }
 
   const trimmed = email.trim();
@@ -16,21 +20,33 @@ export const validateEmail = (email: string): void => {
     trimmed.length < EMAIL_VALIDATION.MIN_LENGTH ||
     trimmed.length > EMAIL_VALIDATION.MAX_LENGTH
   ) {
-    throw new BadRequestError("Invalid email format");
+    throw new BadRequestError(
+      "Invalid email format",
+      ERROR_CODES.VALIDATION_EMAIL_INVALID
+    );
   }
 
   if (!EMAIL_FORMAT_PATTERN.test(trimmed)) {
-    throw new BadRequestError("Invalid email format");
+    throw new BadRequestError(
+      "Invalid email format",
+      ERROR_CODES.VALIDATION_EMAIL_INVALID
+    );
   }
 };
 
 export const validateObjectId = (id: string, fieldName: string): void => {
   if (!id || typeof id !== "string") {
-    throw new BadRequestError(`${fieldName} is required`);
+    throw new BadRequestError(
+      `${fieldName} is required`,
+      ERROR_CODES.VALIDATION_OBJECT_ID_REQUIRED
+    );
   }
 
   if (!Types.ObjectId.isValid(id)) {
-    throw new BadRequestError(`Invalid ${fieldName} format`);
+    throw new BadRequestError(
+      `Invalid ${fieldName} format`,
+      ERROR_CODES.VALIDATION_OBJECT_ID_INVALID
+    );
   }
 };
 
@@ -39,7 +55,10 @@ export const validateRequiredString = (
   fieldName: string
 ): void => {
   if (!value || typeof value !== "string" || value.trim().length === 0) {
-    throw new BadRequestError(`${fieldName} is required`);
+    throw new BadRequestError(
+      `${fieldName} is required`,
+      ERROR_CODES.VALIDATION_FIELD_REQUIRED
+    );
   }
 };
 
@@ -50,10 +69,16 @@ export const validateStringLength = (
   max: number
 ): void => {
   if (value.length < min) {
-    throw new BadRequestError(`${fieldName} is too short`);
+    throw new BadRequestError(
+      `${fieldName} is too short`,
+      ERROR_CODES.VALIDATION_FIELD_TOO_SHORT
+    );
   }
   if (value.length > max) {
-    throw new BadRequestError(`${fieldName} is too long`);
+    throw new BadRequestError(
+      `${fieldName} is too long`,
+      ERROR_CODES.VALIDATION_FIELD_TOO_LONG
+    );
   }
 };
 
