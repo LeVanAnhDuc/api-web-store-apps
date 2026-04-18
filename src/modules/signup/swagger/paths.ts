@@ -312,7 +312,7 @@ Useful for real-time validation in signup forms.
                   summary: "Email available",
                   value: {
                     timestamp: "2025-01-15T10:30:00.000Z",
-                    route: "/api/v1/auth/signup/check-email/user@example.com",
+                    path: "/api/v1/auth/signup/check-email/user@example.com",
                     data: {
                       available: true
                     }
@@ -322,8 +322,7 @@ Useful for real-time validation in signup forms.
                   summary: "Email taken",
                   value: {
                     timestamp: "2025-01-15T10:30:00.000Z",
-                    route:
-                      "/api/v1/auth/signup/check-email/existing@example.com",
+                    path: "/api/v1/auth/signup/check-email/existing@example.com",
                     data: {
                       available: false
                     }

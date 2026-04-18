@@ -1,5 +1,6 @@
 // types
 import type { Response } from "express";
+import type { ResponseMeta } from "@/types/common";
 // config
 import { STATUS_CODES } from "@/config/http";
 
@@ -12,33 +13,32 @@ interface RequestLike {
 }
 
 abstract class SuccessResponse<T> {
-  route: string;
-  timestamp: string;
   private readonly status: number;
   private readonly message: string;
   private readonly data: T;
+  private readonly meta?: ResponseMeta;
 
   constructor({
-    route,
-    timestamp,
     data,
     status,
-    message
+    message,
+    meta
   }: Partial<SuccessResponsePattern<T>>) {
-    this.timestamp = timestamp;
-    this.route = route;
     this.status = status;
     this.message = message;
     this.data = data;
+    this.meta = meta;
   }
 
   public send = (req: RequestLike, res: Response): void => {
-    res.status(this.status).json({
+    const body: ResponsePattern<T> = {
       timestamp: new Date().toISOString(),
-      route: req.originalUrl,
+      path: req.originalUrl,
       message: this.message,
       data: this.data
-    });
+    };
+    if (this.meta) body.meta = this.meta;
+    res.status(this.status).json(body);
   };
 }
 
@@ -46,9 +46,10 @@ export class OkSuccess<T> extends SuccessResponse<T> {
   constructor({
     message = "",
     status = STATUS_CODES.OK,
-    data = undefined
+    data = undefined,
+    meta
   }: Partial<SuccessResponsePattern<T>>) {
-    super({ message, status, data });
+    super({ message, status, data, meta });
   }
 }
 
@@ -56,9 +57,10 @@ export class CreatedSuccess<T> extends SuccessResponse<T> {
   constructor({
     message = "",
     status = STATUS_CODES.CREATED,
-    data = undefined
+    data = undefined,
+    meta
   }: Partial<SuccessResponsePattern<T>>) {
-    super({ message, status, data });
+    super({ message, status, data, meta });
   }
 }
 

@@ -255,7 +255,7 @@ Incoming Request
   → CORS → Helmet → Body Parser → Cookie Parser → i18n Middleware
   → Rate Limiter → Validation Pipe (bodyPipe / paramsPipe / queryPipe)
   → asyncHandler(controller)
-  → Success: res.json({ timestamp, route, message, data })
+  → Success: res.json({ timestamp, path, message, data, meta? })
   → Error:   next(error) → Global Error Handler → standardized error response
 ```
 
