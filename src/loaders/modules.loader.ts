@@ -77,18 +77,16 @@ export const loadModules = (
 
   // --- Shared infrastructure ---
   const { authService } = createAuthenticationModule();
-  const auth = authGuard(authService);
-  const optionalAuth = optionalAuthGuard(authService);
   const rateLimiter = new RateLimiterMiddleware(redisClient);
 
   // --- Module creation ---
-  const { userRouter, userService } = createUserModule(auth, rateLimiter);
+  const { userRouter, userService } = createUserModule(authGuard, rateLimiter);
 
   const {
     loginHistoryService,
     loginHistoryUserRouter,
     loginHistoryAdminRouter
-  } = createLoginHistoryModule(auth, adminGuard);
+  } = createLoginHistoryModule(authGuard, adminGuard);
 
   const { loginRouter, loginService } = createLoginModule(
     redisClient,
@@ -106,7 +104,7 @@ export const loadModules = (
     rateLimiter
   );
 
-  const { logoutRouter } = createLogoutModule(auth);
+  const { logoutRouter } = createLogoutModule(authGuard);
   const { tokenRouter } = createTokenModule(authService, userService);
 
   const { unlockAccountRouter } = createUnlockAccountModule(
@@ -129,9 +127,9 @@ export const loadModules = (
   );
 
   const { contactAdminRouter, contactAdminQueryAdminRouter } =
-    createContactAdminModule(auth, adminGuard, rateLimiter);
+    createContactAdminModule(authGuard, adminGuard, rateLimiter);
 
-  const { blogRouter } = createBlogModule(auth, optionalAuth);
+  const { blogRouter } = createBlogModule(authGuard, optionalAuthGuard);
 
   // --- Route mounting ---
   mountRoutes(app, {
