@@ -1,6 +1,2 @@
-export {
-  generateAuthTokens,
-  verifyAccessToken,
-  verifyRefreshToken
-} from "./jwt";
+export { verifyAccessToken, verifyRefreshToken } from "./jwt";
 export { generateAuthTokensResponse } from "./auth-response";

@@ -1,29 +1,45 @@
 // types
 import type { AuthTokensResponse } from "@/types/modules/authentication";
 // others
-import { generateAuthTokens } from "./jwt";
+import {
+  generateAccessToken,
+  generateIdToken,
+  generateRefreshToken
+} from "./jwt";
 import { TOKEN_EXPIRY } from "@/constants/modules/token";
 
-export interface GenerateAuthTokensInput {
+export const generateAuthTokensResponse = ({
+  userId,
+  authId,
+  email,
+  roles,
+  fullName,
+  avatar
+}: {
   userId: string;
   authId: string;
   email: string;
   roles: string;
   fullName: string;
   avatar?: string | null;
-}
-
-export const generateAuthTokensResponse = (
-  input: GenerateAuthTokensInput
-): AuthTokensResponse => {
-  const { accessToken, refreshToken, idToken } = generateAuthTokens({
-    sub: input.userId,
-    authId: input.authId,
-    email: input.email,
-    roles: input.roles,
-    name: input.fullName,
-    picture: input.avatar ?? null
-  });
+}): AuthTokensResponse => {
+  const { accessToken, refreshToken, idToken } = {
+    accessToken: generateAccessToken({
+      sub: userId,
+      authId: authId,
+      roles: roles
+    }),
+    refreshToken: generateRefreshToken({
+      sub: userId,
+      authId: authId
+    }),
+    idToken: generateIdToken({
+      sub: userId,
+      name: fullName,
+      email: email,
+      picture: avatar ?? null
+    })
+  };
 
   return {
     accessToken,

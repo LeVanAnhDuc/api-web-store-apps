@@ -2,7 +2,6 @@
 import jwt, { type Secret } from "jsonwebtoken";
 // types
 import type { StringValue } from "ms";
-import type { AuthTokensResponse } from "@/types/modules/authentication";
 // config
 import { ForbiddenError } from "@/config/responses/error";
 import ENV from "@/config/env";
@@ -73,15 +72,6 @@ type AccessTokenInput = Omit<AccessTokenPayload, keyof BaseTokenClaims>;
 type IdTokenInput = Omit<IdTokenPayload, keyof BaseTokenClaims>;
 type RefreshTokenInput = Omit<RefreshTokenPayload, keyof BaseTokenClaims>;
 
-export interface AuthTokenSource {
-  sub: string;
-  authId: string;
-  email: string;
-  roles: string;
-  name: string;
-  picture?: string | null;
-}
-
 export const generateAccessToken = (payload: AccessTokenInput): string =>
   signToken(payload, TOKEN_TYPES.ACCESS);
 
@@ -90,26 +80,6 @@ export const generateRefreshToken = (payload: RefreshTokenInput): string =>
 
 export const generateIdToken = (payload: IdTokenInput): string =>
   signToken(payload, TOKEN_TYPES.ID_TOKEN);
-
-export const generateAuthTokens = (
-  source: AuthTokenSource
-): Omit<AuthTokensResponse, "expiresIn"> => ({
-  accessToken: generateAccessToken({
-    sub: source.sub,
-    authId: source.authId,
-    roles: source.roles
-  }),
-  refreshToken: generateRefreshToken({
-    sub: source.sub,
-    authId: source.authId
-  }),
-  idToken: generateIdToken({
-    sub: source.sub,
-    name: source.name,
-    email: source.email,
-    picture: source.picture ?? null
-  })
-});
 
 export const verifyAccessToken = <T = AccessTokenPayload>(token: string): T =>
   verifyToken<T>(token, TOKEN_TYPES.ACCESS);
