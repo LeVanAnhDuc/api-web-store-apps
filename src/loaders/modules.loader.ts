@@ -19,12 +19,7 @@ import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.
 import { createUserModule } from "@/modules/user/user.module";
 import { createBlogModule } from "@/modules/apps/blog/blog.module";
 // middlewares
-import {
-  authGuard,
-  adminGuard,
-  optionalAuthGuard,
-  RateLimiterMiddleware
-} from "@/middlewares";
+import { RateLimiterMiddleware } from "@/middlewares";
 // others
 import { Logger } from "@/utils/logger";
 
@@ -80,13 +75,13 @@ export const loadModules = (
   const rateLimiter = new RateLimiterMiddleware(redisClient);
 
   // --- Module creation ---
-  const { userRouter, userService } = createUserModule(authGuard, rateLimiter);
+  const { userRouter, userService } = createUserModule(rateLimiter);
 
   const {
     loginHistoryService,
     loginHistoryUserRouter,
     loginHistoryAdminRouter
-  } = createLoginHistoryModule(authGuard, adminGuard);
+  } = createLoginHistoryModule();
 
   const { loginRouter, loginService } = createLoginModule(
     redisClient,
@@ -104,7 +99,7 @@ export const loadModules = (
     rateLimiter
   );
 
-  const { logoutRouter } = createLogoutModule(authGuard);
+  const { logoutRouter } = createLogoutModule();
   const { tokenRouter } = createTokenModule(authService, userService);
 
   const { unlockAccountRouter } = createUnlockAccountModule(
@@ -127,9 +122,9 @@ export const loadModules = (
   );
 
   const { contactAdminRouter, contactAdminQueryAdminRouter } =
-    createContactAdminModule(authGuard, adminGuard, rateLimiter);
+    createContactAdminModule(rateLimiter);
 
-  const { blogRouter } = createBlogModule(authGuard, optionalAuthGuard);
+  const { blogRouter } = createBlogModule();
 
   // --- Route mounting ---
   mountRoutes(app, {

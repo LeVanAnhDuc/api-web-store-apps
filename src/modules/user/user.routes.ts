@@ -1,11 +1,10 @@
 // libs
 import { Router } from "express";
 // types
-import type { RequestHandler } from "express";
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { UserController } from "./user.controller";
 // middlewares
-import { bodyPipe, paramsPipe, uploadAvatar } from "@/middlewares";
+import { authGuard, bodyPipe, paramsPipe, uploadAvatar } from "@/middlewares";
 // validators
 import {
   updateProfileSchema,
@@ -16,7 +15,6 @@ import { asyncHandler } from "@/utils/async-handler";
 
 export const createUserRoutes = (
   controller: UserController,
-  authGuard: RequestHandler,
   rl: RateLimiterMiddleware
 ): Router => {
   const router = Router();

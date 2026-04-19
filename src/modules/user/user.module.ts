@@ -1,5 +1,4 @@
 // types
-import type { RequestHandler } from "express";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
 import { MongoUserRepository } from "./repositories/user.repository";
@@ -8,16 +7,13 @@ import { UserService } from "./user.service";
 import { UserController } from "./user.controller";
 import { createUserRoutes } from "./user.routes";
 
-export const createUserModule = (
-  authGuard: RequestHandler,
-  rateLimiter: RateLimiterMiddleware
-) => {
+export const createUserModule = (rateLimiter: RateLimiterMiddleware) => {
   const userRepo = new MongoUserRepository();
   const userService = new UserService(userRepo);
   const userController = new UserController(userService);
 
   return {
-    userRouter: createUserRoutes(userController, authGuard, rateLimiter),
+    userRouter: createUserRoutes(userController, rateLimiter),
     userService
   };
 };

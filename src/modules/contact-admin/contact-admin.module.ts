@@ -1,5 +1,4 @@
 // types
-import type { RequestHandler } from "express";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
 import { MongoContactRepository } from "./repositories/contact.repository";
@@ -12,8 +11,6 @@ import {
 } from "./contact-admin.routes";
 
 export const createContactAdminModule = (
-  authGuard: RequestHandler,
-  adminGuard: RequestHandler,
   rateLimiter: RateLimiterMiddleware
 ) => {
   const contactRepo = new MongoContactRepository();
@@ -22,10 +19,6 @@ export const createContactAdminModule = (
 
   return {
     contactAdminRouter: createContactRoutes(controller, rateLimiter),
-    contactAdminQueryAdminRouter: createContactAdminRoutes(
-      controller,
-      authGuard,
-      adminGuard
-    )
+    contactAdminQueryAdminRouter: createContactAdminRoutes(controller)
   };
 };

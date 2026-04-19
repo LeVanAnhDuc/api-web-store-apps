@@ -1,5 +1,3 @@
-// types
-import type { RequestHandler } from "express";
 // repositories
 import { MongoBlogRepository } from "./repositories/blog.repository";
 import { MongoBlogTagRepository } from "./repositories/blog-tag.repository";
@@ -15,10 +13,7 @@ import { createBlogRoutes } from "./blog.routes";
 import { createBlogTagsRoutes } from "./sub-modules/tags/blog-tags.routes";
 import { createBlogCategoriesRoutes } from "./sub-modules/categories/blog-categories.routes";
 
-export const createBlogModule = (
-  authGuard: RequestHandler,
-  optionalAuth: RequestHandler
-) => {
+export const createBlogModule = () => {
   const blogRepo = new MongoBlogRepository();
   const tagRepo = new MongoBlogTagRepository();
   const categoryRepo = new MongoBlogCategoryRepository();
@@ -31,14 +26,11 @@ export const createBlogModule = (
   const categoriesController = new BlogCategoriesController(categoriesService);
   const blogController = new BlogController(blogService);
 
-  const tagsRouter = createBlogTagsRoutes(tagsController, authGuard);
-  const categoriesRouter = createBlogCategoriesRoutes(
-    categoriesController,
-    authGuard
-  );
+  const tagsRouter = createBlogTagsRoutes(tagsController);
+  const categoriesRouter = createBlogCategoriesRoutes(categoriesController);
 
   return {
-    blogRouter: createBlogRoutes(blogController, authGuard, optionalAuth, {
+    blogRouter: createBlogRoutes(blogController, {
       tagsRouter,
       categoriesRouter
     })

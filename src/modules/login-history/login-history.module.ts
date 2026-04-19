@@ -1,5 +1,3 @@
-// types
-import type { RequestHandler } from "express";
 // repositories
 import { MongoLoginHistoryRepository } from "./repositories/login-history.repository";
 // others
@@ -10,10 +8,7 @@ import {
   createLoginHistoryAdminRoutes
 } from "./login-history.routes";
 
-export const createLoginHistoryModule = (
-  authGuard: RequestHandler,
-  adminGuard: RequestHandler
-) => {
+export const createLoginHistoryModule = () => {
   const loginHistoryRepo = new MongoLoginHistoryRepository();
   const loginHistoryService = new LoginHistoryService(loginHistoryRepo);
   const loginHistoryController = new LoginHistoryController(
@@ -23,13 +18,10 @@ export const createLoginHistoryModule = (
   return {
     loginHistoryService,
     loginHistoryUserRouter: createLoginHistoryUserRoutes(
-      loginHistoryController,
-      authGuard
+      loginHistoryController
     ),
     loginHistoryAdminRouter: createLoginHistoryAdminRoutes(
-      loginHistoryController,
-      authGuard,
-      adminGuard
+      loginHistoryController
     )
   };
 };

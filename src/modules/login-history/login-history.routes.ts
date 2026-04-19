@@ -1,10 +1,9 @@
 // libs
 import { Router } from "express";
 // types
-import type { RequestHandler } from "express";
 import type { LoginHistoryController } from "./login-history.controller";
 // middlewares
-import { queryPipe } from "@/middlewares";
+import { adminGuard, authGuard, queryPipe } from "@/middlewares";
 // validators
 import {
   loginHistoryQuerySchema,
@@ -14,8 +13,7 @@ import {
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createLoginHistoryUserRoutes = (
-  controller: LoginHistoryController,
-  authGuard: RequestHandler
+  controller: LoginHistoryController
 ): Router => {
   const router = Router();
 
@@ -31,9 +29,7 @@ export const createLoginHistoryUserRoutes = (
 };
 
 export const createLoginHistoryAdminRoutes = (
-  controller: LoginHistoryController,
-  authGuard: RequestHandler,
-  adminGuard: RequestHandler
+  controller: LoginHistoryController
 ): Router => {
   const router = Router();
 

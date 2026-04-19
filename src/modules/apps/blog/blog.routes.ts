@@ -1,11 +1,12 @@
 // libs
 import { Router } from "express";
 // types
-import type { RequestHandler } from "express";
 import type { BlogController } from "./blog.controller";
 // middlewares
 import {
+  authGuard,
   bodyPipe,
+  optionalAuthGuard,
   paramsPipe,
   queryPipe,
   uploadBlogCover
@@ -22,8 +23,6 @@ import { asyncHandler } from "@/utils/async-handler";
 
 export const createBlogRoutes = (
   controller: BlogController,
-  authGuard: RequestHandler,
-  optionalAuth: RequestHandler,
   subModuleRouters: {
     tagsRouter: Router;
     categoriesRouter: Router;
@@ -45,12 +44,16 @@ export const createBlogRoutes = (
 
   router.get(
     "/",
-    optionalAuth,
+    optionalAuthGuard,
     queryPipe(listBlogsQuerySchema),
     asyncHandler(controller.listBlogs)
   );
 
-  router.get("/:slug", optionalAuth, asyncHandler(controller.getBlogBySlug));
+  router.get(
+    "/:slug",
+    optionalAuthGuard,
+    asyncHandler(controller.getBlogBySlug)
+  );
 
   router.patch(
     "/:id",

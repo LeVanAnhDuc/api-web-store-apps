@@ -1,11 +1,16 @@
 // libs
 import { Router } from "express";
 // types
-import type { RequestHandler } from "express";
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ContactAdminController } from "./contact-admin.controller";
 // middlewares
-import { bodyPipe, paramsPipe, queryPipe } from "@/middlewares";
+import {
+  adminGuard,
+  authGuard,
+  bodyPipe,
+  paramsPipe,
+  queryPipe
+} from "@/middlewares";
 // validators
 import {
   submitContactSchema,
@@ -33,9 +38,7 @@ export const createContactRoutes = (
 };
 
 export const createContactAdminRoutes = (
-  controller: ContactAdminController,
-  authGuard: RequestHandler,
-  adminGuard: RequestHandler
+  controller: ContactAdminController
 ): Router => {
   const router = Router();
 
