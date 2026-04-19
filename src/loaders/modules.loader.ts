@@ -82,11 +82,7 @@ export const loadModules = (
   const rateLimiter = new RateLimiterMiddleware(redisClient);
 
   // --- Module creation ---
-  const { userRouter, userService } = createUserModule(
-    auth,
-    rateLimiter,
-    authService
-  );
+  const { userRouter, userService } = createUserModule(auth, rateLimiter);
 
   const {
     loginHistoryService,
@@ -96,7 +92,7 @@ export const loadModules = (
 
   const { loginRouter, loginService } = createLoginModule(
     redisClient,
-    authService,
+    userService,
     loginHistoryService,
     emailDispatcher,
     rateLimiter
@@ -111,11 +107,12 @@ export const loadModules = (
   );
 
   const { logoutRouter } = createLogoutModule(auth);
-  const { tokenRouter } = createTokenModule(authService);
+  const { tokenRouter } = createTokenModule(authService, userService);
 
   const { unlockAccountRouter } = createUnlockAccountModule(
     redisClient,
     authService,
+    userService,
     loginHistoryService,
     loginService,
     emailDispatcher,
@@ -125,6 +122,7 @@ export const loadModules = (
   const { forgotPasswordRouter } = createForgotPasswordModule(
     redisClient,
     authService,
+    userService,
     loginHistoryService,
     emailDispatcher,
     rateLimiter

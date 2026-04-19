@@ -5,6 +5,7 @@ import type {
   UnlockVerifyBody
 } from "@/types/modules/unlock-account";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/login.service";
 import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
@@ -12,7 +13,7 @@ import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { UnlockRequestDto, UnlockVerifyDto } from "./dtos";
 // config
 import ENV from "@/config/env";
-import { BadRequestError, NotFoundError } from "@/config/responses/error";
+import { BadRequestError } from "@/config/responses/error";
 // dtos
 import { toUnlockRequestDto, toUnlockVerifyDto } from "./dtos";
 // others
@@ -36,6 +37,7 @@ const TEMP_PASSWORD_EXPIRY_MINUTES = 15;
 export class UnlockAccountService {
   constructor(
     private readonly authService: AuthenticationService,
+    private readonly userService: UserService,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly loginService: LoginService,
     private readonly unlockAccountRepo: UnlockAccountRepository,
@@ -54,13 +56,15 @@ export class UnlockAccountService {
     await checkCooldown(this.unlockAccountRepo, email, t);
     await checkRateLimit(this.unlockAccountRepo, email, t);
 
-    const auth = await this.authService.findByEmail(email);
+    const result = await this.userService.findByEmailWithAuth(email);
 
-    if (!auth) {
+    if (!result) {
       Logger.warn("Unlock request for non-existent email", { email });
       await this.unlockAccountRepo.setCooldown(email);
       return toUnlockRequestDto();
     }
+
+    const { auth } = result;
 
     if (!auth.isActive) {
       Logger.warn("Unlock request for disabled account", {
@@ -128,9 +132,9 @@ export class UnlockAccountService {
 
     Logger.info("Processing unlock verify", { email });
 
-    const auth = await ensureAuthExists(this.authService, email, t);
+    const { auth, user } = await ensureAuthExists(this.userService, email, t);
 
-    await ensureTempPasswordValid(auth, tempPassword, t);
+    await ensureTempPasswordValid(auth, email, tempPassword, t);
 
     Logger.info("Temp password verified successfully", {
       email,
@@ -156,15 +160,6 @@ export class UnlockAccountService {
       req
     });
 
-    const user = await this.authService.findUserByAuthId(auth._id.toString());
-
-    if (!user) {
-      throw new NotFoundError(
-        "user:errors.notFound",
-        ERROR_CODES.UNLOCK_USER_NOT_FOUND
-      );
-    }
-
     Logger.info("Unlock successful - tokens generated", {
       email,
       authId: auth._id
@@ -174,7 +169,7 @@ export class UnlockAccountService {
       generateAuthTokensResponse({
         userId: user._id.toString(),
         authId: auth._id.toString(),
-        email: auth.email,
+        email: user.email,
         roles: auth.roles,
         fullName: user.fullName,
         avatar: user.avatar ?? null

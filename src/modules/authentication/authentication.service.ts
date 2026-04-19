@@ -4,31 +4,15 @@ import type {
   AuthenticationRecord,
   CreateAuthenticationData
 } from "@/types/modules/authentication";
-import type { UserDocument } from "@/types/modules/user";
 import type { ClientSession } from "mongoose";
 import type { AuthenticationRepository } from "./repositories/authentication.repository";
 // validators
-import {
-  validateEmail,
-  validateObjectId,
-  validateRequiredString
-} from "@/validators/utils";
+import { validateObjectId, validateRequiredString } from "@/validators/utils";
 // others
 import { Logger } from "@/utils/logger";
 
 export class AuthenticationService {
   constructor(private readonly authRepo: AuthenticationRepository) {}
-
-  async findByEmail(email: string): Promise<AuthenticationDocument | null> {
-    validateEmail(email);
-
-    try {
-      return await this.authRepo.findByEmail(email);
-    } catch (error) {
-      Logger.error("Failed to find authentication by email", { email, error });
-      throw error;
-    }
-  }
 
   async findById(authId: string): Promise<AuthenticationDocument | null> {
     validateObjectId(authId, "authId");
@@ -41,36 +25,20 @@ export class AuthenticationService {
     }
   }
 
-  async emailExists(email: string): Promise<boolean> {
-    validateEmail(email);
-
-    try {
-      return await this.authRepo.emailExists(email);
-    } catch (error) {
-      Logger.error("Failed to check email existence", { email, error });
-      throw error;
-    }
-  }
-
   async create(
     data: CreateAuthenticationData,
     session?: ClientSession
   ): Promise<AuthenticationRecord> {
-    validateEmail(data.email);
     validateRequiredString(data.hashedPassword, "hashedPassword");
 
     try {
       const record = await this.authRepo.create(data, session);
       Logger.info("New authentication record created", {
-        authId: record._id.toString(),
-        email: record.email
+        authId: record._id.toString()
       });
       return record;
     } catch (error) {
-      Logger.error("Failed to create authentication record", {
-        email: data.email,
-        error
-      });
+      Logger.error("Failed to create authentication record", { error });
       throw error;
     }
   }
@@ -127,21 +95,6 @@ export class AuthenticationService {
         authId,
         error
       });
-      throw error;
-    }
-  }
-
-  async findUserByAuthId(authId: string): Promise<{
-    _id: UserDocument["_id"];
-    fullName: string;
-    avatar?: string | null;
-  } | null> {
-    validateObjectId(authId, "authId");
-
-    try {
-      return await this.authRepo.findUserByAuthId(authId);
-    } catch (error) {
-      Logger.error("Failed to find user by auth ID", { authId, error });
       throw error;
     }
   }

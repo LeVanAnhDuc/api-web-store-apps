@@ -13,14 +13,12 @@ export const seedUsers = async (): Promise<void> => {
   let skippedCount = 0;
 
   for (const testUser of TEST_USERS) {
-    const existingAuthentication = await AuthenticationModel.findOne({
-      email: testUser.authentication.email
+    const existingUser = await UserModel.findOne({
+      email: testUser.user.email
     });
 
-    if (existingAuthentication) {
-      Logger.warn(
-        `User already exists: ${testUser.authentication.email}, skipping...`
-      );
+    if (existingUser) {
+      Logger.warn(`User already exists: ${testUser.user.email}, skipping...`);
       skippedCount++;
       continue;
     }
@@ -28,7 +26,6 @@ export const seedUsers = async (): Promise<void> => {
     const hashedPassword = hashValue(testUser.authentication.password);
 
     const authentication = await AuthenticationModel.create({
-      email: testUser.authentication.email,
       password: hashedPassword,
       roles: testUser.authentication.roles,
       verifiedEmail: testUser.authentication.verifiedEmail,
@@ -37,12 +34,13 @@ export const seedUsers = async (): Promise<void> => {
 
     await UserModel.create({
       authId: authentication._id,
+      email: testUser.user.email,
       fullName: testUser.user.fullName,
       gender: testUser.user.gender,
       dateOfBirth: testUser.user.dateOfBirth
     });
 
-    Logger.info(`Created user: ${testUser.authentication.email}`);
+    Logger.info(`Created user: ${testUser.user.email}`);
     createdCount++;
   }
 
@@ -54,15 +52,13 @@ export const seedUsers = async (): Promise<void> => {
 export const clearUsers = async (): Promise<void> => {
   Logger.info("Clearing all users...");
 
-  const testEmails = TEST_USERS.map((u) => u.authentication.email);
+  const testEmails = TEST_USERS.map((u) => u.user.email);
 
-  const authentications = await AuthenticationModel.find({
-    email: { $in: testEmails }
-  });
-  const authIds = authentications.map((a) => a._id);
+  const users = await UserModel.find({ email: { $in: testEmails } });
+  const authIds = users.map((u) => u.authId);
 
-  await UserModel.deleteMany({ authId: { $in: authIds } });
-  await AuthenticationModel.deleteMany({ email: { $in: testEmails } });
+  await UserModel.deleteMany({ email: { $in: testEmails } });
+  await AuthenticationModel.deleteMany({ _id: { $in: authIds } });
 
-  Logger.info(`Cleared ${authentications.length} test users`);
+  Logger.info(`Cleared ${users.length} test users`);
 };

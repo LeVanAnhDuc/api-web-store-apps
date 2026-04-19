@@ -5,8 +5,9 @@ import type {
 } from "@/types/modules/forgot-password";
 import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
+import type { UserWithAuth } from "@/types/modules/user";
 import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
 import type { MagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
 // config
@@ -66,13 +67,13 @@ export async function ensureOtpResendLimitNotExceeded(
 // ──────────────────────────────────────────────
 
 export async function ensureAuthExists(
-  authService: AuthenticationService,
+  userService: UserService,
   email: string,
   t: TranslateFunction
-): Promise<AuthenticationDocument> {
-  const auth = await authService.findByEmail(email);
+): Promise<UserWithAuth> {
+  const result = await userService.findByEmailWithAuth(email);
 
-  if (!auth) {
+  if (!result) {
     Logger.warn("Forgot password - authentication not found", { email });
     throw new UnauthorizedError(
       t("common:errors.unauthorized"),
@@ -80,7 +81,7 @@ export async function ensureAuthExists(
     );
   }
 
-  return auth;
+  return result;
 }
 
 export async function ensureOtpNotLocked(

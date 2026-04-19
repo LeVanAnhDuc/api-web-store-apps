@@ -3,69 +3,55 @@ import path from "path";
 // types
 import type {
   CreateUserData,
+  UserDocument,
   UserRecord,
-  UpdateProfileData
+  UpdateProfileData,
+  UserWithAuth
 } from "@/types/modules/user";
 import type { ClientSession } from "mongoose";
 import type { UserRepository } from "./repositories/user.repository";
 import type { MyProfileDto, PublicProfileDto, UploadAvatarDto } from "./dtos";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 // config
 import { BadRequestError, NotFoundError } from "@/config/responses/error";
+// validators
+import { validateEmail, validateObjectId } from "@/validators/utils";
 // dtos
 import { toMyProfileDto, toPublicProfileDto, toUploadAvatarDto } from "./dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
+import { Logger } from "@/utils/logger";
 import { buildAvatarUrl } from "./user.helper";
 
 export class UserService {
-  constructor(
-    private readonly userRepo: UserRepository,
-    private readonly authService: AuthenticationService
-  ) {}
+  constructor(private readonly userRepo: UserRepository) {}
 
-  async getMyProfile(userId: string, authId: string): Promise<MyProfileDto> {
-    const [user, auth] = await Promise.all([
-      this.userRepo.findById(userId),
-      this.authService.findById(authId)
-    ]);
+  async getMyProfile(userId: string): Promise<MyProfileDto> {
+    const user = await this.userRepo.findById(userId);
 
-    if (!user || !auth) {
+    if (!user) {
       throw new NotFoundError(
         "user:errors.notFound",
         ERROR_CODES.USER_NOT_FOUND
       );
     }
 
-    return toMyProfileDto(
-      user,
-      auth.email,
-      buildAvatarUrl(user.avatar ?? null)
-    );
+    return toMyProfileDto(user, buildAvatarUrl(user.avatar ?? null));
   }
 
   async updateMyProfile(
     userId: string,
-    authId: string,
     data: Partial<UpdateProfileData>
   ): Promise<MyProfileDto> {
-    const [user, auth] = await Promise.all([
-      this.userRepo.updateById(userId, data),
-      this.authService.findById(authId)
-    ]);
+    const user = await this.userRepo.updateById(userId, data);
 
-    if (!user || !auth) {
+    if (!user) {
       throw new NotFoundError(
         "user:errors.notFound",
         ERROR_CODES.USER_NOT_FOUND
       );
     }
 
-    return toMyProfileDto(
-      user,
-      auth.email,
-      buildAvatarUrl(user.avatar ?? null)
-    );
+    return toMyProfileDto(user, buildAvatarUrl(user.avatar ?? null));
   }
 
   async updateAvatar(
@@ -106,5 +92,43 @@ export class UserService {
     session?: ClientSession
   ): Promise<UserRecord> {
     return this.userRepo.createProfile(data, session);
+  }
+
+  async emailExists(email: string): Promise<boolean> {
+    validateEmail(email);
+
+    try {
+      return await this.userRepo.emailExists(email);
+    } catch (error) {
+      Logger.error("Failed to check email existence", { email, error });
+      throw error;
+    }
+  }
+
+  async findByEmailWithAuth(email: string): Promise<UserWithAuth | null> {
+    validateEmail(email);
+
+    try {
+      return await this.userRepo.findByEmailWithAuth(email);
+    } catch (error) {
+      Logger.error("Failed to find auth by email", { email, error });
+      throw error;
+    }
+  }
+
+  async findByAuthId(authId: string): Promise<{
+    _id: UserDocument["_id"];
+    email: string;
+    fullName: string;
+    avatar?: string | null;
+  } | null> {
+    validateObjectId(authId, "authId");
+
+    try {
+      return await this.userRepo.findByAuthId(authId);
+    } catch (error) {
+      Logger.error("Failed to find user by auth ID", { authId, error });
+      throw error;
+    }
   }
 }

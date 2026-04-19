@@ -17,8 +17,8 @@ export class UserController {
     req: GetMyProfileRequest,
     res: Response
   ): Promise<void> => {
-    const { sub: userId, authId } = req.user;
-    const data = await this.service.getMyProfile(userId, authId);
+    const { sub: userId } = req.user;
+    const data = await this.service.getMyProfile(userId);
     new OkSuccess({ data, message: "user:success.getProfile" }).send(req, res);
   };
 
@@ -26,8 +26,8 @@ export class UserController {
     req: UpdateProfileRequest,
     res: Response
   ): Promise<void> => {
-    const { sub: userId, authId } = req.user;
-    const data = await this.service.updateMyProfile(userId, authId, req.body);
+    const { sub: userId } = req.user;
+    const data = await this.service.updateMyProfile(userId, req.body);
     new OkSuccess({ data, message: "user:success.updateProfile" }).send(
       req,
       res

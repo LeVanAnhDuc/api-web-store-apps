@@ -8,6 +8,7 @@ import type {
 } from "@/types/modules/forgot-password";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
 import type { MagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
@@ -52,6 +53,7 @@ import { FORGOT_PASSWORD_OTP_CONFIG } from "@/constants/modules/forgot-password"
 export class ForgotPasswordService {
   constructor(
     private readonly authService: AuthenticationService,
+    private readonly userService: UserService,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly otpRepo: OtpForgotPasswordRepository,
     private readonly magicLinkRepo: MagicLinkForgotPasswordRepository,
@@ -68,9 +70,9 @@ export class ForgotPasswordService {
     await ensureOtpCooldownExpired(this.otpRepo, email, t);
     await ensureOtpResendLimitNotExceeded(this.otpRepo, email, t);
 
-    const auth = await this.authService.findByEmail(email);
+    const result = await this.userService.findByEmailWithAuth(email);
 
-    if (!auth || !auth.isActive) {
+    if (!result || !result.auth.isActive) {
       Logger.info(
         "Forgot password OTP - email not found or inactive (fake success)",
         { email }
@@ -114,7 +116,7 @@ export class ForgotPasswordService {
 
     await ensureOtpNotLocked(this.otpRepo, email, t);
 
-    const auth = await ensureAuthExists(this.authService, email, t);
+    const { auth } = await ensureAuthExists(this.userService, email, t);
 
     const isValid = await this.otpRepo.verify(email, otp);
 
@@ -151,9 +153,9 @@ export class ForgotPasswordService {
     await ensureMagicLinkCooldownExpired(this.magicLinkRepo, email, t);
     await ensureMagicLinkResendLimitNotExceeded(this.magicLinkRepo, email, t);
 
-    const auth = await this.authService.findByEmail(email);
+    const result = await this.userService.findByEmailWithAuth(email);
 
-    if (!auth || !auth.isActive) {
+    if (!result || !result.auth.isActive) {
       Logger.info(
         "Forgot password magic link - email not found or inactive (fake success)",
         { email }
@@ -193,7 +195,7 @@ export class ForgotPasswordService {
 
     Logger.info("Forgot password magic link verification initiated", { email });
 
-    const auth = await ensureAuthExists(this.authService, email, t);
+    const { auth } = await ensureAuthExists(this.userService, email, t);
 
     const isValid = await this.magicLinkRepo.verifyToken(email, token);
 
@@ -238,7 +240,7 @@ export class ForgotPasswordService {
       );
     }
 
-    const auth = await ensureAuthExists(this.authService, email, t);
+    const { auth } = await ensureAuthExists(this.userService, email, t);
 
     const hashedPassword = hashValue(newPassword);
     await this.authService.updatePassword(auth._id.toString(), hashedPassword);

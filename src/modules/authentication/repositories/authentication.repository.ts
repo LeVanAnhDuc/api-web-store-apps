@@ -4,19 +4,15 @@ import type {
   AuthenticationRecord,
   CreateAuthenticationData
 } from "@/types/modules/authentication";
-import type { UserDocument } from "@/types/modules/user";
 import type { ClientSession } from "mongoose";
 // models
 import AuthenticationModel from "@/models/authentication";
-import UserModel from "@/models/user";
 // others
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 export type AuthenticationRepository = {
-  findByEmail(email: string): Promise<AuthenticationDocument | null>;
   findById(authId: string): Promise<AuthenticationDocument | null>;
-  emailExists(email: string): Promise<boolean>;
   create(
     data: CreateAuthenticationData,
     session?: ClientSession
@@ -32,32 +28,12 @@ export type AuthenticationRepository = {
     hashedPassword: string,
     session?: ClientSession
   ): Promise<void>;
-  findUserByAuthId(authId: string): Promise<{
-    _id: UserDocument["_id"];
-    fullName: string;
-    avatar?: string | null;
-  } | null>;
 };
 
 export class MongoAuthenticationRepository implements AuthenticationRepository {
-  async findByEmail(email: string): Promise<AuthenticationDocument | null> {
-    return asyncDatabaseHandler("findByEmail", () =>
-      AuthenticationModel.findOne({ email })
-        .lean<AuthenticationDocument>()
-        .exec()
-    );
-  }
-
   async findById(authId: string): Promise<AuthenticationDocument | null> {
     return asyncDatabaseHandler("findById", () =>
       AuthenticationModel.findById(authId).lean<AuthenticationDocument>().exec()
-    );
-  }
-
-  async emailExists(email: string): Promise<boolean> {
-    return asyncDatabaseHandler(
-      "emailExists",
-      async () => !!(await AuthenticationModel.exists({ email }))
     );
   }
 
@@ -69,7 +45,6 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
       const [authentication] = await AuthenticationModel.create(
         [
           {
-            email: data.email,
             password: data.hashedPassword,
             verifiedEmail: true,
             roles: AUTHENTICATION_ROLES.USER,
@@ -81,7 +56,6 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
 
       return {
         _id: authentication._id,
-        email: authentication.email,
         roles: authentication.roles
       };
     });
@@ -125,23 +99,6 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
         },
         { session }
       ).exec()
-    );
-  }
-
-  async findUserByAuthId(authId: string): Promise<{
-    _id: UserDocument["_id"];
-    fullName: string;
-    avatar?: string | null;
-  } | null> {
-    return asyncDatabaseHandler("findUserByAuthId", () =>
-      UserModel.findOne({ authId })
-        .select("_id fullName avatar")
-        .lean<{
-          _id: UserDocument["_id"];
-          fullName: string;
-          avatar?: string | null;
-        }>()
-        .exec()
     );
   }
 }

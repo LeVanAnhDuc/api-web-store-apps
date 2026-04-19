@@ -1,7 +1,6 @@
 // types
 import type { RequestHandler } from "express";
 import type { RateLimiterMiddleware } from "@/middlewares";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 // repositories
 import { MongoUserRepository } from "./repositories/user.repository";
 // others
@@ -11,11 +10,10 @@ import { createUserRoutes } from "./user.routes";
 
 export const createUserModule = (
   authGuard: RequestHandler,
-  rateLimiter: RateLimiterMiddleware,
-  authService: AuthenticationService
+  rateLimiter: RateLimiterMiddleware
 ) => {
   const userRepo = new MongoUserRepository();
-  const userService = new UserService(userRepo, authService);
+  const userService = new UserService(userRepo);
   const userController = new UserController(userService);
 
   return {

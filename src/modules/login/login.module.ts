@@ -1,6 +1,6 @@
 // types
 import type { RedisClientType } from "redis";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
@@ -15,7 +15,7 @@ import { createLoginRoutes } from "./login.routes";
 
 export const createLoginModule = (
   redisClient: RedisClientType,
-  authService: AuthenticationService,
+  userService: UserService,
   loginHistorySvc: LoginHistoryService,
   emailDispatcher: EmailDispatcher,
   rateLimiter: RateLimiterMiddleware
@@ -25,7 +25,7 @@ export const createLoginModule = (
   const failedAttemptsRepo = new RedisFailedAttemptsRepository(redisClient);
 
   const loginService = new LoginService(
-    authService,
+    userService,
     loginHistorySvc,
     otpLoginRepo,
     magicLinkLoginRepo,

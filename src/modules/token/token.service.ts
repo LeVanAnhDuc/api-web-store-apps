@@ -1,6 +1,7 @@
 // types
 import type { RefreshTokenDto } from "./dtos";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 // config
 import { UnauthorizedError, ForbiddenError } from "@/config/responses/error";
 // dtos
@@ -11,7 +12,10 @@ import { generateAuthTokensResponse, verifyRefreshToken } from "@/utils/token";
 import { Logger } from "@/utils/logger";
 
 export class TokenService {
-  constructor(private readonly authService: AuthenticationService) {}
+  constructor(
+    private readonly authService: AuthenticationService,
+    private readonly userService: UserService
+  ) {}
 
   async refreshAccessToken(
     refreshToken: string | undefined,
@@ -38,7 +42,10 @@ export class TokenService {
       );
     }
 
-    const auth = await this.authService.findById(payload.authId);
+    const [auth, user] = await Promise.all([
+      this.authService.findById(payload.authId),
+      this.userService.findByAuthId(payload.authId)
+    ]);
 
     if (!auth || !auth.isActive) {
       Logger.warn("Token refresh rejected - account missing or inactive", {
@@ -67,8 +74,6 @@ export class TokenService {
       );
     }
 
-    const user = await this.authService.findUserByAuthId(auth._id.toString());
-
     if (!user) {
       Logger.warn("Token refresh rejected - user profile not found", {
         authId: payload.authId
@@ -82,7 +87,7 @@ export class TokenService {
     const authTokensResponse = generateAuthTokensResponse({
       userId: user._id.toString(),
       authId: auth._id.toString(),
-      email: auth.email,
+      email: user.email,
       roles: auth.roles,
       fullName: user.fullName,
       avatar: user.avatar ?? null

@@ -1,6 +1,7 @@
 // types
 import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/login.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
@@ -15,6 +16,7 @@ import { createUnlockAccountRoutes } from "./unlock-account.routes";
 export const createUnlockAccountModule = (
   redisClient: RedisClientType,
   authService: AuthenticationService,
+  userService: UserService,
   loginHistorySvc: LoginHistoryService,
   loginService: LoginService,
   emailDispatcher: EmailDispatcher,
@@ -24,6 +26,7 @@ export const createUnlockAccountModule = (
 
   const unlockAccountService = new UnlockAccountService(
     authService,
+    userService,
     loginHistorySvc,
     loginService,
     unlockAccountRepo,

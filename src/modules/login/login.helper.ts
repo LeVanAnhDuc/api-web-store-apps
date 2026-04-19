@@ -1,18 +1,16 @@
 // types
 import type { AuthenticationDocument } from "@/types/modules/authentication";
+import type { UserDocument } from "@/types/modules/user";
 import type { LoginMethod } from "@/types/modules/login";
 import type { Request } from "express";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
+import type { UserWithAuth } from "@/types/modules/user";
 import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { FailedAttemptsRepository } from "./repositories/failed-attempts.repository";
 import type { LoginResponseDto } from "./dtos";
 // config
-import {
-  BadRequestError,
-  NotFoundError,
-  UnauthorizedError
-} from "@/config/responses/error";
+import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
 // dtos
 import { toLoginResponseDto } from "./dtos";
 // others
@@ -29,37 +27,27 @@ import { LOGIN_LOCKOUT, LOGIN_OTP_CONFIG } from "@/constants/modules/login";
 
 export async function completeSuccessfulLogin(
   loginHistoryService: LoginHistoryService,
-  authService: AuthenticationService,
   {
-    email,
     auth,
+    user,
     loginMethod,
     req
   }: {
-    email: string;
     auth: AuthenticationDocument;
+    user: UserDocument;
     loginMethod: LoginMethod;
     req: Request;
   }
 ): Promise<LoginResponseDto> {
   loginHistoryService.recordSuccessfulLogin({
     userId: auth._id,
-    usernameAttempted: email,
+    usernameAttempted: user.email,
     loginMethod,
     req
   });
 
-  const user = await authService.findUserByAuthId(auth._id.toString());
-
-  if (!user) {
-    throw new NotFoundError(
-      "user:errors.notFound",
-      ERROR_CODES.LOGIN_USER_NOT_FOUND
-    );
-  }
-
   Logger.info("Login successful", {
-    email,
+    email: user.email,
     userId: user._id.toString(),
     method: loginMethod
   });
@@ -68,7 +56,7 @@ export async function completeSuccessfulLogin(
     generateAuthTokensResponse({
       userId: user._id.toString(),
       authId: auth._id.toString(),
-      email: auth.email,
+      email: user.email,
       roles: auth.roles,
       fullName: user.fullName,
       avatar: user.avatar ?? null
@@ -103,13 +91,13 @@ export async function ensureCooldownExpired<
 }
 
 export async function ensureAuthenticationExists(
-  authService: AuthenticationService,
+  userService: UserService,
   email: string,
   t: TranslateFunction
-): Promise<AuthenticationDocument> {
-  const auth = await authService.findByEmail(email);
+): Promise<UserWithAuth> {
+  const result = await userService.findByEmailWithAuth(email);
 
-  if (!auth) {
+  if (!result) {
     Logger.warn("Authentication not found", { email });
     throw new UnauthorizedError(
       t("login:errors.invalidEmail"),
@@ -117,15 +105,15 @@ export async function ensureAuthenticationExists(
     );
   }
 
-  return auth;
+  return result;
 }
 
 export async function validateAuthenticationForLogin(
-  authService: AuthenticationService,
+  userService: UserService,
   email: string,
   t: TranslateFunction
 ): Promise<void> {
-  const auth = await ensureAuthenticationExists(authService, email, t);
+  const { auth } = await ensureAuthenticationExists(userService, email, t);
 
   if (!auth.isActive) {
     Logger.warn("Account inactive", { email });
@@ -179,12 +167,12 @@ export async function ensureLoginNotLocked(
 
 export function ensureAccountExists(
   loginHistoryService: LoginHistoryService,
-  auth: AuthenticationDocument | null,
+  result: UserWithAuth | null,
   email: string,
   req: Request,
   t: TranslateFunction
-): asserts auth is AuthenticationDocument {
-  if (auth) return;
+): asserts result is UserWithAuth {
+  if (result) return;
 
   loginHistoryService.recordFailedLogin({
     userId: null,

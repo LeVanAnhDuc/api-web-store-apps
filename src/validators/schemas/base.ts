@@ -18,6 +18,8 @@ import { getDateOfBirthBounds } from "@/utils/date";
 const GENDER_VALUES = Object.values(GENDERS);
 
 export const emailSchema = Joi.string()
+  .trim()
+  .lowercase()
   .email()
   .min(EMAIL_VALIDATION.MIN_LENGTH)
   .max(EMAIL_VALIDATION.MAX_LENGTH)

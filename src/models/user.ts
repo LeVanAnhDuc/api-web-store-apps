@@ -6,7 +6,9 @@ import type { UserDocument } from "@/types/modules/user";
 import {
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN,
-  SAFE_ADDRESS_PATTERN
+  SAFE_ADDRESS_PATTERN,
+  EMAIL_FORMAT_PATTERN,
+  SAFE_EMAIL_PATTERN
 } from "@/validators/constants";
 // others
 import { GENDERS } from "@/constants/modules/user";
@@ -21,6 +23,24 @@ const UserSchema = new Schema<UserDocument>(
       ref: AUTHENTICATION,
       required: [true, "Auth ID is required"],
       unique: true
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      trim: true,
+      lowercase: true,
+      validate: {
+        validator: function (email: string) {
+          if (!EMAIL_FORMAT_PATTERN.test(email)) {
+            return false;
+          }
+          if (!SAFE_EMAIL_PATTERN.test(email)) {
+            return false;
+          }
+          return true;
+        },
+        message: "Please provide a valid email address"
+      }
     },
     fullName: {
       type: String,
@@ -71,6 +91,13 @@ const UserSchema = new Schema<UserDocument>(
 
 UserSchema.index({ authId: 1 });
 UserSchema.index({ phone: 1 });
+UserSchema.index(
+  { email: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { email: { $type: "string" } }
+  }
+);
 
 UserSchema.virtual("auth", {
   ref: AUTHENTICATION,

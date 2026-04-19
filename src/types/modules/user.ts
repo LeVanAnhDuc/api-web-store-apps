@@ -1,6 +1,7 @@
 // types
 import type { Request } from "express";
 import type { Schema } from "mongoose";
+import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { GENDERS } from "@/constants/modules/user";
 
 export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
@@ -8,6 +9,7 @@ export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
 export interface UserDocument {
   _id: Schema.Types.ObjectId;
   authId: Schema.Types.ObjectId;
+  email: string;
   fullName: string;
   phone?: string;
   avatar?: string;
@@ -20,6 +22,7 @@ export interface UserDocument {
 
 export interface CreateUserData {
   authId: Schema.Types.ObjectId;
+  email: string;
   fullName: string;
   gender: Gender;
   dateOfBirth: Date;
@@ -27,6 +30,7 @@ export interface CreateUserData {
 
 export interface UserRecord {
   _id: Schema.Types.ObjectId;
+  email: string;
   fullName: string;
 }
 
@@ -43,6 +47,11 @@ export interface PublicUserRecord {
   fullName: string;
   avatar?: string;
   gender?: Gender;
+}
+
+export interface UserWithAuth {
+  user: UserDocument;
+  auth: AuthenticationDocument;
 }
 
 export interface GetMyProfileRequest extends Omit<Request, "user"> {

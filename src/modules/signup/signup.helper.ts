@@ -27,11 +27,11 @@ const LOCKOUT_DURATION_MINUTES = OTP_CONFIG.LOCKOUT_DURATION_MINUTES;
 // ──────────────────────────────────────────────
 
 export async function ensureEmailAvailable(
-  authService: AuthenticationService,
+  userService: UserService,
   email: string,
   t: TranslateFunction
 ): Promise<void> {
-  const exists = await authService.emailExists(email);
+  const exists = await userService.emailExists(email);
 
   if (exists) {
     Logger.warn("Email already exists", { email });
@@ -160,7 +160,7 @@ export async function createUserAccount(
   try {
     const result = await session.withTransaction(async () => {
       const hashedPassword = hashValue(password);
-      const auth = await authService.create({ email, hashedPassword }, session);
+      const auth = await authService.create({ hashedPassword }, session);
       Logger.debug("Auth record created", {
         email,
         authId: auth._id.toString()
@@ -169,6 +169,7 @@ export async function createUserAccount(
       const user = await userService.createProfile(
         {
           authId: auth._id,
+          email,
           fullName,
           gender,
           dateOfBirth: new Date(dateOfBirth)

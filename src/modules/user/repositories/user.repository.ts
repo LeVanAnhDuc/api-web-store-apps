@@ -4,8 +4,10 @@ import type {
   CreateUserData,
   UserRecord,
   UpdateProfileData,
-  PublicUserRecord
+  PublicUserRecord,
+  UserWithAuth
 } from "@/types/modules/user";
+import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { ClientSession } from "mongoose";
 // models
 import UserModel from "@/models/user";
@@ -18,12 +20,20 @@ export type UserRepository = {
     session?: ClientSession
   ): Promise<UserRecord>;
   findById(userId: string): Promise<UserDocument | null>;
+  findByAuthId(authId: string): Promise<{
+    _id: UserDocument["_id"];
+    email: string;
+    fullName: string;
+    avatar?: string | null;
+  } | null>;
   updateById(
     userId: string,
     data: Partial<UpdateProfileData>
   ): Promise<UserDocument | null>;
   updateAvatar(userId: string, avatarPath: string): Promise<void>;
   findPublicById(userId: string): Promise<PublicUserRecord | null>;
+  emailExists(email: string): Promise<boolean>;
+  findByEmailWithAuth(email: string): Promise<UserWithAuth | null>;
 };
 
 export class MongoUserRepository implements UserRepository {
@@ -36,6 +46,7 @@ export class MongoUserRepository implements UserRepository {
         [
           {
             authId: data.authId,
+            email: data.email,
             fullName: data.fullName,
             gender: data.gender,
             dateOfBirth: data.dateOfBirth
@@ -44,15 +55,36 @@ export class MongoUserRepository implements UserRepository {
         { session }
       );
 
-      return { _id: user._id, fullName: user.fullName };
+      return { _id: user._id, email: user.email, fullName: user.fullName };
     });
   }
 
   async findById(userId: string): Promise<UserDocument | null> {
     return asyncDatabaseHandler("findById", () =>
       UserModel.findById(userId)
-        .select("fullName phone avatar address dateOfBirth gender createdAt")
+        .select(
+          "email fullName phone avatar address dateOfBirth gender createdAt"
+        )
         .lean<UserDocument>()
+        .exec()
+    );
+  }
+
+  async findByAuthId(authId: string): Promise<{
+    _id: UserDocument["_id"];
+    email: string;
+    fullName: string;
+    avatar?: string | null;
+  } | null> {
+    return asyncDatabaseHandler("findByAuthId", () =>
+      UserModel.findOne({ authId })
+        .select("_id email fullName avatar")
+        .lean<{
+          _id: UserDocument["_id"];
+          email: string;
+          fullName: string;
+          avatar?: string | null;
+        }>()
         .exec()
     );
   }
@@ -63,7 +95,9 @@ export class MongoUserRepository implements UserRepository {
   ): Promise<UserDocument | null> {
     return asyncDatabaseHandler("updateById", () =>
       UserModel.findByIdAndUpdate(userId, { $set: data }, { new: true })
-        .select("fullName phone avatar address dateOfBirth gender createdAt")
+        .select(
+          "email fullName phone avatar address dateOfBirth gender createdAt"
+        )
         .lean<UserDocument>()
         .exec()
     );
@@ -82,5 +116,37 @@ export class MongoUserRepository implements UserRepository {
         .lean<PublicUserRecord>()
         .exec()
     );
+  }
+
+  async emailExists(email: string): Promise<boolean> {
+    return asyncDatabaseHandler(
+      "emailExists",
+      async () => !!(await UserModel.exists({ email }))
+    );
+  }
+
+  async findByEmailWithAuth(email: string): Promise<UserWithAuth | null> {
+    return asyncDatabaseHandler("findByEmailWithAuth", async () => {
+      type Joined = UserDocument & { auth: AuthenticationDocument };
+
+      const [result] = await UserModel.aggregate<Joined>([
+        { $match: { email } },
+        {
+          $lookup: {
+            from: "auths",
+            localField: "authId",
+            foreignField: "_id",
+            as: "auth"
+          }
+        },
+        { $unwind: "$auth" },
+        { $limit: 1 }
+      ]).exec();
+
+      if (!result) return null;
+
+      const { auth, ...user } = result;
+      return { user: user as UserDocument, auth };
+    });
   }
 }

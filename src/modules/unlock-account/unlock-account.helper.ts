@@ -2,7 +2,8 @@
 import crypto from "crypto";
 // types
 import type { AuthenticationDocument } from "@/types/modules/authentication";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
+import type { UserWithAuth } from "@/types/modules/user";
 import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
 // config
 import {
@@ -64,13 +65,13 @@ export async function checkRateLimit(
 }
 
 export async function ensureAuthExists(
-  authService: AuthenticationService,
+  userService: UserService,
   email: string,
   t: TranslateFunction
-): Promise<AuthenticationDocument> {
-  const auth = await authService.findByEmail(email);
+): Promise<UserWithAuth> {
+  const result = await userService.findByEmailWithAuth(email);
 
-  if (!auth) {
+  if (!result) {
     Logger.warn("Unlock verify failed - account not found", { email });
     throw new UnauthorizedError(
       t("unlockAccount:errors.invalidTempPassword"),
@@ -78,17 +79,18 @@ export async function ensureAuthExists(
     );
   }
 
-  return auth;
+  return result;
 }
 
 export async function ensureTempPasswordValid(
   auth: AuthenticationDocument,
+  email: string,
   tempPassword: string,
   t: TranslateFunction
 ): Promise<void> {
   if (!auth.tempPasswordHash) {
     Logger.warn("Unlock verify failed - no temp password set", {
-      email: auth.email,
+      email,
       authId: auth._id
     });
     throw new UnauthorizedError(
@@ -99,7 +101,7 @@ export async function ensureTempPasswordValid(
 
   if (!auth.tempPasswordExpAt || auth.tempPasswordExpAt < new Date()) {
     Logger.warn("Unlock verify failed - temp password expired", {
-      email: auth.email,
+      email,
       authId: auth._id,
       expiredAt: auth.tempPasswordExpAt
     });
@@ -111,7 +113,7 @@ export async function ensureTempPasswordValid(
 
   if (auth.tempPasswordUsed) {
     Logger.warn("Unlock verify failed - temp password already used", {
-      email: auth.email,
+      email,
       authId: auth._id
     });
     throw new UnauthorizedError(
@@ -123,7 +125,7 @@ export async function ensureTempPasswordValid(
   const isValid = await isValidHashedValue(tempPassword, auth.tempPasswordHash);
   if (!isValid) {
     Logger.warn("Unlock verify failed - invalid temp password", {
-      email: auth.email,
+      email,
       authId: auth._id
     });
     throw new UnauthorizedError(

@@ -70,7 +70,7 @@ export class SignupService {
     Logger.info("SendOtp initiated", { email });
 
     await ensureCooldownExpired(this.otpSignupRepo, email, t);
-    await ensureEmailAvailable(this.authService, email, t);
+    await ensureEmailAvailable(this.userService, email, t);
 
     const otp = await createAndStoreOtp(
       this.otpSignupRepo,
@@ -157,7 +157,7 @@ export class SignupService {
       );
     }
 
-    await ensureEmailAvailable(this.authService, email, t);
+    await ensureEmailAvailable(this.userService, email, t);
 
     const otp = await createAndStoreOtp(
       this.otpSignupRepo,
@@ -218,7 +218,7 @@ export class SignupService {
       );
     }
 
-    await ensureEmailAvailable(this.authService, email, t);
+    await ensureEmailAvailable(this.userService, email, t);
 
     const account = await createUserAccount(
       this.authService,
@@ -258,7 +258,7 @@ export class SignupService {
 
     Logger.info("CheckEmail initiated", { email });
 
-    const exists = await this.authService.emailExists(email);
+    const exists = await this.userService.emailExists(email);
 
     Logger.info("CheckEmail completed", { email });
 

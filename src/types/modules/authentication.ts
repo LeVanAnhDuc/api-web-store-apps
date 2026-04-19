@@ -7,7 +7,6 @@ export type AuthenticationRole =
 
 export interface AuthenticationDocument {
   _id: Schema.Types.ObjectId;
-  email: string;
   password: string;
   verifiedEmail: boolean;
   roles: AuthenticationRole;
@@ -22,13 +21,11 @@ export interface AuthenticationDocument {
 }
 
 export interface CreateAuthenticationData {
-  email: string;
   hashedPassword: string;
 }
 
 export interface AuthenticationRecord {
   _id: Schema.Types.ObjectId;
-  email: string;
   roles: string;
 }
 

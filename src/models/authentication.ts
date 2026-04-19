@@ -2,11 +2,6 @@
 import { Schema, model, type Model } from "mongoose";
 // types
 import type { AuthenticationDocument } from "@/types/modules/authentication";
-// validators
-import {
-  EMAIL_FORMAT_PATTERN,
-  SAFE_EMAIL_PATTERN
-} from "@/validators/constants";
 // others
 import { MODEL_NAMES } from "@/constants/models";
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
@@ -15,25 +10,6 @@ const { AUTHENTICATION } = MODEL_NAMES;
 
 const AuthenticationSchema = new Schema<AuthenticationDocument>(
   {
-    email: {
-      type: String,
-      required: [true, "Email is required"],
-      unique: true,
-      trim: true,
-      lowercase: true,
-      validate: {
-        validator: function (email: string) {
-          if (!EMAIL_FORMAT_PATTERN.test(email)) {
-            return false;
-          }
-          if (!SAFE_EMAIL_PATTERN.test(email)) {
-            return false;
-          }
-          return true;
-        },
-        message: "Please provide a valid email address"
-      }
-    },
     password: {
       type: String,
       required: [true, "Password is required"]
@@ -77,8 +53,6 @@ const AuthenticationSchema = new Schema<AuthenticationDocument>(
     timestamps: true
   }
 );
-
-AuthenticationSchema.index({ email: 1 });
 
 const AuthenticationModel: Model<AuthenticationDocument> =
   model<AuthenticationDocument>(AUTHENTICATION, AuthenticationSchema);

@@ -15,7 +15,6 @@ export interface MyProfileDto {
 
 export const toMyProfileDto = (
   user: UserDocument,
-  email: string,
   avatarUrl: string | null
 ): MyProfileDto => ({
   _id: String(user._id),
@@ -25,6 +24,6 @@ export const toMyProfileDto = (
   address: user.address ?? null,
   dateOfBirth: user.dateOfBirth ? user.dateOfBirth.toISOString() : null,
   gender: user.gender ?? null,
-  email,
+  email: user.email,
   createdAt: user.createdAt.toISOString()
 });

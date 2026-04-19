@@ -7,7 +7,7 @@ import type {
   MagicLinkVerifyBody
 } from "@/types/modules/login";
 import type { Request } from "express";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OtpLoginRepository } from "./repositories/otp-login.repository";
 import type { MagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
@@ -43,7 +43,7 @@ import {
 
 export class LoginService {
   constructor(
-    private readonly authService: AuthenticationService,
+    private readonly userService: UserService,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly otpLoginRepo: OtpLoginRepository,
     private readonly magicLinkLoginRepo: MagicLinkLoginRepository,
@@ -62,9 +62,11 @@ export class LoginService {
 
     await ensureLoginNotLocked(this.failedAttemptsRepo, email, t, language);
 
-    const auth = await this.authService.findByEmail(email);
+    const result = await this.userService.findByEmailWithAuth(email);
 
-    ensureAccountExists(this.loginHistoryService, auth, email, req, t);
+    ensureAccountExists(this.loginHistoryService, result, email, req, t);
+    const { auth, user } = result;
+
     ensureAccountActiveWithLogging(
       this.loginHistoryService,
       auth,
@@ -96,9 +98,9 @@ export class LoginService {
       context: { email }
     });
 
-    return completeSuccessfulLogin(this.loginHistoryService, this.authService, {
-      email,
+    return completeSuccessfulLogin(this.loginHistoryService, {
       auth,
+      user,
       loginMethod: LOGIN_METHODS.PASSWORD,
       req
     });
@@ -118,7 +120,7 @@ export class LoginService {
       "login:errors.otpCooldown",
       ERROR_CODES.LOGIN_OTP_COOLDOWN
     );
-    await validateAuthenticationForLogin(this.authService, email, t);
+    await validateAuthenticationForLogin(this.userService, email, t);
 
     const exceeded = await this.otpLoginRepo.hasExceededResendLimit(email);
     if (exceeded) {
@@ -165,7 +167,11 @@ export class LoginService {
 
     await ensureOtpNotLocked(this.otpLoginRepo, email, t);
 
-    const auth = await ensureAuthenticationExists(this.authService, email, t);
+    const { auth, user } = await ensureAuthenticationExists(
+      this.userService,
+      email,
+      t
+    );
 
     const isValid = await this.otpLoginRepo.verify(email, otp);
 
@@ -184,9 +190,9 @@ export class LoginService {
       context: { email }
     });
 
-    return completeSuccessfulLogin(this.loginHistoryService, this.authService, {
-      email,
+    return completeSuccessfulLogin(this.loginHistoryService, {
       auth,
+      user,
       loginMethod: LOGIN_METHODS.OTP,
       req
     });
@@ -209,7 +215,7 @@ export class LoginService {
       "login:errors.magicLinkCooldown",
       ERROR_CODES.LOGIN_MAGIC_LINK_COOLDOWN
     );
-    await validateAuthenticationForLogin(this.authService, email, t);
+    await validateAuthenticationForLogin(this.userService, email, t);
 
     const token = await this.magicLinkLoginRepo.createAndStoreToken(email);
 
@@ -246,7 +252,11 @@ export class LoginService {
 
     Logger.info("Magic link verification initiated", { email });
 
-    const auth = await ensureAuthenticationExists(this.authService, email, t);
+    const { auth, user } = await ensureAuthenticationExists(
+      this.userService,
+      email,
+      t
+    );
 
     const isValid = await this.magicLinkLoginRepo.verifyToken(email, token);
 
@@ -258,9 +268,9 @@ export class LoginService {
       context: { email }
     });
 
-    return completeSuccessfulLogin(this.loginHistoryService, this.authService, {
-      email,
+    return completeSuccessfulLogin(this.loginHistoryService, {
       auth,
+      user,
       loginMethod: LOGIN_METHODS.MAGIC_LINK,
       req
     });
