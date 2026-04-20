@@ -1,0 +1,77 @@
+// types
+import type { Request } from "express";
+import type { UserService } from "@/modules/user/user.service";
+import type { LoginAuditService } from "../services/login-audit.service";
+// config
+import { UnauthorizedError } from "@/config/responses/error";
+// others
+import { AccountExistsGuard } from "./account-exists.guard";
+import { ERROR_CODES } from "@/constants/error-code";
+import { makeMockRequest } from "@test/helpers/request.helper";
+import { createUserServiceMock } from "@test/mocks/user-service.mock";
+import { createLoginAuditServiceMock } from "@test/mocks/login-audit-service.mock";
+import { buildUserWithAuth } from "@test/factories/user-with-auth.factory";
+
+const EMAIL = "user@example.com";
+
+describe("AccountExistsGuard", () => {
+  let req: Request;
+  let userService: jest.Mocked<UserService>;
+  let audit: jest.Mocked<LoginAuditService>;
+  let guard: AccountExistsGuard;
+
+  beforeEach(() => {
+    req = makeMockRequest();
+    userService = createUserServiceMock();
+    audit = createLoginAuditServiceMock();
+    guard = new AccountExistsGuard(userService, audit);
+  });
+
+  describe("assert", () => {
+    it("returns UserWithAuth when found", async () => {
+      const fixture = buildUserWithAuth();
+      userService.findByEmailWithAuth.mockResolvedValue(fixture);
+
+      await expect(guard.assert(EMAIL, req.t)).resolves.toEqual(fixture);
+    });
+
+    it("throws UnauthorizedError with LOGIN_INVALID_EMAIL when not found", async () => {
+      userService.findByEmailWithAuth.mockResolvedValue(null);
+
+      const promise = guard.assert(EMAIL, req.t);
+
+      await expect(promise).rejects.toBeInstanceOf(UnauthorizedError);
+      await expect(promise).rejects.toMatchObject({
+        code: ERROR_CODES.LOGIN_INVALID_EMAIL
+      });
+      expect(audit.recordInvalidCredentials).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("assertWithCredentialAudit", () => {
+    it("returns UserWithAuth when found, no audit", async () => {
+      const fixture = buildUserWithAuth();
+      userService.findByEmailWithAuth.mockResolvedValue(fixture);
+
+      await expect(
+        guard.assertWithCredentialAudit(EMAIL, req, req.t)
+      ).resolves.toEqual(fixture);
+      expect(audit.recordInvalidCredentials).not.toHaveBeenCalled();
+    });
+
+    it("records audit and throws UnauthorizedError with LOGIN_INVALID_CREDENTIALS when not found", async () => {
+      userService.findByEmailWithAuth.mockResolvedValue(null);
+
+      const promise = guard.assertWithCredentialAudit(EMAIL, req, req.t);
+
+      await expect(promise).rejects.toBeInstanceOf(UnauthorizedError);
+      await expect(promise).rejects.toMatchObject({
+        code: ERROR_CODES.LOGIN_INVALID_CREDENTIALS
+      });
+      expect(audit.recordInvalidCredentials).toHaveBeenCalledWith({
+        email: EMAIL,
+        req
+      });
+    });
+  });
+});

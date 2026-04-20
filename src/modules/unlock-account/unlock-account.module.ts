@@ -3,7 +3,7 @@ import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import type { LoginService } from "@/modules/login/login.service";
+import type { LoginService } from "@/modules/login/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories

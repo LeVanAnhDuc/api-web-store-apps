@@ -7,7 +7,7 @@ import type {
   MagicLinkSendRequest,
   MagicLinkVerifyRequest
 } from "@/types/modules/login";
-import type { LoginService } from "./login.service";
+import type { LoginService } from "./services";
 // config
 import { OkSuccess } from "@/config/responses/success";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";

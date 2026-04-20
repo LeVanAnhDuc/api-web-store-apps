@@ -20,7 +20,7 @@ export function makeMockRequest(overrides: MockRequestOverrides = {}): Request {
   };
 
   const req = {
-    t: overrides.t ?? ((key: string) => key),
+    t: overrides.t ?? jest.fn((key: string) => key),
     language: overrides.language ?? "en",
     ip: overrides.ip ?? "127.0.0.1",
     headers,

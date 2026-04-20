@@ -1,0 +1,48 @@
+// types
+import type { Request } from "express";
+import type { MagicLinkLoginRepository } from "../repositories/magic-link-login.repository";
+// config
+import { BadRequestError } from "@/config/responses/error";
+// others
+import { MagicLinkCooldownGuard } from "./magic-link-cooldown.guard";
+import { ERROR_CODES } from "@/constants/error-code";
+import { makeMockRequest } from "@test/helpers/request.helper";
+import { createMagicLinkLoginRepoMock } from "@test/mocks/magic-link-login-repo.mock";
+
+const EMAIL = "user@example.com";
+
+describe("MagicLinkCooldownGuard", () => {
+  let req: Request;
+  let tSpy: jest.Mock;
+  let repo: jest.Mocked<MagicLinkLoginRepository>;
+  let guard: MagicLinkCooldownGuard;
+
+  beforeEach(() => {
+    req = makeMockRequest();
+    tSpy = req.t as unknown as jest.Mock;
+    repo = createMagicLinkLoginRepoMock();
+    guard = new MagicLinkCooldownGuard(repo);
+  });
+
+  it("returns silently when cooldown expired", async () => {
+    repo.checkCooldown.mockResolvedValue(true);
+
+    await expect(guard.assert(EMAIL, req.t)).resolves.toBeUndefined();
+    expect(repo.getCooldownRemaining).not.toHaveBeenCalled();
+  });
+
+  it("throws LOGIN_MAGIC_LINK_COOLDOWN with interpolated seconds when active", async () => {
+    repo.checkCooldown.mockResolvedValue(false);
+    repo.getCooldownRemaining.mockResolvedValue(77);
+
+    const promise = guard.assert(EMAIL, req.t);
+
+    await expect(promise).rejects.toBeInstanceOf(BadRequestError);
+    await expect(promise).rejects.toMatchObject({
+      code: ERROR_CODES.LOGIN_MAGIC_LINK_COOLDOWN
+    });
+    expect(tSpy).toHaveBeenCalledWith("login:errors.magicLinkCooldown", {
+      seconds: 77
+    });
+  });
+});
