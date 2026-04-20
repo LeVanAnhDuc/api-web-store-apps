@@ -27,6 +27,22 @@ describe("AccountExistsGuard", () => {
     guard = new AccountExistsGuard(userService, audit);
   });
 
+  describe("tryFind", () => {
+    it("returns UserWithAuth when found, no throw", async () => {
+      const fixture = buildUserWithAuth();
+      userService.findByEmailWithAuth.mockResolvedValue(fixture);
+
+      await expect(guard.tryFind(EMAIL)).resolves.toEqual(fixture);
+    });
+
+    it("returns null when not found, no throw, no audit", async () => {
+      userService.findByEmailWithAuth.mockResolvedValue(null);
+
+      await expect(guard.tryFind(EMAIL)).resolves.toBeNull();
+      expect(audit.recordInvalidCredentials).not.toHaveBeenCalled();
+    });
+  });
+
   describe("assert", () => {
     it("returns UserWithAuth when found", async () => {
       const fixture = buildUserWithAuth();

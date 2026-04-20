@@ -1,7 +1,8 @@
 // types
 import type { OtpLoginRepository } from "@/modules/login/repositories/otp-login.repository";
+// modules
+import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
 // others
-import { LOGIN_OTP_CONFIG } from "@/constants/modules/login";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 
 export function createOtpLoginRepoMock(): jest.Mocked<OtpLoginRepository> {

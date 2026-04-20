@@ -5,7 +5,7 @@ import { buildKey } from "@/utils/common";
 import { generateSecureToken } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
-import { MAGIC_LINK_CONFIG } from "@/constants/modules/login";
+import { MAGIC_LINK_CONFIG } from "../constants";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 import { LOGIN } from "@/constants/redis/store";
 

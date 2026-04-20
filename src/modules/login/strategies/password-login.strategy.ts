@@ -13,7 +13,10 @@ import type {
 import type { LoginAuditService } from "../services/login-audit.service";
 import type { LoginCompletionService } from "../services/login-completion.service";
 // config
-import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
+import {
+  TooManyRequestsError,
+  UnauthorizedError
+} from "@/config/responses/error";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
@@ -21,7 +24,7 @@ import { withRetry } from "@/utils/retry";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { formatDuration } from "@/utils/date";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
-import { LOGIN_LOCKOUT } from "@/constants/modules/login";
+import { LOGIN_LOCKOUT } from "../constants";
 
 export class PasswordLoginStrategy {
   constructor(
@@ -94,7 +97,7 @@ export class PasswordLoginStrategy {
 
     if (attemptCount >= LOGIN_LOCKOUT.MAX_ATTEMPTS && lockoutSeconds > 0) {
       const timeMessage = formatDuration(lockoutSeconds, language);
-      throw new BadRequestError(
+      throw new TooManyRequestsError(
         t("login:errors.accountLocked", {
           attempts: attemptCount,
           time: timeMessage

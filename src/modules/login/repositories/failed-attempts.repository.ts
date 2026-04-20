@@ -3,7 +3,7 @@ import type { RedisClientType } from "redis";
 // others
 import { buildKey } from "@/utils/common";
 import { getSecondsUntilMidnightUTC } from "@/utils/date";
-import { LOGIN_LOCKOUT } from "@/constants/modules/login";
+import { LOGIN_LOCKOUT } from "../constants";
 import { LOGIN } from "@/constants/redis/store";
 
 const KEYS = {

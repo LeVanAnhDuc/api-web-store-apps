@@ -1,11 +1,11 @@
 // types
 import type { OtpLoginRepository } from "../repositories/otp-login.repository";
 // config
-import { BadRequestError } from "@/config/responses/error";
+import { TooManyRequestsError } from "@/config/responses/error";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
-import { LOGIN_OTP_CONFIG } from "@/constants/modules/login";
+import { LOGIN_OTP_CONFIG } from "../constants";
 
 export class OtpLockoutGuard {
   constructor(private readonly otpLoginRepo: OtpLoginRepository) {}
@@ -18,7 +18,7 @@ export class OtpLockoutGuard {
     const attempts = await this.otpLoginRepo.getFailedAttemptCount(email);
     Logger.warn("Login OTP verification locked", { email, attempts });
 
-    throw new BadRequestError(
+    throw new TooManyRequestsError(
       t("login:errors.otpLocked", {
         minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
       }),

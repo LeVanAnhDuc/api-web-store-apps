@@ -25,8 +25,9 @@ import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
+import { hashValue } from "@/utils/crypto/bcrypt";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
-import { MAGIC_LINK_CONFIG } from "@/constants/modules/login";
+import { MAGIC_LINK_CONFIG } from "../constants";
 
 export class MagicLinkLoginStrategy {
   constructor(
@@ -51,9 +52,24 @@ export class MagicLinkLoginStrategy {
 
     await this.magicLinkCooldownGuard.assert(email, t);
 
-    const { auth } = await this.accountExistsGuard.assert(email, t);
-    this.accountActiveGuard.assert(auth, t);
-    this.emailVerifiedGuard.assert(auth, t);
+    const result = await this.accountExistsGuard.tryFind(email);
+    const isEligible =
+      result?.auth.isActive === true && result?.auth.verifiedEmail === true;
+
+    if (!isEligible) {
+      Logger.debug("Magic link send skipped — account not eligible", {
+        email
+      });
+      hashValue(email);
+      withRetry(() => this.magicLinkLoginRepo.setCooldownAfterSend(email), {
+        operationName: "setMagicLinkCooldown",
+        context: { email }
+      });
+      return toMagicLinkSendDto(
+        this.magicLinkLoginRepo.MAGIC_LINK_EXPIRY_SECONDS,
+        this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
+      );
+    }
 
     const token = await this.magicLinkLoginRepo.createAndStoreToken(email);
 
@@ -91,6 +107,21 @@ export class MagicLinkLoginStrategy {
     Logger.info("Magic link verification initiated", { email });
 
     const { auth, user } = await this.accountExistsGuard.assert(email, t);
+
+    this.accountActiveGuard.assertWithAudit(
+      auth,
+      email,
+      LOGIN_METHODS.MAGIC_LINK,
+      req,
+      t
+    );
+    this.emailVerifiedGuard.assertWithAudit(
+      auth,
+      email,
+      LOGIN_METHODS.MAGIC_LINK,
+      req,
+      t
+    );
 
     const isValid = await this.magicLinkLoginRepo.verifyToken(email, token);
     if (!isValid) {

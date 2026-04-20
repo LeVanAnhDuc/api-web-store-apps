@@ -19,6 +19,7 @@ export const LOGIN_STATUSES = {
 
 export const LOGIN_FAIL_REASONS = {
   INVALID_CREDENTIALS: "invalid_credentials",
+  INVALID_PASSWORD: "invalid_password",
   ACCOUNT_LOCKED: "account_locked",
   ACCOUNT_INACTIVE: "account_inactive",
   EMAIL_NOT_VERIFIED: "email_not_verified",

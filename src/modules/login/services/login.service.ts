@@ -56,10 +56,9 @@ export class LoginService {
   // Public lockout operations (used by unlock-account module)
   // ──────────────────────────────────────────────
 
-  checkLockout(
-    email: string
-  ): Promise<{ isLocked: boolean; remainingSeconds: number }> {
-    return this.failedAttemptsRepo.checkLockout(email);
+  async isEmailLocked(email: string): Promise<boolean> {
+    const { isLocked } = await this.failedAttemptsRepo.checkLockout(email);
+    return isLocked;
   }
 
   resetFailedAttempts(email: string): Promise<void> {

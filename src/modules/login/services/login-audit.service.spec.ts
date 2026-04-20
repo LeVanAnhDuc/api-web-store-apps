@@ -60,7 +60,7 @@ describe("LoginAuditService", () => {
   });
 
   describe("recordInvalidPassword", () => {
-    it("records failed login with auth._id and INVALID_CREDENTIALS reason", () => {
+    it("records failed login with auth._id and INVALID_PASSWORD reason", () => {
       const auth = buildAuth();
 
       audit.recordInvalidPassword({ auth, email: EMAIL, attemptCount: 3, req });
@@ -69,7 +69,7 @@ describe("LoginAuditService", () => {
         userId: auth._id,
         usernameAttempted: EMAIL,
         loginMethod: LOGIN_METHODS.PASSWORD,
-        failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS,
+        failReason: LOGIN_FAIL_REASONS.INVALID_PASSWORD,
         req
       });
     });

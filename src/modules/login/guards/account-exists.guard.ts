@@ -15,6 +15,10 @@ export class AccountExistsGuard {
     private readonly audit: LoginAuditService
   ) {}
 
+  tryFind(email: string): Promise<UserWithAuth | null> {
+    return this.userService.findByEmailWithAuth(email);
+  }
+
   async assert(email: string, t: TranslateFunction): Promise<UserWithAuth> {
     const result = await this.userService.findByEmailWithAuth(email);
 

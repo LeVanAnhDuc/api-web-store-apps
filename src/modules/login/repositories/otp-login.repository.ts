@@ -5,7 +5,7 @@ import { buildKey } from "@/utils/common";
 import { generateOtp } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";
-import { LOGIN_OTP_CONFIG } from "@/constants/modules/login";
+import { LOGIN_OTP_CONFIG } from "../constants";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 import { LOGIN } from "@/constants/redis/store";
 

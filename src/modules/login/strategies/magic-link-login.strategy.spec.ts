@@ -1,4 +1,5 @@
 jest.mock("@/utils/retry");
+jest.mock("@/utils/crypto/bcrypt");
 jest.mock("@/config/env", () => ({
   __esModule: true,
   default: { CLIENT_URL: "https://app.test" }
@@ -23,6 +24,7 @@ import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
 import { withRetry } from "@/utils/retry";
+import { hashValue } from "@/utils/crypto/bcrypt";
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createMagicLinkLoginRepoMock } from "@test/mocks/magic-link-login-repo.mock";
 import { createEmailDispatcherMock } from "@test/mocks/email-dispatcher.mock";
@@ -37,6 +39,7 @@ import { createLoginCompletionServiceMock } from "@test/mocks/login-completion-s
 import { buildUserWithAuth } from "@test/factories/user-with-auth.factory";
 
 const mockedWithRetry = withRetry as jest.MockedFunction<typeof withRetry>;
+const mockedHashValue = hashValue as jest.MockedFunction<typeof hashValue>;
 
 const EMAIL = "user@example.com";
 const TOKEN = "secure-token-xyz";
@@ -79,17 +82,15 @@ describe("MagicLinkLoginStrategy", () => {
   });
 
   describe("sendLink", () => {
-    it("passes guards, stores token, dispatches email, returns dto", async () => {
+    it("stores token, dispatches email, returns dto for eligible account", async () => {
       const fixture = buildUserWithAuth();
-      accountExists.assert.mockResolvedValue(fixture);
+      accountExists.tryFind.mockResolvedValue(fixture);
       magicLinkRepo.createAndStoreToken.mockResolvedValue(TOKEN);
 
       const result = await strategy.sendLink({ email: EMAIL }, req);
 
       expect(cooldown.assert).toHaveBeenCalledWith(EMAIL, req.t);
-      expect(accountExists.assert).toHaveBeenCalledWith(EMAIL, req.t);
-      expect(accountActive.assert).toHaveBeenCalledWith(fixture.auth, req.t);
-      expect(emailVerified.assert).toHaveBeenCalledWith(fixture.auth, req.t);
+      expect(accountExists.tryFind).toHaveBeenCalledWith(EMAIL);
       expect(magicLinkRepo.createAndStoreToken).toHaveBeenCalledWith(EMAIL);
       expect(emailDispatcher.send).toHaveBeenCalledWith(
         EmailType.MAGIC_LINK,
@@ -109,28 +110,66 @@ describe("MagicLinkLoginStrategy", () => {
       });
     });
 
-    it("short-circuits when emailVerified guard throws (no token stored, no email sent)", async () => {
-      const fixture = buildUserWithAuth();
-      accountExists.assert.mockResolvedValue(fixture);
-      emailVerified.assert.mockImplementation(() => {
-        throw new UnauthorizedError(
-          "unverified",
-          ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
-        );
-      });
+    it("returns fake success (no token stored) when account not found + applies cooldown + equalizes timing", async () => {
+      accountExists.tryFind.mockResolvedValue(null);
 
-      await expect(
-        strategy.sendLink({ email: EMAIL }, req)
-      ).rejects.toMatchObject({
-        code: ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
-      });
+      const result = await strategy.sendLink({ email: EMAIL }, req);
+
       expect(magicLinkRepo.createAndStoreToken).not.toHaveBeenCalled();
       expect(emailDispatcher.send).not.toHaveBeenCalled();
+      expect(mockedHashValue).toHaveBeenCalledWith(EMAIL);
+      expect(mockedWithRetry).toHaveBeenCalledWith(
+        expect.any(Function),
+        expect.objectContaining({
+          operationName: "setMagicLinkCooldown",
+          context: { email: EMAIL }
+        })
+      );
+      const [fn] = mockedWithRetry.mock.calls[0];
+      (fn as () => Promise<void>)();
+      expect(magicLinkRepo.setCooldownAfterSend).toHaveBeenCalledWith(EMAIL);
+      expect(result).toEqual({
+        success: true,
+        expiresIn: magicLinkRepo.MAGIC_LINK_EXPIRY_SECONDS,
+        cooldown: magicLinkRepo.MAGIC_LINK_COOLDOWN_SECONDS
+      });
+    });
+
+    it("returns fake success when account inactive (no enumeration leak)", async () => {
+      accountExists.tryFind.mockResolvedValue(
+        buildUserWithAuth({ auth: { isActive: false } })
+      );
+
+      const result = await strategy.sendLink({ email: EMAIL }, req);
+
+      expect(magicLinkRepo.createAndStoreToken).not.toHaveBeenCalled();
+      expect(emailDispatcher.send).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        success: true,
+        expiresIn: magicLinkRepo.MAGIC_LINK_EXPIRY_SECONDS,
+        cooldown: magicLinkRepo.MAGIC_LINK_COOLDOWN_SECONDS
+      });
+    });
+
+    it("returns fake success when email not verified (no enumeration leak)", async () => {
+      accountExists.tryFind.mockResolvedValue(
+        buildUserWithAuth({ auth: { verifiedEmail: false } })
+      );
+
+      const result = await strategy.sendLink({ email: EMAIL }, req);
+
+      expect(magicLinkRepo.createAndStoreToken).not.toHaveBeenCalled();
+      expect(emailDispatcher.send).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        success: true,
+        expiresIn: magicLinkRepo.MAGIC_LINK_EXPIRY_SECONDS,
+        cooldown: magicLinkRepo.MAGIC_LINK_COOLDOWN_SECONDS
+      });
     });
   });
 
   describe("verifyLink", () => {
-    it("completes login when token valid", async () => {
+    it("completes login when token valid and account eligible", async () => {
       const fixture = buildUserWithAuth();
       accountExists.assert.mockResolvedValue(fixture);
       magicLinkRepo.verifyToken.mockResolvedValue(true);
@@ -146,6 +185,20 @@ describe("MagicLinkLoginStrategy", () => {
         req
       );
 
+      expect(accountActive.assertWithAudit).toHaveBeenCalledWith(
+        fixture.auth,
+        EMAIL,
+        LOGIN_METHODS.MAGIC_LINK,
+        req,
+        req.t
+      );
+      expect(emailVerified.assertWithAudit).toHaveBeenCalledWith(
+        fixture.auth,
+        EMAIL,
+        LOGIN_METHODS.MAGIC_LINK,
+        req,
+        req.t
+      );
       expect(magicLinkRepo.verifyToken).toHaveBeenCalledWith(EMAIL, TOKEN);
       expect(completion.complete).toHaveBeenCalledWith({
         auth: fixture.auth,
@@ -159,6 +212,25 @@ describe("MagicLinkLoginStrategy", () => {
         idToken: "i",
         expiresIn: 3600
       });
+    });
+
+    it("short-circuits when emailVerified fails (user unverified between send and verify)", async () => {
+      const fixture = buildUserWithAuth({ auth: { verifiedEmail: false } });
+      accountExists.assert.mockResolvedValue(fixture);
+      emailVerified.assertWithAudit.mockImplementation(() => {
+        throw new UnauthorizedError(
+          "unverified",
+          ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
+        );
+      });
+
+      await expect(
+        strategy.verifyLink({ email: EMAIL, token: TOKEN }, req)
+      ).rejects.toMatchObject({
+        code: ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
+      });
+      expect(magicLinkRepo.verifyToken).not.toHaveBeenCalled();
+      expect(completion.complete).not.toHaveBeenCalled();
     });
 
     it("audits and throws MAGIC_LINK_INVALID when token invalid", async () => {

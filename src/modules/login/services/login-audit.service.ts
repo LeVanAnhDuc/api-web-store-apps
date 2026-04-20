@@ -62,7 +62,7 @@ export class LoginAuditService {
       userId: auth._id,
       usernameAttempted: email,
       loginMethod: LOGIN_METHODS.PASSWORD,
-      failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS,
+      failReason: LOGIN_FAIL_REASONS.INVALID_PASSWORD,
       req
     });
 

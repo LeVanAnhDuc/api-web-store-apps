@@ -13,12 +13,15 @@ import type {
 import type { LoginAuditService } from "../services/login-audit.service";
 import type { LoginCompletionService } from "../services/login-completion.service";
 // config
-import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
+import {
+  TooManyRequestsError,
+  UnauthorizedError
+} from "@/config/responses/error";
 // others
 import { PasswordLoginStrategy } from "./password-login.strategy";
 import { ERROR_CODES } from "@/constants/error-code";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
-import { LOGIN_LOCKOUT } from "@/constants/modules/login";
+import { LOGIN_LOCKOUT } from "../constants";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { formatDuration } from "@/utils/date";
 import { withRetry } from "@/utils/retry";
@@ -173,7 +176,7 @@ describe("PasswordLoginStrategy", () => {
       req
     );
 
-    await expect(promise).rejects.toBeInstanceOf(BadRequestError);
+    await expect(promise).rejects.toBeInstanceOf(TooManyRequestsError);
     await expect(promise).rejects.toMatchObject({
       code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
     });
@@ -181,7 +184,7 @@ describe("PasswordLoginStrategy", () => {
 
   it("propagates guard errors from lockout check", async () => {
     lockout.assert.mockRejectedValue(
-      new BadRequestError("locked", ERROR_CODES.LOGIN_ACCOUNT_LOCKED)
+      new TooManyRequestsError("locked", ERROR_CODES.LOGIN_ACCOUNT_LOCKED)
     );
 
     await expect(

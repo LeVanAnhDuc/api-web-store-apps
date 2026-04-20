@@ -15,7 +15,11 @@ import type { LoginAuditService } from "../services/login-audit.service";
 import type { LoginCompletionService } from "../services/login-completion.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 // config
-import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
+import {
+  BadRequestError,
+  TooManyRequestsError,
+  UnauthorizedError
+} from "@/config/responses/error";
 // dtos
 import { toOtpSendDto } from "../dtos";
 // others
@@ -23,8 +27,9 @@ import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
+import { hashValue } from "@/utils/crypto/bcrypt";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
-import { LOGIN_OTP_CONFIG } from "@/constants/modules/login";
+import { LOGIN_OTP_CONFIG } from "../constants";
 
 export class OtpLoginStrategy {
   constructor(
@@ -47,9 +52,22 @@ export class OtpLoginStrategy {
 
     await this.otpCooldownGuard.assert(email, t);
 
-    const { auth } = await this.accountExistsGuard.assert(email, t);
-    this.accountActiveGuard.assert(auth, t);
-    this.emailVerifiedGuard.assert(auth, t);
+    const result = await this.accountExistsGuard.tryFind(email);
+    const isEligible =
+      result?.auth.isActive === true && result?.auth.verifiedEmail === true;
+
+    if (!isEligible) {
+      Logger.debug("Login OTP send skipped — account not eligible", { email });
+      hashValue(email);
+      withRetry(() => this.otpLoginRepo.setRateLimits(email), {
+        operationName: "setOtpRateLimits",
+        context: { email }
+      });
+      return toOtpSendDto(
+        this.otpLoginRepo.OTP_EXPIRY_SECONDS,
+        this.otpLoginRepo.OTP_COOLDOWN_SECONDS
+      );
+    }
 
     const exceeded = await this.otpLoginRepo.hasExceededResendLimit(email);
     if (exceeded) {
@@ -98,6 +116,21 @@ export class OtpLoginStrategy {
 
     const { auth, user } = await this.accountExistsGuard.assert(email, t);
 
+    this.accountActiveGuard.assertWithAudit(
+      auth,
+      email,
+      LOGIN_METHODS.OTP,
+      req,
+      t
+    );
+    this.emailVerifiedGuard.assertWithAudit(
+      auth,
+      email,
+      LOGIN_METHODS.OTP,
+      req,
+      t
+    );
+
     const isValid = await this.otpLoginRepo.verify(email, otp);
     if (!isValid) await this.handleInvalidOtp(auth, email, req, t);
 
@@ -126,7 +159,7 @@ export class OtpLoginStrategy {
     const remaining = LOGIN_OTP_CONFIG.MAX_FAILED_ATTEMPTS - attempts;
 
     if (remaining <= 0) {
-      throw new BadRequestError(
+      throw new TooManyRequestsError(
         t("login:errors.otpLocked", {
           minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
         }),

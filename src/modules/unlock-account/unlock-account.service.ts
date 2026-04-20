@@ -77,7 +77,7 @@ export class UnlockAccountService {
       );
     }
 
-    const { isLocked } = await this.loginService.checkLockout(email);
+    const isLocked = await this.loginService.isEmailLocked(email);
     if (!isLocked) {
       Logger.info("Unlock request for non-locked account", {
         email,

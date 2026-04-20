@@ -1,7 +1,7 @@
 // types
 import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
 // config
-import { BadRequestError } from "@/config/responses/error";
+import { TooManyRequestsError } from "@/config/responses/error";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
@@ -29,7 +29,7 @@ export class PasswordLockoutGuard {
       remainingSeconds
     });
 
-    throw new BadRequestError(
+    throw new TooManyRequestsError(
       t("login:errors.accountLocked", {
         attempts: attemptCount,
         time: timeMessage

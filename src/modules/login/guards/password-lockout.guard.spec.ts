@@ -3,11 +3,11 @@ jest.mock("@/utils/date");
 import type { Request } from "express";
 import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
 // config
-import { BadRequestError } from "@/config/responses/error";
+import { TooManyRequestsError } from "@/config/responses/error";
 // others
 import { PasswordLockoutGuard } from "./password-lockout.guard";
 import { ERROR_CODES } from "@/constants/error-code";
-import { LOGIN_LOCKOUT } from "@/constants/modules/login";
+import { LOGIN_LOCKOUT } from "../constants";
 import { formatDuration } from "@/utils/date";
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createFailedAttemptsRepoMock } from "@test/mocks/failed-attempts-repo.mock";
@@ -51,7 +51,7 @@ describe("PasswordLockoutGuard", () => {
 
     const promise = guard.assert(EMAIL, "en", req.t);
 
-    await expect(promise).rejects.toBeInstanceOf(BadRequestError);
+    await expect(promise).rejects.toBeInstanceOf(TooManyRequestsError);
     await expect(promise).rejects.toMatchObject({
       code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
     });

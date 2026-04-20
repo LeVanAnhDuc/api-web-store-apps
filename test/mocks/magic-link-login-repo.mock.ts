@@ -1,7 +1,8 @@
 // types
 import type { MagicLinkLoginRepository } from "@/modules/login/repositories/magic-link-login.repository";
+// modules
+import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
 // others
-import { MAGIC_LINK_CONFIG } from "@/constants/modules/login";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 
 export function createMagicLinkLoginRepoMock(): jest.Mocked<MagicLinkLoginRepository> {
