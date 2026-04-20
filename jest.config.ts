@@ -1,12 +1,18 @@
+// types
 import type { Config } from "jest";
 
 const config: Config = {
   preset: "ts-jest",
   testEnvironment: "node",
-  roots: ["<rootDir>/src"],
-  testMatch: ["**/__tests__/**/*.test.ts"],
+  roots: ["<rootDir>/src", "<rootDir>/test"],
+  testMatch: [
+    "<rootDir>/src/**/*.spec.ts",
+    "<rootDir>/test/integration/**/*.integration-spec.ts",
+    "<rootDir>/test/e2e/**/*.e2e-spec.ts"
+  ],
   moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1"
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@test/(.*)$": "<rootDir>/test/$1"
   },
   transform: {
     "^.+\\.ts$": [
@@ -19,8 +25,7 @@ const config: Config = {
       }
     ]
   },
-  setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup.ts"],
-  clearMocks: true,
+  setupFilesAfterEnv: ["<rootDir>/test/setup.ts"],
   resetMocks: true
 };
 

@@ -14,10 +14,11 @@
     "skipLibCheck": true,
     "typeRoots": ["./node_modules/@types"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@test/*": ["./test/*"]
     }
   },
   "lib": ["es2015"],
-  "include": ["src/**/*", "jest.config.ts"],
+  "include": ["src/**/*", "test/**/*", "jest.config.ts"],
   "exclude": ["node_modules", "dist", "backup"]
 }
