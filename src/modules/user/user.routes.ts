@@ -18,10 +18,11 @@ export const createUserRoutes = (
   rl: RateLimiterMiddleware
 ): Router => {
   const router = Router();
+  const users = Router();
 
-  router.get("/me", authGuard, asyncHandler(controller.getMyProfile));
+  users.get("/me", authGuard, asyncHandler(controller.getMyProfile));
 
-  router.patch(
+  users.patch(
     "/me",
     rl.updateProfileByIp,
     authGuard,
@@ -29,7 +30,7 @@ export const createUserRoutes = (
     asyncHandler(controller.updateMyProfile)
   );
 
-  router.post(
+  users.post(
     "/me/avatar",
     rl.uploadAvatarByIp,
     authGuard,
@@ -37,11 +38,12 @@ export const createUserRoutes = (
     asyncHandler(controller.uploadAvatarHandler)
   );
 
-  router.get(
+  users.get(
     "/:id",
     paramsPipe(getPublicProfileSchema),
     asyncHandler(controller.getPublicProfile)
   );
 
+  router.use("/users", users);
   return router;
 };

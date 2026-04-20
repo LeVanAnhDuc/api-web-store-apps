@@ -29,12 +29,13 @@ export const createBlogRoutes = (
   }
 ): Router => {
   const router = Router();
+  const blogs = Router();
 
   // Sub-module routes MUST come before /:slug to avoid conflicts
-  router.use("/tags", subModuleRouters.tagsRouter);
-  router.use("/categories", subModuleRouters.categoriesRouter);
+  blogs.use("/tags", subModuleRouters.tagsRouter);
+  blogs.use("/categories", subModuleRouters.categoriesRouter);
 
-  router.post(
+  blogs.post(
     "/",
     authGuard,
     uploadBlogCover,
@@ -42,20 +43,20 @@ export const createBlogRoutes = (
     asyncHandler(controller.createBlog)
   );
 
-  router.get(
+  blogs.get(
     "/",
     optionalAuthGuard,
     queryPipe(listBlogsQuerySchema),
     asyncHandler(controller.listBlogs)
   );
 
-  router.get(
+  blogs.get(
     "/:slug",
     optionalAuthGuard,
     asyncHandler(controller.getBlogBySlug)
   );
 
-  router.patch(
+  blogs.patch(
     "/:id",
     authGuard,
     uploadBlogCover,
@@ -64,12 +65,13 @@ export const createBlogRoutes = (
     asyncHandler(controller.updateBlog)
   );
 
-  router.delete(
+  blogs.delete(
     "/:id",
     authGuard,
     paramsPipe(blogIdParamSchema),
     asyncHandler(controller.deleteBlog)
   );
 
+  router.use("/apps/blogs", blogs);
   return router;
 };

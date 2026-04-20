@@ -42,24 +42,24 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   const v1Router = Router();
 
   // Auth
-  v1Router.use("/auth/signup", routes.signup);
-  v1Router.use("/auth/login", routes.login);
-  v1Router.use("/auth/logout", routes.logout);
-  v1Router.use("/auth/token", routes.token);
-  v1Router.use("/auth/unlock", routes.unlockAccount);
-  v1Router.use("/auth/forgot-password", routes.forgotPassword);
+  v1Router.use(routes.signup);
+  v1Router.use(routes.login);
+  v1Router.use(routes.logout);
+  v1Router.use(routes.token);
+  v1Router.use(routes.unlockAccount);
+  v1Router.use(routes.forgotPassword);
 
   // User
-  v1Router.use("/users", routes.user);
-  v1Router.use("/login-history", routes.loginHistoryUser);
-  v1Router.use("/admin/login-history", routes.loginHistoryAdmin);
+  v1Router.use(routes.user);
+  v1Router.use(routes.loginHistoryUser);
+  v1Router.use(routes.loginHistoryAdmin);
 
   // Contact
-  v1Router.use("/contact", routes.contact);
-  v1Router.use("/admin/contacts", routes.contactAdmin);
+  v1Router.use(routes.contact);
+  v1Router.use(routes.contactAdmin);
 
   // Apps
-  v1Router.use("/apps/blogs", routes.blog);
+  v1Router.use(routes.blog);
 
   app.use("/api/v1", v1Router);
 };

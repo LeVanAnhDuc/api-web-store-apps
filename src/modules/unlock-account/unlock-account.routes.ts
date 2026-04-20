@@ -18,19 +18,21 @@ export const createUnlockAccountRoutes = (
   rl: RateLimiterMiddleware
 ): Router => {
   const router = Router();
+  const unlock = Router();
 
-  router.post(
+  unlock.post(
     "/request",
     bodyPipe(unlockRequestSchema),
     asyncHandler(controller.unlockRequest)
   );
 
-  router.post(
+  unlock.post(
     "/verify",
     rl.loginByIp,
     bodyPipe(unlockVerifySchema),
     asyncHandler(controller.unlockVerify)
   );
 
+  router.use("/auth/unlock", unlock);
   return router;
 };

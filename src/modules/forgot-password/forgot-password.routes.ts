@@ -21,8 +21,9 @@ export const createForgotPasswordRoutes = (
   rl: RateLimiterMiddleware
 ): Router => {
   const router = Router();
+  const forgotPassword = Router();
 
-  router.post(
+  forgotPassword.post(
     "/otp/send",
     rl.forgotPasswordOtpByIp,
     rl.forgotPasswordOtpByEmail,
@@ -30,14 +31,14 @@ export const createForgotPasswordRoutes = (
     asyncHandler(controller.sendOtp)
   );
 
-  router.post(
+  forgotPassword.post(
     "/otp/verify",
     rl.forgotPasswordOtpByIp,
     bodyPipe(fpOtpVerifySchema),
     asyncHandler(controller.verifyOtp)
   );
 
-  router.post(
+  forgotPassword.post(
     "/magic-link/send",
     rl.forgotPasswordMagicLinkByIp,
     rl.forgotPasswordMagicLinkByEmail,
@@ -45,19 +46,20 @@ export const createForgotPasswordRoutes = (
     asyncHandler(controller.sendMagicLink)
   );
 
-  router.post(
+  forgotPassword.post(
     "/magic-link/verify",
     rl.forgotPasswordMagicLinkByIp,
     bodyPipe(fpMagicLinkVerifySchema),
     asyncHandler(controller.verifyMagicLink)
   );
 
-  router.post(
+  forgotPassword.post(
     "/reset",
     rl.forgotPasswordResetByIp,
     bodyPipe(fpResetPasswordSchema),
     asyncHandler(controller.resetPassword)
   );
 
+  router.use("/auth/forgot-password", forgotPassword);
   return router;
 };

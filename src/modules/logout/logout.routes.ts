@@ -9,8 +9,10 @@ import { asyncHandler } from "@/utils/async-handler";
 
 export const createLogoutRoutes = (controller: LogoutController): Router => {
   const router = Router();
+  const logout = Router();
 
-  router.post("/", authGuard, asyncHandler(controller.logout));
+  logout.post("/", authGuard, asyncHandler(controller.logout));
 
+  router.use("/auth/logout", logout);
   return router;
 };

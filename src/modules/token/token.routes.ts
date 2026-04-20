@@ -7,8 +7,10 @@ import { asyncHandler } from "@/utils/async-handler";
 
 export const createTokenRoutes = (controller: TokenController): Router => {
   const router = Router();
+  const token = Router();
 
-  router.post("/refresh", asyncHandler(controller.refreshToken));
+  token.post("/refresh", asyncHandler(controller.refreshToken));
 
+  router.use("/auth/token", token);
   return router;
 };

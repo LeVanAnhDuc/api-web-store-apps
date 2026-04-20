@@ -21,8 +21,9 @@ export const createSignupRoutes = (
   rl: RateLimiterMiddleware
 ): Router => {
   const router = Router();
+  const signup = Router();
 
-  router.post(
+  signup.post(
     "/send-otp",
     rl.signupOtpByIp,
     rl.signupOtpByEmail,
@@ -30,13 +31,13 @@ export const createSignupRoutes = (
     asyncHandler(controller.sendOtp)
   );
 
-  router.post(
+  signup.post(
     "/verify-otp",
     bodyPipe(verifyOtpSchema),
     asyncHandler(controller.verifyOtp)
   );
 
-  router.post(
+  signup.post(
     "/resend-otp",
     rl.signupOtpByIp,
     rl.signupOtpByEmail,
@@ -44,18 +45,19 @@ export const createSignupRoutes = (
     asyncHandler(controller.resendOtp)
   );
 
-  router.post(
+  signup.post(
     "/complete",
     bodyPipe(completeSignupSchema),
     asyncHandler(controller.completeSignup)
   );
 
-  router.get(
+  signup.get(
     "/check-email/:email",
     rl.checkEmailByIp,
     paramsPipe(checkEmailSchema),
     asyncHandler(controller.checkEmail)
   );
 
+  router.use("/auth/signup", signup);
   return router;
 };

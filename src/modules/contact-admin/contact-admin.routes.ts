@@ -26,14 +26,16 @@ export const createContactRoutes = (
   rl: RateLimiterMiddleware
 ): Router => {
   const router = Router();
+  const contact = Router();
 
-  router.post(
+  contact.post(
     "/submit",
     rl.contactByIp,
     bodyPipe(submitContactSchema),
     asyncHandler(controller.submit)
   );
 
+  router.use("/contact", contact);
   return router;
 };
 
@@ -41,27 +43,29 @@ export const createContactAdminRoutes = (
   controller: ContactAdminController
 ): Router => {
   const router = Router();
+  const adminContacts = Router();
 
-  router.use(authGuard, adminGuard);
+  adminContacts.use(authGuard, adminGuard);
 
-  router.get(
+  adminContacts.get(
     "/",
     queryPipe(adminListContactsQuerySchema),
     asyncHandler(controller.getContactList)
   );
 
-  router.get(
+  adminContacts.get(
     "/:id",
     paramsPipe(contactIdParamSchema),
     asyncHandler(controller.getContactDetail)
   );
 
-  router.patch(
+  adminContacts.patch(
     "/:id/status",
     paramsPipe(contactIdParamSchema),
     bodyPipe(updateContactStatusSchema),
     asyncHandler(controller.updateContactStatus)
   );
 
+  router.use("/admin/contacts", adminContacts);
   return router;
 };

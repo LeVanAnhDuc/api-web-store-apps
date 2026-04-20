@@ -21,15 +21,16 @@ export const createLoginRoutes = (
   rl: RateLimiterMiddleware
 ): Router => {
   const router = Router();
+  const login = Router();
 
-  router.post(
+  login.post(
     "/",
     rl.loginByIp,
     bodyPipe(loginSchema),
     asyncHandler(controller.login)
   );
 
-  router.post(
+  login.post(
     "/otp/send",
     rl.loginOtpByIp,
     rl.loginOtpByEmail,
@@ -37,14 +38,14 @@ export const createLoginRoutes = (
     asyncHandler(controller.sendOtp)
   );
 
-  router.post(
+  login.post(
     "/otp/verify",
     rl.loginByIp,
     bodyPipe(otpVerifySchema),
     asyncHandler(controller.verifyOtp)
   );
 
-  router.post(
+  login.post(
     "/magic-link/send",
     rl.magicLinkByIp,
     rl.magicLinkByEmail,
@@ -52,12 +53,13 @@ export const createLoginRoutes = (
     asyncHandler(controller.sendMagicLink)
   );
 
-  router.post(
+  login.post(
     "/magic-link/verify",
     rl.loginByIp,
     bodyPipe(magicLinkVerifySchema),
     asyncHandler(controller.verifyMagicLink)
   );
 
+  router.use("/auth/login", login);
   return router;
 };

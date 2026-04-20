@@ -16,15 +16,17 @@ export const createLoginHistoryUserRoutes = (
   controller: LoginHistoryController
 ): Router => {
   const router = Router();
+  const loginHistory = Router();
 
-  router.use(authGuard);
+  loginHistory.use(authGuard);
 
-  router.get(
+  loginHistory.get(
     "/",
     queryPipe(loginHistoryQuerySchema),
     asyncHandler(controller.getMyHistory)
   );
 
+  router.use("/login-history", loginHistory);
   return router;
 };
 
@@ -32,14 +34,16 @@ export const createLoginHistoryAdminRoutes = (
   controller: LoginHistoryController
 ): Router => {
   const router = Router();
+  const adminLoginHistory = Router();
 
-  router.use(authGuard, adminGuard);
+  adminLoginHistory.use(authGuard, adminGuard);
 
-  router.get(
+  adminLoginHistory.get(
     "/",
     queryPipe(loginHistoryAdminQuerySchema),
     asyncHandler(controller.getAllHistory)
   );
 
+  router.use("/admin/login-history", adminLoginHistory);
   return router;
 };
