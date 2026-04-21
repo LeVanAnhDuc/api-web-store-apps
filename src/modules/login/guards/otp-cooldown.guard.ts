@@ -1,5 +1,5 @@
 // types
-import type { OtpLoginRepository } from "../repositories/otp-login.repository";
+import type { OtpLoginRepository } from "../repositories";
 // config
 import { BadRequestError } from "@/config/responses/error";
 // others

@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { MagicLinkLoginRepository } from "../repositories/magic-link-login.repository";
+import type { MagicLinkLoginRepository } from "../repositories";
 // config
 import { BadRequestError } from "@/config/responses/error";
 // others

@@ -5,9 +5,11 @@ import type { LoginHistoryService } from "@/modules/login-history/login-history.
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
-import { RedisOtpLoginRepository } from "./repositories/otp-login.repository";
-import { RedisMagicLinkLoginRepository } from "./repositories/magic-link-login.repository";
-import { RedisFailedAttemptsRepository } from "./repositories/failed-attempts.repository";
+import {
+  RedisOtpLoginRepository,
+  RedisMagicLinkLoginRepository,
+  RedisFailedAttemptsRepository
+} from "./repositories";
 // others
 import {
   LoginService,

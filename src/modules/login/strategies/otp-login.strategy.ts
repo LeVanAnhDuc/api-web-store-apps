@@ -2,7 +2,7 @@
 import type { Request } from "express";
 import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { OtpSendBody, OtpVerifyBody } from "@/types/modules/login";
-import type { OtpLoginRepository } from "../repositories/otp-login.repository";
+import type { OtpLoginRepository } from "../repositories";
 import type { LoginResponseDto, OtpSendDto } from "../dtos";
 import type {
   AccountExistsGuard,

@@ -2,7 +2,7 @@ jest.mock("@/utils/retry");
 jest.mock("@/utils/crypto/bcrypt");
 // types
 import type { Request } from "express";
-import type { OtpLoginRepository } from "../repositories/otp-login.repository";
+import type { OtpLoginRepository } from "../repositories";
 import type {
   AccountExistsGuard,
   AccountActiveGuard,

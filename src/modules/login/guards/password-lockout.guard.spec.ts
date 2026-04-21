@@ -1,7 +1,7 @@
 jest.mock("@/utils/date");
 // types
 import type { Request } from "express";
-import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
+import type { FailedAttemptsRepository } from "../repositories";
 // config
 import { TooManyRequestsError } from "@/config/responses/error";
 // others

@@ -2,7 +2,7 @@
 import type { Request } from "express";
 import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { PasswordLoginBody } from "@/types/modules/login";
-import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
+import type { FailedAttemptsRepository } from "../repositories";
 import type { LoginResponseDto } from "../dtos";
 import type {
   AccountExistsGuard,

@@ -1,5 +1,5 @@
 // types
-import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
+import type { FailedAttemptsRepository } from "../repositories";
 // config
 import { TooManyRequestsError } from "@/config/responses/error";
 // others

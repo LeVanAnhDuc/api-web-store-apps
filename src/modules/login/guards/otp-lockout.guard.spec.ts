@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { OtpLoginRepository } from "../repositories/otp-login.repository";
+import type { OtpLoginRepository } from "../repositories";
 // config
 import { TooManyRequestsError } from "@/config/responses/error";
 // others

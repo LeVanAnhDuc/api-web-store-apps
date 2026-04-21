@@ -3,7 +3,7 @@ jest.mock("@/utils/date");
 jest.mock("@/utils/retry");
 // types
 import type { Request } from "express";
-import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
+import type { FailedAttemptsRepository } from "../repositories";
 import type {
   AccountExistsGuard,
   AccountActiveGuard,

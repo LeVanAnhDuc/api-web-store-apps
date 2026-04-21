@@ -6,7 +6,7 @@ jest.mock("@/config/env", () => ({
 }));
 // types
 import type { Request } from "express";
-import type { MagicLinkLoginRepository } from "../repositories/magic-link-login.repository";
+import type { MagicLinkLoginRepository } from "../repositories";
 import type {
   AccountExistsGuard,
   AccountActiveGuard,

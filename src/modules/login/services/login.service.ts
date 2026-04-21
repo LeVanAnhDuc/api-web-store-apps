@@ -7,7 +7,7 @@ import type {
   MagicLinkSendBody,
   MagicLinkVerifyBody
 } from "@/types/modules/login";
-import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
+import type { FailedAttemptsRepository } from "../repositories";
 import type { LoginResponseDto, OtpSendDto, MagicLinkSendDto } from "../dtos";
 import type {
   PasswordLoginStrategy,

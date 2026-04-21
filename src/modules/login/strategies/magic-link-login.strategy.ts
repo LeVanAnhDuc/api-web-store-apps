@@ -4,7 +4,7 @@ import type {
   MagicLinkSendBody,
   MagicLinkVerifyBody
 } from "@/types/modules/login";
-import type { MagicLinkLoginRepository } from "../repositories/magic-link-login.repository";
+import type { MagicLinkLoginRepository } from "../repositories";
 import type { LoginResponseDto, MagicLinkSendDto } from "../dtos";
 import type {
   AccountExistsGuard,
