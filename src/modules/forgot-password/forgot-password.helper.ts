@@ -8,8 +8,10 @@ import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { UserWithAuth } from "@/types/modules/user";
-import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
-import type { MagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
+import type {
+  OtpForgotPasswordRepository,
+  MagicLinkForgotPasswordRepository
+} from "./repositories";
 // config
 import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
 import ENV from "@/config/env";

@@ -10,9 +10,11 @@ import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import type { OtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
-import type { MagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
-import type { ResetTokenRepository } from "./repositories/reset-token.repository";
+import type {
+  OtpForgotPasswordRepository,
+  MagicLinkForgotPasswordRepository,
+  ResetTokenRepository
+} from "./repositories";
 import type {
   SendOtpResponseDto,
   VerifyOtpResponseDto,

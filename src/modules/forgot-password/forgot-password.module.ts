@@ -6,9 +6,11 @@ import type { LoginHistoryService } from "@/modules/login-history/login-history.
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
-import { RedisOtpForgotPasswordRepository } from "./repositories/otp-forgot-password.repository";
-import { RedisMagicLinkForgotPasswordRepository } from "./repositories/magic-link-forgot-password.repository";
-import { RedisResetTokenRepository } from "./repositories/reset-token.repository";
+import {
+  RedisOtpForgotPasswordRepository,
+  RedisMagicLinkForgotPasswordRepository,
+  RedisResetTokenRepository
+} from "./repositories";
 // others
 import { ForgotPasswordService } from "./forgot-password.service";
 import { ForgotPasswordController } from "./forgot-password.controller";
