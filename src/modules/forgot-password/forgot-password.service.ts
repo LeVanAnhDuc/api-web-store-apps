@@ -5,7 +5,7 @@ import type {
   FPMagicLinkSendRequest,
   FPMagicLinkVerifyRequest,
   FPResetPasswordRequest
-} from "@/types/modules/forgot-password";
+} from "./types";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";

@@ -1,8 +1,5 @@
 // types
-import type {
-  FPOtpVerifyRequest,
-  FPMagicLinkVerifyRequest
-} from "@/types/modules/forgot-password";
+import type { FPOtpVerifyRequest, FPMagicLinkVerifyRequest } from "./types";
 import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { UserService } from "@/modules/user/user.service";
