@@ -1,2 +1,18 @@
-export type { RefreshTokenDto } from "./refresh-token.dto";
-export { toRefreshTokenDto } from "./refresh-token.dto";
+// types
+import type { AuthTokensResponse } from "@/types/modules/authentication";
+
+export interface RefreshTokenDto {
+  accessToken: string;
+  refreshToken: string;
+  idToken: string;
+  expiresIn: number;
+}
+
+export const toRefreshTokenDto = (
+  tokens: AuthTokensResponse
+): RefreshTokenDto => ({
+  accessToken: tokens.accessToken,
+  refreshToken: tokens.refreshToken,
+  idToken: tokens.idToken,
+  expiresIn: tokens.expiresIn
+});
