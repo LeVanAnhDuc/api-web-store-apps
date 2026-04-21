@@ -1,5 +1,5 @@
 // repositories
-import { MongoLoginHistoryRepository } from "./repositories/login-history.repository";
+import { MongoLoginHistoryRepository } from "./repositories";
 // others
 import { LoginHistoryService } from "./login-history.service";
 import { LoginHistoryController } from "./login-history.controller";
