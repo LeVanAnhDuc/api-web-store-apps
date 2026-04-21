@@ -2,7 +2,7 @@
 import type { RedisClientType } from "redis";
 // others
 import { buildKey } from "@/utils/common";
-import { getSecondsUntilMidnightUTC } from "@/utils/date";
+import { getSecondsUntilMidnightUTC } from "../helpers";
 import { LOGIN_LOCKOUT } from "../constants";
 import { LOGIN } from "@/constants/redis/store";
 

@@ -1,4 +1,4 @@
-jest.mock("@/utils/date");
+jest.mock("../helpers");
 // types
 import type { Request } from "express";
 import type { FailedAttemptsRepository } from "../repositories";
@@ -8,7 +8,7 @@ import { TooManyRequestsError } from "@/config/responses/error";
 import { PasswordLockoutGuard } from "./password-lockout.guard";
 import { ERROR_CODES } from "@/constants/error-code";
 import { LOGIN_LOCKOUT } from "../constants";
-import { formatDuration } from "@/utils/date";
+import { formatDuration } from "../helpers";
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createFailedAttemptsRepoMock } from "@test/mocks/failed-attempts-repo.mock";
 

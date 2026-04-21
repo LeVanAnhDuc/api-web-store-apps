@@ -1,5 +1,5 @@
 jest.mock("@/utils/crypto/bcrypt");
-jest.mock("@/utils/date");
+jest.mock("../helpers");
 jest.mock("@/utils/retry");
 // types
 import type { Request } from "express";
@@ -23,7 +23,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
 import { LOGIN_LOCKOUT } from "../constants";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
-import { formatDuration } from "@/utils/date";
+import { formatDuration } from "../helpers";
 import { withRetry } from "@/utils/retry";
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createFailedAttemptsRepoMock } from "@test/mocks/failed-attempts-repo.mock";

@@ -5,7 +5,7 @@ import { TooManyRequestsError } from "@/config/responses/error";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
-import { formatDuration } from "@/utils/date";
+import { formatDuration } from "../helpers";
 
 export class PasswordLockoutGuard {
   constructor(private readonly failedAttemptsRepo: FailedAttemptsRepository) {}
