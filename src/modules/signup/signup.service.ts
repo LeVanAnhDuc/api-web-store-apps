@@ -10,8 +10,10 @@ import type { Request } from "express";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-import type { OtpSignupRepository } from "./repositories/otp-signup.repository";
-import type { SessionSignupRepository } from "./repositories/session-signup.repository";
+import type {
+  OtpSignupRepository,
+  SessionSignupRepository
+} from "./repositories";
 import type {
   SendOtpDto,
   VerifyOtpDto,

@@ -5,8 +5,10 @@ import type { UserService } from "@/modules/user/user.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
-import { RedisOtpSignupRepository } from "./repositories/otp-signup.repository";
-import { RedisSessionSignupRepository } from "./repositories/session-signup.repository";
+import {
+  RedisOtpSignupRepository,
+  RedisSessionSignupRepository
+} from "./repositories";
 // others
 import { SignupService } from "./signup.service";
 import { SignupController } from "./signup.controller";
