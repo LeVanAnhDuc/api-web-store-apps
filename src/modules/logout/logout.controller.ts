@@ -1,6 +1,6 @@
 // types
 import type { Response } from "express";
-import type { LogoutRequest } from "@/types/modules/logout";
+import type { LogoutRequest } from "./types";
 import type { LogoutService } from "./logout.service";
 // config
 import { NoContentSuccess } from "@/config/responses/success";
