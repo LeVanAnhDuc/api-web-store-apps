@@ -9,7 +9,7 @@ import type {
   UserWithAuth
 } from "@/types/modules/user";
 import type { ClientSession } from "mongoose";
-import type { UserRepository } from "./repositories/user.repository";
+import type { UserRepository } from "./repositories";
 import type { MyProfileDto, PublicProfileDto, UploadAvatarDto } from "./dtos";
 // config
 import { BadRequestError, NotFoundError } from "@/config/responses/error";
