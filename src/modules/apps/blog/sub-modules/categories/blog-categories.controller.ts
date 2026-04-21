@@ -4,7 +4,7 @@ import type { BlogCategoriesService } from "./blog-categories.service";
 import type {
   SearchCategoriesRequest,
   CreateCategoryRequest
-} from "@/types/modules/blog";
+} from "../../types";
 // config
 import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
 

@@ -1,7 +1,7 @@
 // types
 import type { Response } from "express";
 import type { BlogTagsService } from "./blog-tags.service";
-import type { SearchTagsRequest, CreateTagRequest } from "@/types/modules/blog";
+import type { SearchTagsRequest, CreateTagRequest } from "../../types";
 // config
 import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
 

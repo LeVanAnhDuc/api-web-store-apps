@@ -1,10 +1,7 @@
 // types
 import type { Request } from "express";
 import type { Document } from "mongoose";
-import type {
-  CONTACT_PRIORITIES,
-  CONTACT_STATUSES
-} from "@/constants/modules/contact-admin";
+import type { CONTACT_PRIORITIES, CONTACT_STATUSES } from "../constants";
 
 export type ContactPriority =
   (typeof CONTACT_PRIORITIES)[keyof typeof CONTACT_PRIORITIES];

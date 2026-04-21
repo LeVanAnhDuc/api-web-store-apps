@@ -10,7 +10,7 @@ import { BadRequestError } from "@/config/responses/error";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { USER_CONFIG } from "@/constants/modules/user";
-import { BLOG_CONFIG } from "@/constants/modules/blog";
+import { BLOG_CONFIG } from "@/modules/apps/blog/constants";
 
 function detectImageMimeType(filePath: string): string | null {
   try {

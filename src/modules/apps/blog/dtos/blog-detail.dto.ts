@@ -1,5 +1,5 @@
 // types
-import type { BlogDetailItem } from "@/types/modules/blog";
+import type { BlogDetailItem } from "../types";
 // others
 import { toBlogListItemDto } from "./blog-list-item.dto";
 

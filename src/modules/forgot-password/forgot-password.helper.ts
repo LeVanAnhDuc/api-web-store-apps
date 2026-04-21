@@ -23,7 +23,7 @@ import {
 import {
   FORGOT_PASSWORD_OTP_CONFIG,
   FORGOT_PASSWORD_MAGIC_LINK_CONFIG
-} from "@/constants/modules/forgot-password";
+} from "./constants";
 
 export async function ensureOtpCooldownExpired(
   otpRepo: OtpForgotPasswordRepository,

@@ -7,7 +7,7 @@ import type {
   GetBlogBySlugRequest,
   UpdateBlogRequest,
   DeleteBlogRequest
-} from "@/types/modules/blog";
+} from "./types";
 // config
 import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
 

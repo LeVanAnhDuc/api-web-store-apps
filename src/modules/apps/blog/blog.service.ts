@@ -7,7 +7,7 @@ import type {
   UpdateBlogDto,
   BlogQuery,
   PaginatedResult
-} from "@/types/modules/blog";
+} from "./types";
 import type { BlogDetailDto, BlogListItemDto, DeleteBlogDto } from "./dtos";
 // config
 import {
@@ -19,7 +19,7 @@ import {
 import { toBlogListItemDto, toBlogDetailDto, toDeleteBlogDto } from "./dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { BLOG_COVER_TYPE, BLOG_VISIBILITY } from "@/constants/modules/blog";
+import { BLOG_COVER_TYPE, BLOG_VISIBILITY } from "./constants";
 import {
   generateBaseSlug,
   appendTimestampToSlug,

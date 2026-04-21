@@ -6,9 +6,9 @@ import type {
   VerifyOtpBody,
   CompleteSignupBody,
   CheckEmailParams
-} from "@/types/modules/signup";
+} from "@/modules/signup/types";
 // others
-import { SESSION_CONFIG } from "@/constants/modules/signup";
+import { SESSION_CONFIG } from "@/modules/signup/constants";
 import {
   emailSchema,
   passwordSchema,

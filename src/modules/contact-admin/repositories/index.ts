@@ -1,9 +1,6 @@
 // types
 import type { FilterQuery } from "mongoose";
-import type {
-  ContactDocument,
-  ContactStatus
-} from "@/types/modules/contact-admin";
+import type { ContactDocument, ContactStatus } from "../types";
 // models
 import ContactModel from "@/models/contact";
 // others

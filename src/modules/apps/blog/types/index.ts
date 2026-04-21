@@ -1,10 +1,7 @@
 // types
 import type { Request } from "express";
 import type { Document, Types } from "mongoose";
-import type {
-  BLOG_VISIBILITY,
-  BLOG_COVER_TYPE
-} from "@/constants/modules/blog";
+import type { BLOG_VISIBILITY, BLOG_COVER_TYPE } from "../constants";
 
 export type BlogVisibility =
   (typeof BLOG_VISIBILITY)[keyof typeof BLOG_VISIBILITY];

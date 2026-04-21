@@ -1,9 +1,5 @@
 // types
-import type {
-  ContactPriority,
-  ContactStatus,
-  ContactDocument
-} from "@/types/modules/contact-admin";
+import type { ContactPriority, ContactStatus, ContactDocument } from "../types";
 
 export interface ContactListItemDto {
   _id: string;

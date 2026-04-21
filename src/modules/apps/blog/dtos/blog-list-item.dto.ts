@@ -4,7 +4,7 @@ import type {
   BlogAuthorInfo,
   BlogTagItem,
   BlogCoverImage
-} from "@/types/modules/blog";
+} from "../types";
 // others
 import { USER_CONFIG } from "@/constants/modules/user";
 

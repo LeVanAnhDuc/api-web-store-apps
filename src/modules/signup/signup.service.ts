@@ -5,7 +5,7 @@ import type {
   ResendOtpBody,
   CompleteSignupBody,
   CheckEmailParams
-} from "@/types/modules/signup";
+} from "./types";
 import type { Request } from "express";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
@@ -37,7 +37,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
-import { OTP_CONFIG, SESSION_CONFIG } from "@/constants/modules/signup";
+import { OTP_CONFIG, SESSION_CONFIG } from "./constants";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
 import {
   ensureEmailAvailable,

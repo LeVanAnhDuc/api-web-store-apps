@@ -1,5 +1,5 @@
 // types
-import type { BlogCategoryDocument } from "@/types/modules/blog";
+import type { BlogCategoryDocument } from "../types";
 // models
 import BlogCategoryModel from "@/models/blog-category";
 // others

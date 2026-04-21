@@ -1,14 +1,14 @@
 // libs
 import { Schema, model, type Model } from "mongoose";
 // types
-import type { ContactDocument } from "@/types/modules/contact-admin";
+import type { ContactDocument } from "@/modules/contact-admin/types";
 // validators
 import { CONTACT_CONFIG, EMAIL_FORMAT_PATTERN } from "@/validators/constants";
 // others
 import {
   CONTACT_PRIORITIES,
   CONTACT_STATUSES
-} from "@/constants/modules/contact-admin";
+} from "@/modules/contact-admin/constants";
 import { MODEL_NAMES } from "@/constants/models";
 
 const { CONTACT } = MODEL_NAMES;

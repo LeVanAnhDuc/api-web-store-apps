@@ -6,7 +6,7 @@ import type {
   AdminContactsQueryRequest,
   ContactIdParamRequest,
   UpdateContactStatusRequest
-} from "@/types/modules/contact-admin";
+} from "./types";
 // config
 import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
 

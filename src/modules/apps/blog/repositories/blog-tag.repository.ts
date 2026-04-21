@@ -1,5 +1,5 @@
 // types
-import type { BlogTagDocument } from "@/types/modules/blog";
+import type { BlogTagDocument } from "../types";
 // models
 import BlogTagModel from "@/models/blog-tag";
 // others

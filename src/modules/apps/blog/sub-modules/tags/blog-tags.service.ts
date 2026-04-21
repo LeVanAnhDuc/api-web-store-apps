@@ -1,6 +1,6 @@
 // types
 import type { BlogTagRepository } from "../../repositories";
-import type { TagQuery } from "@/types/modules/blog";
+import type { TagQuery } from "../../types";
 import type { TagItemDto } from "../../dtos";
 // config
 import { ConflictRequestError } from "@/config/responses/error";

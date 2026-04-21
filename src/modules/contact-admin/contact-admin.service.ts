@@ -4,7 +4,7 @@ import type {
   AdminContactsQuery,
   PaginatedResult,
   ContactStatus
-} from "@/types/modules/contact-admin";
+} from "./types";
 import type { ContactRepository } from "./repositories";
 import type {
   SubmitContactResponseDto,
@@ -26,7 +26,7 @@ import {
 } from "./dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { CONTACT_STATUSES } from "@/constants/modules/contact-admin";
+import { CONTACT_STATUSES } from "./constants";
 import { buildContactFilter } from "./contact-admin.helper";
 
 const DEFAULT_PAGE = 1;

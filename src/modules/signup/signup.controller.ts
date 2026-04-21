@@ -6,7 +6,7 @@ import type {
   ResendOtpRequest,
   CompleteSignupRequest,
   CheckEmailRequest
-} from "@/types/modules/signup";
+} from "./types";
 import type { SignupService } from "./signup.service";
 // config
 import { OkSuccess, CreatedSuccess } from "@/config/responses/success";

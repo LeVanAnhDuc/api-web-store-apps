@@ -19,7 +19,7 @@ import {
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
-import { OTP_CONFIG } from "@/constants/modules/signup";
+import { OTP_CONFIG } from "./constants";
 
 const MAX_FAILED_ATTEMPTS = OTP_CONFIG.MAX_FAILED_ATTEMPTS;
 const LOCKOUT_DURATION_MINUTES = OTP_CONFIG.LOCKOUT_DURATION_MINUTES;

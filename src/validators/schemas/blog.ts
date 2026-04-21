@@ -1,7 +1,7 @@
 // libs
 import Joi from "joi";
 // others
-import { BLOG_VISIBILITY } from "@/constants/modules/blog";
+import { BLOG_VISIBILITY } from "@/modules/apps/blog/constants";
 
 const OBJECTID_PATTERN = /^[a-fA-F0-9]{24}$/;
 const VISIBILITY_VALUES = Object.values(BLOG_VISIBILITY);

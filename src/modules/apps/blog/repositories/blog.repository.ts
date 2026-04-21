@@ -1,7 +1,7 @@
 // types
 import type { Types } from "mongoose";
 import type { FilterQuery, SortOrder } from "mongoose";
-import type { BlogDocument, UpdateBlogDto } from "@/types/modules/blog";
+import type { BlogDocument, UpdateBlogDto } from "../types";
 // models
 import BlogModel from "@/models/blog";
 // others

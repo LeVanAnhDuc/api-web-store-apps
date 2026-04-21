@@ -1,5 +1,5 @@
 // types
-import type { BlogTagItem } from "@/types/modules/blog";
+import type { BlogTagItem } from "../types";
 
 export type CategoryItemDto = BlogTagItem;
 

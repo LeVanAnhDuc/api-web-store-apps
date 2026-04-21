@@ -50,7 +50,7 @@ import {
   handleInvalidMagicLink
 } from "./forgot-password.helper";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
-import { FORGOT_PASSWORD_OTP_CONFIG } from "@/constants/modules/forgot-password";
+import { FORGOT_PASSWORD_OTP_CONFIG } from "./constants";
 
 export class ForgotPasswordService {
   constructor(

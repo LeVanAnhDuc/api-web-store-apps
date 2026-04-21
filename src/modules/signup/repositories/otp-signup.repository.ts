@@ -4,7 +4,7 @@ import type { RedisClientType } from "redis";
 import { buildKey } from "@/utils/common";
 import { generateOtp } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
-import { OTP_CONFIG } from "@/constants/modules/signup";
+import { OTP_CONFIG } from "../constants";
 import { SIGNUP } from "@/constants/redis/store";
 
 const KEYS = {

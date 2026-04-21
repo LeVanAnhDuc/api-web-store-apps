@@ -1,7 +1,7 @@
 // libs
 import { Schema, model, type Model } from "mongoose";
 // types
-import type { BlogTagDocument } from "@/types/modules/blog";
+import type { BlogTagDocument } from "@/modules/apps/blog/types";
 // others
 import { MODEL_NAMES } from "@/constants/models";
 
