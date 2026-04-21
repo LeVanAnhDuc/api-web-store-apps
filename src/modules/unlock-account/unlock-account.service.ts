@@ -1,9 +1,6 @@
 // types
 import type { Request } from "express";
-import type {
-  UnlockRequestBody,
-  UnlockVerifyBody
-} from "@/types/modules/unlock-account";
+import type { UnlockRequestBody, UnlockVerifyBody } from "./types";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
