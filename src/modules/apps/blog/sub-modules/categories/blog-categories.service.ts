@@ -1,5 +1,5 @@
 // types
-import type { BlogCategoryRepository } from "../../repositories/blog-category.repository";
+import type { BlogCategoryRepository } from "../../repositories";
 import type { TagQuery } from "@/types/modules/blog";
 import type { CategoryItemDto } from "../../dtos";
 // config

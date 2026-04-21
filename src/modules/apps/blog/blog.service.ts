@@ -1,7 +1,7 @@
 // libs
 import { Types } from "mongoose";
 // types
-import type { BlogRepository } from "./repositories/blog.repository";
+import type { BlogRepository } from "./repositories";
 import type {
   CreateBlogDto,
   UpdateBlogDto,
