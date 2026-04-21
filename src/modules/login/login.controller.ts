@@ -6,7 +6,7 @@ import type {
   OtpVerifyRequest,
   MagicLinkSendRequest,
   MagicLinkVerifyRequest
-} from "@/types/modules/login";
+} from "./types";
 import type { LoginService } from "./services";
 // config
 import { OkSuccess } from "@/config/responses/success";

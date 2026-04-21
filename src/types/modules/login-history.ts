@@ -1,13 +1,15 @@
 // types
 import type { Schema, Document } from "mongoose";
 import type { Request } from "express";
-import type { LoginMethod } from "@/types/modules/login";
 import type {
+  LOGIN_METHODS,
   LOGIN_STATUSES,
   LOGIN_FAIL_REASONS,
   DEVICE_TYPES,
   CLIENT_TYPES
 } from "@/constants/modules/login-history";
+
+export type LoginMethod = (typeof LOGIN_METHODS)[keyof typeof LOGIN_METHODS];
 
 export interface PaginationParams {
   page: number;

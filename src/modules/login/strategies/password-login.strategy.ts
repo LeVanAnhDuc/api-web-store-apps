@@ -1,7 +1,7 @@
 // types
 import type { Request } from "express";
 import type { AuthenticationDocument } from "@/types/modules/authentication";
-import type { PasswordLoginBody } from "@/types/modules/login";
+import type { PasswordLoginBody } from "../types";
 import type { FailedAttemptsRepository } from "../repositories";
 import type { LoginResponseDto } from "../dtos";
 import type {

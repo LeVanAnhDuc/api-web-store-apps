@@ -1,6 +1,6 @@
 // types
-import type { LoginMethod } from "@/types/modules/login";
 import type {
+  LoginMethod,
   LoginStatus,
   LoginFailReason,
   DeviceType,

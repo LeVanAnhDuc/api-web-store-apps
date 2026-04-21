@@ -2,7 +2,7 @@
 import type { Request } from "express";
 import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { UserDocument } from "@/types/modules/user";
-import type { LoginMethod } from "@/types/modules/login";
+import type { LoginMethod } from "@/types/modules/login-history";
 import type { LoginResponseDto } from "../dtos";
 import type { LoginAuditService } from "./login-audit.service";
 // dtos

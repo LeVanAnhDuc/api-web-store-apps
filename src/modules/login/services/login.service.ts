@@ -6,7 +6,7 @@ import type {
   OtpVerifyBody,
   MagicLinkSendBody,
   MagicLinkVerifyBody
-} from "@/types/modules/login";
+} from "../types";
 import type { FailedAttemptsRepository } from "../repositories";
 import type { LoginResponseDto, OtpSendDto, MagicLinkSendDto } from "../dtos";
 import type {

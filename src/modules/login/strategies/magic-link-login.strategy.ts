@@ -1,9 +1,6 @@
 // types
 import type { Request } from "express";
-import type {
-  MagicLinkSendBody,
-  MagicLinkVerifyBody
-} from "@/types/modules/login";
+import type { MagicLinkSendBody, MagicLinkVerifyBody } from "../types";
 import type { MagicLinkLoginRepository } from "../repositories";
 import type { LoginResponseDto, MagicLinkSendDto } from "../dtos";
 import type {

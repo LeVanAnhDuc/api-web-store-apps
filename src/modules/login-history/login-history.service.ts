@@ -7,11 +7,11 @@ import type {
   ClientType,
   LoginHistoryQuery,
   LoginHistoryAdminQuery,
-  PaginatedResult
+  PaginatedResult,
+  LoginMethod,
+  LoginFailReason
 } from "@/types/modules/login-history";
-import type { LoginMethod } from "@/types/modules/login";
 import type { MyHistoryItemDto, AllHistoryItemDto } from "./dtos";
-import type { LoginFailReason } from "@/types/modules/login-history";
 // dtos
 import { toMyHistoryItemDto, toAllHistoryItemDto } from "./dtos";
 // others

@@ -1,7 +1,7 @@
 // types
 import type { Request } from "express";
 import type { AuthenticationDocument } from "@/types/modules/authentication";
-import type { LoginMethod } from "@/types/modules/login";
+import type { LoginMethod } from "@/types/modules/login-history";
 import type { LoginAuditService } from "../services/login-audit.service";
 // config
 import { UnauthorizedError } from "@/config/responses/error";
