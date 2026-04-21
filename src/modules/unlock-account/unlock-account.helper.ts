@@ -4,7 +4,7 @@ import crypto from "crypto";
 import type { AuthenticationDocument } from "@/types/modules/authentication";
 import type { UserService } from "@/modules/user/user.service";
 import type { UserWithAuth } from "@/types/modules/user";
-import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
+import type { UnlockAccountRepository } from "./repositories";
 // config
 import {
   BadRequestError,

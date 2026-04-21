@@ -7,7 +7,7 @@ import type { LoginService } from "@/modules/login/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
-import { RedisUnlockAccountRepository } from "./repositories/unlock-account.repository";
+import { RedisUnlockAccountRepository } from "./repositories";
 // others
 import { UnlockAccountService } from "./unlock-account.service";
 import { UnlockAccountController } from "./unlock-account.controller";

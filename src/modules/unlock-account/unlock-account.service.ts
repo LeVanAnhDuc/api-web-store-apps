@@ -8,7 +8,7 @@ import type { AuthenticationService } from "@/modules/authentication/authenticat
 import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/services";
-import type { UnlockAccountRepository } from "./repositories/unlock-account.repository";
+import type { UnlockAccountRepository } from "./repositories";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { UnlockRequestDto, UnlockVerifyDto } from "./dtos";
 // config
