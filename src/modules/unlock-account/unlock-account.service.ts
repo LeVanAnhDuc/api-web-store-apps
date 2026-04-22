@@ -2,17 +2,24 @@
 import type { Request } from "express";
 import type { UnlockRequestBody, UnlockVerifyBody } from "./types";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/services";
-import type { UnlockAccountRepository } from "./repositories";
+import type { UnlockAccountRepository } from "./unlock-account.repository";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { UnlockRequestDto, UnlockVerifyDto } from "./dtos";
+import type {
+  CooldownGuard,
+  RateLimitGuard,
+  AuthExistsGuard,
+  TempPasswordValidGuard
+} from "./guards";
 // config
 import ENV from "@/config/env";
 import { BadRequestError } from "@/config/responses/error";
 // dtos
 import { toUnlockRequestDto, toUnlockVerifyDto } from "./dtos";
+// helpers
+import { generateTempPassword } from "./helpers";
 // others
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -21,24 +28,22 @@ import { hashValue } from "@/utils/crypto/bcrypt";
 import { withRetry } from "@/utils/retry";
 import { generateAuthTokensResponse } from "@/utils/token";
 import { LOGIN_METHODS } from "@/constants/modules/login-history";
-import {
-  checkCooldown,
-  checkRateLimit,
-  ensureAuthExists,
-  ensureTempPasswordValid,
-  generateTempPassword
-} from "./unlock-account.helper";
 
 const TEMP_PASSWORD_EXPIRY_MINUTES = 15;
+const SECONDS_PER_MINUTE = 60;
+const MS_PER_SECOND = 1000;
 
 export class UnlockAccountService {
   constructor(
     private readonly authService: AuthenticationService,
-    private readonly userService: UserService,
     private readonly loginHistoryService: LoginHistoryService,
     private readonly loginService: LoginService,
     private readonly unlockAccountRepo: UnlockAccountRepository,
-    private readonly emailDispatcher: EmailDispatcher
+    private readonly emailDispatcher: EmailDispatcher,
+    private readonly cooldownGuard: CooldownGuard,
+    private readonly rateLimitGuard: RateLimitGuard,
+    private readonly authExistsGuard: AuthExistsGuard,
+    private readonly tempPasswordValidGuard: TempPasswordValidGuard
   ) {}
 
   async unlockRequest(
@@ -50,10 +55,10 @@ export class UnlockAccountService {
 
     Logger.info("Processing unlock request", { email });
 
-    await checkCooldown(this.unlockAccountRepo, email, t);
-    await checkRateLimit(this.unlockAccountRepo, email, t);
+    await this.cooldownGuard.assert(email, t);
+    await this.rateLimitGuard.assert(email, t);
 
-    const result = await this.userService.findByEmailWithAuth(email);
+    const result = await this.authExistsGuard.tryFind(email);
 
     if (!result) {
       Logger.warn("Unlock request for non-existent email", { email });
@@ -89,7 +94,8 @@ export class UnlockAccountService {
     const tempPassword = generateTempPassword();
     const tempPasswordHash = await hashValue(tempPassword);
     const tempPasswordExpAt = new Date(
-      Date.now() + TEMP_PASSWORD_EXPIRY_MINUTES * 60 * 1000
+      Date.now() +
+        TEMP_PASSWORD_EXPIRY_MINUTES * SECONDS_PER_MINUTE * MS_PER_SECOND
     );
 
     await this.authService.storeTempPassword(
@@ -129,9 +135,9 @@ export class UnlockAccountService {
 
     Logger.info("Processing unlock verify", { email });
 
-    const { auth, user } = await ensureAuthExists(this.userService, email, t);
+    const { auth, user } = await this.authExistsGuard.assert(email, t);
 
-    await ensureTempPasswordValid(auth, email, tempPassword, t);
+    await this.tempPasswordValidGuard.assert(auth, email, tempPassword, t);
 
     Logger.info("Temp password verified successfully", {
       email,

@@ -7,7 +7,14 @@ import type { LoginService } from "@/modules/login/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
-import { RedisUnlockAccountRepository } from "./repositories";
+import { RedisUnlockAccountRepository } from "./unlock-account.repository";
+// guards
+import {
+  CooldownGuard,
+  RateLimitGuard,
+  AuthExistsGuard,
+  TempPasswordValidGuard
+} from "./guards";
 // others
 import { UnlockAccountService } from "./unlock-account.service";
 import { UnlockAccountController } from "./unlock-account.controller";
@@ -24,13 +31,21 @@ export const createUnlockAccountModule = (
 ) => {
   const unlockAccountRepo = new RedisUnlockAccountRepository(redisClient);
 
+  const cooldownGuard = new CooldownGuard(unlockAccountRepo);
+  const rateLimitGuard = new RateLimitGuard(unlockAccountRepo);
+  const authExistsGuard = new AuthExistsGuard(userService);
+  const tempPasswordValidGuard = new TempPasswordValidGuard();
+
   const unlockAccountService = new UnlockAccountService(
     authService,
-    userService,
     loginHistorySvc,
     loginService,
     unlockAccountRepo,
-    emailDispatcher
+    emailDispatcher,
+    cooldownGuard,
+    rateLimitGuard,
+    authExistsGuard,
+    tempPasswordValidGuard
   );
   const unlockAccountController = new UnlockAccountController(
     unlockAccountService
