@@ -4,7 +4,7 @@ import type { Request, Response, NextFunction } from "express";
 import { ForbiddenError } from "@/config/responses/error";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 
 export const adminGuard = (
   req: Request,

@@ -7,7 +7,7 @@ import { ForbiddenError } from "@/config/responses/error";
 import ENV from "@/config/env";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/constants/modules/token";
+import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/modules/token/constants";
 
 const TOKEN_TYPES = {
   ACCESS: "ACCESS",

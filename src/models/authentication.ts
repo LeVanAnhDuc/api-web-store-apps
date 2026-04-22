@@ -4,7 +4,7 @@ import { Schema, model, type Model } from "mongoose";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 // others
 import { MODEL_NAMES } from "@/constants/models";
-import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 
 const { AUTHENTICATION } = MODEL_NAMES;
 

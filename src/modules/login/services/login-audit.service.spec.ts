@@ -6,7 +6,7 @@ import { LoginAuditService } from "./login-audit.service";
 import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS
-} from "@/constants/modules/login-history";
+} from "@/modules/login-history/constants";
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createLoginHistoryServiceMock } from "@test/mocks/login-history-service.mock";
 import { buildAuth, buildUser } from "@test/factories/user-with-auth.factory";

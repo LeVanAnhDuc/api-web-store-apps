@@ -12,7 +12,7 @@ import type { LoginService } from "./services";
 import { OkSuccess } from "@/config/responses/success";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
 // others
-import { REFRESH_TOKEN } from "@/constants/modules/token";
+import { REFRESH_TOKEN } from "@/modules/token/constants";
 
 export class LoginController {
   constructor(private readonly service: LoginService) {}

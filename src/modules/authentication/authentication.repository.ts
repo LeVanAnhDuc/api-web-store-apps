@@ -8,7 +8,7 @@ import type { ClientSession } from "mongoose";
 // models
 import AuthenticationModel from "@/models/authentication";
 // others
-import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 export type AuthenticationRepository = {

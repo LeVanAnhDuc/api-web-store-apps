@@ -1,6 +1,6 @@
 // others
-import { GENDERS } from "@/constants/modules/user";
-import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
+import { GENDERS } from "@/modules/user/constants";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 
 export const TEST_USERS = [
   {

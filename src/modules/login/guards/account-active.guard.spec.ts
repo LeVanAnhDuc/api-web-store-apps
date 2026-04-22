@@ -6,7 +6,7 @@ import { UnauthorizedError } from "@/config/responses/error";
 // others
 import { AccountActiveGuard } from "./account-active.guard";
 import { ERROR_CODES } from "@/constants/error-code";
-import { LOGIN_METHODS } from "@/constants/modules/login-history";
+import { LOGIN_METHODS } from "@/modules/login-history/constants";
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createLoginAuditServiceMock } from "@test/mocks/login-audit-service.mock";
 import { buildAuth } from "@test/factories/user-with-auth.factory";

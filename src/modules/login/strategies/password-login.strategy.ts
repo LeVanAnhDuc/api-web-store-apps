@@ -23,7 +23,7 @@ import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { formatDuration } from "../helpers";
-import { LOGIN_METHODS } from "@/constants/modules/login-history";
+import { LOGIN_METHODS } from "@/modules/login-history/constants";
 import { LOGIN_LOCKOUT } from "../constants";
 
 export class PasswordLoginStrategy {

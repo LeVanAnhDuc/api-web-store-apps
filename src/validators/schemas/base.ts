@@ -12,7 +12,7 @@ import {
   SAFE_EMAIL_PATTERN
 } from "@/validators/constants";
 // others
-import { GENDERS } from "@/constants/modules/user";
+import { GENDERS } from "@/modules/user/constants";
 import { getDateOfBirthBounds } from "@/utils/date";
 
 const GENDER_VALUES = Object.values(GENDERS);

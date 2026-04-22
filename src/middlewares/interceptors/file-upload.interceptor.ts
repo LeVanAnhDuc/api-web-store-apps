@@ -9,7 +9,7 @@ import type { Request, RequestHandler } from "express";
 import { BadRequestError } from "@/config/responses/error";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { USER_CONFIG } from "@/constants/modules/user";
+import { USER_CONFIG } from "@/modules/user/constants";
 import { BLOG_CONFIG } from "@/modules/apps/blog/constants";
 
 function detectImageMimeType(filePath: string): string | null {

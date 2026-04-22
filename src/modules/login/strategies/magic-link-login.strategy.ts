@@ -23,7 +23,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { withRetry } from "@/utils/retry";
 import { hashValue } from "@/utils/crypto/bcrypt";
-import { LOGIN_METHODS } from "@/constants/modules/login-history";
+import { LOGIN_METHODS } from "@/modules/login-history/constants";
 import { MAGIC_LINK_CONFIG } from "../constants";
 
 export class MagicLinkLoginStrategy {

@@ -6,7 +6,7 @@ import {
   LOGIN_METHODS,
   DEVICE_TYPES,
   CLIENT_TYPES
-} from "@/constants/modules/login-history";
+} from "@/modules/login-history/constants";
 
 const STATUS_VALUES = Object.values(LOGIN_STATUSES);
 const METHOD_VALUES = Object.values(LOGIN_METHODS);

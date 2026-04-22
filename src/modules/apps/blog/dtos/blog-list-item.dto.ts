@@ -6,7 +6,7 @@ import type {
   BlogCoverImage
 } from "../types";
 // others
-import { USER_CONFIG } from "@/constants/modules/user";
+import { USER_CONFIG } from "@/modules/user/constants";
 
 export type BlogListItemDto = BlogListItem;
 

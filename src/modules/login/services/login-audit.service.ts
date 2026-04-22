@@ -9,7 +9,7 @@ import { Logger } from "@/utils/logger";
 import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS
-} from "@/constants/modules/login-history";
+} from "@/modules/login-history/constants";
 
 export class LoginAuditService {
   constructor(private readonly historyService: LoginHistoryService) {}

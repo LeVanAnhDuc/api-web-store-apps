@@ -2,7 +2,7 @@
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { UserDocument, UserWithAuth } from "@/modules/user/types";
 // others
-import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 
 type AuthOverrides = Partial<AuthenticationDocument>;
 type UserOverrides = Partial<UserDocument>;

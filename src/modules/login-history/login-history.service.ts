@@ -18,7 +18,7 @@ import { toMyHistoryItemDto, toAllHistoryItemDto } from "./dtos";
 import {
   LOGIN_STATUSES,
   HTTP_HEADERS
-} from "@/constants/modules/login-history";
+} from "@/modules/login-history/constants";
 import { Logger } from "@/utils/logger";
 // helpers
 import {

@@ -22,7 +22,7 @@ import { UnauthorizedError } from "@/config/responses/error";
 import { MagicLinkLoginStrategy } from "./magic-link-login.strategy";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
-import { LOGIN_METHODS } from "@/constants/modules/login-history";
+import { LOGIN_METHODS } from "@/modules/login-history/constants";
 import { withRetry } from "@/utils/retry";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { makeMockRequest } from "@test/helpers/request.helper";

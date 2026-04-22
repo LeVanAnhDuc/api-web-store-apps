@@ -20,7 +20,7 @@ import {
 // others
 import { PasswordLoginStrategy } from "./password-login.strategy";
 import { ERROR_CODES } from "@/constants/error-code";
-import { LOGIN_METHODS } from "@/constants/modules/login-history";
+import { LOGIN_METHODS } from "@/modules/login-history/constants";
 import { LOGIN_LOCKOUT } from "../constants";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { formatDuration } from "../helpers";

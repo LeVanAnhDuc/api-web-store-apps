@@ -11,7 +11,7 @@ import {
   SAFE_EMAIL_PATTERN
 } from "@/validators/constants";
 // others
-import { GENDERS } from "@/constants/modules/user";
+import { GENDERS } from "@/modules/user/constants";
 import { MODEL_NAMES } from "@/constants/models";
 
 const { USER, AUTHENTICATION } = MODEL_NAMES;

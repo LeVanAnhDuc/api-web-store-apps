@@ -9,7 +9,7 @@ import {
   SAFE_ADDRESS_PATTERN
 } from "@/validators/constants";
 // others
-import { GENDERS } from "@/constants/modules/user";
+import { GENDERS } from "@/modules/user/constants";
 
 const GENDER_VALUES = Object.values(GENDERS);
 const ADDRESS_MAX_LENGTH = 500;

@@ -6,7 +6,7 @@ import type { LoginHistoryService } from "@/modules/login-history/login-history.
 import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS
-} from "@/constants/modules/login-history";
+} from "@/modules/login-history/constants";
 import { Logger } from "@/utils/logger";
 
 export class ForgotPasswordAuditService {

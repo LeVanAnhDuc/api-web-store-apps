@@ -27,7 +27,7 @@ import { Logger } from "@/utils/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { withRetry } from "@/utils/retry";
 import { generateAuthTokensResponse } from "@/utils/token";
-import { LOGIN_METHODS } from "@/constants/modules/login-history";
+import { LOGIN_METHODS } from "@/modules/login-history/constants";
 
 const TEMP_PASSWORD_EXPIRY_MINUTES = 15;
 const SECONDS_PER_MINUTE = 60;

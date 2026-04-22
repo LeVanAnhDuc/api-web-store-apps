@@ -18,7 +18,7 @@ import {
   HTTP_HEADERS,
   LOCALHOST_VALUES,
   PRIVATE_IP_PATTERNS
-} from "@/constants/modules/login-history";
+} from "@/modules/login-history/constants";
 import { Logger } from "@/utils/logger";
 
 const COMMA_SEPARATOR = ",";

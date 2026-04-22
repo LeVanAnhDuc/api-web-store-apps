@@ -7,7 +7,7 @@ import type {
   LOGIN_FAIL_REASONS,
   DEVICE_TYPES,
   CLIENT_TYPES
-} from "@/constants/modules/login-history";
+} from "@/modules/login-history/constants";
 
 export type LoginMethod = (typeof LOGIN_METHODS)[keyof typeof LOGIN_METHODS];
 

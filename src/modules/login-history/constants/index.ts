@@ -56,6 +56,7 @@ export const USER_AGENT_DEFAULTS = {
   UNKNOWN_OS: "UNKNOWN",
   UNKNOWN_BROWSER: "UNKNOWN"
 } as const;
+
 export const HTTP_HEADERS = {
   USER_AGENT: "user-agent",
   CLIENT_TYPE: "x-client-type",

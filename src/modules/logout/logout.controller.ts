@@ -6,7 +6,7 @@ import type { LogoutService } from "./logout.service";
 import { NoContentSuccess } from "@/config/responses/success";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
 // others
-import { REFRESH_TOKEN } from "@/constants/modules/token";
+import { REFRESH_TOKEN } from "@/modules/token/constants";
 
 export class LogoutController {
   constructor(private readonly service: LogoutService) {}

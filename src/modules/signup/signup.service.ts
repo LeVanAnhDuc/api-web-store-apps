@@ -42,7 +42,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
 import { hashValue } from "@/utils/crypto/bcrypt";
-import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { OTP_CONFIG, SESSION_CONFIG } from "./constants";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
 

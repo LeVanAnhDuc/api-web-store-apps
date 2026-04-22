@@ -4,7 +4,7 @@ import type { Request } from "express";
 import type { LoginAuditService } from "./login-audit.service";
 // others
 import { LoginCompletionService } from "./login-completion.service";
-import { LOGIN_METHODS } from "@/constants/modules/login-history";
+import { LOGIN_METHODS } from "@/modules/login-history/constants";
 import { generateAuthTokensResponse } from "@/utils/token";
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createLoginAuditServiceMock } from "@test/mocks/login-audit-service.mock";

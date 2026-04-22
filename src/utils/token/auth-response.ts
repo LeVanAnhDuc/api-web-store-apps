@@ -6,7 +6,7 @@ import {
   generateIdToken,
   generateRefreshToken
 } from "./jwt";
-import { TOKEN_EXPIRY } from "@/constants/modules/token";
+import { TOKEN_EXPIRY } from "@/modules/token/constants";
 
 export const generateAuthTokensResponse = ({
   userId,

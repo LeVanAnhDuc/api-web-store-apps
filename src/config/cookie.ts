@@ -3,7 +3,7 @@ import type { CookieOptions } from "express";
 // config
 import ENV from "@/config/env";
 // others
-import { TOKEN_EXPIRY } from "@/constants/modules/token";
+import { TOKEN_EXPIRY } from "@/modules/token/constants";
 
 const allowCrossOrigin = ENV.ALLOW_CROSS_ORIGIN_COOKIES === "true";
 
