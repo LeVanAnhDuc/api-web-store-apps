@@ -1,7 +1,7 @@
 // types
 import type { Schema } from "mongoose";
 import type { Request } from "express";
-import type { LoginHistoryRepository } from "./repositories";
+import type { LoginHistoryRepository } from "./login-history.repository";
 import type {
   LoginEventPayload,
   ClientType,
@@ -20,13 +20,14 @@ import {
   HTTP_HEADERS
 } from "@/constants/modules/login-history";
 import { Logger } from "@/utils/logger";
+// helpers
 import {
   extractIp,
   parseUserAgent,
   geoipLookup,
   determineClientType,
   buildLoginHistoryFilter
-} from "./login-history.helper";
+} from "./helpers";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;

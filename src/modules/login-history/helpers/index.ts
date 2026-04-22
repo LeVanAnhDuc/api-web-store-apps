@@ -8,7 +8,7 @@ import type {
   DeviceType,
   LoginHistoryAdminQuery
 } from "@/types/modules/login-history";
-import type { LoginHistoryFilter } from "./repositories";
+import type { LoginHistoryFilter } from "../login-history.repository";
 // others
 import {
   CLIENT_TYPES,
