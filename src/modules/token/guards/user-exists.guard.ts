@@ -1,5 +1,5 @@
 // types
-import type { UserDocument } from "@/types/modules/user";
+import type { UserDocument } from "@/modules/user/types";
 // config
 import { ForbiddenError } from "@/config/responses/error";
 // others

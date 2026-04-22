@@ -7,7 +7,7 @@ import type {
   UserRecord,
   UpdateProfileData,
   UserWithAuth
-} from "@/types/modules/user";
+} from "@/modules/user/types";
 import type { ClientSession } from "mongoose";
 import type { UserRepository } from "./user.repository";
 import type { MyProfileDto, PublicProfileDto, UploadAvatarDto } from "./dtos";

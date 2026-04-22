@@ -8,7 +8,7 @@ import type {
   CompleteSignupBody,
   CheckEmailParams
 } from "./types";
-import type { Gender } from "@/types/modules/user";
+import type { Gender } from "@/modules/user/types";
 import type { Schema } from "mongoose";
 import type { Request } from "express";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";

@@ -6,9 +6,9 @@ import type {
   DeviceType,
   ClientType,
   LoginHistoryDocument
-} from "@/types/modules/login-history";
+} from "@/modules/login-history/types";
 // others
-import { maskIp } from "../login-history.helper";
+import { maskIp } from "../helpers";
 
 export interface MyHistoryItemDto {
   _id: string;

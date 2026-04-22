@@ -57,22 +57,6 @@ export interface UpdateContactStatusRequest
   body: { status: ContactStatus };
 }
 
-// ─── v2.0 Response Types ───────────────────────────────────────────────────
-
-export interface ContactListItem {
-  _id: string;
-  email: string | null;
-  subject: string;
-  priority: ContactPriority;
-  status: ContactStatus;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ContactDetailItem extends ContactListItem {
-  message: string;
-}
-
 export interface PaginatedResult<T> {
   items: T[];
   meta: {

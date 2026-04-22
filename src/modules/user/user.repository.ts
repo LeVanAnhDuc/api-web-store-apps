@@ -6,8 +6,8 @@ import type {
   UpdateProfileData,
   PublicUserRecord,
   UserWithAuth
-} from "@/types/modules/user";
-import type { AuthenticationDocument } from "@/types/modules/authentication";
+} from "@/modules/user/types";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { ClientSession } from "mongoose";
 // models
 import UserModel from "@/models/user";

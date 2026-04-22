@@ -1,5 +1,5 @@
 // types
-import type { AuthenticationDocument } from "@/types/modules/authentication";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
 // config
 import { ForbiddenError } from "@/config/responses/error";
 // others

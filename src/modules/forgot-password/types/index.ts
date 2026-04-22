@@ -11,12 +11,6 @@ export type FPOtpSendRequest = Request<
   FPOtpSendBody
 >;
 
-export interface FPOtpSendResponse {
-  success: boolean;
-  expiresIn: number;
-  cooldown: number;
-}
-
 // ──────────────────────────────────────────────
 // OTP Verify
 // ──────────────────────────────────────────────
@@ -45,12 +39,6 @@ export type FPMagicLinkSendRequest = Request<
   unknown,
   FPMagicLinkSendBody
 >;
-
-export interface FPMagicLinkSendResponse {
-  success: boolean;
-  expiresIn: number;
-  cooldown: number;
-}
 
 // ──────────────────────────────────────────────
 // Magic Link Verify

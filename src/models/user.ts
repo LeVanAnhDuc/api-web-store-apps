@@ -1,7 +1,7 @@
 // libs
 import { Schema, model, type Model } from "mongoose";
 // types
-import type { UserDocument } from "@/types/modules/user";
+import type { UserDocument } from "@/modules/user/types";
 // validators
 import {
   FULLNAME_VALIDATION,

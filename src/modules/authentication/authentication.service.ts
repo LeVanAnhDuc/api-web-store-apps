@@ -3,7 +3,7 @@ import type {
   AuthenticationDocument,
   AuthenticationRecord,
   CreateAuthenticationData
-} from "@/types/modules/authentication";
+} from "@/modules/authentication/types";
 import type { ClientSession } from "mongoose";
 import type { AuthenticationRepository } from "./authentication.repository";
 // validators

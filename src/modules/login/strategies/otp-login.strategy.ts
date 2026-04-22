@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { AuthenticationDocument } from "@/types/modules/authentication";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { OtpSendBody, OtpVerifyBody } from "../types";
 import type { OtpLoginRepository } from "../repositories";
 import type { LoginResponseDto, OtpSendDto } from "../dtos";

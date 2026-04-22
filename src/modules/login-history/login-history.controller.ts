@@ -4,7 +4,7 @@ import type { LoginHistoryService } from "./login-history.service";
 import type {
   MyHistoryRequest,
   AllHistoryRequest
-} from "@/types/modules/login-history";
+} from "@/modules/login-history/types";
 // config
 import { OkSuccess } from "@/config/responses/success";
 

@@ -3,7 +3,7 @@ import type {
   AuthenticationDocument,
   AuthenticationRecord,
   CreateAuthenticationData
-} from "@/types/modules/authentication";
+} from "@/modules/authentication/types";
 import type { ClientSession } from "mongoose";
 // models
 import AuthenticationModel from "@/models/authentication";

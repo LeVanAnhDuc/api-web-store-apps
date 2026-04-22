@@ -5,7 +5,7 @@ import type {
   UpdateProfileRequest,
   UploadAvatarRequest,
   GetPublicProfileRequest
-} from "@/types/modules/user";
+} from "@/modules/user/types";
 import type { UserService } from "./user.service";
 // config
 import { OkSuccess } from "@/config/responses/success";

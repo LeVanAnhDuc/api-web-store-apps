@@ -6,7 +6,7 @@ import type {
   DeviceType,
   ClientType,
   LoginHistoryDocument
-} from "@/types/modules/login-history";
+} from "@/modules/login-history/types";
 
 export interface AllHistoryItemDto {
   _id: string;

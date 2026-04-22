@@ -5,7 +5,7 @@ import type { FilterQuery } from "mongoose";
 import type {
   CreateLoginHistoryData,
   LoginHistoryDocument
-} from "@/types/modules/login-history";
+} from "@/modules/login-history/types";
 // models
 import LoginHistoryModel from "@/models/login-history";
 // others

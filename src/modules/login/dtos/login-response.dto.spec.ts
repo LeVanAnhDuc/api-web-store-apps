@@ -1,5 +1,5 @@
 // types
-import type { AuthTokensResponse } from "@/types/modules/authentication";
+import type { AuthTokensResponse } from "@/modules/authentication/types";
 // dtos
 import { toLoginResponseDto } from "./login-response.dto";
 

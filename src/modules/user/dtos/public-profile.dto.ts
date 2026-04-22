@@ -1,5 +1,5 @@
 // types
-import type { PublicUserRecord } from "@/types/modules/user";
+import type { PublicUserRecord } from "@/modules/user/types";
 
 export interface PublicProfileDto {
   _id: string;

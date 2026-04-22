@@ -1,7 +1,7 @@
 // types
 import type { Request } from "express";
 import type { Schema } from "mongoose";
-import type { AuthenticationDocument } from "@/types/modules/authentication";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { GENDERS } from "@/constants/modules/user";
 
 export type Gender = (typeof GENDERS)[keyof typeof GENDERS];

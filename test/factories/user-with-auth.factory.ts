@@ -1,6 +1,6 @@
 // types
-import type { AuthenticationDocument } from "@/types/modules/authentication";
-import type { UserDocument, UserWithAuth } from "@/types/modules/user";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
+import type { UserDocument, UserWithAuth } from "@/modules/user/types";
 // others
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
 

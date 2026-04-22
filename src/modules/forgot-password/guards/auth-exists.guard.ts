@@ -1,6 +1,6 @@
 // types
 import type { UserService } from "@/modules/user/user.service";
-import type { UserWithAuth } from "@/types/modules/user";
+import type { UserWithAuth } from "@/modules/user/types";
 // config
 import { UnauthorizedError } from "@/config/responses/error";
 // others

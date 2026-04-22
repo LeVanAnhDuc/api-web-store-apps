@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { AuthenticationDocument } from "@/types/modules/authentication";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 // others
 import {

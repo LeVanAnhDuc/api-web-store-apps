@@ -10,7 +10,7 @@ import type {
   PaginatedResult,
   LoginMethod,
   LoginFailReason
-} from "@/types/modules/login-history";
+} from "@/modules/login-history/types";
 import type { MyHistoryItemDto, AllHistoryItemDto } from "./dtos";
 // dtos
 import { toMyHistoryItemDto, toAllHistoryItemDto } from "./dtos";

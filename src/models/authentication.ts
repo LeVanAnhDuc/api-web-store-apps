@@ -1,7 +1,7 @@
 // libs
 import { Schema, model, type Model } from "mongoose";
 // types
-import type { AuthenticationDocument } from "@/types/modules/authentication";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
 // others
 import { MODEL_NAMES } from "@/constants/models";
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";

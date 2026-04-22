@@ -1,7 +1,7 @@
 // libs
 import Joi from "joi";
 // types
-import type { UpdateProfileData } from "@/types/modules/user";
+import type { UpdateProfileData } from "@/modules/user/types";
 // validators
 import {
   FULLNAME_VALIDATION,

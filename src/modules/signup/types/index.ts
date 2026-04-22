@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { Gender } from "@/types/modules/user";
+import type { Gender } from "@/modules/user/types";
 
 export interface SendOtpBody {
   email: string;
@@ -49,37 +49,4 @@ export interface CompleteSignupRequest extends Omit<Request, "body"> {
 
 export interface CheckEmailRequest extends Omit<Request, "params"> {
   params: CheckEmailParams;
-}
-
-export interface OtpData {
-  hashedOtp: string;
-  expiresAt: number;
-  failedAttempts: number;
-  resendCount: number;
-}
-
-export interface SignupSession {
-  email: string;
-  verified: boolean;
-  sessionToken: string;
-  createdAt: number;
-  expiresAt: number;
-}
-
-export interface UserProfileData {
-  email: string;
-  fullName: string;
-  gender: Gender;
-  dateOfBirth: Date;
-  password: string;
-}
-
-export interface OtpVerificationResult {
-  verified: boolean;
-  remainingAttempts?: number;
-}
-
-export interface SessionCreationResult {
-  sessionToken: string;
-  expiresIn: number;
 }

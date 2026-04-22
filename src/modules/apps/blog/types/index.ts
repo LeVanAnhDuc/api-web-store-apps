@@ -159,10 +159,6 @@ export interface DeleteBlogRequest extends Omit<Request, "params" | "user"> {
   user: RequestUserPayload;
 }
 
-export interface BlogIdParamRequest extends Omit<Request, "params"> {
-  params: { id: string };
-}
-
 export interface SearchTagsRequest extends Omit<Request, "query"> {
   query: TagQuery;
 }
