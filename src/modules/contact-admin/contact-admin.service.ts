@@ -5,7 +5,7 @@ import type {
   PaginatedResult,
   ContactStatus
 } from "./types";
-import type { ContactRepository } from "./repositories";
+import type { ContactRepository } from "./contact.repository";
 import type {
   SubmitContactResponseDto,
   ContactListItemDto,
@@ -27,7 +27,8 @@ import {
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { CONTACT_STATUSES } from "./constants";
-import { buildContactFilter } from "./contact-admin.helper";
+// helpers
+import { buildContactFilter } from "./helpers";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;

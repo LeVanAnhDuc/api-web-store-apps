@@ -1,7 +1,7 @@
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
-import { MongoContactRepository } from "./repositories";
+import { MongoContactRepository } from "./contact.repository";
 // others
 import { ContactAdminService } from "./contact-admin.service";
 import { ContactAdminController } from "./contact-admin.controller";

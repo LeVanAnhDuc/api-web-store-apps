@@ -1,6 +1,6 @@
 // types
 import type { FilterQuery } from "mongoose";
-import type { AdminContactsQuery, ContactDocument } from "./types";
+import type { AdminContactsQuery, ContactDocument } from "../types";
 
 export const buildContactFilter = (
   query: AdminContactsQuery
