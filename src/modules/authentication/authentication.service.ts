@@ -5,7 +5,7 @@ import type {
   CreateAuthenticationData
 } from "@/types/modules/authentication";
 import type { ClientSession } from "mongoose";
-import type { AuthenticationRepository } from "./repositories";
+import type { AuthenticationRepository } from "./authentication.repository";
 // validators
 import { validateObjectId, validateRequiredString } from "@/validators/utils";
 // others

@@ -1,5 +1,5 @@
 // repositories
-import { MongoAuthenticationRepository } from "./repositories";
+import { MongoAuthenticationRepository } from "./authentication.repository";
 // others
 import { AuthenticationService } from "./authentication.service";
 
