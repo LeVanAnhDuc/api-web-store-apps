@@ -9,7 +9,7 @@ import type {
   UserWithAuth
 } from "@/types/modules/user";
 import type { ClientSession } from "mongoose";
-import type { UserRepository } from "./repositories";
+import type { UserRepository } from "./user.repository";
 import type { MyProfileDto, PublicProfileDto, UploadAvatarDto } from "./dtos";
 // config
 import { BadRequestError, NotFoundError } from "@/config/responses/error";
@@ -20,7 +20,8 @@ import { toMyProfileDto, toPublicProfileDto, toUploadAvatarDto } from "./dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
-import { buildAvatarUrl } from "./user.helper";
+// helpers
+import { buildAvatarUrl } from "./helpers";
 
 export class UserService {
   constructor(private readonly userRepo: UserRepository) {}
