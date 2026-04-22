@@ -1,0 +1,25 @@
+// types
+import type { AuthenticationDocument } from "@/types/modules/authentication";
+// config
+import { ForbiddenError } from "@/config/responses/error";
+// others
+import { ERROR_CODES } from "@/constants/error-code";
+import { Logger } from "@/utils/logger";
+
+export class AuthActiveGuard {
+  assert(
+    auth: AuthenticationDocument | null,
+    authId: string,
+    t: TranslateFunction
+  ): asserts auth is AuthenticationDocument {
+    if (!auth || !auth.isActive) {
+      Logger.warn("Token refresh rejected - account missing or inactive", {
+        authId
+      });
+      throw new ForbiddenError(
+        t("login:errors.invalidRefreshToken"),
+        ERROR_CODES.REFRESH_TOKEN_INVALID
+      );
+    }
+  }
+}
