@@ -1,3 +1,5 @@
+// libs
+import mongoose from "mongoose";
 // types
 import type {
   SendOtpBody,
@@ -6,6 +8,8 @@ import type {
   CompleteSignupBody,
   CheckEmailParams
 } from "./types";
+import type { Gender } from "@/types/modules/user";
+import type { Schema } from "mongoose";
 import type { Request } from "express";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/user.service";
@@ -21,8 +25,9 @@ import type {
   CompleteSignupDto,
   CheckEmailDto
 } from "./dtos";
+import type { EmailAvailableGuard, CooldownGuard } from "./guards";
 // config
-import { BadRequestError } from "@/config/responses/error";
+import { BadRequestError, InternalServerError } from "@/config/responses/error";
 // dtos
 import {
   toSendOtpDto,
@@ -36,23 +41,17 @@ import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { generateAuthTokensResponse } from "@/utils/token";
+import { hashValue } from "@/utils/crypto/bcrypt";
 import { AUTHENTICATION_ROLES } from "@/constants/modules/authentication";
 import { OTP_CONFIG, SESSION_CONFIG } from "./constants";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
-import {
-  ensureEmailAvailable,
-  ensureCooldownExpired,
-  createAndStoreOtp,
-  verifyOtpOrFail,
-  createAndStoreSession,
-  createUserAccount
-} from "./signup.helper";
 
 const OTP_EXPIRY_SECONDS = OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 const OTP_COOLDOWN_SECONDS = OTP_CONFIG.RESEND_COOLDOWN_SECONDS;
 const RESEND_WINDOW_SECONDS = MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
 const MAX_RESEND_COUNT = OTP_CONFIG.MAX_RESEND_COUNT;
 const MAX_FAILED_ATTEMPTS = OTP_CONFIG.MAX_FAILED_ATTEMPTS;
+const LOCKOUT_DURATION_MINUTES = OTP_CONFIG.LOCKOUT_DURATION_MINUTES;
 const SESSION_EXPIRY_SECONDS =
   SESSION_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
 
@@ -62,7 +61,9 @@ export class SignupService {
     private readonly userService: UserService,
     private readonly otpSignupRepo: OtpSignupRepository,
     private readonly sessionSignupRepo: SessionSignupRepository,
-    private readonly emailDispatcher: EmailDispatcher
+    private readonly emailDispatcher: EmailDispatcher,
+    private readonly emailAvailableGuard: EmailAvailableGuard,
+    private readonly cooldownGuard: CooldownGuard
   ) {}
 
   async sendOtp(body: SendOtpBody, req: Request): Promise<SendOtpDto> {
@@ -71,11 +72,10 @@ export class SignupService {
 
     Logger.info("SendOtp initiated", { email });
 
-    await ensureCooldownExpired(this.otpSignupRepo, email, t);
-    await ensureEmailAvailable(this.userService, email, t);
+    await this.cooldownGuard.assert(email, t);
+    await this.emailAvailableGuard.assert(email, t);
 
-    const otp = await createAndStoreOtp(
-      this.otpSignupRepo,
+    const otp = await this.otpSignupRepo.createAndStoreOtp(
       email,
       OTP_EXPIRY_SECONDS
     );
@@ -118,10 +118,9 @@ export class SignupService {
       );
     }
 
-    await verifyOtpOrFail(this.otpSignupRepo, email, otp, t);
+    await this.verifyOtpOrFail(email, otp, t);
 
-    const sessionToken = await createAndStoreSession(
-      this.sessionSignupRepo,
+    const sessionToken = await this.sessionSignupRepo.createAndStore(
       email,
       SESSION_EXPIRY_SECONDS
     );
@@ -142,7 +141,7 @@ export class SignupService {
 
     Logger.info("ResendOtp initiated", { email });
 
-    await ensureCooldownExpired(this.otpSignupRepo, email, t);
+    await this.cooldownGuard.assert(email, t);
 
     const exceeded = await this.otpSignupRepo.hasExceededResendLimit(
       email,
@@ -159,10 +158,9 @@ export class SignupService {
       );
     }
 
-    await ensureEmailAvailable(this.userService, email, t);
+    await this.emailAvailableGuard.assert(email, t);
 
-    const otp = await createAndStoreOtp(
-      this.otpSignupRepo,
+    const otp = await this.otpSignupRepo.createAndStoreOtp(
       email,
       OTP_EXPIRY_SECONDS
     );
@@ -220,11 +218,9 @@ export class SignupService {
       );
     }
 
-    await ensureEmailAvailable(this.userService, email, t);
+    await this.emailAvailableGuard.assert(email, t);
 
-    const account = await createUserAccount(
-      this.authService,
-      this.userService,
+    const account = await this.createUserAccount(
       email,
       password,
       fullName,
@@ -265,5 +261,89 @@ export class SignupService {
     Logger.info("CheckEmail completed", { email });
 
     return toCheckEmailDto(!exists);
+  }
+
+  private async verifyOtpOrFail(
+    email: string,
+    otp: string,
+    t: TranslateFunction
+  ): Promise<void> {
+    const isValid = await this.otpSignupRepo.verify(email, otp);
+    if (isValid) return;
+
+    const failedCount = await this.otpSignupRepo.incrementFailedAttempts(
+      email,
+      LOCKOUT_DURATION_MINUTES
+    );
+    Logger.warn("Invalid OTP attempt", {
+      email,
+      failedCount,
+      lockoutDurationMinutes: LOCKOUT_DURATION_MINUTES
+    });
+
+    const remaining = MAX_FAILED_ATTEMPTS - failedCount;
+
+    if (remaining > 0) {
+      throw new BadRequestError(
+        t("signup:errors.invalidOtpWithRemaining", { remaining }),
+        ERROR_CODES.SIGNUP_OTP_INVALID
+      );
+    }
+
+    throw new BadRequestError(
+      t("signup:errors.otpAttemptsExceeded"),
+      ERROR_CODES.SIGNUP_OTP_LOCKED
+    );
+  }
+
+  private async createUserAccount(
+    email: string,
+    password: string,
+    fullName: string,
+    gender: Gender,
+    dateOfBirth: string
+  ): Promise<{
+    authId: Schema.Types.ObjectId;
+    userId: Schema.Types.ObjectId;
+    email: string;
+    fullName: string;
+  }> {
+    const session = await mongoose.startSession();
+
+    try {
+      const result = await session.withTransaction(async () => {
+        const hashedPassword = hashValue(password);
+        const auth = await this.authService.create({ hashedPassword }, session);
+        Logger.debug("Auth record created", {
+          email,
+          authId: auth._id.toString()
+        });
+
+        const user = await this.userService.createProfile(
+          {
+            authId: auth._id,
+            email,
+            fullName,
+            gender,
+            dateOfBirth: new Date(dateOfBirth)
+          },
+          session
+        );
+        Logger.info("User profile created", {
+          userId: user._id.toString(),
+          authId: auth._id.toString()
+        });
+
+        return { authId: auth._id, userId: user._id, email, fullName };
+      });
+
+      if (!result) {
+        throw new InternalServerError("Signup transaction was aborted");
+      }
+
+      return result;
+    } finally {
+      await session.endSession();
+    }
   }
 }

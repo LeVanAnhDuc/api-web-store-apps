@@ -9,6 +9,8 @@ import {
   RedisOtpSignupRepository,
   RedisSessionSignupRepository
 } from "./repositories";
+// guards
+import { EmailAvailableGuard, CooldownGuard } from "./guards";
 // others
 import { SignupService } from "./signup.service";
 import { SignupController } from "./signup.controller";
@@ -24,12 +26,17 @@ export const createSignupModule = (
   const otpSignupRepo = new RedisOtpSignupRepository(redisClient);
   const sessionSignupRepo = new RedisSessionSignupRepository(redisClient);
 
+  const emailAvailableGuard = new EmailAvailableGuard(userService);
+  const cooldownGuard = new CooldownGuard(otpSignupRepo);
+
   const signupService = new SignupService(
     authService,
     userService,
     otpSignupRepo,
     sessionSignupRepo,
-    emailDispatcher
+    emailDispatcher,
+    emailAvailableGuard,
+    cooldownGuard
   );
   const signupController = new SignupController(signupService);
 

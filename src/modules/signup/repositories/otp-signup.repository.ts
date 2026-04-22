@@ -18,6 +18,7 @@ export type OtpSignupRepository = {
   createOtp(): string;
   storeHashed(email: string, otp: string, expiry: number): Promise<void>;
   clearOtp(email: string): Promise<void>;
+  createAndStoreOtp(email: string, expiry: number): Promise<string>;
   verify(email: string, otp: string): Promise<boolean>;
   checkCooldown(email: string): Promise<boolean>;
   getCooldownRemaining(email: string): Promise<number>;
@@ -69,6 +70,13 @@ export class RedisOtpSignupRepository implements OtpSignupRepository {
   async clearOtp(email: string): Promise<void> {
     const key = this.otpKey(email);
     await this.client.del(key);
+  }
+
+  async createAndStoreOtp(email: string, expiry: number): Promise<string> {
+    const otp = this.createOtp();
+    await this.clearOtp(email);
+    await this.storeHashed(email, otp, expiry);
+    return otp;
   }
 
   async verify(email: string, otp: string): Promise<boolean> {

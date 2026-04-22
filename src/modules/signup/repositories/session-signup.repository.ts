@@ -13,6 +13,7 @@ const KEYS = {
 export type SessionSignupRepository = {
   createToken(): string;
   store(email: string, sessionId: string, expiry: number): Promise<void>;
+  createAndStore(email: string, expiry: number): Promise<string>;
   verify(email: string, sessionId: string): Promise<boolean>;
   clear(email: string): Promise<void>;
 };
@@ -31,6 +32,12 @@ export class RedisSessionSignupRepository implements SessionSignupRepository {
   async store(email: string, sessionId: string, expiry: number): Promise<void> {
     const key = this.sessionKey(email);
     await this.client.setEx(key, expiry, sessionId);
+  }
+
+  async createAndStore(email: string, expiry: number): Promise<string> {
+    const token = this.createToken();
+    await this.store(email, token, expiry);
+    return token;
   }
 
   async verify(email: string, sessionId: string): Promise<boolean> {
