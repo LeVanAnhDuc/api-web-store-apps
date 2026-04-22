@@ -7,7 +7,7 @@ import type {
   FPMagicLinkVerifyRequest,
   FPResetPasswordRequest
 } from "./types";
-import type { ForgotPasswordService } from "./forgot-password.service";
+import type { ForgotPasswordService } from "./services";
 // config
 import { OkSuccess } from "@/config/responses/success";
 
