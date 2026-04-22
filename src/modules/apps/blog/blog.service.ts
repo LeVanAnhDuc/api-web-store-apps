@@ -20,6 +20,7 @@ import { toBlogListItemDto, toBlogDetailDto, toDeleteBlogDto } from "./dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { BLOG_COVER_TYPE, BLOG_VISIBILITY } from "./constants";
+// helpers
 import {
   generateBaseSlug,
   appendTimestampToSlug,
@@ -27,7 +28,7 @@ import {
   deleteUploadedFile,
   buildBlogFilter,
   buildBlogSort
-} from "./blog.helper";
+} from "./helpers";
 
 type RequestUser = Pick<RequestUserPayload, "sub" | "roles">;
 

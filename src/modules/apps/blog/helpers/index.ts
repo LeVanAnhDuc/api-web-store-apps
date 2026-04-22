@@ -5,9 +5,9 @@ import fs from "fs";
 import { Types } from "mongoose";
 // types
 import type { FilterQuery, SortOrder } from "mongoose";
-import type { BlogDocument, BlogQuery } from "./types";
+import type { BlogDocument, BlogQuery } from "../types";
 // others
-import { BLOG_COVER_TYPE, BLOG_VISIBILITY } from "./constants";
+import { BLOG_COVER_TYPE, BLOG_VISIBILITY } from "../constants";
 
 type RequestUser = Pick<RequestUserPayload, "sub" | "roles">;
 
