@@ -1,7 +1,7 @@
 // libs
 import { Types } from "mongoose";
-// config
-import { BadRequestError } from "@/config/responses/error";
+// common
+import { BadRequestError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { EMAIL_FORMAT_PATTERN, EMAIL_VALIDATION } from "./constants";

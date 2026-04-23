@@ -2,15 +2,6 @@
 import { Router } from "express";
 // types
 import type { BlogController } from "./blog.controller";
-// middlewares
-import {
-  authGuard,
-  bodyPipe,
-  optionalAuthGuard,
-  paramsPipe,
-  queryPipe,
-  uploadBlogCover
-} from "@/middlewares";
 // validators
 import {
   createBlogSchema,
@@ -19,6 +10,14 @@ import {
   blogIdParamSchema
 } from "@/validators/schemas/blog";
 // others
+import {
+  authGuard,
+  bodyPipe,
+  optionalAuthGuard,
+  paramsPipe,
+  queryPipe,
+  uploadBlogCover
+} from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createBlogRoutes = (

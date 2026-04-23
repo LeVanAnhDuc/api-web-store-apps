@@ -1,7 +1,10 @@
 // libs
 import Joi from "joi";
+// modules
+import { GENDERS } from "@/modules/user/constants";
 // validators
 import {
+  AGE_VALIDATION,
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN,
   EMAIL_VALIDATION,
@@ -11,11 +14,17 @@ import {
   PASSWORD_VALIDATION,
   SAFE_EMAIL_PATTERN
 } from "@/validators/constants";
-// others
-import { GENDERS } from "@/modules/user/constants";
-import { getDateOfBirthBounds } from "@/utils/date";
 
 const GENDER_VALUES = Object.values(GENDERS);
+
+const getDateOfBirthBounds = (): { minDate: Date; maxDate: Date } => {
+  const now = new Date();
+  const maxDate = new Date(now);
+  maxDate.setFullYear(maxDate.getFullYear() - AGE_VALIDATION.MIN_AGE);
+  const minDate = new Date(now);
+  minDate.setFullYear(minDate.getFullYear() - AGE_VALIDATION.MAX_AGE);
+  return { minDate, maxDate };
+};
 
 export const emailSchema = Joi.string()
   .trim()

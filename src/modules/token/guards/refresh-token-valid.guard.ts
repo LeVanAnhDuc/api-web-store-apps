@@ -1,8 +1,8 @@
-// config
-import { ForbiddenError } from "@/config/responses/error";
+// common
+import { ForbiddenError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { verifyRefreshToken } from "@/utils/token";
+import { verifyRefreshToken } from "../helpers";
 import { Logger } from "@/utils/logger";
 
 export class RefreshTokenValidGuard {

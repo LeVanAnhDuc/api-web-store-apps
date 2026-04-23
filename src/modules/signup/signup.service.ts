@@ -1,6 +1,10 @@
 // libs
 import mongoose from "mongoose";
 // types
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { Gender } from "@/modules/user/types";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type {
   SendOtpBody,
   VerifyOtpBody,
@@ -8,12 +12,8 @@ import type {
   CompleteSignupBody,
   CheckEmailParams
 } from "./types";
-import type { Gender } from "@/modules/user/types";
 import type { Schema } from "mongoose";
 import type { Request } from "express";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/user.service";
-import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type {
   OtpSignupRepository,
   SessionSignupRepository
@@ -26,8 +26,11 @@ import type {
   CheckEmailDto
 } from "./dtos";
 import type { EmailAvailableGuard, CooldownGuard } from "./guards";
-// config
-import { BadRequestError, InternalServerError } from "@/config/responses/error";
+// common
+import { BadRequestError, InternalServerError } from "@/common/exceptions";
+// modules
+import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // dtos
 import {
   toSendOtpDto,
@@ -40,9 +43,7 @@ import {
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
-import { generateAuthTokensResponse } from "@/utils/token";
 import { hashValue } from "@/utils/crypto/bcrypt";
-import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { OTP_CONFIG, SESSION_CONFIG } from "./constants";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
 

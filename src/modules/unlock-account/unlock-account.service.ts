@@ -1,11 +1,11 @@
 // types
-import type { Request } from "express";
-import type { UnlockRequestBody, UnlockVerifyBody } from "./types";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/services";
+import type { Request } from "express";
+import type { UnlockRequestBody, UnlockVerifyBody } from "./types";
 import type { UnlockAccountRepository } from "./unlock-account.repository";
-import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { UnlockRequestDto, UnlockVerifyDto } from "./dtos";
 import type {
   CooldownGuard,
@@ -13,21 +13,21 @@ import type {
   AuthExistsGuard,
   TempPasswordValidGuard
 } from "./guards";
-// config
-import ENV from "@/config/env";
-import { BadRequestError } from "@/config/responses/error";
+// common
+import { BadRequestError } from "@/common/exceptions";
+// modules
+import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
+import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // dtos
 import { toUnlockRequestDto, toUnlockVerifyDto } from "./dtos";
-// helpers
-import { generateTempPassword } from "./helpers";
 // others
+import ENV from "@/constants/env";
+import { generateTempPassword } from "./helpers";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
-import { withRetry } from "@/utils/retry";
-import { generateAuthTokensResponse } from "@/utils/token";
-import { LOGIN_METHODS } from "@/modules/login-history/constants";
+import { withRetry } from "@/utils/resilience/retry";
 
 const TEMP_PASSWORD_EXPIRY_MINUTES = 15;
 const SECONDS_PER_MINUTE = 60;

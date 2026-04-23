@@ -2,8 +2,7 @@
 import { Schema, model, type Model } from "mongoose";
 // types
 import type { LoginHistoryDocument } from "@/modules/login-history/types";
-// others
-import { MODEL_NAMES } from "@/constants/models";
+// modules
 import {
   LOGIN_METHODS,
   LOGIN_STATUSES,
@@ -13,6 +12,8 @@ import {
   GEO_DEFAULTS,
   LOGIN_HISTORY_CONFIG
 } from "@/modules/login-history/constants";
+// others
+import { MODEL_NAMES } from "@/constants/models";
 
 const { LOGIN_HISTORY, AUTHENTICATION } = MODEL_NAMES;
 

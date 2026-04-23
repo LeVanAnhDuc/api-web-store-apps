@@ -1,7 +1,7 @@
 // types
 import type { AuthenticationDocument } from "@/modules/authentication/types";
-// config
-import { UnauthorizedError } from "@/config/responses/error";
+// common
+import { UnauthorizedError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";

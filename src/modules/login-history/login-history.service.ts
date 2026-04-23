@@ -12,13 +12,14 @@ import type {
   LoginFailReason
 } from "@/modules/login-history/types";
 import type { MyHistoryItemDto, AllHistoryItemDto } from "./dtos";
-// dtos
-import { toMyHistoryItemDto, toAllHistoryItemDto } from "./dtos";
-// others
+// modules
 import {
   LOGIN_STATUSES,
   HTTP_HEADERS
 } from "@/modules/login-history/constants";
+// dtos
+import { toMyHistoryItemDto, toAllHistoryItemDto } from "./dtos";
+// others
 import { Logger } from "@/utils/logger";
 // helpers
 import {

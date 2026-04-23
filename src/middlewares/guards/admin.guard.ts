@@ -1,10 +1,11 @@
 // types
 import type { Request, Response, NextFunction } from "express";
-// config
-import { ForbiddenError } from "@/config/responses/error";
+// common
+import { ForbiddenError } from "@/common/exceptions";
+// modules
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 
 export const adminGuard = (
   req: Request,

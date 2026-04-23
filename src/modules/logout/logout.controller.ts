@@ -2,10 +2,10 @@
 import type { Response } from "express";
 import type { LogoutRequest } from "./types";
 import type { LogoutService } from "./logout.service";
-// config
-import { NoContentSuccess } from "@/config/responses/success";
-import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
-// others
+// common
+import { NoContentSuccess } from "@/common/responses";
+// modules
+import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/modules/token/constants";
 import { REFRESH_TOKEN } from "@/modules/token/constants";
 
 export class LogoutController {

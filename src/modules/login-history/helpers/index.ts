@@ -9,7 +9,7 @@ import type {
   LoginHistoryAdminQuery
 } from "@/modules/login-history/types";
 import type { LoginHistoryFilter } from "../login-history.repository";
-// others
+// modules
 import {
   CLIENT_TYPES,
   DEVICE_TYPES,
@@ -19,6 +19,7 @@ import {
   LOCALHOST_VALUES,
   PRIVATE_IP_PATTERNS
 } from "@/modules/login-history/constants";
+// others
 import { Logger } from "@/utils/logger";
 
 const COMMA_SEPARATOR = ",";

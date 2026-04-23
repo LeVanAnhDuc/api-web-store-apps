@@ -1,5 +1,5 @@
 // others
-import { Logger } from "./logger";
+import { Logger } from "@/utils/logger";
 
 /**
  * State machine 3 trang thai:

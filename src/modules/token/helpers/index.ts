@@ -2,12 +2,12 @@
 import jwt, { type Secret } from "jsonwebtoken";
 // types
 import type { StringValue } from "ms";
-// config
-import { ForbiddenError } from "@/config/responses/error";
-import ENV from "@/config/env";
+// common
+import { ForbiddenError } from "@/common/exceptions";
 // others
+import ENV from "@/constants/env";
 import { ERROR_CODES } from "@/constants/error-code";
-import { TOKEN_EXPIRY, TOKEN_ERRORS } from "@/modules/token/constants";
+import { TOKEN_EXPIRY, TOKEN_ERRORS } from "../constants";
 
 const TOKEN_TYPES = {
   ACCESS: "ACCESS",

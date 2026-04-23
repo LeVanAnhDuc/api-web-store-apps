@@ -1,7 +1,7 @@
 // types
 import type { ValidationErrorItem } from "@/types/common";
-// config
-import { REASON_PHRASES, STATUS_CODES } from "@/config/http";
+// common
+import { REASON_PHRASES, STATUS_CODES } from "@/common/http";
 
 export class ErrorResponse extends Error {
   readonly status: number;

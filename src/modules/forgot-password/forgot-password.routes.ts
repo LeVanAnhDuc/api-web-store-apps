@@ -3,8 +3,6 @@ import { Router } from "express";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ForgotPasswordController } from "./forgot-password.controller";
-// middlewares
-import { bodyPipe } from "@/middlewares";
 // validators
 import {
   fpOtpSendSchema,
@@ -14,6 +12,7 @@ import {
   fpResetPasswordSchema
 } from "@/validators/schemas/forgot-password";
 // others
+import { bodyPipe } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createForgotPasswordRoutes = (

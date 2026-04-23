@@ -1,8 +1,8 @@
 // types
 import type { Request, Response } from "express";
 import type { TokenService } from "./token.service";
-// config
-import { OkSuccess } from "@/config/responses/success";
+// common
+import { OkSuccess } from "@/common/responses";
 
 export class TokenController {
   constructor(private readonly service: TokenService) {}

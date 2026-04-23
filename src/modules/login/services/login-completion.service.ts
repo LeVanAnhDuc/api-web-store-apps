@@ -5,10 +5,10 @@ import type { UserDocument } from "@/modules/user/types";
 import type { LoginMethod } from "@/modules/login-history/types";
 import type { LoginResponseDto } from "../dtos";
 import type { LoginAuditService } from "./login-audit.service";
+// modules
+import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 // dtos
 import { toLoginResponseDto } from "../dtos";
-// others
-import { generateAuthTokensResponse } from "@/utils/token";
 
 export class LoginCompletionService {
   constructor(private readonly audit: LoginAuditService) {}

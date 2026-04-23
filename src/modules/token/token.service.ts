@@ -9,10 +9,11 @@ import type {
   PasswordNotChangedGuard,
   UserExistsGuard
 } from "./guards";
+// modules
+import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 // dtos
 import { toRefreshTokenDto } from "./dtos";
 // others
-import { generateAuthTokensResponse } from "@/utils/token";
 import { Logger } from "@/utils/logger";
 
 export class TokenService {

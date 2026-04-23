@@ -2,6 +2,8 @@
 import { Schema, model, type Model } from "mongoose";
 // types
 import type { UserDocument } from "@/modules/user/types";
+// modules
+import { GENDERS } from "@/modules/user/constants";
 // validators
 import {
   FULLNAME_VALIDATION,
@@ -11,7 +13,6 @@ import {
   SAFE_EMAIL_PATTERN
 } from "@/validators/constants";
 // others
-import { GENDERS } from "@/modules/user/constants";
 import { MODEL_NAMES } from "@/constants/models";
 
 const { USER, AUTHENTICATION } = MODEL_NAMES;

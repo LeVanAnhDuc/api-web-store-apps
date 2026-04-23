@@ -2,15 +2,15 @@ jest.mock("../helpers");
 // types
 import type { Request } from "express";
 import type { FailedAttemptsRepository } from "../repositories";
-// config
-import { TooManyRequestsError } from "@/config/responses/error";
+// common
+import { TooManyRequestsError } from "@/common/exceptions";
 // others
+import { makeMockRequest } from "@test/helpers/request.helper";
+import { createFailedAttemptsRepoMock } from "@test/mocks/failed-attempts-repo.mock";
 import { PasswordLockoutGuard } from "./password-lockout.guard";
 import { ERROR_CODES } from "@/constants/error-code";
 import { LOGIN_LOCKOUT } from "../constants";
 import { formatDuration } from "../helpers";
-import { makeMockRequest } from "@test/helpers/request.helper";
-import { createFailedAttemptsRepoMock } from "@test/mocks/failed-attempts-repo.mock";
 
 const mockedFormatDuration = formatDuration as jest.MockedFunction<
   typeof formatDuration

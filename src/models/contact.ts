@@ -2,13 +2,14 @@
 import { Schema, model, type Model } from "mongoose";
 // types
 import type { ContactDocument } from "@/modules/contact-admin/types";
-// validators
-import { CONTACT_CONFIG, EMAIL_FORMAT_PATTERN } from "@/validators/constants";
-// others
+// modules
 import {
   CONTACT_PRIORITIES,
   CONTACT_STATUSES
 } from "@/modules/contact-admin/constants";
+// validators
+import { CONTACT_CONFIG, EMAIL_FORMAT_PATTERN } from "@/validators/constants";
+// others
 import { MODEL_NAMES } from "@/constants/models";
 
 const { CONTACT } = MODEL_NAMES;

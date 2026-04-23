@@ -2,11 +2,10 @@
 import { Router } from "express";
 // types
 import type { BlogTagsController } from "./blog-tags.controller";
-// middlewares
-import { authGuard, bodyPipe, queryPipe } from "@/middlewares";
 // validators
 import { tagQuerySchema, createTagSchema } from "@/validators/schemas/blog";
 // others
+import { authGuard, bodyPipe, queryPipe } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createBlogTagsRoutes = (

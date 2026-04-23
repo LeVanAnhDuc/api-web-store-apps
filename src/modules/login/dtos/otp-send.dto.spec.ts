@@ -1,4 +1,4 @@
-// dtos
+// others
 import { toOtpSendDto } from "./otp-send.dto";
 
 describe("toOtpSendDto", () => {

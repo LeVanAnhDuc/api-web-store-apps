@@ -1,7 +1,7 @@
 // types
 import type { UserService } from "@/modules/user/user.service";
-// config
-import { ConflictRequestError } from "@/config/responses/error";
+// common
+import { ConflictRequestError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";

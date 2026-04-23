@@ -7,8 +7,9 @@ import type {
   CompleteSignupBody,
   CheckEmailParams
 } from "@/modules/signup/types";
-// others
+// modules
 import { SESSION_CONFIG } from "@/modules/signup/constants";
+// others
 import {
   emailSchema,
   passwordSchema,

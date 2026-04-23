@@ -1,7 +1,7 @@
 // types
 import type { RedisClientType } from "redis";
 // others
-import { buildKey } from "@/utils/common";
+import { buildKey } from "@/utils/redis/key-builder";
 import { generateOtp } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/utils/logger";

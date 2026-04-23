@@ -1,6 +1,6 @@
 // types
 import type { AuthTokensResponse } from "@/modules/authentication/types";
-// dtos
+// others
 import { toLoginResponseDto } from "./login-response.dto";
 
 describe("toLoginResponseDto", () => {

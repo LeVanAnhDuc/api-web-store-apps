@@ -7,8 +7,8 @@ import type {
   ContactIdParamRequest,
   UpdateContactStatusRequest
 } from "./types";
-// config
-import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
+// common
+import { OkSuccess, CreatedSuccess } from "@/common/responses";
 
 export class ContactAdminController {
   constructor(private readonly service: ContactAdminService) {}

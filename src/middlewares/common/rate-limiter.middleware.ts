@@ -4,8 +4,8 @@ import RedisStore from "rate-limit-redis";
 // types
 import type { Request, Response } from "express";
 import type { createClient } from "redis";
-// config
-import { TooManyRequestsError } from "@/config/responses/error";
+// common
+import { TooManyRequestsError } from "@/common/exceptions";
 // others
 import { RATE_LIMIT_CONFIG } from "@/constants/redis/rate-limit";
 

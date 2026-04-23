@@ -11,8 +11,8 @@ import type {
 import type { ClientSession } from "mongoose";
 import type { UserRepository } from "./user.repository";
 import type { MyProfileDto, PublicProfileDto, UploadAvatarDto } from "./dtos";
-// config
-import { BadRequestError, NotFoundError } from "@/config/responses/error";
+// common
+import { BadRequestError, NotFoundError } from "@/common/exceptions";
 // validators
 import { validateEmail, validateObjectId } from "@/validators/utils";
 // dtos
@@ -20,7 +20,6 @@ import { toMyProfileDto, toPublicProfileDto, toUploadAvatarDto } from "./dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
-// helpers
 import { buildAvatarUrl } from "./helpers";
 
 export class UserService {

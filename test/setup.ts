@@ -18,7 +18,7 @@ jest.mock("@/utils/logger", () => ({
   }
 }));
 
-jest.mock("@/config/env", () => ({
+jest.mock("@/constants/env", () => ({
   __esModule: true,
   default: {
     NODE_ENV: "test",

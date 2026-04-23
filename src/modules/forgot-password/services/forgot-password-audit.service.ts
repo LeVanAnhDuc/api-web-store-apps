@@ -2,11 +2,12 @@
 import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-// others
+// modules
 import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS
 } from "@/modules/login-history/constants";
+// others
 import { Logger } from "@/utils/logger";
 
 export class ForgotPasswordAuditService {

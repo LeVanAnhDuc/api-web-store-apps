@@ -5,12 +5,13 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 // types
 import type { Request, RequestHandler } from "express";
-// config
-import { BadRequestError } from "@/config/responses/error";
-// others
-import { ERROR_CODES } from "@/constants/error-code";
+// common
+import { BadRequestError } from "@/common/exceptions";
+// modules
 import { USER_CONFIG } from "@/modules/user/constants";
 import { BLOG_CONFIG } from "@/modules/apps/blog/constants";
+// others
+import { ERROR_CODES } from "@/constants/error-code";
 
 function detectImageMimeType(filePath: string): string | null {
   try {

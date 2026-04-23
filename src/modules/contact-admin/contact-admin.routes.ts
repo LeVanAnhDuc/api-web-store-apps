@@ -3,14 +3,6 @@ import { Router } from "express";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ContactAdminController } from "./contact-admin.controller";
-// middlewares
-import {
-  adminGuard,
-  authGuard,
-  bodyPipe,
-  paramsPipe,
-  queryPipe
-} from "@/middlewares";
 // validators
 import {
   submitContactSchema,
@@ -19,6 +11,13 @@ import {
   adminListContactsQuerySchema
 } from "@/validators/schemas/contact-admin";
 // others
+import {
+  adminGuard,
+  authGuard,
+  bodyPipe,
+  paramsPipe,
+  queryPipe
+} from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createContactRoutes = (

@@ -1,11 +1,11 @@
 // types
 import type { AuthTokensResponse } from "@/modules/authentication/types";
-// others
+// modules
 import {
   generateAccessToken,
   generateIdToken,
   generateRefreshToken
-} from "./jwt";
+} from "@/modules/token/helpers";
 import { TOKEN_EXPIRY } from "@/modules/token/constants";
 
 export const generateAuthTokensResponse = ({

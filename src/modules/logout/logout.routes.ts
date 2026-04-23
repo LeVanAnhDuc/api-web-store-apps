@@ -2,9 +2,8 @@
 import { Router } from "express";
 // types
 import type { LogoutController } from "./logout.controller";
-// middlewares
-import { authGuard } from "@/middlewares";
 // others
+import { authGuard } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createLogoutRoutes = (controller: LogoutController): Router => {

@@ -15,7 +15,7 @@ import {
 } from "@/modules/contact-admin/swagger";
 import { userSwaggerSchemas, userPaths } from "@/modules/user/swagger";
 // others
-import ENV from "../env";
+import ENV from "@/constants/env";
 import { commonSchemas, commonResponses } from "./common.schemas";
 
 const PORT = ENV.APP_PORT || 3000;

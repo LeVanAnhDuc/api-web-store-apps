@@ -2,9 +2,10 @@
 import { Schema, model, type Model } from "mongoose";
 // types
 import type { AuthenticationDocument } from "@/modules/authentication/types";
+// modules
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // others
 import { MODEL_NAMES } from "@/constants/models";
-import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 
 const { AUTHENTICATION } = MODEL_NAMES;
 

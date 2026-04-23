@@ -2,14 +2,13 @@
 import { Router } from "express";
 // types
 import type { LoginHistoryController } from "./login-history.controller";
-// middlewares
-import { adminGuard, authGuard, queryPipe } from "@/middlewares";
 // validators
 import {
   loginHistoryQuerySchema,
   loginHistoryAdminQuerySchema
 } from "@/validators/schemas/login-history";
 // others
+import { adminGuard, authGuard, queryPipe } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createLoginHistoryUserRoutes = (

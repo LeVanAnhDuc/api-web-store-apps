@@ -2,10 +2,10 @@
 import type { Response } from "express";
 import type { UnlockRequest, UnlockVerifyRequest } from "./types";
 import type { UnlockAccountService } from "./unlock-account.service";
-// config
-import { OkSuccess } from "@/config/responses/success";
-import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/config/cookie";
-// others
+// common
+import { OkSuccess } from "@/common/responses";
+// modules
+import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/modules/token/constants";
 import { REFRESH_TOKEN } from "@/modules/token/constants";
 
 export class UnlockAccountController {

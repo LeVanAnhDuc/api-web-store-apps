@@ -2,11 +2,12 @@
 import type { BlogTagRepository } from "../../repositories";
 import type { TagQuery } from "../../types";
 import type { TagItemDto } from "../../dtos";
-// config
-import { ConflictRequestError } from "@/config/responses/error";
+// common
+import { ConflictRequestError } from "@/common/exceptions";
+// dtos
+import { toTagItemDto } from "../../dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { toTagItemDto } from "../../dtos";
 
 export class BlogTagsService {
   constructor(private readonly tagRepo: BlogTagRepository) {}

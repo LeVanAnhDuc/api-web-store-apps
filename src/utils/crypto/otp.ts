@@ -13,6 +13,3 @@ export const generateOtp = (length: number): string => {
 
   return otp.toString();
 };
-
-export const generateSecureToken = (length: number): string =>
-  crypto.randomBytes(length).toString("hex");

@@ -1,14 +1,14 @@
 // types
 import type { Request } from "express";
 import type { OtpLoginRepository } from "../repositories";
-// config
-import { TooManyRequestsError } from "@/config/responses/error";
+// common
+import { TooManyRequestsError } from "@/common/exceptions";
 // others
+import { makeMockRequest } from "@test/helpers/request.helper";
+import { createOtpLoginRepoMock } from "@test/mocks/otp-login-repo.mock";
 import { OtpLockoutGuard } from "./otp-lockout.guard";
 import { ERROR_CODES } from "@/constants/error-code";
 import { LOGIN_OTP_CONFIG } from "../constants";
-import { makeMockRequest } from "@test/helpers/request.helper";
-import { createOtpLoginRepoMock } from "@test/mocks/otp-login-repo.mock";
 
 const EMAIL = "user@example.com";
 

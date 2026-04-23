@@ -9,18 +9,17 @@ import type {
   PaginatedResult
 } from "./types";
 import type { BlogDetailDto, BlogListItemDto, DeleteBlogDto } from "./dtos";
-// config
+// common
 import {
   NotFoundError,
   ForbiddenError,
   BadRequestError
-} from "@/config/responses/error";
+} from "@/common/exceptions";
 // dtos
 import { toBlogListItemDto, toBlogDetailDto, toDeleteBlogDto } from "./dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { BLOG_COVER_TYPE, BLOG_VISIBILITY } from "./constants";
-// helpers
 import {
   generateBaseSlug,
   appendTimestampToSlug,

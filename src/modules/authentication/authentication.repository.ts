@@ -7,8 +7,9 @@ import type {
 import type { ClientSession } from "mongoose";
 // models
 import AuthenticationModel from "@/models/authentication";
-// others
+// modules
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+// others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 export type AuthenticationRepository = {

@@ -1,7 +1,7 @@
 // libs
 import { ConnectionTimeoutError, createClient } from "redis";
-// config
-import { RedisError } from "@/config/responses/error";
+// common
+import { RedisError } from "@/common/exceptions";
 // others
 import { Logger } from "@/utils/logger";
 import { buildRedisConfig } from "./redis.config";

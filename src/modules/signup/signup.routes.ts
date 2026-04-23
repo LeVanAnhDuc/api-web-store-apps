@@ -3,8 +3,6 @@ import { Router } from "express";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { SignupController } from "./signup.controller";
-// middlewares
-import { bodyPipe, paramsPipe } from "@/middlewares";
 // validators
 import {
   sendOtpSchema,
@@ -14,6 +12,7 @@ import {
   checkEmailSchema
 } from "@/validators/schemas/signup";
 // others
+import { bodyPipe, paramsPipe } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createSignupRoutes = (

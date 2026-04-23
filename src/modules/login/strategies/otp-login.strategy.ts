@@ -1,6 +1,7 @@
 // types
-import type { Request } from "express";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
+import type { Request } from "express";
 import type { OtpSendBody, OtpVerifyBody } from "../types";
 import type { OtpLoginRepository } from "../repositories";
 import type { LoginResponseDto, OtpSendDto } from "../dtos";
@@ -13,22 +14,22 @@ import type {
 } from "../guards";
 import type { LoginAuditService } from "../services/login-audit.service";
 import type { LoginCompletionService } from "../services/login-completion.service";
-import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-// config
+// common
 import {
   BadRequestError,
   TooManyRequestsError,
   UnauthorizedError
-} from "@/config/responses/error";
+} from "@/common/exceptions";
+// modules
+import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // dtos
 import { toOtpSendDto } from "../dtos";
 // others
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
-import { withRetry } from "@/utils/retry";
+import { withRetry } from "@/utils/resilience/retry";
 import { hashValue } from "@/utils/crypto/bcrypt";
-import { LOGIN_METHODS } from "@/modules/login-history/constants";
 import { LOGIN_OTP_CONFIG } from "../constants";
 
 export class OtpLoginStrategy {

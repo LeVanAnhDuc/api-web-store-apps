@@ -1,14 +1,15 @@
-jest.mock("@/utils/token");
+jest.mock("@/modules/authentication/helpers");
 // types
 import type { Request } from "express";
 import type { LoginAuditService } from "./login-audit.service";
-// others
-import { LoginCompletionService } from "./login-completion.service";
+// modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
-import { generateAuthTokensResponse } from "@/utils/token";
+import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
+// others
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createLoginAuditServiceMock } from "@test/mocks/login-audit-service.mock";
 import { buildAuth, buildUser } from "@test/factories/user-with-auth.factory";
+import { LoginCompletionService } from "./login-completion.service";
 
 const mockedGenerateAuthTokensResponse =
   generateAuthTokensResponse as jest.MockedFunction<

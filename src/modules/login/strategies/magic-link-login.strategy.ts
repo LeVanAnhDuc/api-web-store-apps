@@ -1,4 +1,5 @@
 // types
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { Request } from "express";
 import type { MagicLinkSendBody, MagicLinkVerifyBody } from "../types";
 import type { MagicLinkLoginRepository } from "../repositories";
@@ -11,19 +12,19 @@ import type {
 } from "../guards";
 import type { LoginAuditService } from "../services/login-audit.service";
 import type { LoginCompletionService } from "../services/login-completion.service";
-import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-// config
-import { UnauthorizedError } from "@/config/responses/error";
-import ENV from "@/config/env";
+// common
+import { UnauthorizedError } from "@/common/exceptions";
+// modules
+import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // dtos
 import { toMagicLinkSendDto } from "../dtos";
 // others
+import ENV from "@/constants/env";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
-import { withRetry } from "@/utils/retry";
+import { withRetry } from "@/utils/resilience/retry";
 import { hashValue } from "@/utils/crypto/bcrypt";
-import { LOGIN_METHODS } from "@/modules/login-history/constants";
 import { MAGIC_LINK_CONFIG } from "../constants";
 
 export class MagicLinkLoginStrategy {

@@ -6,7 +6,7 @@ import type { LoginHistoryService } from "@/modules/login-history/login-history.
 import type { LoginService } from "@/modules/login/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
-// repositories
+// others
 import { RedisUnlockAccountRepository } from "./unlock-account.repository";
 // guards
 import {

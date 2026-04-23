@@ -1,10 +1,11 @@
 // types
 import type { RequestHandler } from "express";
-// config
-import { UnauthorizedError } from "@/config/responses/error";
+// common
+import { UnauthorizedError } from "@/common/exceptions";
+// modules
+import { verifyAccessToken } from "@/modules/token/helpers";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { verifyAccessToken } from "@/utils/token";
 
 export const authGuard: RequestHandler = (req, _res, next) => {
   try {

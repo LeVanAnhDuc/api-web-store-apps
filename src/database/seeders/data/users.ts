@@ -1,4 +1,4 @@
-// others
+// modules
 import { GENDERS } from "@/modules/user/constants";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 

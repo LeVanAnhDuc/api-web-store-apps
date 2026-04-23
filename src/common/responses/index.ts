@@ -1,8 +1,8 @@
 // types
 import type { Response } from "express";
 import type { ResponseMeta } from "@/types/common";
-// config
-import { STATUS_CODES } from "@/config/http";
+// common
+import { STATUS_CODES } from "@/common/http";
 
 interface SuccessResponsePattern<T> extends ResponsePattern<T> {
   status: number;

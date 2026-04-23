@@ -1,7 +1,7 @@
 // types
 import type { NextFunction, Request, Response } from "express";
-// config
-import { DatabaseError } from "@/config/responses/error";
+// common
+import { DatabaseError } from "@/common/exceptions";
 // others
 import Logger from "@/utils/logger";
 

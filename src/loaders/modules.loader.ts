@@ -18,9 +18,8 @@ import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-pas
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
 import { createUserModule } from "@/modules/user/user.module";
 import { createBlogModule } from "@/modules/apps/blog/blog.module";
-// middlewares
-import { RateLimiterMiddleware } from "@/middlewares";
 // others
+import { RateLimiterMiddleware } from "@/middlewares";
 import { Logger } from "@/utils/logger";
 
 interface ModuleRoutes {

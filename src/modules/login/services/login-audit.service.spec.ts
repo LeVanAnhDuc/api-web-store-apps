@@ -1,15 +1,16 @@
 // types
 import type { Request } from "express";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-// others
-import { LoginAuditService } from "./login-audit.service";
+// modules
 import {
   LOGIN_METHODS,
   LOGIN_FAIL_REASONS
 } from "@/modules/login-history/constants";
+// others
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createLoginHistoryServiceMock } from "@test/mocks/login-history-service.mock";
 import { buildAuth, buildUser } from "@test/factories/user-with-auth.factory";
+import { LoginAuditService } from "./login-audit.service";
 
 const EMAIL = "user@example.com";
 

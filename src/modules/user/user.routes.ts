@@ -3,14 +3,13 @@ import { Router } from "express";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { UserController } from "./user.controller";
-// middlewares
-import { authGuard, bodyPipe, paramsPipe, uploadAvatar } from "@/middlewares";
 // validators
 import {
   updateProfileSchema,
   getPublicProfileSchema
 } from "@/validators/schemas/user";
 // others
+import { authGuard, bodyPipe, paramsPipe, uploadAvatar } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createUserRoutes = (

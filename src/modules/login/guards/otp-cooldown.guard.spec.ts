@@ -1,13 +1,13 @@
 // types
 import type { Request } from "express";
 import type { OtpLoginRepository } from "../repositories";
-// config
-import { BadRequestError } from "@/config/responses/error";
+// common
+import { BadRequestError } from "@/common/exceptions";
 // others
-import { OtpCooldownGuard } from "./otp-cooldown.guard";
-import { ERROR_CODES } from "@/constants/error-code";
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createOtpLoginRepoMock } from "@test/mocks/otp-login-repo.mock";
+import { OtpCooldownGuard } from "./otp-cooldown.guard";
+import { ERROR_CODES } from "@/constants/error-code";
 
 const EMAIL = "user@example.com";
 

@@ -8,8 +8,8 @@ import type {
   CheckEmailRequest
 } from "./types";
 import type { SignupService } from "./signup.service";
-// config
-import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
+// common
+import { OkSuccess, CreatedSuccess } from "@/common/responses";
 
 export class SignupController {
   constructor(private readonly service: SignupService) {}

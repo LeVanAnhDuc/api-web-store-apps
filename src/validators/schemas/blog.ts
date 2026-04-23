@@ -1,6 +1,6 @@
 // libs
 import Joi from "joi";
-// others
+// modules
 import { BLOG_VISIBILITY } from "@/modules/apps/blog/constants";
 
 const OBJECTID_PATTERN = /^[a-fA-F0-9]{24}$/;

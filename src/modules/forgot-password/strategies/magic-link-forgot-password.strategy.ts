@@ -1,9 +1,9 @@
 // types
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type {
   FPMagicLinkSendRequest,
   FPMagicLinkVerifyRequest
 } from "../types";
-import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type {
   MagicLinkForgotPasswordRepository,
   ResetTokenRepository
@@ -18,19 +18,19 @@ import type {
   AuthExistsGuard
 } from "../guards";
 import type { ForgotPasswordAuditService } from "../services/forgot-password-audit.service";
-// config
-import ENV from "@/config/env";
-import { UnauthorizedError } from "@/config/responses/error";
+// common
+import { UnauthorizedError } from "@/common/exceptions";
 // dtos
 import {
   toSendMagicLinkResponseDto,
   toVerifyMagicLinkResponseDto
 } from "../dtos";
 // others
+import ENV from "@/constants/env";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
-import { withRetry } from "@/utils/retry";
+import { withRetry } from "@/utils/resilience/retry";
 import { FORGOT_PASSWORD_MAGIC_LINK_CONFIG } from "../constants";
 
 export class MagicLinkForgotPasswordStrategy {

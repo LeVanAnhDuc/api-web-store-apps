@@ -2,10 +2,10 @@
 import nodemailer from "nodemailer";
 // types
 import type { Transporter } from "nodemailer";
-// config
-import config from "@/config/env";
-import { ServiceUnavailableError } from "@/config/responses/error";
+// common
+import { ServiceUnavailableError } from "@/common/exceptions";
 // others
+import config from "@/constants/env";
 import { Logger } from "@/utils/logger";
 
 export interface EmailSendOptions {

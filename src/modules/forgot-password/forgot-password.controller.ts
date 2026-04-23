@@ -8,8 +8,8 @@ import type {
   FPResetPasswordRequest
 } from "./types";
 import type { ForgotPasswordService } from "./services";
-// config
-import { OkSuccess } from "@/config/responses/success";
+// common
+import { OkSuccess } from "@/common/responses";
 
 export class ForgotPasswordController {
   constructor(private readonly service: ForgotPasswordService) {}

@@ -1,16 +1,16 @@
 // types
-import type { Request } from "express";
 import type { UserService } from "@/modules/user/user.service";
+import type { Request } from "express";
 import type { LoginAuditService } from "../services/login-audit.service";
-// config
-import { UnauthorizedError } from "@/config/responses/error";
+// common
+import { UnauthorizedError } from "@/common/exceptions";
 // others
-import { AccountExistsGuard } from "./account-exists.guard";
-import { ERROR_CODES } from "@/constants/error-code";
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createUserServiceMock } from "@test/mocks/user-service.mock";
 import { createLoginAuditServiceMock } from "@test/mocks/login-audit-service.mock";
 import { buildUserWithAuth } from "@test/factories/user-with-auth.factory";
+import { AccountExistsGuard } from "./account-exists.guard";
+import { ERROR_CODES } from "@/constants/error-code";
 
 const EMAIL = "user@example.com";
 

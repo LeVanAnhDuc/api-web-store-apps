@@ -2,8 +2,8 @@
 import type { Response } from "express";
 import type { BlogTagsService } from "./blog-tags.service";
 import type { SearchTagsRequest, CreateTagRequest } from "../../types";
-// config
-import { OkSuccess, CreatedSuccess } from "@/config/responses/success";
+// common
+import { OkSuccess, CreatedSuccess } from "@/common/responses";
 
 export class BlogTagsController {
   constructor(private readonly service: BlogTagsService) {}

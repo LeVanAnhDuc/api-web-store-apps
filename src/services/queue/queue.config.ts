@@ -1,8 +1,7 @@
 // types
 import type { ConnectionOptions } from "bullmq";
-// config
-import config from "@/config/env";
 // others
+import config from "@/constants/env";
 import { Logger } from "@/utils/logger";
 
 const DEFAULT_REDIS_PORT = 6379;

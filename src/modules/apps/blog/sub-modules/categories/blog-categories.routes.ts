@@ -2,14 +2,13 @@
 import { Router } from "express";
 // types
 import type { BlogCategoriesController } from "./blog-categories.controller";
-// middlewares
-import { authGuard, bodyPipe, queryPipe } from "@/middlewares";
 // validators
 import {
   tagQuerySchema,
   createCategorySchema
 } from "@/validators/schemas/blog";
 // others
+import { authGuard, bodyPipe, queryPipe } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createBlogCategoriesRoutes = (

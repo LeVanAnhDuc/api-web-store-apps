@@ -1,13 +1,13 @@
 // types
 import type { Request } from "express";
 import type { MagicLinkLoginRepository } from "../repositories";
-// config
-import { BadRequestError } from "@/config/responses/error";
+// common
+import { BadRequestError } from "@/common/exceptions";
 // others
-import { MagicLinkCooldownGuard } from "./magic-link-cooldown.guard";
-import { ERROR_CODES } from "@/constants/error-code";
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createMagicLinkLoginRepoMock } from "@test/mocks/magic-link-login-repo.mock";
+import { MagicLinkCooldownGuard } from "./magic-link-cooldown.guard";
+import { ERROR_CODES } from "@/constants/error-code";
 
 const EMAIL = "user@example.com";
 

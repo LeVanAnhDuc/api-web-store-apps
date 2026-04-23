@@ -1,3 +1,8 @@
+// types
+import type { CookieOptions } from "express";
+// others
+import ENV from "@/constants/env";
+
 export const REFRESH_TOKEN = "refreshToken";
 
 export const TOKEN_EXPIRY = {
@@ -11,4 +16,14 @@ export const TOKEN_EXPIRY = {
 export const TOKEN_ERRORS = {
   TOKEN_EXPIRED_ERROR: "TokenExpiredError",
   JSON_WEB_TOKEN_ERROR: "JsonWebTokenError"
+} as const;
+
+const allowCrossOrigin = ENV.ALLOW_CROSS_ORIGIN_COOKIES === "true";
+
+export const REFRESH_TOKEN_COOKIE_OPTIONS: CookieOptions = {
+  httpOnly: true,
+  secure: allowCrossOrigin || ENV.NODE_ENV === "production",
+  sameSite: allowCrossOrigin ? "none" : "lax",
+  maxAge: TOKEN_EXPIRY.NUMBER_REFRESH_TOKEN,
+  path: "/"
 } as const;

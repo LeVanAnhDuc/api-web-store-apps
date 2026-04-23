@@ -1,4 +1,4 @@
-// others
+// modules
 import { USER_CONFIG } from "@/modules/user/constants";
 
 export function buildAvatarUrl(avatarPath: string | null): string | null {

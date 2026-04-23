@@ -2,8 +2,8 @@
 import type { Request, Response, NextFunction } from "express";
 import type { Schema } from "joi";
 import type { ValidationErrorItem } from "@/types/common";
-// config
-import { ValidationError } from "@/config/responses/error";
+// common
+import { ValidationError } from "@/common/exceptions";
 
 const validationPipe =
   (source: "body" | "params" | "query", schema: Schema) =>

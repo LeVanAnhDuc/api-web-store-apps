@@ -12,8 +12,8 @@ import type {
   ContactDetailItemDto,
   UpdateContactStatusDto
 } from "./dtos";
-// config
-import { NotFoundError } from "@/config/responses/error";
+// common
+import { NotFoundError } from "@/common/exceptions";
 // validators
 import { sanitizeText, validateStringLength } from "@/validators/utils";
 import { CONTACT_CONFIG } from "@/validators/constants";
@@ -27,7 +27,6 @@ import {
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { CONTACT_STATUSES } from "./constants";
-// helpers
 import { buildContactFilter } from "./helpers";
 
 const DEFAULT_PAGE = 1;

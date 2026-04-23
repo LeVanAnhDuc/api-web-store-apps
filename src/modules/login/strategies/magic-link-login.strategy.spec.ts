@@ -1,6 +1,6 @@
-jest.mock("@/utils/retry");
+jest.mock("@/utils/resilience/retry");
 jest.mock("@/utils/crypto/bcrypt");
-jest.mock("@/config/env", () => ({
+jest.mock("@/constants/env", () => ({
   __esModule: true,
   default: { CLIENT_URL: "https://app.test" }
 }));
@@ -16,15 +16,11 @@ import type {
 import type { LoginAuditService } from "../services/login-audit.service";
 import type { LoginCompletionService } from "../services/login-completion.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-// config
-import { UnauthorizedError } from "@/config/responses/error";
-// others
-import { MagicLinkLoginStrategy } from "./magic-link-login.strategy";
-import { EmailType } from "@/types/services/email";
-import { ERROR_CODES } from "@/constants/error-code";
+// common
+import { UnauthorizedError } from "@/common/exceptions";
+// modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
-import { withRetry } from "@/utils/retry";
-import { hashValue } from "@/utils/crypto/bcrypt";
+// others
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createMagicLinkLoginRepoMock } from "@test/mocks/magic-link-login-repo.mock";
 import { createEmailDispatcherMock } from "@test/mocks/email-dispatcher.mock";
@@ -37,6 +33,11 @@ import {
 import { createLoginAuditServiceMock } from "@test/mocks/login-audit-service.mock";
 import { createLoginCompletionServiceMock } from "@test/mocks/login-completion-service.mock";
 import { buildUserWithAuth } from "@test/factories/user-with-auth.factory";
+import { MagicLinkLoginStrategy } from "./magic-link-login.strategy";
+import { EmailType } from "@/types/services/email";
+import { ERROR_CODES } from "@/constants/error-code";
+import { withRetry } from "@/utils/resilience/retry";
+import { hashValue } from "@/utils/crypto/bcrypt";
 
 const mockedWithRetry = withRetry as jest.MockedFunction<typeof withRetry>;
 const mockedHashValue = hashValue as jest.MockedFunction<typeof hashValue>;

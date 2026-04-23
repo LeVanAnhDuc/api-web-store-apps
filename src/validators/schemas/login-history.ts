@@ -1,6 +1,6 @@
 // libs
 import Joi from "joi";
-// others
+// modules
 import {
   LOGIN_STATUSES,
   LOGIN_METHODS,

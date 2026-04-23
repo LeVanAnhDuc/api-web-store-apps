@@ -1,4 +1,4 @@
-// dtos
+// others
 import { toMagicLinkSendDto } from "./magic-link-send.dto";
 
 describe("toMagicLinkSendDto", () => {

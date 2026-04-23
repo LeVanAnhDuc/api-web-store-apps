@@ -10,12 +10,15 @@ import type {
   SignupOtpData,
   UnlockTempPasswordData
 } from "@/types/services/email";
-// config
-import { InternalServerError } from "@/config/responses/error";
+// common
+import { InternalServerError } from "@/common/exceptions";
 // others
 import { Logger } from "@/utils/logger";
-import { withRetry } from "@/utils/retry";
-import { CircuitBreaker, CircuitOpenError } from "@/utils/circuit-breaker";
+import { withRetry } from "@/utils/resilience/retry";
+import {
+  CircuitBreaker,
+  CircuitOpenError
+} from "@/utils/resilience/circuit-breaker";
 import { EmailType } from "@/types/services/email";
 import { getEmailT } from "./email.helper";
 import { LoginOtpEmail } from "./templates/login-otp";

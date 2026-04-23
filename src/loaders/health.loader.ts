@@ -2,9 +2,9 @@
 import { Router } from "express";
 // types
 import type { Express, Request, Response } from "express";
-// config
-import { InternalServerError } from "@/config/responses/error";
-import { OkSuccess } from "@/config/responses/success";
+// common
+import { InternalServerError } from "@/common/exceptions";
+import { OkSuccess } from "@/common/responses";
 // database
 import { instanceMongoDB } from "@/database/mongodb";
 import { instanceRedis } from "@/database/redis";

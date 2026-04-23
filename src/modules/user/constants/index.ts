@@ -1,5 +1,5 @@
-// config
-import ENV from "@/config/env";
+// others
+import ENV from "@/constants/env";
 
 export const GENDERS = {
   MALE: "male",

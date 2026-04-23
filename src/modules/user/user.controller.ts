@@ -1,14 +1,14 @@
 // types
-import type { Response } from "express";
 import type {
   GetMyProfileRequest,
   UpdateProfileRequest,
   UploadAvatarRequest,
   GetPublicProfileRequest
 } from "@/modules/user/types";
+import type { Response } from "express";
 import type { UserService } from "./user.service";
-// config
-import { OkSuccess } from "@/config/responses/success";
+// common
+import { OkSuccess } from "@/common/responses";
 
 export class UserController {
   constructor(private readonly service: UserService) {}

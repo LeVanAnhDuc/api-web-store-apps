@@ -1,12 +1,12 @@
 // types
-import type { Response } from "express";
-import type { LoginHistoryService } from "./login-history.service";
 import type {
   MyHistoryRequest,
   AllHistoryRequest
 } from "@/modules/login-history/types";
-// config
-import { OkSuccess } from "@/config/responses/success";
+import type { Response } from "express";
+import type { LoginHistoryService } from "./login-history.service";
+// common
+import { OkSuccess } from "@/common/responses";
 
 export class LoginHistoryController {
   constructor(private readonly service: LoginHistoryService) {}

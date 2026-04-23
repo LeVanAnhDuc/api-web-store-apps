@@ -1,8 +1,8 @@
 // types
 import type { NextFunction, Request, Response } from "express";
-// config
-import { ErrorResponse } from "@/config/responses/error";
-import { STATUS_CODES } from "@/config/http";
+// common
+import { ErrorResponse } from "@/common/exceptions";
+import { STATUS_CODES } from "@/common/http";
 
 export const handleNotFound = (
   req: Request,

@@ -1,7 +1,7 @@
 // types
 import type { UnlockAccountRepository } from "../unlock-account.repository";
-// config
-import { BadRequestError } from "@/config/responses/error";
+// common
+import { BadRequestError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";

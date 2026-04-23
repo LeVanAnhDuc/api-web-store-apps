@@ -4,12 +4,10 @@ import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
-// config
-import { setupSwagger } from "@/config/swagger.setup";
-import config from "@/config/env";
-// middlewares
-import { requestId, requestLogger } from "@/middlewares";
 // others
+import { setupSwagger } from "@/libs/swagger";
+import config from "@/constants/env";
+import { requestId, requestLogger } from "@/middlewares";
 import { i18nMiddleware } from "./i18n";
 
 const app = express();

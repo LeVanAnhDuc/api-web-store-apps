@@ -1,7 +1,7 @@
 // types
 import type { UserDocument } from "@/modules/user/types";
-// config
-import { ForbiddenError } from "@/config/responses/error";
+// common
+import { ForbiddenError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";

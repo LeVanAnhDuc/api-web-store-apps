@@ -1,10 +1,10 @@
 // types
-import type { Request } from "express";
 import type { UserService } from "@/modules/user/user.service";
 import type { UserWithAuth } from "@/modules/user/types";
+import type { Request } from "express";
 import type { LoginAuditService } from "../services/login-audit.service";
-// config
-import { UnauthorizedError } from "@/config/responses/error";
+// common
+import { UnauthorizedError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";

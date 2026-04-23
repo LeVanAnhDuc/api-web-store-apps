@@ -1,8 +1,6 @@
-// libs
-import "reflect-metadata";
-// config
-import config from "@/config/env";
 // others
+import "reflect-metadata";
+import config from "@/constants/env";
 import app from "./app";
 import { loadAll, closeAll } from "./loaders";
 import { Logger } from "@/utils/logger";

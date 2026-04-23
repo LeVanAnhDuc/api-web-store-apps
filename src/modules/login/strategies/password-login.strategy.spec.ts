@@ -1,6 +1,6 @@
 jest.mock("@/utils/crypto/bcrypt");
 jest.mock("../helpers");
-jest.mock("@/utils/retry");
+jest.mock("@/utils/resilience/retry");
 // types
 import type { Request } from "express";
 import type { FailedAttemptsRepository } from "../repositories";
@@ -12,19 +12,11 @@ import type {
 } from "../guards";
 import type { LoginAuditService } from "../services/login-audit.service";
 import type { LoginCompletionService } from "../services/login-completion.service";
-// config
-import {
-  TooManyRequestsError,
-  UnauthorizedError
-} from "@/config/responses/error";
-// others
-import { PasswordLoginStrategy } from "./password-login.strategy";
-import { ERROR_CODES } from "@/constants/error-code";
+// common
+import { TooManyRequestsError, UnauthorizedError } from "@/common/exceptions";
+// modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
-import { LOGIN_LOCKOUT } from "../constants";
-import { isValidHashedValue } from "@/utils/crypto/bcrypt";
-import { formatDuration } from "../helpers";
-import { withRetry } from "@/utils/retry";
+// others
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createFailedAttemptsRepoMock } from "@test/mocks/failed-attempts-repo.mock";
 import {
@@ -36,6 +28,12 @@ import {
 import { createLoginAuditServiceMock } from "@test/mocks/login-audit-service.mock";
 import { createLoginCompletionServiceMock } from "@test/mocks/login-completion-service.mock";
 import { buildUserWithAuth } from "@test/factories/user-with-auth.factory";
+import { PasswordLoginStrategy } from "./password-login.strategy";
+import { ERROR_CODES } from "@/constants/error-code";
+import { LOGIN_LOCKOUT } from "../constants";
+import { isValidHashedValue } from "@/utils/crypto/bcrypt";
+import { formatDuration } from "../helpers";
+import { withRetry } from "@/utils/resilience/retry";
 
 const mockedIsValidHashedValue = isValidHashedValue as jest.MockedFunction<
   typeof isValidHashedValue

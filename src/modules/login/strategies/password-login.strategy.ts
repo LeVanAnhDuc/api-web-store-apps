@@ -1,6 +1,6 @@
 // types
-import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
+import type { Request } from "express";
 import type { PasswordLoginBody } from "../types";
 import type { FailedAttemptsRepository } from "../repositories";
 import type { LoginResponseDto } from "../dtos";
@@ -12,18 +12,16 @@ import type {
 } from "../guards";
 import type { LoginAuditService } from "../services/login-audit.service";
 import type { LoginCompletionService } from "../services/login-completion.service";
-// config
-import {
-  TooManyRequestsError,
-  UnauthorizedError
-} from "@/config/responses/error";
+// common
+import { TooManyRequestsError, UnauthorizedError } from "@/common/exceptions";
+// modules
+import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
-import { withRetry } from "@/utils/retry";
+import { withRetry } from "@/utils/resilience/retry";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { formatDuration } from "../helpers";
-import { LOGIN_METHODS } from "@/modules/login-history/constants";
 import { LOGIN_LOCKOUT } from "../constants";
 
 export class PasswordLoginStrategy {

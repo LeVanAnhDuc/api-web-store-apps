@@ -2,11 +2,12 @@
 import type { BlogCategoryRepository } from "../../repositories";
 import type { TagQuery } from "../../types";
 import type { CategoryItemDto } from "../../dtos";
-// config
-import { ConflictRequestError } from "@/config/responses/error";
+// common
+import { ConflictRequestError } from "@/common/exceptions";
+// dtos
+import { toCategoryItemDto } from "../../dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { toCategoryItemDto } from "../../dtos";
 
 export class BlogCategoriesService {
   constructor(private readonly categoryRepo: BlogCategoryRepository) {}

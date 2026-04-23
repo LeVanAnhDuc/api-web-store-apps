@@ -1,8 +1,7 @@
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
-// repositories
-import { MongoUserRepository } from "./user.repository";
 // others
+import { MongoUserRepository } from "./user.repository";
 import { UserService } from "./user.service";
 import { UserController } from "./user.controller";
 import { createUserRoutes } from "./user.routes";

@@ -3,7 +3,7 @@ import swaggerUi from "swagger-ui-express";
 // types
 import type { Application } from "express";
 // others
-import { openApiSpec } from "./swagger";
+import { openApiSpec } from "./openapi";
 
 export const setupSwagger = (app: Application): void => {
   const customCss = `

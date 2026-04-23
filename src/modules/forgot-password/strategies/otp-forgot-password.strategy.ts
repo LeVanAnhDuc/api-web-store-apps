@@ -1,6 +1,6 @@
 // types
-import type { FPOtpSendRequest, FPOtpVerifyRequest } from "../types";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { FPOtpSendRequest, FPOtpVerifyRequest } from "../types";
 import type {
   OtpForgotPasswordRepository,
   ResetTokenRepository
@@ -13,15 +13,15 @@ import type {
   AuthExistsGuard
 } from "../guards";
 import type { ForgotPasswordAuditService } from "../services/forgot-password-audit.service";
-// config
-import { BadRequestError, UnauthorizedError } from "@/config/responses/error";
+// common
+import { BadRequestError, UnauthorizedError } from "@/common/exceptions";
 // dtos
 import { toSendOtpResponseDto, toVerifyOtpResponseDto } from "../dtos";
 // others
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/utils/logger";
-import { withRetry } from "@/utils/retry";
+import { withRetry } from "@/utils/resilience/retry";
 import { FORGOT_PASSWORD_OTP_CONFIG } from "../constants";
 
 export class OtpForgotPasswordStrategy {
