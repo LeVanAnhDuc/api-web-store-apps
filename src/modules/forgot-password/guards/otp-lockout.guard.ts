@@ -4,7 +4,7 @@ import type { OtpForgotPasswordRepository } from "../repositories";
 import { BadRequestError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { FORGOT_PASSWORD_OTP_CONFIG } from "../constants";
 
 export class OtpLockoutGuard {

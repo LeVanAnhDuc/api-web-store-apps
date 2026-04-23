@@ -4,7 +4,7 @@ import type { RedisClientType } from "redis";
 import { buildKey } from "@/utils/redis/key-builder";
 import { generateSecureToken } from "@/utils/crypto/secure-token";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { MAGIC_LINK_CONFIG } from "../constants";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 import { LOGIN } from "@/constants/redis/store";

@@ -5,7 +5,7 @@ import type { UserWithAuth } from "@/modules/user/types";
 import { UnauthorizedError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export class AuthExistsGuard {
   constructor(private readonly userService: UserService) {}

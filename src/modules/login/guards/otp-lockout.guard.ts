@@ -4,7 +4,7 @@ import type { OtpLoginRepository } from "../repositories";
 import { TooManyRequestsError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { LOGIN_OTP_CONFIG } from "../constants";
 
 export class OtpLockoutGuard {

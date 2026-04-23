@@ -14,7 +14,7 @@ import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 // dtos
 import { toRefreshTokenDto } from "./dtos";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export class TokenService {
   constructor(

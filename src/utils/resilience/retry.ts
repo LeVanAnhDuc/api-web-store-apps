@@ -4,7 +4,7 @@
  */
 
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 interface RetryOptions {
   maxAttempts?: number;

@@ -3,7 +3,7 @@ import { ForbiddenError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { verifyRefreshToken } from "../helpers";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export class RefreshTokenValidGuard {
   assert(token: string, t: TranslateFunction): RefreshTokenPayload {

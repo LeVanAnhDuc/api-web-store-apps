@@ -9,7 +9,7 @@ import type { AuthenticationRepository } from "./authentication.repository";
 // validators
 import { validateObjectId, validateRequiredString } from "@/validators/utils";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export class AuthenticationService {
   constructor(private readonly authRepo: AuthenticationRepository) {}

@@ -20,7 +20,7 @@ import {
 // dtos
 import { toMyHistoryItemDto, toAllHistoryItemDto } from "./dtos";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 // helpers
 import {
   extractIp,

@@ -4,7 +4,7 @@ import UserModel from "@/models/user";
 // others
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { TEST_USERS } from "./data/users";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export const seedUsers = async (): Promise<void> => {
   Logger.info("Starting user seeding...");

@@ -3,7 +3,7 @@ import { Queue, Worker } from "bullmq";
 // types
 import type { ConnectionOptions, Job, JobsOptions, Processor } from "bullmq";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 const DEFAULT_CONCURRENCY = 5;
 const DEFAULT_ATTEMPTS = 3;

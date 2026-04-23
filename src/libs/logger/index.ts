@@ -1,75 +1,36 @@
-// libs
-import { format, addColors, createLogger, transports } from "winston";
-import DailyRotateFile from "winston-daily-rotate-file";
-import path from "path";
 // others
-import ENV from "@/constants/env";
+import logger from "./winston";
 
-const LEVELS = {
-  error: 0,
-  warn: 1,
-  info: 2,
-  http: 3,
-  debug: 4
-};
+export class Logger {
+  static error(message: string, error?: Error | unknown): void {
+    if (error instanceof Error) {
+      logger.error(`${message} - ${error.message}`, { stack: error.stack });
+    } else if (error) {
+      logger.error(`${message} - ${JSON.stringify(error)}`);
+    } else {
+      logger.error(message);
+    }
+  }
 
-const COLORS = {
-  error: "red",
-  warn: "yellow",
-  info: "green",
-  http: "magenta",
-  debug: "white"
-};
+  static warn(message: string, meta?: Record<string, unknown>): void {
+    logger.warn(message, meta);
+  }
 
-addColors(COLORS);
+  static info(message: string, meta?: Record<string, unknown>): void {
+    logger.info(message, meta);
+  }
 
-const consoleFormat = format.combine(
-  format.timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSS" }),
-  format.colorize({ all: true }),
-  format.printf((info) => {
-    const { timestamp, level, message, service, requestId, ...meta } = info;
-    const prefix = [service, requestId].filter(Boolean).join(" ");
-    const prefixStr = prefix ? ` [${prefix}]` : "";
-    const metaString =
-      Object.keys(meta).length > 0 ? ` ${JSON.stringify(meta)}` : "";
-    return `${timestamp} [${level}]${prefixStr}: ${message}${metaString}`;
-  })
-);
+  static http(message: string, meta?: Record<string, unknown>): void {
+    logger.http(message, meta);
+  }
 
-const fileFormat = format.combine(
-  format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-  format.errors({ stack: true }),
-  format.splat(),
-  format.json()
-);
+  static debug(message: string, meta?: Record<string, unknown>): void {
+    logger.debug(message, meta);
+  }
 
-const errorFileRotateTransport = new DailyRotateFile({
-  level: "error",
-  filename: path.join("logs", "error-%DATE%.log"),
-  datePattern: "YYYY-MM-DD",
-  maxFiles: "30d",
-  maxSize: "20m",
-  format: fileFormat
-});
-
-const combinedFileRotateTransport = new DailyRotateFile({
-  filename: path.join("logs", "combined-%DATE%.log"),
-  datePattern: "YYYY-MM-DD",
-  maxFiles: "14d",
-  maxSize: "20m",
-  format: fileFormat
-});
-
-const logger = createLogger({
-  level: ENV.LOG_LEVEL,
-  levels: LEVELS,
-  defaultMeta: { service: "web-app-store-server" },
-  exitOnError: false,
-  transports: [errorFileRotateTransport, combinedFileRotateTransport]
-});
-
-if (ENV.NODE_ENV !== "production") {
-  logger.add(new transports.Console({ format: consoleFormat }));
+  static stream = {
+    write: (message: string) => logger.http(message.trim())
+  };
 }
 
-export default logger;
+export default Logger;

@@ -1,4 +1,4 @@
-jest.mock("@/utils/logger", () => ({
+jest.mock("@/libs/logger", () => ({
   __esModule: true,
   Logger: {
     error: jest.fn(),

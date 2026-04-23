@@ -4,7 +4,7 @@ import type { OtpSignupRepository } from "../repositories";
 import { BadRequestError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export class CooldownGuard {
   constructor(private readonly otpRepo: OtpSignupRepository) {}

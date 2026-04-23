@@ -3,7 +3,7 @@ import type { NextFunction, Request, Response } from "express";
 // common
 import { DatabaseError } from "@/common/exceptions";
 // others
-import Logger from "@/utils/logger";
+import Logger from "@/libs/logger";
 
 type ControllerFn = (
   req: Request,

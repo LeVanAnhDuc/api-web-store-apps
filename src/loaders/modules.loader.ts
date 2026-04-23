@@ -20,7 +20,7 @@ import { createUserModule } from "@/modules/user/user.module";
 import { createBlogModule } from "@/modules/apps/blog/blog.module";
 // others
 import { RateLimiterMiddleware } from "@/middlewares";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 interface ModuleRoutes {
   signup: Router;

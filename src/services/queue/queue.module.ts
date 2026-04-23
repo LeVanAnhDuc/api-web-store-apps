@@ -6,7 +6,7 @@ import { ExpressAdapter } from "@bull-board/express";
 import type { SendEmailService } from "@/services/email/email.service";
 import type { EmailJobData } from "@/types/services/queue";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { QueueService } from "./queue.service";
 import { buildQueueConnection } from "./queue.config";

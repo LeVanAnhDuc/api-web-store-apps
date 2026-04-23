@@ -3,7 +3,7 @@ import "reflect-metadata";
 import config from "@/constants/env";
 import app from "./app";
 import { loadAll, closeAll } from "./loaders";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 const startServer = async (): Promise<void> => {
   try {

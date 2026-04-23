@@ -2,7 +2,7 @@
 import { UnauthorizedError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export class RefreshTokenPresentGuard {
   assert(

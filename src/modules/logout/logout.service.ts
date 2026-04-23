@@ -1,5 +1,5 @@
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export class LogoutService {
   async logout(userId: string): Promise<void> {

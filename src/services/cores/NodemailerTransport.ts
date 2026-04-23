@@ -6,7 +6,7 @@ import type { Transporter } from "nodemailer";
 import { ServiceUnavailableError } from "@/common/exceptions";
 // others
 import config from "@/constants/env";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export interface EmailSendOptions {
   to: string;

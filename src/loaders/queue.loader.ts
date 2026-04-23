@@ -6,7 +6,7 @@ import type { EmailJobData } from "@/types/services/queue";
 // services
 import { createQueueModule } from "@/services/queue/queue.module";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 const BULL_BOARD_PATH = "/admin/queues";
 

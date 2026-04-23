@@ -1,7 +1,7 @@
 // database
 import instanceRedis from "@/database/redis";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export const loadRedis = async (): Promise<void> => {
   try {

@@ -10,7 +10,7 @@ import { loadQueues, closeAllQueues } from "./queue.loader";
 import { loadModules } from "./modules.loader";
 import { loadHealthCheck } from "./health.loader";
 import { loadErrorHandlers } from "./error-handler.loader";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export const loadAll = async (app: Express): Promise<void> => {
   try {

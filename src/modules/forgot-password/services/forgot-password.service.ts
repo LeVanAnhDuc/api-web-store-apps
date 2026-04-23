@@ -24,7 +24,7 @@ import type { ForgotPasswordAuditService } from "./forgot-password-audit.service
 // dtos
 import { toResetPasswordResponseDto } from "../dtos";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 
 export class ForgotPasswordService {

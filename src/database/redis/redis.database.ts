@@ -3,7 +3,7 @@ import { ConnectionTimeoutError, createClient } from "redis";
 // common
 import { RedisError } from "@/common/exceptions";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { buildRedisConfig } from "./redis.config";
 import { setupEventHandlers } from "./redis.events";
 import { checkRedisHealth, type RedisHealthStatus } from "./redis.health";

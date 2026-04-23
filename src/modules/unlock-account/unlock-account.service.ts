@@ -25,7 +25,7 @@ import ENV from "@/constants/env";
 import { generateTempPassword } from "./helpers";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { withRetry } from "@/utils/resilience/retry";
 

@@ -20,7 +20,7 @@ import { toSendOtpResponseDto, toVerifyOtpResponseDto } from "../dtos";
 // others
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { FORGOT_PASSWORD_OTP_CONFIG } from "../constants";
 

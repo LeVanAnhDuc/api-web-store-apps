@@ -19,7 +19,7 @@ import { validateEmail, validateObjectId } from "@/validators/utils";
 import { toMyProfileDto, toPublicProfileDto, toUploadAvatarDto } from "./dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { buildAvatarUrl } from "./helpers";
 
 export class UserService {

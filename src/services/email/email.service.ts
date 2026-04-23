@@ -13,7 +13,7 @@ import type {
 // common
 import { InternalServerError } from "@/common/exceptions";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import {
   CircuitBreaker,

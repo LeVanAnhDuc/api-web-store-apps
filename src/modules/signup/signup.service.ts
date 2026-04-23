@@ -42,7 +42,7 @@ import {
 // others
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { OTP_CONFIG, SESSION_CONFIG } from "./constants";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";

@@ -29,7 +29,7 @@ import {
 import ENV from "@/constants/env";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { FORGOT_PASSWORD_MAGIC_LINK_CONFIG } from "../constants";
 

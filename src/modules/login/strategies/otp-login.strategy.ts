@@ -27,7 +27,7 @@ import { toOtpSendDto } from "../dtos";
 // others
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { LOGIN_OTP_CONFIG } from "../constants";

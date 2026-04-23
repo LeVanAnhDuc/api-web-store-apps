@@ -4,7 +4,7 @@ import type { UnlockAccountRepository } from "../unlock-account.repository";
 import { TooManyRequestsError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export class RateLimitGuard {
   constructor(private readonly repo: UnlockAccountRepository) {}

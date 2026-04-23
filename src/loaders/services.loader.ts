@@ -3,7 +3,7 @@ import type { SendEmailService } from "@/services/email/email.service";
 // services
 import { createEmailModule } from "@/services/email/email.module";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export interface AppServices {
   emailService: SendEmailService;

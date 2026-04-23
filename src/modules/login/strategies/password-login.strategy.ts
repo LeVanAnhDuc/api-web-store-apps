@@ -18,7 +18,7 @@ import { TooManyRequestsError, UnauthorizedError } from "@/common/exceptions";
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { formatDuration } from "../helpers";

@@ -4,7 +4,7 @@ import type { OtpForgotPasswordRepository } from "../repositories";
 import { BadRequestError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 export class OtpResendLimitGuard {
   constructor(private readonly otpRepo: OtpForgotPasswordRepository) {}

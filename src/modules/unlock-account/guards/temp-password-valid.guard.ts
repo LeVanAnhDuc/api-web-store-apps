@@ -4,7 +4,7 @@ import type { AuthenticationDocument } from "@/modules/authentication/types";
 import { UnauthorizedError } from "@/common/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 
 export class TempPasswordValidGuard {

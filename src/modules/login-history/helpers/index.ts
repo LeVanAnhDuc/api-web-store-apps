@@ -20,7 +20,7 @@ import {
   PRIVATE_IP_PATTERNS
 } from "@/modules/login-history/constants";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 
 const COMMA_SEPARATOR = ",";
 const FIRST_IP_INDEX = 0;

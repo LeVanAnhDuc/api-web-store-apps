@@ -4,7 +4,7 @@ import type { RedisClientType } from "redis";
 import { buildKey } from "@/utils/redis/key-builder";
 import { generateOtp } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { LOGIN_OTP_CONFIG } from "../constants";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 import { LOGIN } from "@/constants/redis/store";

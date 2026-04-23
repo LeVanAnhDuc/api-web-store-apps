@@ -1,7 +1,7 @@
 // database
 import instanceMongoDB from "@/database/mongodb";
 // others
-import { Logger } from "@/utils/logger";
+import { Logger } from "@/libs/logger";
 import { seedUsers, clearUsers } from "./user.seeder";
 
 const runSeeders = async (): Promise<void> => {
