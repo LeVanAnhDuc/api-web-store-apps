@@ -5,7 +5,7 @@ import type {
   PaginatedResult,
   ContactStatus
 } from "./types";
-import type { ContactRepository } from "./contact.repository";
+import type { ContactRepository } from "./contact-admin.repository";
 import type {
   SubmitContactResponseDto,
   ContactListItemDto,
