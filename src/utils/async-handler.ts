@@ -1,9 +1,14 @@
 // types
 import type { NextFunction, Request, Response } from "express";
 // common
-import { DatabaseError } from "@/common/exceptions";
+import { DatabaseError, ErrorResponse } from "@/common/exceptions";
 // others
 import Logger from "@/libs/logger";
+import {
+  isDuplicateKeyError,
+  isMongooseValidationError,
+  isMongooseCastError
+} from "@/utils/mongo-errors";
 
 type ControllerFn = (
   req: Request,
@@ -29,6 +34,16 @@ export async function asyncDatabaseHandler<T>(
     return await fn();
   } catch (error) {
     Logger.error(`Database operation failed: ${operation}`, error);
+
+    if (
+      error instanceof ErrorResponse ||
+      isDuplicateKeyError(error) ||
+      isMongooseValidationError(error) ||
+      isMongooseCastError(error)
+    ) {
+      throw error;
+    }
+
     throw new DatabaseError(operation, error);
   }
 }

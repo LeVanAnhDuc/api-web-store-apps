@@ -27,7 +27,11 @@ import type {
 } from "./dtos";
 import type { EmailAvailableGuard, CooldownGuard } from "./guards";
 // common
-import { BadRequestError, InternalServerError } from "@/common/exceptions";
+import {
+  BadRequestError,
+  ConflictRequestError,
+  InternalServerError
+} from "@/common/exceptions";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
@@ -44,6 +48,7 @@ import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
+import { isDuplicateKeyError, getDuplicatedField } from "@/utils/mongo-errors";
 import { OTP_CONFIG, SESSION_CONFIG } from "./constants";
 import { SECONDS_PER_MINUTE, MINUTES_PER_HOUR } from "@/constants/time";
 
@@ -230,7 +235,8 @@ export class SignupService {
       password,
       fullName,
       gender,
-      dateOfBirth
+      dateOfBirth,
+      t
     );
 
     const tokens = generateAuthTokensResponse({
@@ -309,7 +315,8 @@ export class SignupService {
     password: string,
     fullName: string,
     gender: Gender,
-    dateOfBirth: string
+    dateOfBirth: string,
+    t: TranslateFunction
   ): Promise<{
     authId: Schema.Types.ObjectId;
     userId: Schema.Types.ObjectId;
@@ -353,6 +360,15 @@ export class SignupService {
       }
 
       return result;
+    } catch (err) {
+      if (isDuplicateKeyError(err) && getDuplicatedField(err) === "email") {
+        Logger.warn("Signup email duplicate key (race condition)", { email });
+        throw new ConflictRequestError(
+          t("signup:errors.emailAlreadyExists"),
+          ERROR_CODES.SIGNUP_EMAIL_EXISTS
+        );
+      }
+      throw err;
     } finally {
       await session.endSession();
     }

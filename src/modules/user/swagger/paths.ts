@@ -1,5 +1,7 @@
 // types
 import type { OpenAPIV3 } from "openapi-types";
+// others
+import { ERROR_CODES } from "@/constants/error-code";
 
 export const userPaths: OpenAPIV3.PathsObject = {
   "/users/me": {
@@ -167,7 +169,7 @@ Upload a new avatar image for the authenticated user.
                 noFile: {
                   summary: "No file uploaded",
                   value: {
-                    code: "BAD_REQUEST",
+                    code: ERROR_CODES.BAD_REQUEST,
                     message: "No file uploaded",
                     timestamp: "2026-01-01T00:00:00.000Z",
                     path: "/api/v1/users/me/avatar"
@@ -176,7 +178,7 @@ Upload a new avatar image for the authenticated user.
                 tooLarge: {
                   summary: "File too large",
                   value: {
-                    code: "BAD_REQUEST",
+                    code: ERROR_CODES.BAD_REQUEST,
                     message: "File too large. Max size is 10MB",
                     timestamp: "2026-01-01T00:00:00.000Z",
                     path: "/api/v1/users/me/avatar"
@@ -185,7 +187,7 @@ Upload a new avatar image for the authenticated user.
                 unsupportedType: {
                   summary: "Unsupported file type",
                   value: {
-                    code: "BAD_REQUEST",
+                    code: ERROR_CODES.BAD_REQUEST,
                     message: "File type not supported",
                     timestamp: "2026-01-01T00:00:00.000Z",
                     path: "/api/v1/users/me/avatar"
@@ -262,7 +264,7 @@ Get the public profile of any user by their ID. Does not require authentication.
             "application/json": {
               schema: { $ref: "#/components/schemas/ErrorResponse" },
               example: {
-                code: "BAD_REQUEST",
+                code: ERROR_CODES.BAD_REQUEST,
                 message: "Invalid user ID format",
                 timestamp: "2026-01-01T00:00:00.000Z",
                 path: "/api/v1/users/abc123"

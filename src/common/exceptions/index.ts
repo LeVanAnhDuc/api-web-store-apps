@@ -2,6 +2,8 @@
 import type { ValidationErrorItem } from "@/types/common";
 // common
 import { REASON_PHRASES, STATUS_CODES } from "@/common/http";
+// others
+import { ERROR_CODES } from "@/constants/error-code";
 
 export class ErrorResponse extends Error {
   readonly status: number;
@@ -10,7 +12,7 @@ export class ErrorResponse extends Error {
 
   constructor({
     status = STATUS_CODES.INTERNAL_SERVER_ERROR,
-    code = "INTERNAL_SERVER_ERROR",
+    code = ERROR_CODES.INTERNAL_SERVER_ERROR,
     message = "An unexpected error occurred",
     errors = []
   }: {
@@ -27,39 +29,54 @@ export class ErrorResponse extends Error {
 }
 
 export class ConflictRequestError extends ErrorResponse {
-  constructor(message = REASON_PHRASES.CONFLICT, code = "CONFLICT") {
+  constructor(
+    message: string = REASON_PHRASES.CONFLICT,
+    code: string = ERROR_CODES.CONFLICT
+  ) {
     super({ message, status: STATUS_CODES.CONFLICT, code });
   }
 }
 
 export class BadRequestError extends ErrorResponse {
-  constructor(message = REASON_PHRASES.BAD_REQUEST, code = "BAD_REQUEST") {
+  constructor(
+    message: string = REASON_PHRASES.BAD_REQUEST,
+    code: string = ERROR_CODES.BAD_REQUEST
+  ) {
     super({ message, status: STATUS_CODES.BAD_REQUEST, code });
   }
 }
 
 export class ForbiddenError extends ErrorResponse {
-  constructor(message = REASON_PHRASES.FORBIDDEN, code = "FORBIDDEN") {
+  constructor(
+    message: string = REASON_PHRASES.FORBIDDEN,
+    code: string = ERROR_CODES.FORBIDDEN
+  ) {
     super({ message, status: STATUS_CODES.FORBIDDEN, code });
   }
 }
 
 export class NotFoundError extends ErrorResponse {
-  constructor(message = REASON_PHRASES.NOT_FOUND, code = "NOT_FOUND") {
+  constructor(
+    message: string = REASON_PHRASES.NOT_FOUND,
+    code: string = ERROR_CODES.NOT_FOUND
+  ) {
     super({ message, status: STATUS_CODES.NOT_FOUND, code });
   }
 }
 
 export class UnauthorizedError extends ErrorResponse {
-  constructor(message = REASON_PHRASES.UNAUTHORIZED, code = "UNAUTHORIZED") {
+  constructor(
+    message: string = REASON_PHRASES.UNAUTHORIZED,
+    code: string = ERROR_CODES.UNAUTHORIZED
+  ) {
     super({ message, status: STATUS_CODES.UNAUTHORIZED, code });
   }
 }
 
 export class RedisError extends ErrorResponse {
   constructor(
-    message = REASON_PHRASES.INTERNAL_SERVER_ERROR,
-    code = "REDIS_ERROR"
+    message: string = REASON_PHRASES.INTERNAL_SERVER_ERROR,
+    code: string = ERROR_CODES.REDIS_ERROR
   ) {
     super({ message, status: STATUS_CODES.INTERNAL_SERVER_ERROR, code });
   }
@@ -67,8 +84,8 @@ export class RedisError extends ErrorResponse {
 
 export class TooManyRequestsError extends ErrorResponse {
   constructor(
-    message = REASON_PHRASES.TOO_MANY_REQUESTS,
-    code = "TOO_MANY_REQUESTS"
+    message: string = REASON_PHRASES.TOO_MANY_REQUESTS,
+    code: string = ERROR_CODES.TOO_MANY_REQUESTS
   ) {
     super({ message, status: STATUS_CODES.TOO_MANY_REQUESTS, code });
   }
@@ -76,8 +93,8 @@ export class TooManyRequestsError extends ErrorResponse {
 
 export class InternalServerError extends ErrorResponse {
   constructor(
-    message = REASON_PHRASES.INTERNAL_SERVER_ERROR,
-    code = "INTERNAL_SERVER_ERROR"
+    message: string = REASON_PHRASES.INTERNAL_SERVER_ERROR,
+    code: string = ERROR_CODES.INTERNAL_SERVER_ERROR
   ) {
     super({ message, status: STATUS_CODES.INTERNAL_SERVER_ERROR, code });
   }
@@ -85,8 +102,8 @@ export class InternalServerError extends ErrorResponse {
 
 export class ServiceUnavailableError extends ErrorResponse {
   constructor(
-    message = REASON_PHRASES.SERVICE_UNAVAILABLE,
-    code = "SERVICE_UNAVAILABLE"
+    message: string = REASON_PHRASES.SERVICE_UNAVAILABLE,
+    code: string = ERROR_CODES.SERVICE_UNAVAILABLE
   ) {
     super({ message, status: STATUS_CODES.SERVICE_UNAVAILABLE, code });
   }
@@ -99,7 +116,7 @@ export class DatabaseError extends ErrorResponse {
   constructor(operation: string, cause: unknown) {
     super({
       status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-      code: "DATABASE_ERROR",
+      code: ERROR_CODES.DATABASE_ERROR,
       message: REASON_PHRASES.INTERNAL_SERVER_ERROR
     });
     this.name = "DatabaseError";
@@ -110,9 +127,9 @@ export class DatabaseError extends ErrorResponse {
 
 export class ValidationError extends ErrorResponse {
   constructor(
-    message = REASON_PHRASES.BAD_REQUEST,
+    message: string = REASON_PHRASES.BAD_REQUEST,
     errors: ValidationErrorItem[] = [],
-    code = "VALIDATION_ERROR"
+    code: string = ERROR_CODES.VALIDATION_ERROR
   ) {
     super({ message, status: STATUS_CODES.BAD_REQUEST, code, errors });
   }

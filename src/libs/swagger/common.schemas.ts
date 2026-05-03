@@ -1,5 +1,7 @@
 // types
 import type { OpenAPIV3 } from "openapi-types";
+// others
+import { ERROR_CODES } from "@/constants/error-code";
 
 export const commonSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   SuccessResponse: {
@@ -61,7 +63,7 @@ export const commonSchemas: Record<string, OpenAPIV3.SchemaObject> = {
     properties: {
       code: {
         type: "string",
-        example: "BAD_REQUEST"
+        example: ERROR_CODES.BAD_REQUEST
       },
       message: {
         type: "string",
@@ -90,7 +92,7 @@ export const commonSchemas: Record<string, OpenAPIV3.SchemaObject> = {
     properties: {
       code: {
         type: "string",
-        example: "VALIDATION_ERROR"
+        example: ERROR_CODES.VALIDATION_ERROR
       },
       message: {
         type: "string",
@@ -193,7 +195,7 @@ export const commonResponses: Record<
           $ref: "#/components/schemas/ErrorResponse"
         },
         example: {
-          code: "CONFLICT",
+          code: ERROR_CODES.CONFLICT,
           message: "Email already registered",
           timestamp: "2025-01-15T10:30:00.000Z",
           path: "/api/v1/auth/signup/send-otp"
@@ -209,7 +211,7 @@ export const commonResponses: Record<
           $ref: "#/components/schemas/ErrorResponse"
         },
         example: {
-          code: "TOO_MANY_REQUESTS",
+          code: ERROR_CODES.TOO_MANY_REQUESTS,
           message: "Rate limit exceeded. Try again later.",
           timestamp: "2025-01-15T10:30:00.000Z",
           path: "/api/v1/auth/login"
