@@ -29,7 +29,6 @@ import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
-import { hashValue } from "@/utils/crypto/bcrypt";
 import { LOGIN_OTP_CONFIG } from "../constants";
 
 export class OtpLoginStrategy {
@@ -45,6 +44,10 @@ export class OtpLoginStrategy {
     private readonly completion: LoginCompletionService
   ) {}
 
+  private isAccountEligible(auth: AuthenticationDocument): boolean {
+    return auth.isActive === true && auth.verifiedEmail === true;
+  }
+
   async sendCode(body: OtpSendBody, req: Request): Promise<OtpSendDto> {
     const { email } = body;
     const { language, t } = req;
@@ -54,12 +57,10 @@ export class OtpLoginStrategy {
     await this.otpCooldownGuard.assert(email, t);
 
     const result = await this.accountExistsGuard.tryFind(email);
-    const isEligible =
-      result?.auth.isActive === true && result?.auth.verifiedEmail === true;
+    const isEligible = this.isAccountEligible(result?.auth);
 
     if (!isEligible) {
       Logger.debug("Login OTP send skipped — account not eligible", { email });
-      hashValue(email);
       withRetry(() => this.otpLoginRepo.setRateLimits(email), {
         operationName: "setOtpRateLimits",
         context: { email }
@@ -81,10 +82,7 @@ export class OtpLoginStrategy {
 
     const otp = await this.otpLoginRepo.createAndStoreOtp(email);
 
-    withRetry(() => this.otpLoginRepo.setRateLimits(email), {
-      operationName: "setOtpRateLimits",
-      context: { email }
-    });
+    this.otpLoginRepo.setRateLimits(email);
 
     this.emailDispatcher.send(EmailType.LOGIN_OTP, {
       email,
@@ -153,7 +151,7 @@ export class OtpLoginStrategy {
     email: string,
     req: Request,
     t: TranslateFunction
-  ): Promise<never> {
+  ): Promise<void> {
     const attempts = await this.otpLoginRepo.incrementFailedAttempts(email);
     this.audit.recordInvalidOtp({ auth, email, attempts, req });
 
