@@ -1,4 +1,3 @@
-jest.mock("../helpers");
 // types
 import type { Request } from "express";
 import type { FailedAttemptsRepository } from "../repositories";
@@ -10,11 +9,6 @@ import { createFailedAttemptsRepoMock } from "@test/mocks/failed-attempts-repo.m
 import { PasswordLockoutGuard } from "./password-lockout.guard";
 import { ERROR_CODES } from "@/constants/error-code";
 import { LOGIN_LOCKOUT } from "../constants";
-import { formatDuration } from "../helpers";
-
-const mockedFormatDuration = formatDuration as jest.MockedFunction<
-  typeof formatDuration
->;
 
 const EMAIL = "user@example.com";
 
@@ -29,7 +23,6 @@ describe("PasswordLockoutGuard", () => {
     tSpy = req.t as unknown as jest.Mock;
     repo = createFailedAttemptsRepoMock();
     guard = new PasswordLockoutGuard(repo);
-    mockedFormatDuration.mockReturnValue("30 minutes");
   });
 
   it("returns silently when not locked", async () => {
@@ -38,27 +31,26 @@ describe("PasswordLockoutGuard", () => {
       remainingSeconds: 0
     });
 
-    await expect(guard.assert(EMAIL, "en", req.t)).resolves.toBeUndefined();
+    await expect(guard.assert(EMAIL, req.t)).resolves.toBeUndefined();
     expect(repo.getCount).not.toHaveBeenCalled();
   });
 
-  it("throws LOGIN_ACCOUNT_LOCKED with interpolated attempts+time when locked", async () => {
+  it("throws LOGIN_ACCOUNT_LOCKED with interpolated attempts+seconds when locked", async () => {
     repo.checkLockout.mockResolvedValue({
       isLocked: true,
       remainingSeconds: 1800
     });
     repo.getCount.mockResolvedValue(LOGIN_LOCKOUT.MAX_ATTEMPTS);
 
-    const promise = guard.assert(EMAIL, "en", req.t);
+    const promise = guard.assert(EMAIL, req.t);
 
     await expect(promise).rejects.toBeInstanceOf(TooManyRequestsError);
     await expect(promise).rejects.toMatchObject({
       code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
     });
-    expect(mockedFormatDuration).toHaveBeenCalledWith(1800, "en");
     expect(tSpy).toHaveBeenCalledWith("login:errors.accountLocked", {
       attempts: LOGIN_LOCKOUT.MAX_ATTEMPTS,
-      time: "30 minutes"
+      seconds: 1800
     });
   });
 });

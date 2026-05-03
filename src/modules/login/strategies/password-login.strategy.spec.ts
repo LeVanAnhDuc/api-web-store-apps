@@ -1,5 +1,4 @@
 jest.mock("@/utils/crypto/bcrypt");
-jest.mock("../helpers");
 jest.mock("@/utils/resilience/retry");
 // types
 import type { Request } from "express";
@@ -32,14 +31,10 @@ import { PasswordLoginStrategy } from "./password-login.strategy";
 import { ERROR_CODES } from "@/constants/error-code";
 import { LOGIN_LOCKOUT } from "../constants";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
-import { formatDuration } from "../helpers";
 import { withRetry } from "@/utils/resilience/retry";
 
 const mockedIsValidHashedValue = isValidHashedValue as jest.MockedFunction<
   typeof isValidHashedValue
->;
-const mockedFormatDuration = formatDuration as jest.MockedFunction<
-  typeof formatDuration
 >;
 const mockedWithRetry = withRetry as jest.MockedFunction<typeof withRetry>;
 
@@ -77,7 +72,6 @@ describe("PasswordLoginStrategy", () => {
       completion
     );
 
-    mockedFormatDuration.mockReturnValue("30 minutes");
     mockedWithRetry.mockImplementation(() => Promise.resolve());
   });
 
@@ -97,7 +91,7 @@ describe("PasswordLoginStrategy", () => {
       req
     );
 
-    expect(lockout.assert).toHaveBeenCalledWith(EMAIL, "en", req.t);
+    expect(lockout.assert).toHaveBeenCalledWith(EMAIL, req.t);
     expect(accountExists.assertWithCredentialAudit).toHaveBeenCalledWith(
       EMAIL,
       req,

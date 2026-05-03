@@ -21,7 +21,6 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
-import { formatDuration } from "../helpers";
 import { LOGIN_LOCKOUT } from "../constants";
 
 export class PasswordLoginStrategy {
@@ -40,11 +39,11 @@ export class PasswordLoginStrategy {
     req: Request
   ): Promise<LoginResponseDto> {
     const { email, password } = body;
-    const { language, t } = req;
+    const { t } = req;
 
     Logger.info("Password login initiated", { email });
 
-    await this.passwordLockoutGuard.assert(email, language, t);
+    await this.passwordLockoutGuard.assert(email, t);
 
     const { auth, user } =
       await this.accountExistsGuard.assertWithCredentialAudit(email, req, t);
@@ -64,7 +63,7 @@ export class PasswordLoginStrategy {
       t
     );
 
-    await this.verifyPasswordOrFail(auth, password, email, language, req, t);
+    await this.verifyPasswordOrFail(auth, password, email, req, t);
 
     withRetry(() => this.failedAttemptsRepo.resetAll(email), {
       operationName: "resetFailedLoginAttempts",
@@ -83,7 +82,6 @@ export class PasswordLoginStrategy {
     auth: AuthenticationDocument,
     password: string,
     email: string,
-    language: string,
     req: Request,
     t: TranslateFunction
   ): Promise<void> {
@@ -94,11 +92,10 @@ export class PasswordLoginStrategy {
     this.audit.recordInvalidPassword({ auth, email, attemptCount, req });
 
     if (attemptCount >= LOGIN_LOCKOUT.MAX_ATTEMPTS && lockoutSeconds > 0) {
-      const timeMessage = formatDuration(lockoutSeconds, language);
       throw new TooManyRequestsError(
         t("login:errors.accountLocked", {
           attempts: attemptCount,
-          time: timeMessage
+          seconds: lockoutSeconds
         }),
         ERROR_CODES.LOGIN_ACCOUNT_LOCKED
       );

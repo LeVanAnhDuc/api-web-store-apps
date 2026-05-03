@@ -1,6 +1,6 @@
 export const LOGIN_LOCKOUT = {
   MAX_ATTEMPTS: 10,
-  LOCKOUT_SECONDS: 1800
+  LOCKOUT_SECONDS: 1800 // 30 minutes
 } as const;
 
 export const LOGIN_OTP_CONFIG = {

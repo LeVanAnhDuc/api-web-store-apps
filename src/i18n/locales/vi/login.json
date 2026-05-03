@@ -9,7 +9,7 @@
     "accountInactive": "Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ",
     "emailNotVerified": "Vui lòng xác thực email trước khi đăng nhập",
     "rateLimitExceeded": "Quá nhiều lần đăng nhập. Vui lòng thử lại sau",
-    "accountLocked": "Tài khoản tạm thời bị khóa sau {{attempts}} lần đăng nhập sai. Vui lòng thử lại sau {{time}}",
+    "accountLocked": "Tài khoản tạm thời bị khóa sau {{attempts}} lần đăng nhập sai. Vui lòng thử lại sau {{seconds}} giây",
     "otpCooldown": "Vui lòng đợi {{seconds}} giây trước khi yêu cầu OTP mới",
     "otpLocked": "Quá nhiều lần nhập sai OTP. Vui lòng thử lại sau {{minutes}} phút",
     "invalidOtpWithRemaining": "Mã OTP không hợp lệ. Còn {{remaining}} lần thử",
