@@ -108,6 +108,7 @@ export class SignupService {
       email,
       MAX_FAILED_ATTEMPTS
     );
+
     if (isLocked) {
       Logger.warn("OTP account locked", {
         email,
@@ -148,6 +149,7 @@ export class SignupService {
       email,
       MAX_RESEND_COUNT
     );
+
     if (exceeded) {
       Logger.warn("Resend OTP limit exceeded", {
         email,
@@ -172,6 +174,7 @@ export class SignupService {
       email,
       RESEND_WINDOW_SECONDS
     );
+
     Logger.debug("Resend attempt tracked", {
       email,
       currentCount: currentResendCount,
@@ -211,6 +214,7 @@ export class SignupService {
     Logger.info("CompleteSignup initiated", { email });
 
     const isValid = await this.sessionSignupRepo.verify(email, sessionToken);
+
     if (!isValid) {
       Logger.warn("Invalid or expired signup session", { email });
       throw new BadRequestError(
@@ -242,6 +246,7 @@ export class SignupService {
       this.otpSignupRepo.cleanupOtpData(email),
       this.sessionSignupRepo.clear(email)
     ]);
+
     Logger.debug("Signup data cleaned up", { email });
 
     Logger.info("CompleteSignup finished - new user registered", {
@@ -270,12 +275,14 @@ export class SignupService {
     t: TranslateFunction
   ): Promise<void> {
     const isValid = await this.otpSignupRepo.verify(email, otp);
+
     if (isValid) return;
 
     const failedCount = await this.otpSignupRepo.incrementFailedAttempts(
       email,
       LOCKOUT_DURATION_MINUTES
     );
+
     Logger.warn("Invalid OTP attempt", {
       email,
       failedCount,
@@ -314,7 +321,9 @@ export class SignupService {
     try {
       const result = await session.withTransaction(async () => {
         const hashedPassword = hashValue(password);
+
         const auth = await this.authService.create({ hashedPassword }, session);
+
         Logger.debug("Auth record created", {
           email,
           authId: auth._id.toString()
@@ -330,6 +339,7 @@ export class SignupService {
           },
           session
         );
+
         Logger.info("User profile created", {
           userId: user._id.toString(),
           authId: auth._id.toString()
