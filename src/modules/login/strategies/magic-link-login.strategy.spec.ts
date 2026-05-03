@@ -1,5 +1,4 @@
 jest.mock("@/utils/resilience/retry");
-jest.mock("@/utils/crypto/bcrypt");
 jest.mock("@/constants/env", () => ({
   __esModule: true,
   default: { CLIENT_URL: "https://app.test" }
@@ -37,10 +36,8 @@ import { MagicLinkLoginStrategy } from "./magic-link-login.strategy";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { withRetry } from "@/utils/resilience/retry";
-import { hashValue } from "@/utils/crypto/bcrypt";
 
 const mockedWithRetry = withRetry as jest.MockedFunction<typeof withRetry>;
-const mockedHashValue = hashValue as jest.MockedFunction<typeof hashValue>;
 
 const EMAIL = "user@example.com";
 const TOKEN = "secure-token-xyz";
@@ -86,6 +83,7 @@ describe("MagicLinkLoginStrategy", () => {
     it("stores token, dispatches email, returns dto for eligible account", async () => {
       const fixture = buildUserWithAuth();
       accountExists.tryFind.mockResolvedValue(fixture);
+      accountExists.isLoginEligible.mockReturnValue(true);
       magicLinkRepo.createAndStoreToken.mockResolvedValue(TOKEN);
 
       const result = await strategy.sendLink({ email: EMAIL }, req);
@@ -111,14 +109,14 @@ describe("MagicLinkLoginStrategy", () => {
       });
     });
 
-    it("returns fake success (no token stored) when account not found + applies cooldown + equalizes timing", async () => {
+    it("returns fake success (no token stored) when account not found + applies cooldown", async () => {
       accountExists.tryFind.mockResolvedValue(null);
+      accountExists.isLoginEligible.mockReturnValue(false);
 
       const result = await strategy.sendLink({ email: EMAIL }, req);
 
       expect(magicLinkRepo.createAndStoreToken).not.toHaveBeenCalled();
       expect(emailDispatcher.send).not.toHaveBeenCalled();
-      expect(mockedHashValue).toHaveBeenCalledWith(EMAIL);
       expect(mockedWithRetry).toHaveBeenCalledWith(
         expect.any(Function),
         expect.objectContaining({

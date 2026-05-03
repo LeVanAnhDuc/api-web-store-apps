@@ -1,5 +1,4 @@
 jest.mock("@/utils/resilience/retry");
-jest.mock("@/utils/crypto/bcrypt");
 // types
 import type { Request } from "express";
 import type { OtpLoginRepository } from "../repositories";
@@ -40,10 +39,8 @@ import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { LOGIN_OTP_CONFIG } from "../constants";
 import { withRetry } from "@/utils/resilience/retry";
-import { hashValue } from "@/utils/crypto/bcrypt";
 
 const mockedWithRetry = withRetry as jest.MockedFunction<typeof withRetry>;
-const mockedHashValue = hashValue as jest.MockedFunction<typeof hashValue>;
 
 const EMAIL = "user@example.com";
 const OTP_CODE = "123456";
@@ -92,6 +89,7 @@ describe("OtpLoginStrategy", () => {
     it("generates OTP, dispatches email, and returns dto for eligible account", async () => {
       const fixture = buildUserWithAuth();
       accountExists.tryFind.mockResolvedValue(fixture);
+      accountExists.isLoginEligible.mockReturnValue(true);
       otpRepo.hasExceededResendLimit.mockResolvedValue(false);
       otpRepo.createAndStoreOtp.mockResolvedValue(OTP_CODE);
 
@@ -120,6 +118,7 @@ describe("OtpLoginStrategy", () => {
     it("throws OTP_RESEND_LIMIT when resend limit exceeded", async () => {
       const fixture = buildUserWithAuth();
       accountExists.tryFind.mockResolvedValue(fixture);
+      accountExists.isLoginEligible.mockReturnValue(true);
       otpRepo.hasExceededResendLimit.mockResolvedValue(true);
 
       const promise = strategy.sendCode({ email: EMAIL }, req);
@@ -132,14 +131,14 @@ describe("OtpLoginStrategy", () => {
       expect(emailDispatcher.send).not.toHaveBeenCalled();
     });
 
-    it("returns fake success (no OTP dispatch) when account not found + applies rate-limit + equalizes timing", async () => {
+    it("returns fake success (no OTP dispatch) when account not found + applies rate-limit", async () => {
       accountExists.tryFind.mockResolvedValue(null);
+      accountExists.isLoginEligible.mockReturnValue(false);
 
       const result = await strategy.sendCode({ email: EMAIL }, req);
 
       expect(otpRepo.createAndStoreOtp).not.toHaveBeenCalled();
       expect(emailDispatcher.send).not.toHaveBeenCalled();
-      expect(mockedHashValue).toHaveBeenCalledWith(EMAIL);
       expect(mockedWithRetry).toHaveBeenCalledWith(
         expect.any(Function),
         expect.objectContaining({

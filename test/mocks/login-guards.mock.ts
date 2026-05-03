@@ -12,6 +12,7 @@ import type {
 export function createAccountExistsGuardMock(): jest.Mocked<AccountExistsGuard> {
   return {
     tryFind: jest.fn(),
+    isLoginEligible: jest.fn(),
     assert: jest.fn(),
     assertWithCredentialAudit: jest.fn()
   } as unknown as jest.Mocked<AccountExistsGuard>;
