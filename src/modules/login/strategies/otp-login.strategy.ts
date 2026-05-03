@@ -44,10 +44,6 @@ export class OtpLoginStrategy {
     private readonly completion: LoginCompletionService
   ) {}
 
-  private isAccountEligible(auth: AuthenticationDocument): boolean {
-    return auth.isActive === true && auth.verifiedEmail === true;
-  }
-
   async sendCode(body: OtpSendBody, req: Request): Promise<OtpSendDto> {
     const { email } = body;
     const { language, t } = req;
@@ -57,7 +53,7 @@ export class OtpLoginStrategy {
     await this.otpCooldownGuard.assert(email, t);
 
     const result = await this.accountExistsGuard.tryFind(email);
-    const isEligible = this.isAccountEligible(result?.auth);
+    const isEligible = this.accountExistsGuard.isLoginEligible(result);
 
     if (!isEligible) {
       Logger.debug("Login OTP send skipped — account not eligible", { email });

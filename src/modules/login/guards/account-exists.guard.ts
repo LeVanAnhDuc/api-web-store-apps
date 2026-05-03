@@ -19,6 +19,12 @@ export class AccountExistsGuard {
     return this.userService.findByEmailWithAuth(email);
   }
 
+  isLoginEligible(result: UserWithAuth | null): boolean {
+    return (
+      result?.auth.isActive === true && result?.auth.verifiedEmail === true
+    );
+  }
+
   async assert(email: string, t: TranslateFunction): Promise<UserWithAuth> {
     const result = await this.userService.findByEmailWithAuth(email);
 

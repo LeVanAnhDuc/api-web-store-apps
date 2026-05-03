@@ -24,7 +24,6 @@ import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
-import { hashValue } from "@/utils/crypto/bcrypt";
 import { MAGIC_LINK_CONFIG } from "../constants";
 
 export class MagicLinkLoginStrategy {
@@ -51,14 +50,12 @@ export class MagicLinkLoginStrategy {
     await this.magicLinkCooldownGuard.assert(email, t);
 
     const result = await this.accountExistsGuard.tryFind(email);
-    const isEligible =
-      result?.auth.isActive === true && result?.auth.verifiedEmail === true;
+    const isEligible = this.accountExistsGuard.isLoginEligible(result);
 
     if (!isEligible) {
       Logger.debug("Magic link send skipped — account not eligible", {
         email
       });
-      hashValue(email);
       withRetry(() => this.magicLinkLoginRepo.setCooldownAfterSend(email), {
         operationName: "setMagicLinkCooldown",
         context: { email }
