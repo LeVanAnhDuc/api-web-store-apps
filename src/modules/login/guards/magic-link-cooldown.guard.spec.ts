@@ -24,15 +24,13 @@ describe("MagicLinkCooldownGuard", () => {
     guard = new MagicLinkCooldownGuard(repo);
   });
 
-  it("returns silently when cooldown expired", async () => {
-    repo.checkCooldown.mockResolvedValue(true);
+  it("returns silently when cooldown has expired", async () => {
+    repo.getCooldownRemaining.mockResolvedValue(0);
 
     await expect(guard.assert(EMAIL, req.t)).resolves.toBeUndefined();
-    expect(repo.getCooldownRemaining).not.toHaveBeenCalled();
   });
 
-  it("throws LOGIN_MAGIC_LINK_COOLDOWN with interpolated seconds when active", async () => {
-    repo.checkCooldown.mockResolvedValue(false);
+  it("throws LOGIN_MAGIC_LINK_COOLDOWN with interpolated seconds when cooldown is active", async () => {
     repo.getCooldownRemaining.mockResolvedValue(77);
 
     const promise = guard.assert(EMAIL, req.t);

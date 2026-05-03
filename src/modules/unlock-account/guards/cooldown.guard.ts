@@ -12,15 +12,15 @@ export class CooldownGuard {
   async assert(email: string, t: TranslateFunction): Promise<void> {
     const remaining = await this.repo.getCooldownRemaining(email);
 
-    if (remaining > 0) {
-      Logger.warn("Unlock request blocked - cooldown active", {
-        email,
-        remainingSeconds: remaining
-      });
-      throw new BadRequestError(
-        t("unlockAccount:errors.unlockCooldown", { seconds: remaining }),
-        ERROR_CODES.UNLOCK_COOLDOWN
-      );
-    }
+    if (!remaining) return;
+
+    Logger.warn("Unlock request blocked - cooldown active", {
+      email,
+      remainingSeconds: remaining
+    });
+    throw new BadRequestError(
+      t("unlockAccount:errors.unlockCooldown", { seconds: remaining }),
+      ERROR_CODES.UNLOCK_COOLDOWN
+    );
   }
 }

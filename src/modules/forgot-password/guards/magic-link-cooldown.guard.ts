@@ -12,10 +12,10 @@ export class MagicLinkCooldownGuard {
   ) {}
 
   async assert(email: string, t: TranslateFunction): Promise<void> {
-    const canSend = await this.magicLinkRepo.checkCooldown(email);
-    if (canSend) return;
-
     const remaining = await this.magicLinkRepo.getCooldownRemaining(email);
+
+    if (!remaining) return;
+
     Logger.warn("Forgot password magic link cooldown not expired", {
       email,
       remaining

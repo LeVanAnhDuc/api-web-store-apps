@@ -2,6 +2,7 @@
 import type { RedisClientType } from "redis";
 // others
 import { buildKey } from "@/utils/redis/key-builder";
+import { TTL_KEY_MISSING, TTL_NO_EXPIRY } from "@/constants/redis/ttl";
 import { LOGIN } from "@/constants/redis/store";
 
 const KEYS = {
@@ -44,7 +45,10 @@ export class RedisUnlockAccountRepository implements UnlockAccountRepository {
   async getCooldownRemaining(email: string): Promise<number> {
     const key = this.cooldownKey(email);
     const ttl = await this.client.ttl(key);
-    return ttl > 0 ? ttl : 0;
+
+    if (ttl === TTL_KEY_MISSING) return 0;
+    if (ttl === TTL_NO_EXPIRY) return this.COOLDOWN_SECONDS;
+    return ttl;
   }
 
   async setCooldown(email: string): Promise<void> {

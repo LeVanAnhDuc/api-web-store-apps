@@ -2,6 +2,7 @@
 import type { RedisClientType } from "redis";
 // others
 import { buildKey } from "@/utils/redis/key-builder";
+import { TTL_KEY_MISSING, TTL_NO_EXPIRY } from "@/constants/redis/ttl";
 import { generateOtp } from "@/utils/crypto/otp";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { OTP_CONFIG } from "../constants";
@@ -20,7 +21,6 @@ export type OtpSignupRepository = {
   clearOtp(email: string): Promise<void>;
   createAndStoreOtp(email: string, expiry: number): Promise<string>;
   verify(email: string, otp: string): Promise<boolean>;
-  checkCooldown(email: string): Promise<boolean>;
   getCooldownRemaining(email: string): Promise<number>;
   setCooldown(email: string, seconds: number): Promise<void>;
   clearCooldown(email: string): Promise<void>;
@@ -88,16 +88,13 @@ export class RedisOtpSignupRepository implements OtpSignupRepository {
     return isValidHashedValue(otp, hashedOtp);
   }
 
-  async checkCooldown(email: string): Promise<boolean> {
-    const key = this.cooldownKey(email);
-    const exists = await this.client.exists(key);
-    return exists === 0;
-  }
-
   async getCooldownRemaining(email: string): Promise<number> {
     const key = this.cooldownKey(email);
     const ttl = await this.client.ttl(key);
-    return ttl > 0 ? ttl : 0;
+
+    if (ttl === TTL_KEY_MISSING) return 0;
+    if (ttl === TTL_NO_EXPIRY) return OTP_CONFIG.RESEND_COOLDOWN_SECONDS;
+    return ttl;
   }
 
   async setCooldown(email: string, seconds: number): Promise<void> {

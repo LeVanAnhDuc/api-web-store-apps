@@ -10,10 +10,10 @@ export class OtpCooldownGuard {
   constructor(private readonly otpRepo: OtpForgotPasswordRepository) {}
 
   async assert(email: string, t: TranslateFunction): Promise<void> {
-    const canSend = await this.otpRepo.checkCooldown(email);
-    if (canSend) return;
-
     const remaining = await this.otpRepo.getCooldownRemaining(email);
+
+    if (!remaining) return;
+
     Logger.warn("Forgot password OTP cooldown not expired", {
       email,
       remaining

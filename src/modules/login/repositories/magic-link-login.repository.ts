@@ -2,6 +2,7 @@
 import type { RedisClientType } from "redis";
 // others
 import { buildKey } from "@/utils/redis/key-builder";
+import { TTL_KEY_MISSING, TTL_NO_EXPIRY } from "@/constants/redis/ttl";
 import { generateSecureToken } from "@/utils/crypto/secure-token";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { Logger } from "@/libs/logger";
@@ -21,7 +22,6 @@ export type MagicLinkLoginRepository = {
   storeHashed(email: string, token: string, expiry: number): Promise<void>;
   verifyToken(email: string, token: string): Promise<boolean>;
   clearToken(email: string): Promise<void>;
-  checkCooldown(email: string): Promise<boolean>;
   getCooldownRemaining(email: string): Promise<number>;
   setCooldown(email: string, seconds: number): Promise<void>;
   clearCooldown(email: string): Promise<void>;
@@ -73,16 +73,13 @@ export class RedisMagicLinkLoginRepository implements MagicLinkLoginRepository {
     await this.client.del(key);
   }
 
-  async checkCooldown(email: string): Promise<boolean> {
-    const key = this.cooldownKey(email);
-    const exists = await this.client.exists(key);
-    return exists === 0;
-  }
-
   async getCooldownRemaining(email: string): Promise<number> {
     const key = this.cooldownKey(email);
     const ttl = await this.client.ttl(key);
-    return ttl > 0 ? ttl : 0;
+
+    if (ttl === TTL_KEY_MISSING) return 0;
+    if (ttl === TTL_NO_EXPIRY) return this.MAGIC_LINK_COOLDOWN_SECONDS;
+    return ttl;
   }
 
   async setCooldown(email: string, seconds: number): Promise<void> {

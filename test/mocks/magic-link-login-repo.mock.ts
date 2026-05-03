@@ -14,7 +14,6 @@ export function createMagicLinkLoginRepoMock(): jest.Mocked<MagicLinkLoginReposi
     storeHashed: jest.fn(),
     verifyToken: jest.fn(),
     clearToken: jest.fn(),
-    checkCooldown: jest.fn(),
     getCooldownRemaining: jest.fn(),
     setCooldown: jest.fn(),
     clearCooldown: jest.fn(),

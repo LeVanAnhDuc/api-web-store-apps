@@ -13,7 +13,6 @@ export function createOtpLoginRepoMock(): jest.Mocked<OtpLoginRepository> {
     storeHashed: jest.fn(),
     clearOtp: jest.fn(),
     verify: jest.fn(),
-    checkCooldown: jest.fn(),
     getCooldownRemaining: jest.fn(),
     setCooldown: jest.fn(),
     clearCooldown: jest.fn(),
