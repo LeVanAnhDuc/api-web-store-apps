@@ -48,13 +48,13 @@ class RedisDatabase {
       // metrics.increment('redis.connection.timeout');
       // }
 
-      throw new RedisError("Redis connection error");
+      throw new RedisError({ message: "Redis connection error" });
     }
   };
 
   public getClient = (): ReturnType<typeof createClient> => {
     if (!this.redisClient || !this.redisClient.isOpen) {
-      throw new RedisError("Redis client is not connected");
+      throw new RedisError({ message: "Redis client is not connected" });
     }
     return this.redisClient;
   };
@@ -68,7 +68,7 @@ class RedisDatabase {
       }
     } catch (error) {
       Logger.error("Error closing Redis connection", error);
-      throw new RedisError("Redis connection error");
+      throw new RedisError({ message: "Redis connection error" });
     }
   };
 

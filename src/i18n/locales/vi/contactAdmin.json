@@ -13,7 +13,8 @@
     "messageRequired": "Nội dung là bắt buộc",
     "messageTooShort": "Nội dung phải có ít nhất 20 ký tự",
     "messageTooLong": "Nội dung không được vượt quá 5000 ký tự",
-    "ticketGenerationFailed": "Không thể tạo mã ticket. Vui lòng thử lại"
+    "ticketGenerationFailed": "Không thể tạo mã ticket. Vui lòng thử lại",
+    "notFound": "Không tìm thấy yêu cầu liên hệ"
   },
   "success": {
     "submitted": "Yêu cầu của bạn đã được gửi thành công",

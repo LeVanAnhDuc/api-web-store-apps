@@ -74,12 +74,12 @@ export class SignupService {
 
   async sendOtp(body: SendOtpBody, req: Request): Promise<SendOtpDto> {
     const { email } = body;
-    const { language, t } = req;
+    const { language } = req;
 
     Logger.info("SendOtp initiated", { email });
 
-    await this.cooldownGuard.assert(email, t);
-    await this.emailAvailableGuard.assert(email, t);
+    await this.cooldownGuard.assert(email);
+    await this.emailAvailableGuard.assert(email);
 
     const otp = await this.otpSignupRepo.createAndStoreOtp(
       email,
@@ -103,9 +103,8 @@ export class SignupService {
     return toSendOtpDto(OTP_EXPIRY_SECONDS, OTP_COOLDOWN_SECONDS);
   }
 
-  async verifyOtp(body: VerifyOtpBody, req: Request): Promise<VerifyOtpDto> {
+  async verifyOtp(body: VerifyOtpBody): Promise<VerifyOtpDto> {
     const { email, otp } = body;
-    const { t } = req;
 
     Logger.info("VerifyOtp initiated", { email });
 
@@ -119,13 +118,13 @@ export class SignupService {
         email,
         maxAttempts: MAX_FAILED_ATTEMPTS
       });
-      throw new BadRequestError(
-        t("signup:errors.otpAttemptsExceeded"),
-        ERROR_CODES.SIGNUP_OTP_LOCKED
-      );
+      throw new BadRequestError({
+        i18nMessage: (t) => t("signup:errors.otpAttemptsExceeded"),
+        code: ERROR_CODES.SIGNUP_OTP_LOCKED
+      });
     }
 
-    await this.verifyOtpOrFail(email, otp, t);
+    await this.verifyOtpOrFail(email, otp);
 
     const sessionToken = await this.sessionSignupRepo.createAndStore(
       email,
@@ -144,11 +143,11 @@ export class SignupService {
 
   async resendOtp(body: ResendOtpBody, req: Request): Promise<ResendOtpDto> {
     const { email } = body;
-    const { language, t } = req;
+    const { language } = req;
 
     Logger.info("ResendOtp initiated", { email });
 
-    await this.cooldownGuard.assert(email, t);
+    await this.cooldownGuard.assert(email);
 
     const exceeded = await this.otpSignupRepo.hasExceededResendLimit(
       email,
@@ -160,13 +159,13 @@ export class SignupService {
         email,
         maxResends: MAX_RESEND_COUNT
       });
-      throw new BadRequestError(
-        t("signup:errors.resendLimitExceeded"),
-        ERROR_CODES.SIGNUP_RESEND_LIMIT
-      );
+      throw new BadRequestError({
+        i18nMessage: (t) => t("signup:errors.resendLimitExceeded"),
+        code: ERROR_CODES.SIGNUP_RESEND_LIMIT
+      });
     }
 
-    await this.emailAvailableGuard.assert(email, t);
+    await this.emailAvailableGuard.assert(email);
 
     const otp = await this.otpSignupRepo.createAndStoreOtp(
       email,
@@ -208,13 +207,9 @@ export class SignupService {
     );
   }
 
-  async completeSignup(
-    body: CompleteSignupBody,
-    req: Request
-  ): Promise<CompleteSignupDto> {
+  async completeSignup(body: CompleteSignupBody): Promise<CompleteSignupDto> {
     const { email, password, fullName, gender, dateOfBirth, sessionToken } =
       body;
-    const { t } = req;
 
     Logger.info("CompleteSignup initiated", { email });
 
@@ -222,21 +217,20 @@ export class SignupService {
 
     if (!isValid) {
       Logger.warn("Invalid or expired signup session", { email });
-      throw new BadRequestError(
-        t("signup:errors.invalidSession"),
-        ERROR_CODES.SIGNUP_SESSION_INVALID
-      );
+      throw new BadRequestError({
+        i18nMessage: (t) => t("signup:errors.invalidSession"),
+        code: ERROR_CODES.SIGNUP_SESSION_INVALID
+      });
     }
 
-    await this.emailAvailableGuard.assert(email, t);
+    await this.emailAvailableGuard.assert(email);
 
     const account = await this.createUserAccount(
       email,
       password,
       fullName,
       gender,
-      dateOfBirth,
-      t
+      dateOfBirth
     );
 
     const tokens = generateAuthTokensResponse({
@@ -275,11 +269,7 @@ export class SignupService {
     return toCheckEmailDto(!exists);
   }
 
-  private async verifyOtpOrFail(
-    email: string,
-    otp: string,
-    t: TranslateFunction
-  ): Promise<void> {
+  private async verifyOtpOrFail(email: string, otp: string): Promise<void> {
     const isValid = await this.otpSignupRepo.verify(email, otp);
 
     if (isValid) return;
@@ -298,16 +288,17 @@ export class SignupService {
     const remaining = MAX_FAILED_ATTEMPTS - failedCount;
 
     if (remaining > 0) {
-      throw new BadRequestError(
-        t("signup:errors.invalidOtpWithRemaining", { remaining }),
-        ERROR_CODES.SIGNUP_OTP_INVALID
-      );
+      throw new BadRequestError({
+        i18nMessage: (t) =>
+          t("signup:errors.invalidOtpWithRemaining", { remaining }),
+        code: ERROR_CODES.SIGNUP_OTP_INVALID
+      });
     }
 
-    throw new BadRequestError(
-      t("signup:errors.otpAttemptsExceeded"),
-      ERROR_CODES.SIGNUP_OTP_LOCKED
-    );
+    throw new BadRequestError({
+      i18nMessage: (t) => t("signup:errors.otpAttemptsExceeded"),
+      code: ERROR_CODES.SIGNUP_OTP_LOCKED
+    });
   }
 
   private async createUserAccount(
@@ -315,8 +306,7 @@ export class SignupService {
     password: string,
     fullName: string,
     gender: Gender,
-    dateOfBirth: string,
-    t: TranslateFunction
+    dateOfBirth: string
   ): Promise<{
     authId: Schema.Types.ObjectId;
     userId: Schema.Types.ObjectId;
@@ -356,17 +346,19 @@ export class SignupService {
       });
 
       if (!result) {
-        throw new InternalServerError("Signup transaction was aborted");
+        throw new InternalServerError({
+          message: "Signup transaction was aborted"
+        });
       }
 
       return result;
     } catch (err) {
       if (isDuplicateKeyError(err) && getDuplicatedField(err) === "email") {
         Logger.warn("Signup email duplicate key (race condition)", { email });
-        throw new ConflictRequestError(
-          t("signup:errors.emailAlreadyExists"),
-          ERROR_CODES.SIGNUP_EMAIL_EXISTS
-        );
+        throw new ConflictRequestError({
+          i18nMessage: (t) => t("signup:errors.emailAlreadyExists"),
+          code: ERROR_CODES.SIGNUP_EMAIL_EXISTS
+        });
       }
       throw err;
     } finally {

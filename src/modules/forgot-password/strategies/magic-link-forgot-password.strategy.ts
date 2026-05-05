@@ -48,12 +48,12 @@ export class MagicLinkForgotPasswordStrategy {
     req: FPMagicLinkSendRequest
   ): Promise<SendMagicLinkResponseDto> {
     const { email } = req.body;
-    const { language, t } = req;
+    const { language } = req;
 
     Logger.info("Forgot password magic link send initiated", { email });
 
-    await this.cooldownGuard.assert(email, t);
-    await this.resendLimitGuard.assert(email, t);
+    await this.cooldownGuard.assert(email);
+    await this.resendLimitGuard.assert(email);
 
     const result = await this.authExistsGuard.tryFind(email);
 
@@ -93,19 +93,18 @@ export class MagicLinkForgotPasswordStrategy {
     req: FPMagicLinkVerifyRequest
   ): Promise<VerifyMagicLinkResponseDto> {
     const { email, token } = req.body;
-    const { t } = req;
 
     Logger.info("Forgot password magic link verification initiated", { email });
 
-    const { auth } = await this.authExistsGuard.assert(email, t);
+    const { auth } = await this.authExistsGuard.assert(email);
 
     const isValid = await this.magicLinkRepo.verifyToken(email, token);
     if (!isValid) {
       this.audit.recordInvalidMagicLink({ email, auth, req });
-      throw new UnauthorizedError(
-        t("forgotPassword:errors.invalidMagicLink"),
-        ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_INVALID
-      );
+      throw new UnauthorizedError({
+        i18nMessage: (t) => t("forgotPassword:errors.invalidMagicLink"),
+        code: ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_INVALID
+      });
     }
 
     const resetToken = await this.resetTokenRepo.createAndStore(email);

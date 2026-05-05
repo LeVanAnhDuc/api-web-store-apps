@@ -28,20 +28,19 @@ export class TokenService {
   ) {}
 
   async refreshAccessToken(
-    refreshToken: string | undefined,
-    t: TranslateFunction
+    refreshToken: string | undefined
   ): Promise<RefreshTokenDto> {
-    this.refreshTokenPresentGuard.assert(refreshToken, t);
-    const payload = this.refreshTokenValidGuard.assert(refreshToken, t);
+    this.refreshTokenPresentGuard.assert(refreshToken);
+    const payload = this.refreshTokenValidGuard.assert(refreshToken);
 
     const [auth, user] = await Promise.all([
       this.authService.findById(payload.authId),
       this.userService.findByAuthId(payload.authId)
     ]);
 
-    this.authActiveGuard.assert(auth, payload.authId, t);
-    this.passwordNotChangedGuard.assert(auth, payload, t);
-    this.userExistsGuard.assert(user, payload.authId, t);
+    this.authActiveGuard.assert(auth, payload.authId);
+    this.passwordNotChangedGuard.assert(auth, payload);
+    this.userExistsGuard.assert(user, payload.authId);
 
     const authTokensResponse = generateAuthTokensResponse({
       userId: user._id.toString(),

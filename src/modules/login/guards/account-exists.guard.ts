@@ -25,31 +25,30 @@ export class AccountExistsGuard {
     );
   }
 
-  async assert(email: string, t: TranslateFunction): Promise<UserWithAuth> {
+  async assert(email: string): Promise<UserWithAuth> {
     const result = await this.userService.findByEmailWithAuth(email);
 
     if (result) return result;
 
     Logger.warn("Authentication not found", { email });
-    throw new UnauthorizedError(
-      t("login:errors.invalidEmail"),
-      ERROR_CODES.LOGIN_INVALID_EMAIL
-    );
+    throw new UnauthorizedError({
+      i18nMessage: (t) => t("login:errors.invalidEmail"),
+      code: ERROR_CODES.LOGIN_INVALID_EMAIL
+    });
   }
 
   async assertWithCredentialAudit(
     email: string,
-    req: Request,
-    t: TranslateFunction
+    req: Request
   ): Promise<UserWithAuth> {
     const result = await this.userService.findByEmailWithAuth(email);
 
     if (result) return result;
 
     this.audit.recordInvalidCredentials({ email, req });
-    throw new UnauthorizedError(
-      t("login:errors.invalidCredentials"),
-      ERROR_CODES.LOGIN_INVALID_CREDENTIALS
-    );
+    throw new UnauthorizedError({
+      i18nMessage: (t) => t("login:errors.invalidCredentials"),
+      code: ERROR_CODES.LOGIN_INVALID_CREDENTIALS
+    });
   }
 }

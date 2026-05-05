@@ -13,7 +13,8 @@
     "messageRequired": "Message is required",
     "messageTooShort": "Message must be at least 20 characters",
     "messageTooLong": "Message must not exceed 5000 characters",
-    "ticketGenerationFailed": "Unable to generate ticket number. Please try again"
+    "ticketGenerationFailed": "Unable to generate ticket number. Please try again",
+    "notFound": "Contact request not found"
   },
   "success": {
     "submitted": "Your request has been submitted successfully",

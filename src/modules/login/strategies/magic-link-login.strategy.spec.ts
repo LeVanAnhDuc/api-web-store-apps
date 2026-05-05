@@ -88,7 +88,7 @@ describe("MagicLinkLoginStrategy", () => {
 
       const result = await strategy.sendLink({ email: EMAIL }, req);
 
-      expect(cooldown.assert).toHaveBeenCalledWith(EMAIL, req.t);
+      expect(cooldown.assert).toHaveBeenCalledWith(EMAIL);
       expect(accountExists.tryFind).toHaveBeenCalledWith(EMAIL);
       expect(magicLinkRepo.createAndStoreToken).toHaveBeenCalledWith(EMAIL);
       expect(emailDispatcher.send).toHaveBeenCalledWith(
@@ -188,15 +188,13 @@ describe("MagicLinkLoginStrategy", () => {
         fixture.auth,
         EMAIL,
         LOGIN_METHODS.MAGIC_LINK,
-        req,
-        req.t
+        req
       );
       expect(emailVerified.assertWithAudit).toHaveBeenCalledWith(
         fixture.auth,
         EMAIL,
         LOGIN_METHODS.MAGIC_LINK,
-        req,
-        req.t
+        req
       );
       expect(magicLinkRepo.verifyToken).toHaveBeenCalledWith(EMAIL, TOKEN);
       expect(completion.complete).toHaveBeenCalledWith({
@@ -217,10 +215,10 @@ describe("MagicLinkLoginStrategy", () => {
       const fixture = buildUserWithAuth({ auth: { verifiedEmail: false } });
       accountExists.assert.mockResolvedValue(fixture);
       emailVerified.assertWithAudit.mockImplementation(() => {
-        throw new UnauthorizedError(
-          "unverified",
-          ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
-        );
+        throw new UnauthorizedError({
+          message: "unverified",
+          code: ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
+        });
       });
 
       await expect(

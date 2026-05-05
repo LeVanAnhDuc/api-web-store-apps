@@ -27,18 +27,19 @@ describe("OtpCooldownGuard", () => {
   it("returns silently when cooldown has expired", async () => {
     repo.getCooldownRemaining.mockResolvedValue(0);
 
-    await expect(guard.assert(EMAIL, req.t)).resolves.toBeUndefined();
+    await expect(guard.assert(EMAIL)).resolves.toBeUndefined();
   });
 
   it("throws LOGIN_OTP_COOLDOWN with interpolated seconds when cooldown is active", async () => {
     repo.getCooldownRemaining.mockResolvedValue(42);
 
-    const promise = guard.assert(EMAIL, req.t);
+    const error = await guard.assert(EMAIL).catch((e: unknown) => e);
 
-    await expect(promise).rejects.toBeInstanceOf(BadRequestError);
-    await expect(promise).rejects.toMatchObject({
-      code: ERROR_CODES.LOGIN_OTP_COOLDOWN
-    });
+    expect(error).toBeInstanceOf(BadRequestError);
+    expect((error as BadRequestError).code).toBe(
+      ERROR_CODES.LOGIN_OTP_COOLDOWN
+    );
+    (error as BadRequestError).i18nMessage?.(req.t);
     expect(tSpy).toHaveBeenCalledWith("login:errors.otpCooldown", {
       seconds: 42
     });

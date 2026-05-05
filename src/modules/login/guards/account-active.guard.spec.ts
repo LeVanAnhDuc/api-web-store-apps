@@ -27,13 +27,13 @@ describe("AccountActiveGuard", () => {
 
   describe("assert", () => {
     it("returns silently when active", () => {
-      expect(() => guard.assert(buildAuth(), req.t)).not.toThrow();
+      expect(() => guard.assert(buildAuth())).not.toThrow();
     });
 
     it("throws LOGIN_ACCOUNT_INACTIVE when inactive, without audit", () => {
       const auth = buildAuth({ isActive: false });
       try {
-        guard.assert(auth, req.t);
+        guard.assert(auth);
         throw new Error("expected throw");
       } catch (err) {
         expect(err).toBeInstanceOf(UnauthorizedError);
@@ -48,13 +48,7 @@ describe("AccountActiveGuard", () => {
   describe("assertWithAudit", () => {
     it("returns silently when active, no audit", () => {
       expect(() =>
-        guard.assertWithAudit(
-          buildAuth(),
-          EMAIL,
-          LOGIN_METHODS.PASSWORD,
-          req,
-          req.t
-        )
+        guard.assertWithAudit(buildAuth(), EMAIL, LOGIN_METHODS.PASSWORD, req)
       ).not.toThrow();
       expect(audit.recordInactiveAccount).not.toHaveBeenCalled();
     });
@@ -63,7 +57,7 @@ describe("AccountActiveGuard", () => {
       const auth = buildAuth({ isActive: false });
 
       expect(() =>
-        guard.assertWithAudit(auth, EMAIL, LOGIN_METHODS.PASSWORD, req, req.t)
+        guard.assertWithAudit(auth, EMAIL, LOGIN_METHODS.PASSWORD, req)
       ).toThrow(UnauthorizedError);
 
       expect(audit.recordInactiveAccount).toHaveBeenCalledWith({

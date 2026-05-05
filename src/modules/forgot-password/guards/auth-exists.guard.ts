@@ -14,15 +14,15 @@ export class AuthExistsGuard {
     return this.userService.findByEmailWithAuth(email);
   }
 
-  async assert(email: string, t: TranslateFunction): Promise<UserWithAuth> {
+  async assert(email: string): Promise<UserWithAuth> {
     const result = await this.tryFind(email);
 
     if (!result) {
       Logger.warn("Forgot password - authentication not found", { email });
-      throw new UnauthorizedError(
-        t("common:errors.unauthorized"),
-        ERROR_CODES.FORGOT_PASSWORD_AUTH_NOT_FOUND
-      );
+      throw new UnauthorizedError({
+        i18nMessage: (t) => t("common:errors.unauthorized"),
+        code: ERROR_CODES.FORGOT_PASSWORD_AUTH_NOT_FOUND
+      });
     }
 
     return result;

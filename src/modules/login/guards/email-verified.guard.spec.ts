@@ -27,13 +27,13 @@ describe("EmailVerifiedGuard", () => {
 
   describe("assert", () => {
     it("returns silently when email verified", () => {
-      expect(() => guard.assert(buildAuth(), req.t)).not.toThrow();
+      expect(() => guard.assert(buildAuth())).not.toThrow();
     });
 
     it("throws LOGIN_EMAIL_NOT_VERIFIED when not verified, without audit", () => {
       const auth = buildAuth({ verifiedEmail: false });
       try {
-        guard.assert(auth, req.t);
+        guard.assert(auth);
         throw new Error("expected throw");
       } catch (err) {
         expect(err).toBeInstanceOf(UnauthorizedError);
@@ -48,13 +48,7 @@ describe("EmailVerifiedGuard", () => {
   describe("assertWithAudit", () => {
     it("returns silently when verified, no audit", () => {
       expect(() =>
-        guard.assertWithAudit(
-          buildAuth(),
-          EMAIL,
-          LOGIN_METHODS.PASSWORD,
-          req,
-          req.t
-        )
+        guard.assertWithAudit(buildAuth(), EMAIL, LOGIN_METHODS.PASSWORD, req)
       ).not.toThrow();
       expect(audit.recordEmailNotVerified).not.toHaveBeenCalled();
     });
@@ -63,7 +57,7 @@ describe("EmailVerifiedGuard", () => {
       const auth = buildAuth({ verifiedEmail: false });
 
       expect(() =>
-        guard.assertWithAudit(auth, EMAIL, LOGIN_METHODS.PASSWORD, req, req.t)
+        guard.assertWithAudit(auth, EMAIL, LOGIN_METHODS.PASSWORD, req)
       ).toThrow(UnauthorizedError);
 
       expect(audit.recordEmailNotVerified).toHaveBeenCalledWith({

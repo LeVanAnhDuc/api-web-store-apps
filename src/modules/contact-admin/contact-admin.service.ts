@@ -98,10 +98,10 @@ export class ContactAdminService {
     const doc = await this.contactRepo.findById(id);
 
     if (!doc) {
-      throw new NotFoundError(
-        "contactAdmin:errors.notFound",
-        ERROR_CODES.CONTACT_NOT_FOUND
-      );
+      throw new NotFoundError({
+        i18nMessage: (t) => t("contactAdmin:errors.notFound"),
+        code: ERROR_CODES.CONTACT_NOT_FOUND
+      });
     }
 
     return toContactDetailItemDto(doc);
@@ -114,10 +114,10 @@ export class ContactAdminService {
     const updated = await this.contactRepo.updateStatus(id, status);
 
     if (!updated) {
-      throw new NotFoundError(
-        "contactAdmin:errors.notFound",
-        ERROR_CODES.CONTACT_NOT_FOUND
-      );
+      throw new NotFoundError({
+        i18nMessage: (t) => t("contactAdmin:errors.notFound"),
+        code: ERROR_CODES.CONTACT_NOT_FOUND
+      });
     }
 
     return toUpdateContactStatusDto(updated);

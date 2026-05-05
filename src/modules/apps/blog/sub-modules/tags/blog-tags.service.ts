@@ -28,10 +28,10 @@ export class BlogTagsService {
     const existing = await this.tagRepo.findByName(normalized);
 
     if (existing) {
-      throw new ConflictRequestError(
-        "blog:errors.tagAlreadyExists",
-        ERROR_CODES.BLOG_TAG_EXISTS
-      );
+      throw new ConflictRequestError({
+        message: "Tag already exists",
+        code: ERROR_CODES.BLOG_TAG_EXISTS
+      });
     }
 
     const doc = await this.tagRepo.create(normalized);

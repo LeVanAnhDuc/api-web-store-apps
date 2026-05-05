@@ -20,7 +20,7 @@ export class SignupController {
   };
 
   verifyOtp = async (req: VerifyOtpRequest, res: Response): Promise<void> => {
-    const data = await this.service.verifyOtp(req.body, req);
+    const data = await this.service.verifyOtp(req.body);
     new OkSuccess({ data, message: "signup:success.otpVerified" }).send(
       req,
       res
@@ -36,7 +36,7 @@ export class SignupController {
     req: CompleteSignupRequest,
     res: Response
   ): Promise<void> => {
-    const data = await this.service.completeSignup(req.body, req);
+    const data = await this.service.completeSignup(req.body);
     new CreatedSuccess({
       data,
       message: "signup:success.signupCompleted"

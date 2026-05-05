@@ -11,18 +11,17 @@ export class TempPasswordValidGuard {
   async assert(
     auth: AuthenticationDocument,
     email: string,
-    tempPassword: string,
-    t: TranslateFunction
+    tempPassword: string
   ): Promise<void> {
     if (!auth.tempPasswordHash) {
       Logger.warn("Unlock verify failed - no temp password set", {
         email,
         authId: auth._id
       });
-      throw new UnauthorizedError(
-        t("unlockAccount:errors.invalidTempPassword"),
-        ERROR_CODES.UNLOCK_INVALID_TEMP_PASSWORD
-      );
+      throw new UnauthorizedError({
+        i18nMessage: (t) => t("unlockAccount:errors.invalidTempPassword"),
+        code: ERROR_CODES.UNLOCK_INVALID_TEMP_PASSWORD
+      });
     }
 
     if (!auth.tempPasswordExpAt || auth.tempPasswordExpAt < new Date()) {
@@ -31,10 +30,10 @@ export class TempPasswordValidGuard {
         authId: auth._id,
         expiredAt: auth.tempPasswordExpAt
       });
-      throw new UnauthorizedError(
-        t("unlockAccount:errors.tempPasswordExpired"),
-        ERROR_CODES.UNLOCK_TEMP_PASSWORD_EXPIRED
-      );
+      throw new UnauthorizedError({
+        i18nMessage: (t) => t("unlockAccount:errors.tempPasswordExpired"),
+        code: ERROR_CODES.UNLOCK_TEMP_PASSWORD_EXPIRED
+      });
     }
 
     if (auth.tempPasswordUsed) {
@@ -42,10 +41,10 @@ export class TempPasswordValidGuard {
         email,
         authId: auth._id
       });
-      throw new UnauthorizedError(
-        t("unlockAccount:errors.invalidTempPassword"),
-        ERROR_CODES.UNLOCK_INVALID_TEMP_PASSWORD
-      );
+      throw new UnauthorizedError({
+        i18nMessage: (t) => t("unlockAccount:errors.invalidTempPassword"),
+        code: ERROR_CODES.UNLOCK_INVALID_TEMP_PASSWORD
+      });
     }
 
     const isValid = await isValidHashedValue(
@@ -57,10 +56,10 @@ export class TempPasswordValidGuard {
         email,
         authId: auth._id
       });
-      throw new UnauthorizedError(
-        t("unlockAccount:errors.invalidTempPassword"),
-        ERROR_CODES.UNLOCK_INVALID_TEMP_PASSWORD
-      );
+      throw new UnauthorizedError({
+        i18nMessage: (t) => t("unlockAccount:errors.invalidTempPassword"),
+        code: ERROR_CODES.UNLOCK_INVALID_TEMP_PASSWORD
+      });
     }
   }
 }

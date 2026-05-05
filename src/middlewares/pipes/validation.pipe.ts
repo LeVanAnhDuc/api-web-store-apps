@@ -22,9 +22,10 @@ const validationPipe =
           message: req.t(detail.message as I18n.Key)
         }));
 
-        const mainMessage = req.t("common:errors.validationFailed");
-
-        throw new ValidationError(mainMessage, errors);
+        throw new ValidationError({
+          i18nMessage: (t) => t("common:errors.validationFailed"),
+          errors
+        });
       }
 
       req[source] = value;

@@ -77,7 +77,9 @@ export class NodemailerTransport extends EmailTransport {
 
   async sendRawEmail(options: EmailSendOptions): Promise<void> {
     if (!this.transporter) {
-      throw new ServiceUnavailableError("Email transport not initialized");
+      throw new ServiceUnavailableError({
+        message: "Email transport not initialized"
+      });
     }
 
     await this.transporter.sendMail({

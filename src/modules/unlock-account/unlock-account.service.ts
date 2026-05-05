@@ -51,12 +51,12 @@ export class UnlockAccountService {
     req: Request
   ): Promise<UnlockRequestDto> {
     const { email } = body;
-    const { language, t } = req;
+    const { language } = req;
 
     Logger.info("Processing unlock request", { email });
 
-    await this.cooldownGuard.assert(email, t);
-    await this.rateLimitGuard.assert(email, t);
+    await this.cooldownGuard.assert(email);
+    await this.rateLimitGuard.assert(email);
 
     const result = await this.authExistsGuard.tryFind(email);
 
@@ -73,10 +73,10 @@ export class UnlockAccountService {
         email,
         authId: auth._id
       });
-      throw new BadRequestError(
-        t("unlockAccount:errors.accountDisabled"),
-        ERROR_CODES.UNLOCK_ACCOUNT_DISABLED
-      );
+      throw new BadRequestError({
+        i18nMessage: (t) => t("unlockAccount:errors.accountDisabled"),
+        code: ERROR_CODES.UNLOCK_ACCOUNT_DISABLED
+      });
     }
 
     const isLocked = await this.loginService.isEmailLocked(email);
@@ -85,10 +85,10 @@ export class UnlockAccountService {
         email,
         authId: auth._id
       });
-      throw new BadRequestError(
-        t("unlockAccount:errors.accountNotLocked"),
-        ERROR_CODES.UNLOCK_ACCOUNT_NOT_LOCKED
-      );
+      throw new BadRequestError({
+        i18nMessage: (t) => t("unlockAccount:errors.accountNotLocked"),
+        code: ERROR_CODES.UNLOCK_ACCOUNT_NOT_LOCKED
+      });
     }
 
     const tempPassword = generateTempPassword();
@@ -131,13 +131,12 @@ export class UnlockAccountService {
     req: Request
   ): Promise<UnlockVerifyDto> {
     const { email, tempPassword } = body;
-    const { t } = req;
 
     Logger.info("Processing unlock verify", { email });
 
-    const { auth, user } = await this.authExistsGuard.assert(email, t);
+    const { auth, user } = await this.authExistsGuard.assert(email);
 
-    await this.tempPasswordValidGuard.assert(auth, email, tempPassword, t);
+    await this.tempPasswordValidGuard.assert(auth, email, tempPassword);
 
     Logger.info("Temp password verified successfully", {
       email,

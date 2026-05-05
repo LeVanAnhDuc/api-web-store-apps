@@ -62,13 +62,12 @@ export class ForgotPasswordService {
     req: FPResetPasswordRequest
   ): Promise<ResetPasswordResponseDto> {
     const { email, resetToken, newPassword } = req.body;
-    const { t } = req;
 
     Logger.info("Forgot password reset initiated", { email });
 
-    await this.resetTokenValidGuard.assert(email, resetToken, t);
+    await this.resetTokenValidGuard.assert(email, resetToken);
 
-    const { auth } = await this.authExistsGuard.assert(email, t);
+    const { auth } = await this.authExistsGuard.assert(email);
 
     const hashedPassword = hashValue(newPassword);
     await this.authService.updatePassword(auth._id.toString(), hashedPassword);

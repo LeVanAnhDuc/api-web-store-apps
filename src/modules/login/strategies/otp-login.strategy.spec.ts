@@ -95,7 +95,7 @@ describe("OtpLoginStrategy", () => {
 
       const result = await strategy.sendCode({ email: EMAIL }, req);
 
-      expect(otpCooldown.assert).toHaveBeenCalledWith(EMAIL, req.t);
+      expect(otpCooldown.assert).toHaveBeenCalledWith(EMAIL);
       expect(accountExists.tryFind).toHaveBeenCalledWith(EMAIL);
       expect(otpRepo.createAndStoreOtp).toHaveBeenCalledWith(EMAIL);
       expect(emailDispatcher.send).toHaveBeenCalledWith(
@@ -206,20 +206,18 @@ describe("OtpLoginStrategy", () => {
         req
       );
 
-      expect(otpLockout.assert).toHaveBeenCalledWith(EMAIL, req.t);
+      expect(otpLockout.assert).toHaveBeenCalledWith(EMAIL);
       expect(accountActive.assertWithAudit).toHaveBeenCalledWith(
         fixture.auth,
         EMAIL,
         LOGIN_METHODS.OTP,
-        req,
-        req.t
+        req
       );
       expect(emailVerified.assertWithAudit).toHaveBeenCalledWith(
         fixture.auth,
         EMAIL,
         LOGIN_METHODS.OTP,
-        req,
-        req.t
+        req
       );
       expect(otpRepo.verify).toHaveBeenCalledWith(EMAIL, OTP_CODE);
       expect(completion.complete).toHaveBeenCalledWith({
@@ -240,10 +238,10 @@ describe("OtpLoginStrategy", () => {
       const fixture = buildUserWithAuth({ auth: { isActive: false } });
       accountExists.assert.mockResolvedValue(fixture);
       accountActive.assertWithAudit.mockImplementation(() => {
-        throw new UnauthorizedError(
-          "inactive",
-          ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
-        );
+        throw new UnauthorizedError({
+          message: "inactive",
+          code: ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
+        });
       });
 
       await expect(

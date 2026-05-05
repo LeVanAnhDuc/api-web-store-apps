@@ -9,7 +9,7 @@ import { Logger } from "@/libs/logger";
 export class PasswordLockoutGuard {
   constructor(private readonly failedAttemptsRepo: FailedAttemptsRepository) {}
 
-  async assert(email: string, t: TranslateFunction): Promise<void> {
+  async assert(email: string): Promise<void> {
     const { isLocked, remainingSeconds } =
       await this.failedAttemptsRepo.checkLockout(email);
 
@@ -23,12 +23,13 @@ export class PasswordLockoutGuard {
       remainingSeconds
     });
 
-    throw new TooManyRequestsError(
-      t("login:errors.accountLocked", {
-        attempts: attemptCount,
-        seconds: remainingSeconds
-      }),
-      ERROR_CODES.LOGIN_ACCOUNT_LOCKED
-    );
+    throw new TooManyRequestsError({
+      i18nMessage: (t) =>
+        t("login:errors.accountLocked", {
+          attempts: attemptCount,
+          seconds: remainingSeconds
+        }),
+      code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
+    });
   }
 }

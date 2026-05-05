@@ -14,15 +14,15 @@ export class AuthExistsGuard {
     return this.userService.findByEmailWithAuth(email);
   }
 
-  async assert(email: string, t: TranslateFunction): Promise<UserWithAuth> {
+  async assert(email: string): Promise<UserWithAuth> {
     const result = await this.tryFind(email);
 
     if (!result) {
       Logger.warn("Unlock verify failed - account not found", { email });
-      throw new UnauthorizedError(
-        t("unlockAccount:errors.invalidTempPassword"),
-        ERROR_CODES.UNLOCK_AUTH_NOT_FOUND
-      );
+      throw new UnauthorizedError({
+        i18nMessage: (t) => t("unlockAccount:errors.invalidTempPassword"),
+        code: ERROR_CODES.UNLOCK_AUTH_NOT_FOUND
+      });
     }
 
     return result;

@@ -9,15 +9,15 @@ import { Logger } from "@/libs/logger";
 export class OtpCooldownGuard {
   constructor(private readonly otpLoginRepo: OtpLoginRepository) {}
 
-  async assert(email: string, t: TranslateFunction): Promise<void> {
+  async assert(email: string): Promise<void> {
     const remaining = await this.otpLoginRepo.getCooldownRemaining(email);
 
     if (!remaining) return;
 
     Logger.warn("Login OTP cooldown not expired", { email, remaining });
-    throw new BadRequestError(
-      t("login:errors.otpCooldown", { seconds: remaining }),
-      ERROR_CODES.LOGIN_OTP_COOLDOWN
-    );
+    throw new BadRequestError({
+      i18nMessage: (t) => t("login:errors.otpCooldown", { seconds: remaining }),
+      code: ERROR_CODES.LOGIN_OTP_COOLDOWN
+    });
   }
 }

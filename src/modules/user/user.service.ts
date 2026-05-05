@@ -29,10 +29,10 @@ export class UserService {
     const user = await this.userRepo.findById(userId);
 
     if (!user) {
-      throw new NotFoundError(
-        "user:errors.notFound",
-        ERROR_CODES.USER_NOT_FOUND
-      );
+      throw new NotFoundError({
+        i18nMessage: (t) => t("user:errors.notFound"),
+        code: ERROR_CODES.USER_NOT_FOUND
+      });
     }
 
     return toMyProfileDto(user, buildAvatarUrl(user.avatar ?? null));
@@ -45,10 +45,10 @@ export class UserService {
     const user = await this.userRepo.updateById(userId, data);
 
     if (!user) {
-      throw new NotFoundError(
-        "user:errors.notFound",
-        ERROR_CODES.USER_NOT_FOUND
-      );
+      throw new NotFoundError({
+        i18nMessage: (t) => t("user:errors.notFound"),
+        code: ERROR_CODES.USER_NOT_FOUND
+      });
     }
 
     return toMyProfileDto(user, buildAvatarUrl(user.avatar ?? null));
@@ -59,10 +59,10 @@ export class UserService {
     filePath?: string
   ): Promise<UploadAvatarDto> {
     if (!filePath) {
-      throw new BadRequestError(
-        "user:errors.noFileUploaded",
-        ERROR_CODES.USER_NO_FILE_UPLOADED
-      );
+      throw new BadRequestError({
+        i18nMessage: (t) => t("user:errors.noFileUploaded"),
+        code: ERROR_CODES.USER_NO_FILE_UPLOADED
+      });
     }
 
     const normalizedPath = path
@@ -78,10 +78,10 @@ export class UserService {
     const user = await this.userRepo.findPublicById(userId);
 
     if (!user) {
-      throw new NotFoundError(
-        "user:errors.notFound",
-        ERROR_CODES.USER_NOT_FOUND
-      );
+      throw new NotFoundError({
+        i18nMessage: (t) => t("user:errors.notFound"),
+        code: ERROR_CODES.USER_NOT_FOUND
+      });
     }
 
     return toPublicProfileDto(user, buildAvatarUrl(user.avatar ?? null));

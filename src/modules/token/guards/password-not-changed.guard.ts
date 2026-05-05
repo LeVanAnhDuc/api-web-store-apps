@@ -9,11 +9,7 @@ import { Logger } from "@/libs/logger";
 const MILLISECONDS_PER_SECOND = 1000;
 
 export class PasswordNotChangedGuard {
-  assert(
-    auth: AuthenticationDocument,
-    payload: RefreshTokenPayload,
-    t: TranslateFunction
-  ): void {
+  assert(auth: AuthenticationDocument, payload: RefreshTokenPayload): void {
     if (!auth.passwordChangedAt || !payload.iat) return;
 
     const passwordChangedAtSec = Math.floor(
@@ -25,10 +21,11 @@ export class PasswordNotChangedGuard {
         "Token refresh rejected - password changed after token issued",
         { authId: payload.authId }
       );
-      throw new ForbiddenError(
-        t("forgotPassword:errors.passwordChangedPleaseLogin"),
-        ERROR_CODES.AUTH_PASSWORD_CHANGED
-      );
+      throw new ForbiddenError({
+        i18nMessage: (t) =>
+          t("forgotPassword:errors.passwordChangedPleaseLogin"),
+        code: ERROR_CODES.AUTH_PASSWORD_CHANGED
+      });
     }
   }
 }

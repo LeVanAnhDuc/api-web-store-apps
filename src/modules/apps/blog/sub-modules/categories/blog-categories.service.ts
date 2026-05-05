@@ -28,10 +28,10 @@ export class BlogCategoriesService {
     const existing = await this.categoryRepo.findByName(normalized);
 
     if (existing) {
-      throw new ConflictRequestError(
-        "blog:errors.categoryAlreadyExists",
-        ERROR_CODES.BLOG_CATEGORY_EXISTS
-      );
+      throw new ConflictRequestError({
+        message: "Category already exists",
+        code: ERROR_CODES.BLOG_CATEGORY_EXISTS
+      });
     }
 
     const doc = await this.categoryRepo.create(normalized);

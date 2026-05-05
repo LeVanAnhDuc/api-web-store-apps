@@ -48,13 +48,13 @@ describe("AccountExistsGuard", () => {
       const fixture = buildUserWithAuth();
       userService.findByEmailWithAuth.mockResolvedValue(fixture);
 
-      await expect(guard.assert(EMAIL, req.t)).resolves.toEqual(fixture);
+      await expect(guard.assert(EMAIL)).resolves.toEqual(fixture);
     });
 
     it("throws UnauthorizedError with LOGIN_INVALID_EMAIL when not found", async () => {
       userService.findByEmailWithAuth.mockResolvedValue(null);
 
-      const promise = guard.assert(EMAIL, req.t);
+      const promise = guard.assert(EMAIL);
 
       await expect(promise).rejects.toBeInstanceOf(UnauthorizedError);
       await expect(promise).rejects.toMatchObject({
@@ -70,7 +70,7 @@ describe("AccountExistsGuard", () => {
       userService.findByEmailWithAuth.mockResolvedValue(fixture);
 
       await expect(
-        guard.assertWithCredentialAudit(EMAIL, req, req.t)
+        guard.assertWithCredentialAudit(EMAIL, req)
       ).resolves.toEqual(fixture);
       expect(audit.recordInvalidCredentials).not.toHaveBeenCalled();
     });
@@ -78,7 +78,7 @@ describe("AccountExistsGuard", () => {
     it("records audit and throws UnauthorizedError with LOGIN_INVALID_CREDENTIALS when not found", async () => {
       userService.findByEmailWithAuth.mockResolvedValue(null);
 
-      const promise = guard.assertWithCredentialAudit(EMAIL, req, req.t);
+      const promise = guard.assertWithCredentialAudit(EMAIL, req);
 
       await expect(promise).rejects.toBeInstanceOf(UnauthorizedError);
       await expect(promise).rejects.toMatchObject({

@@ -13,20 +13,18 @@ export const adminGuard = (
   next: NextFunction
 ): void => {
   try {
-    const { t } = req;
-
     if (!req.user) {
-      throw new ForbiddenError(
-        t("common:errors.forbidden"),
-        ERROR_CODES.AUTH_ADMIN_ONLY
-      );
+      throw new ForbiddenError({
+        i18nMessage: (t) => t("common:errors.forbidden"),
+        code: ERROR_CODES.AUTH_ADMIN_ONLY
+      });
     }
 
     if (req.user.roles !== AUTHENTICATION_ROLES.ADMIN) {
-      throw new ForbiddenError(
-        t("common:errors.forbidden"),
-        ERROR_CODES.AUTH_ADMIN_ONLY
-      );
+      throw new ForbiddenError({
+        i18nMessage: (t) => t("common:errors.forbidden"),
+        code: ERROR_CODES.AUTH_ADMIN_ONLY
+      });
     }
 
     next();

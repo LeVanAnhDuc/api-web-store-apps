@@ -11,28 +11,27 @@ import { ERROR_CODES } from "@/constants/error-code";
 export class EmailVerifiedGuard {
   constructor(private readonly audit: LoginAuditService) {}
 
-  assert(auth: AuthenticationDocument, t: TranslateFunction): void {
+  assert(auth: AuthenticationDocument): void {
     if (auth.verifiedEmail) return;
 
-    throw new UnauthorizedError(
-      t("login:errors.emailNotVerified"),
-      ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
-    );
+    throw new UnauthorizedError({
+      i18nMessage: (t) => t("login:errors.emailNotVerified"),
+      code: ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
+    });
   }
 
   assertWithAudit(
     auth: AuthenticationDocument,
     email: string,
     method: LoginMethod,
-    req: Request,
-    t: TranslateFunction
+    req: Request
   ): void {
     if (auth.verifiedEmail) return;
 
     this.audit.recordEmailNotVerified({ auth, email, method, req });
-    throw new UnauthorizedError(
-      t("login:errors.emailNotVerified"),
-      ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
-    );
+    throw new UnauthorizedError({
+      i18nMessage: (t) => t("login:errors.emailNotVerified"),
+      code: ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
+    });
   }
 }

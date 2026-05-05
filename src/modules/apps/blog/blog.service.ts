@@ -44,10 +44,10 @@ export class BlogService {
     file?: Express.Multer.File
   ): Promise<BlogDetailDto> {
     if (file && dto.coverUrl) {
-      throw new BadRequestError(
-        "blog:errors.coverConflict",
-        ERROR_CODES.BLOG_COVER_IMAGE_CONFLICT
-      );
+      throw new BadRequestError({
+        message: "Provide either a cover URL or upload a file, not both",
+        code: ERROR_CODES.BLOG_COVER_IMAGE_CONFLICT
+      });
     }
 
     const base = generateBaseSlug(dto.title);
@@ -111,20 +111,20 @@ export class BlogService {
     const doc = await this.blogRepo.findBySlug(slug);
 
     if (!doc) {
-      throw new NotFoundError(
-        "blog:errors.notFound",
-        ERROR_CODES.BLOG_NOT_FOUND
-      );
+      throw new NotFoundError({
+        message: "Blog not found",
+        code: ERROR_CODES.BLOG_NOT_FOUND
+      });
     }
 
     if (doc.visibility === BLOG_VISIBILITY.PRIVATE) {
       const isOwner = user?.sub === doc.authorId.toString();
       const isAdmin = user?.roles === "admin";
       if (!isOwner && !isAdmin) {
-        throw new NotFoundError(
-          "blog:errors.notFound",
-          ERROR_CODES.BLOG_NOT_FOUND
-        );
+        throw new NotFoundError({
+          message: "Blog not found",
+          code: ERROR_CODES.BLOG_NOT_FOUND
+        });
       }
     }
 
@@ -140,17 +140,17 @@ export class BlogService {
     const existing = await this.blogRepo.findById(id);
 
     if (!existing) {
-      throw new NotFoundError(
-        "blog:errors.notFound",
-        ERROR_CODES.BLOG_NOT_FOUND
-      );
+      throw new NotFoundError({
+        message: "Blog not found",
+        code: ERROR_CODES.BLOG_NOT_FOUND
+      });
     }
 
     if (existing.authorId.toString() !== userId) {
-      throw new ForbiddenError(
-        "blog:errors.forbidden",
-        ERROR_CODES.BLOG_FORBIDDEN
-      );
+      throw new ForbiddenError({
+        message: "You do not have permission to perform this action",
+        code: ERROR_CODES.BLOG_FORBIDDEN
+      });
     }
 
     const coverResult = resolveCoverImage(file, dto.coverUrl, dto.removeCover);
@@ -184,10 +184,10 @@ export class BlogService {
     );
 
     if (!updated) {
-      throw new NotFoundError(
-        "blog:errors.notFound",
-        ERROR_CODES.BLOG_NOT_FOUND
-      );
+      throw new NotFoundError({
+        message: "Blog not found",
+        code: ERROR_CODES.BLOG_NOT_FOUND
+      });
     }
 
     return toBlogDetailDto(updated as unknown as Record<string, unknown>);
@@ -197,10 +197,10 @@ export class BlogService {
     const existing = await this.blogRepo.findById(id);
 
     if (!existing) {
-      throw new NotFoundError(
-        "blog:errors.notFound",
-        ERROR_CODES.BLOG_NOT_FOUND
-      );
+      throw new NotFoundError({
+        message: "Blog not found",
+        code: ERROR_CODES.BLOG_NOT_FOUND
+      });
     }
 
     if (user.roles === "admin") {
@@ -210,10 +210,10 @@ export class BlogService {
       await this.blogRepo.hardDelete(id);
     } else {
       if (existing.authorId.toString() !== user.sub) {
-        throw new ForbiddenError(
-          "blog:errors.forbidden",
-          ERROR_CODES.BLOG_FORBIDDEN
-        );
+        throw new ForbiddenError({
+          message: "You do not have permission to perform this action",
+          code: ERROR_CODES.BLOG_FORBIDDEN
+        });
       }
       await this.blogRepo.softDelete(id);
     }

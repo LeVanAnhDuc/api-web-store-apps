@@ -11,14 +11,15 @@ export class MagicLinkResendLimitGuard {
     private readonly magicLinkRepo: MagicLinkForgotPasswordRepository
   ) {}
 
-  async assert(email: string, t: TranslateFunction): Promise<void> {
+  async assert(email: string): Promise<void> {
     const exceeded = await this.magicLinkRepo.hasExceededResendLimit(email);
     if (!exceeded) return;
 
     Logger.warn("Forgot password magic link resend limit exceeded", { email });
-    throw new BadRequestError(
-      t("forgotPassword:errors.magicLinkResendLimitExceeded"),
-      ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_RESEND_LIMIT
-    );
+    throw new BadRequestError({
+      i18nMessage: (t) =>
+        t("forgotPassword:errors.magicLinkResendLimitExceeded"),
+      code: ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_RESEND_LIMIT
+    });
   }
 }

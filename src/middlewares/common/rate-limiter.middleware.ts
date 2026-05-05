@@ -267,12 +267,13 @@ export class RateLimiterMiddleware {
     messageKey: I18n.Key
   ): RateLimitHandler {
     return (req: Request, res: Response): void => {
-      const { t } = req;
-      const error = new TooManyRequestsError(t(messageKey));
+      const error = new TooManyRequestsError({
+        i18nMessage: (t) => t(messageKey)
+      });
 
       const body: ErrorPattern = {
         code: error.code,
-        message: error.message,
+        message: error.i18nMessage ? error.i18nMessage(req.t) : error.message,
         timestamp: new Date().toISOString(),
         path: req.originalUrl
       };

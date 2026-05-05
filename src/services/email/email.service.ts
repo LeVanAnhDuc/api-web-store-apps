@@ -106,7 +106,9 @@ export class SendEmailService {
           ForgotPasswordOtpEmail(options.data as ForgotPasswordOtpData, locale)
         );
       default:
-        throw new InternalServerError(`Unknown email template: ${type}`);
+        throw new InternalServerError({
+          message: `Unknown email template: ${type}`
+        });
     }
   }
 
@@ -125,7 +127,9 @@ export class SendEmailService {
       case EmailType.FORGOT_PASSWORD_OTP:
         return strings.forgotPasswordOtp.title;
       default:
-        throw new InternalServerError(`Unknown email template: ${type}`);
+        throw new InternalServerError({
+          message: `Unknown email template: ${type}`
+        });
     }
   }
 }

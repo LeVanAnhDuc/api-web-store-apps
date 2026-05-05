@@ -11,7 +11,7 @@ export class MagicLinkCooldownGuard {
     private readonly magicLinkRepo: MagicLinkForgotPasswordRepository
   ) {}
 
-  async assert(email: string, t: TranslateFunction): Promise<void> {
+  async assert(email: string): Promise<void> {
     const remaining = await this.magicLinkRepo.getCooldownRemaining(email);
 
     if (!remaining) return;
@@ -20,9 +20,10 @@ export class MagicLinkCooldownGuard {
       email,
       remaining
     });
-    throw new BadRequestError(
-      t("forgotPassword:errors.magicLinkCooldown", { seconds: remaining }),
-      ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_COOLDOWN
-    );
+    throw new BadRequestError({
+      i18nMessage: (t) =>
+        t("forgotPassword:errors.magicLinkCooldown", { seconds: remaining }),
+      code: ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_COOLDOWN
+    });
   }
 }

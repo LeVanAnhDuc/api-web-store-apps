@@ -9,7 +9,7 @@ import { Logger } from "@/libs/logger";
 export class OtpCooldownGuard {
   constructor(private readonly otpRepo: OtpForgotPasswordRepository) {}
 
-  async assert(email: string, t: TranslateFunction): Promise<void> {
+  async assert(email: string): Promise<void> {
     const remaining = await this.otpRepo.getCooldownRemaining(email);
 
     if (!remaining) return;
@@ -18,9 +18,10 @@ export class OtpCooldownGuard {
       email,
       remaining
     });
-    throw new BadRequestError(
-      t("forgotPassword:errors.otpCooldown", { seconds: remaining }),
-      ERROR_CODES.FORGOT_PASSWORD_OTP_COOLDOWN
-    );
+    throw new BadRequestError({
+      i18nMessage: (t) =>
+        t("forgotPassword:errors.otpCooldown", { seconds: remaining }),
+      code: ERROR_CODES.FORGOT_PASSWORD_OTP_COOLDOWN
+    });
   }
 }

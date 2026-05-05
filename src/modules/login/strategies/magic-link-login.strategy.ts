@@ -43,11 +43,11 @@ export class MagicLinkLoginStrategy {
     req: Request
   ): Promise<MagicLinkSendDto> {
     const { email } = body;
-    const { language, t } = req;
+    const { language } = req;
 
     Logger.info("Magic link send initiated", { email });
 
-    await this.magicLinkCooldownGuard.assert(email, t);
+    await this.magicLinkCooldownGuard.assert(email);
 
     const result = await this.accountExistsGuard.tryFind(email);
     const isEligible = this.accountExistsGuard.isLoginEligible(result);
@@ -97,34 +97,31 @@ export class MagicLinkLoginStrategy {
     req: Request
   ): Promise<LoginResponseDto> {
     const { email, token } = body;
-    const { t } = req;
 
     Logger.info("Magic link verification initiated", { email });
 
-    const { auth, user } = await this.accountExistsGuard.assert(email, t);
+    const { auth, user } = await this.accountExistsGuard.assert(email);
 
     this.accountActiveGuard.assertWithAudit(
       auth,
       email,
       LOGIN_METHODS.MAGIC_LINK,
-      req,
-      t
+      req
     );
     this.emailVerifiedGuard.assertWithAudit(
       auth,
       email,
       LOGIN_METHODS.MAGIC_LINK,
-      req,
-      t
+      req
     );
 
     const isValid = await this.magicLinkLoginRepo.verifyToken(email, token);
     if (!isValid) {
       this.audit.recordInvalidMagicLink({ auth, email, req });
-      throw new UnauthorizedError(
-        t("login:errors.invalidMagicLink"),
-        ERROR_CODES.LOGIN_MAGIC_LINK_INVALID
-      );
+      throw new UnauthorizedError({
+        i18nMessage: (t) => t("login:errors.invalidMagicLink"),
+        code: ERROR_CODES.LOGIN_MAGIC_LINK_INVALID
+      });
     }
 
     withRetry(() => this.magicLinkLoginRepo.cleanupAll(email), {

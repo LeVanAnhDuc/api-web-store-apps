@@ -11,28 +11,27 @@ import { ERROR_CODES } from "@/constants/error-code";
 export class AccountActiveGuard {
   constructor(private readonly audit: LoginAuditService) {}
 
-  assert(auth: AuthenticationDocument, t: TranslateFunction): void {
+  assert(auth: AuthenticationDocument): void {
     if (auth.isActive) return;
 
-    throw new UnauthorizedError(
-      t("login:errors.accountInactive"),
-      ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
-    );
+    throw new UnauthorizedError({
+      i18nMessage: (t) => t("login:errors.accountInactive"),
+      code: ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
+    });
   }
 
   assertWithAudit(
     auth: AuthenticationDocument,
     email: string,
     method: LoginMethod,
-    req: Request,
-    t: TranslateFunction
+    req: Request
   ): void {
     if (auth.isActive) return;
 
     this.audit.recordInactiveAccount({ auth, email, method, req });
-    throw new UnauthorizedError(
-      t("login:errors.accountInactive"),
-      ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
-    );
+    throw new UnauthorizedError({
+      i18nMessage: (t) => t("login:errors.accountInactive"),
+      code: ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
+    });
   }
 }

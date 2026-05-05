@@ -9,8 +9,7 @@ export class TokenController {
 
   refreshToken = async (req: Request, res: Response): Promise<void> => {
     const data = await this.service.refreshAccessToken(
-      req.cookies?.refreshToken,
-      req.t
+      req.cookies?.refreshToken
     );
     new OkSuccess({ data, message: "login:success.tokenRefreshed" }).send(
       req,

@@ -9,32 +9,31 @@ import { ERROR_CODES } from "@/constants/error-code";
 
 export const authGuard: RequestHandler = (req, _res, next) => {
   try {
-    const { t } = req;
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new UnauthorizedError(
-        t("common:errors.unauthorized"),
-        ERROR_CODES.AUTH_MISSING_TOKEN
-      );
+      throw new UnauthorizedError({
+        i18nMessage: (t) => t("common:errors.unauthorized"),
+        code: ERROR_CODES.AUTH_MISSING_TOKEN
+      });
     }
 
     const token = authHeader.substring(7);
 
     if (!token) {
-      throw new UnauthorizedError(
-        t("common:errors.unauthorized"),
-        ERROR_CODES.AUTH_MISSING_TOKEN
-      );
+      throw new UnauthorizedError({
+        i18nMessage: (t) => t("common:errors.unauthorized"),
+        code: ERROR_CODES.AUTH_MISSING_TOKEN
+      });
     }
 
     const payload = verifyAccessToken(token);
 
     if (!payload || !payload.sub || !payload.authId) {
-      throw new UnauthorizedError(
-        t("common:errors.invalidToken"),
-        ERROR_CODES.AUTH_INVALID_TOKEN
-      );
+      throw new UnauthorizedError({
+        i18nMessage: (t) => t("common:errors.invalidToken"),
+        code: ERROR_CODES.AUTH_INVALID_TOKEN
+      });
     }
 
     req.user = {

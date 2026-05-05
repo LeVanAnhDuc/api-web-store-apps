@@ -16,17 +16,16 @@ type UserForToken = {
 export class UserExistsGuard {
   assert(
     user: UserForToken | null,
-    authId: string,
-    t: TranslateFunction
+    authId: string
   ): asserts user is UserForToken {
     if (!user) {
       Logger.warn("Token refresh rejected - user profile not found", {
         authId
       });
-      throw new ForbiddenError(
-        t("login:errors.invalidRefreshToken"),
-        ERROR_CODES.REFRESH_TOKEN_INVALID
-      );
+      throw new ForbiddenError({
+        i18nMessage: (t) => t("login:errors.invalidRefreshToken"),
+        code: ERROR_CODES.REFRESH_TOKEN_INVALID
+      });
     }
   }
 }

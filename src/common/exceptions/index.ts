@@ -5,107 +5,139 @@ import { REASON_PHRASES, STATUS_CODES } from "@/common/http";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
+export type I18nMessageThunk = (t: TranslateFunction) => string;
+
+interface ErrorResponseInit {
+  status: number;
+  message?: string;
+  code?: string;
+  errors?: ValidationErrorItem[];
+  i18nMessage?: I18nMessageThunk;
+}
+
 export class ErrorResponse extends Error {
   readonly status: number;
   readonly code: string;
   readonly errors: ValidationErrorItem[];
+  readonly i18nMessage?: I18nMessageThunk;
 
   constructor({
     status = STATUS_CODES.INTERNAL_SERVER_ERROR,
     code = ERROR_CODES.INTERNAL_SERVER_ERROR,
     message = "An unexpected error occurred",
-    errors = []
-  }: {
-    status: number;
-    message: string;
-    code?: string;
-    errors?: ValidationErrorItem[];
-  }) {
+    errors = [],
+    i18nMessage
+  }: ErrorResponseInit) {
     super(message);
     this.status = status;
     this.code = code;
     this.errors = errors;
+    this.i18nMessage = i18nMessage;
   }
 }
 
+export interface DomainErrorOptions {
+  i18nMessage?: I18nMessageThunk;
+  code?: string;
+  message?: string;
+}
+
 export class ConflictRequestError extends ErrorResponse {
-  constructor(
-    message: string = REASON_PHRASES.CONFLICT,
-    code: string = ERROR_CODES.CONFLICT
-  ) {
-    super({ message, status: STATUS_CODES.CONFLICT, code });
+  constructor(opts: DomainErrorOptions = {}) {
+    super({
+      status: STATUS_CODES.CONFLICT,
+      code: opts.code ?? ERROR_CODES.CONFLICT,
+      message: opts.message ?? REASON_PHRASES.CONFLICT,
+      i18nMessage: opts.i18nMessage
+    });
   }
 }
 
 export class BadRequestError extends ErrorResponse {
-  constructor(
-    message: string = REASON_PHRASES.BAD_REQUEST,
-    code: string = ERROR_CODES.BAD_REQUEST
-  ) {
-    super({ message, status: STATUS_CODES.BAD_REQUEST, code });
+  constructor(opts: DomainErrorOptions = {}) {
+    super({
+      status: STATUS_CODES.BAD_REQUEST,
+      code: opts.code ?? ERROR_CODES.BAD_REQUEST,
+      message: opts.message ?? REASON_PHRASES.BAD_REQUEST,
+      i18nMessage: opts.i18nMessage
+    });
   }
 }
 
 export class ForbiddenError extends ErrorResponse {
-  constructor(
-    message: string = REASON_PHRASES.FORBIDDEN,
-    code: string = ERROR_CODES.FORBIDDEN
-  ) {
-    super({ message, status: STATUS_CODES.FORBIDDEN, code });
+  constructor(opts: DomainErrorOptions = {}) {
+    super({
+      status: STATUS_CODES.FORBIDDEN,
+      code: opts.code ?? ERROR_CODES.FORBIDDEN,
+      message: opts.message ?? REASON_PHRASES.FORBIDDEN,
+      i18nMessage: opts.i18nMessage
+    });
   }
 }
 
 export class NotFoundError extends ErrorResponse {
-  constructor(
-    message: string = REASON_PHRASES.NOT_FOUND,
-    code: string = ERROR_CODES.NOT_FOUND
-  ) {
-    super({ message, status: STATUS_CODES.NOT_FOUND, code });
+  constructor(opts: DomainErrorOptions = {}) {
+    super({
+      status: STATUS_CODES.NOT_FOUND,
+      code: opts.code ?? ERROR_CODES.NOT_FOUND,
+      message: opts.message ?? REASON_PHRASES.NOT_FOUND,
+      i18nMessage: opts.i18nMessage
+    });
   }
 }
 
 export class UnauthorizedError extends ErrorResponse {
-  constructor(
-    message: string = REASON_PHRASES.UNAUTHORIZED,
-    code: string = ERROR_CODES.UNAUTHORIZED
-  ) {
-    super({ message, status: STATUS_CODES.UNAUTHORIZED, code });
+  constructor(opts: DomainErrorOptions = {}) {
+    super({
+      status: STATUS_CODES.UNAUTHORIZED,
+      code: opts.code ?? ERROR_CODES.UNAUTHORIZED,
+      message: opts.message ?? REASON_PHRASES.UNAUTHORIZED,
+      i18nMessage: opts.i18nMessage
+    });
   }
 }
 
 export class RedisError extends ErrorResponse {
-  constructor(
-    message: string = REASON_PHRASES.INTERNAL_SERVER_ERROR,
-    code: string = ERROR_CODES.REDIS_ERROR
-  ) {
-    super({ message, status: STATUS_CODES.INTERNAL_SERVER_ERROR, code });
+  constructor(opts: DomainErrorOptions = {}) {
+    super({
+      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+      code: opts.code ?? ERROR_CODES.REDIS_ERROR,
+      message: opts.message ?? REASON_PHRASES.INTERNAL_SERVER_ERROR,
+      i18nMessage: opts.i18nMessage
+    });
   }
 }
 
 export class TooManyRequestsError extends ErrorResponse {
-  constructor(
-    message: string = REASON_PHRASES.TOO_MANY_REQUESTS,
-    code: string = ERROR_CODES.TOO_MANY_REQUESTS
-  ) {
-    super({ message, status: STATUS_CODES.TOO_MANY_REQUESTS, code });
+  constructor(opts: DomainErrorOptions = {}) {
+    super({
+      status: STATUS_CODES.TOO_MANY_REQUESTS,
+      code: opts.code ?? ERROR_CODES.TOO_MANY_REQUESTS,
+      message: opts.message ?? REASON_PHRASES.TOO_MANY_REQUESTS,
+      i18nMessage: opts.i18nMessage
+    });
   }
 }
 
 export class InternalServerError extends ErrorResponse {
-  constructor(
-    message: string = REASON_PHRASES.INTERNAL_SERVER_ERROR,
-    code: string = ERROR_CODES.INTERNAL_SERVER_ERROR
-  ) {
-    super({ message, status: STATUS_CODES.INTERNAL_SERVER_ERROR, code });
+  constructor(opts: DomainErrorOptions = {}) {
+    super({
+      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+      code: opts.code ?? ERROR_CODES.INTERNAL_SERVER_ERROR,
+      message: opts.message ?? REASON_PHRASES.INTERNAL_SERVER_ERROR,
+      i18nMessage: opts.i18nMessage
+    });
   }
 }
 
 export class ServiceUnavailableError extends ErrorResponse {
-  constructor(
-    message: string = REASON_PHRASES.SERVICE_UNAVAILABLE,
-    code: string = ERROR_CODES.SERVICE_UNAVAILABLE
-  ) {
-    super({ message, status: STATUS_CODES.SERVICE_UNAVAILABLE, code });
+  constructor(opts: DomainErrorOptions = {}) {
+    super({
+      status: STATUS_CODES.SERVICE_UNAVAILABLE,
+      code: opts.code ?? ERROR_CODES.SERVICE_UNAVAILABLE,
+      message: opts.message ?? REASON_PHRASES.SERVICE_UNAVAILABLE,
+      i18nMessage: opts.i18nMessage
+    });
   }
 }
 
@@ -125,12 +157,18 @@ export class DatabaseError extends ErrorResponse {
   }
 }
 
+export interface ValidationErrorOptions extends DomainErrorOptions {
+  errors?: ValidationErrorItem[];
+}
+
 export class ValidationError extends ErrorResponse {
-  constructor(
-    message: string = REASON_PHRASES.BAD_REQUEST,
-    errors: ValidationErrorItem[] = [],
-    code: string = ERROR_CODES.VALIDATION_ERROR
-  ) {
-    super({ message, status: STATUS_CODES.BAD_REQUEST, code, errors });
+  constructor(opts: ValidationErrorOptions = {}) {
+    super({
+      status: STATUS_CODES.BAD_REQUEST,
+      code: opts.code ?? ERROR_CODES.VALIDATION_ERROR,
+      message: opts.message ?? REASON_PHRASES.BAD_REQUEST,
+      errors: opts.errors ?? [],
+      i18nMessage: opts.i18nMessage
+    });
   }
 }

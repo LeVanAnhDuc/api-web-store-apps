@@ -9,7 +9,7 @@ import { Logger } from "@/libs/logger";
 export class RateLimitGuard {
   constructor(private readonly repo: UnlockAccountRepository) {}
 
-  async assert(email: string, t: TranslateFunction): Promise<void> {
+  async assert(email: string): Promise<void> {
     const requestCount = await this.repo.incrementRequestCount(email);
 
     if (this.repo.hasExceededRateLimit(requestCount)) {
@@ -17,10 +17,10 @@ export class RateLimitGuard {
         email,
         requestCount
       });
-      throw new TooManyRequestsError(
-        t("unlockAccount:errors.unlockRateLimit"),
-        ERROR_CODES.UNLOCK_RATE_LIMIT
-      );
+      throw new TooManyRequestsError({
+        i18nMessage: (t) => t("unlockAccount:errors.unlockRateLimit"),
+        code: ERROR_CODES.UNLOCK_RATE_LIMIT
+      });
     }
 
     Logger.info("Unlock rate limit check passed", {

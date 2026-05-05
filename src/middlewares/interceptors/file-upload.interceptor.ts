@@ -118,10 +118,10 @@ const avatarFileFilter = (
     !AVATAR_ALLOWED_EXTENSIONS.has(ext)
   ) {
     cb(
-      new BadRequestError(
-        "user:errors.fileTypeNotSupported",
-        ERROR_CODES.FILE_TYPE_NOT_SUPPORTED
-      )
+      new BadRequestError({
+        i18nMessage: (t) => t("user:errors.fileTypeNotSupported"),
+        code: ERROR_CODES.FILE_TYPE_NOT_SUPPORTED
+      })
     );
     return;
   }
@@ -147,10 +147,10 @@ export const uploadAvatar: RequestHandler = (req, res, next) => {
         if (!actualMimeType || !AVATAR_ALLOWED_MIME_TYPES.has(actualMimeType)) {
           fs.unlink(req.file.path, () => {});
           next(
-            new BadRequestError(
-              "user:errors.fileTypeNotSupported",
-              ERROR_CODES.FILE_TYPE_NOT_SUPPORTED
-            )
+            new BadRequestError({
+              i18nMessage: (t) => t("user:errors.fileTypeNotSupported"),
+              code: ERROR_CODES.FILE_TYPE_NOT_SUPPORTED
+            })
           );
           return;
         }
@@ -162,18 +162,18 @@ export const uploadAvatar: RequestHandler = (req, res, next) => {
     if (err instanceof multer.MulterError) {
       if (err.code === "LIMIT_FILE_SIZE") {
         next(
-          new BadRequestError(
-            "user:errors.fileTooLarge",
-            ERROR_CODES.FILE_TOO_LARGE
-          )
+          new BadRequestError({
+            i18nMessage: (t) => t("user:errors.fileTooLarge"),
+            code: ERROR_CODES.FILE_TOO_LARGE
+          })
         );
         return;
       }
       next(
-        new BadRequestError(
-          "user:errors.fileUploadFailed",
-          ERROR_CODES.FILE_UPLOAD_ERROR
-        )
+        new BadRequestError({
+          i18nMessage: (t) => t("user:errors.fileUploadFailed"),
+          code: ERROR_CODES.FILE_UPLOAD_ERROR
+        })
       );
       return;
     }
@@ -227,10 +227,10 @@ const blogCoverFileFilter = (
     !BLOG_COVER_ALLOWED_EXTENSIONS.has(ext)
   ) {
     cb(
-      new BadRequestError(
-        "blog:errors.fileTypeNotSupported",
-        ERROR_CODES.FILE_TYPE_NOT_SUPPORTED
-      )
+      new BadRequestError({
+        message: "File type not supported",
+        code: ERROR_CODES.FILE_TYPE_NOT_SUPPORTED
+      })
     );
     return;
   }
@@ -257,18 +257,18 @@ export const uploadBlogCover: RequestHandler = (req, res, next) => {
     if (err instanceof multer.MulterError) {
       if (err.code === "LIMIT_FILE_SIZE") {
         next(
-          new BadRequestError(
-            "blog:errors.fileTooLarge",
-            ERROR_CODES.FILE_TOO_LARGE
-          )
+          new BadRequestError({
+            message: "File size exceeds the limit",
+            code: ERROR_CODES.FILE_TOO_LARGE
+          })
         );
         return;
       }
       next(
-        new BadRequestError(
-          "blog:errors.fileUploadFailed",
-          ERROR_CODES.FILE_UPLOAD_ERROR
-        )
+        new BadRequestError({
+          message: "File upload failed. Please try again",
+          code: ERROR_CODES.FILE_UPLOAD_ERROR
+        })
       );
       return;
     }

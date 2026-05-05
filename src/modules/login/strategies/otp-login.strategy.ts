@@ -46,11 +46,11 @@ export class OtpLoginStrategy {
 
   async sendCode(body: OtpSendBody, req: Request): Promise<OtpSendDto> {
     const { email } = body;
-    const { language, t } = req;
+    const { language } = req;
 
     Logger.info("Login OTP send initiated", { email });
 
-    await this.otpCooldownGuard.assert(email, t);
+    await this.otpCooldownGuard.assert(email);
 
     const result = await this.accountExistsGuard.tryFind(email);
     const isEligible = this.accountExistsGuard.isLoginEligible(result);
@@ -70,10 +70,10 @@ export class OtpLoginStrategy {
     const exceeded = await this.otpLoginRepo.hasExceededResendLimit(email);
     if (exceeded) {
       Logger.warn("Login OTP resend limit exceeded", { email });
-      throw new BadRequestError(
-        t("login:errors.otpResendLimitExceeded"),
-        ERROR_CODES.LOGIN_OTP_RESEND_LIMIT
-      );
+      throw new BadRequestError({
+        i18nMessage: (t) => t("login:errors.otpResendLimitExceeded"),
+        code: ERROR_CODES.LOGIN_OTP_RESEND_LIMIT
+      });
     }
 
     const otp = await this.otpLoginRepo.createAndStoreOtp(email);
@@ -103,31 +103,28 @@ export class OtpLoginStrategy {
     req: Request
   ): Promise<LoginResponseDto> {
     const { email, otp } = body;
-    const { t } = req;
 
     Logger.info("Login OTP verification initiated", { email });
 
-    await this.otpLockoutGuard.assert(email, t);
+    await this.otpLockoutGuard.assert(email);
 
-    const { auth, user } = await this.accountExistsGuard.assert(email, t);
+    const { auth, user } = await this.accountExistsGuard.assert(email);
 
     this.accountActiveGuard.assertWithAudit(
       auth,
       email,
       LOGIN_METHODS.OTP,
-      req,
-      t
+      req
     );
     this.emailVerifiedGuard.assertWithAudit(
       auth,
       email,
       LOGIN_METHODS.OTP,
-      req,
-      t
+      req
     );
 
     const isValid = await this.otpLoginRepo.verify(email, otp);
-    if (!isValid) await this.handleInvalidOtp(auth, email, req, t);
+    if (!isValid) await this.handleInvalidOtp(auth, email, req);
 
     withRetry(() => this.otpLoginRepo.cleanupAll(email), {
       operationName: "cleanupLoginOtpData",
@@ -145,8 +142,7 @@ export class OtpLoginStrategy {
   private async handleInvalidOtp(
     auth: AuthenticationDocument,
     email: string,
-    req: Request,
-    t: TranslateFunction
+    req: Request
   ): Promise<void> {
     const attempts = await this.otpLoginRepo.incrementFailedAttempts(email);
     this.audit.recordInvalidOtp({ auth, email, attempts, req });
@@ -154,17 +150,19 @@ export class OtpLoginStrategy {
     const remaining = LOGIN_OTP_CONFIG.MAX_FAILED_ATTEMPTS - attempts;
 
     if (remaining <= 0) {
-      throw new TooManyRequestsError(
-        t("login:errors.otpLocked", {
-          minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-        }),
-        ERROR_CODES.LOGIN_OTP_LOCKED
-      );
+      throw new TooManyRequestsError({
+        i18nMessage: (t) =>
+          t("login:errors.otpLocked", {
+            minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
+          }),
+        code: ERROR_CODES.LOGIN_OTP_LOCKED
+      });
     }
 
-    throw new UnauthorizedError(
-      t("login:errors.invalidOtpWithRemaining", { remaining }),
-      ERROR_CODES.LOGIN_OTP_INVALID
-    );
+    throw new UnauthorizedError({
+      i18nMessage: (t) =>
+        t("login:errors.invalidOtpWithRemaining", { remaining }),
+      code: ERROR_CODES.LOGIN_OTP_INVALID
+    });
   }
 }

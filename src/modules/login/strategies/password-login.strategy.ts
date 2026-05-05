@@ -39,31 +39,28 @@ export class PasswordLoginStrategy {
     req: Request
   ): Promise<LoginResponseDto> {
     const { email, password } = body;
-    const { t } = req;
 
     Logger.info("Password login initiated", { email });
 
-    await this.passwordLockoutGuard.assert(email, t);
+    await this.passwordLockoutGuard.assert(email);
 
     const { auth, user } =
-      await this.accountExistsGuard.assertWithCredentialAudit(email, req, t);
+      await this.accountExistsGuard.assertWithCredentialAudit(email, req);
 
     this.accountActiveGuard.assertWithAudit(
       auth,
       email,
       LOGIN_METHODS.PASSWORD,
-      req,
-      t
+      req
     );
     this.emailVerifiedGuard.assertWithAudit(
       auth,
       email,
       LOGIN_METHODS.PASSWORD,
-      req,
-      t
+      req
     );
 
-    await this.verifyPasswordOrFail(auth, password, email, req, t);
+    await this.verifyPasswordOrFail(auth, password, email, req);
 
     withRetry(() => this.failedAttemptsRepo.resetAll(email), {
       operationName: "resetFailedLoginAttempts",
@@ -82,8 +79,7 @@ export class PasswordLoginStrategy {
     auth: AuthenticationDocument,
     password: string,
     email: string,
-    req: Request,
-    t: TranslateFunction
+    req: Request
   ): Promise<void> {
     if (isValidHashedValue(password, auth.password)) return;
 
@@ -92,18 +88,19 @@ export class PasswordLoginStrategy {
     this.audit.recordInvalidPassword({ auth, email, attemptCount, req });
 
     if (attemptCount >= LOGIN_LOCKOUT.MAX_ATTEMPTS && lockoutSeconds > 0) {
-      throw new TooManyRequestsError(
-        t("login:errors.accountLocked", {
-          attempts: attemptCount,
-          seconds: lockoutSeconds
-        }),
-        ERROR_CODES.LOGIN_ACCOUNT_LOCKED
-      );
+      throw new TooManyRequestsError({
+        i18nMessage: (t) =>
+          t("login:errors.accountLocked", {
+            attempts: attemptCount,
+            seconds: lockoutSeconds
+          }),
+        code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
+      });
     }
 
-    throw new UnauthorizedError(
-      t("login:errors.invalidCredentials"),
-      ERROR_CODES.LOGIN_INVALID_CREDENTIALS
-    );
+    throw new UnauthorizedError({
+      i18nMessage: (t) => t("login:errors.invalidCredentials"),
+      code: ERROR_CODES.LOGIN_INVALID_CREDENTIALS
+    });
   }
 }

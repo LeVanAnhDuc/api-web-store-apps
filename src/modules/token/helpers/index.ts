@@ -64,7 +64,10 @@ const verifyToken = <T>(token: string, type: VerifiableTokenType): T => {
     const translationKey =
       ERROR_TRANSLATION_KEYS[errorName] ?? "common:errors.invalidToken";
     const errorCode = ERROR_CODE_MAP[errorName] ?? ERROR_CODES.JWT_INVALID;
-    throw new ForbiddenError(translationKey, errorCode);
+    throw new ForbiddenError({
+      i18nMessage: (t) => t(translationKey),
+      code: errorCode
+    });
   }
 };
 

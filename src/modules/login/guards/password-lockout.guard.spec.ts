@@ -31,7 +31,7 @@ describe("PasswordLockoutGuard", () => {
       remainingSeconds: 0
     });
 
-    await expect(guard.assert(EMAIL, req.t)).resolves.toBeUndefined();
+    await expect(guard.assert(EMAIL)).resolves.toBeUndefined();
     expect(repo.getCount).not.toHaveBeenCalled();
   });
 
@@ -42,12 +42,13 @@ describe("PasswordLockoutGuard", () => {
     });
     repo.getCount.mockResolvedValue(LOGIN_LOCKOUT.MAX_ATTEMPTS);
 
-    const promise = guard.assert(EMAIL, req.t);
+    const error = await guard.assert(EMAIL).catch((e: unknown) => e);
 
-    await expect(promise).rejects.toBeInstanceOf(TooManyRequestsError);
-    await expect(promise).rejects.toMatchObject({
-      code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
-    });
+    expect(error).toBeInstanceOf(TooManyRequestsError);
+    expect((error as TooManyRequestsError).code).toBe(
+      ERROR_CODES.LOGIN_ACCOUNT_LOCKED
+    );
+    (error as TooManyRequestsError).i18nMessage?.(req.t);
     expect(tSpy).toHaveBeenCalledWith("login:errors.accountLocked", {
       attempts: LOGIN_LOCKOUT.MAX_ATTEMPTS,
       seconds: 1800

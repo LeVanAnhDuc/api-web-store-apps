@@ -38,12 +38,12 @@ export class OtpForgotPasswordStrategy {
 
   async sendCode(req: FPOtpSendRequest): Promise<SendOtpResponseDto> {
     const { email } = req.body;
-    const { language, t } = req;
+    const { language } = req;
 
     Logger.info("Forgot password OTP send initiated", { email });
 
-    await this.cooldownGuard.assert(email, t);
-    await this.resendLimitGuard.assert(email, t);
+    await this.cooldownGuard.assert(email);
+    await this.resendLimitGuard.assert(email);
 
     const result = await this.authExistsGuard.tryFind(email);
 
@@ -85,16 +85,15 @@ export class OtpForgotPasswordStrategy {
 
   async verifyCode(req: FPOtpVerifyRequest): Promise<VerifyOtpResponseDto> {
     const { email, otp } = req.body;
-    const { t } = req;
 
     Logger.info("Forgot password OTP verification initiated", { email });
 
-    await this.lockoutGuard.assert(email, t);
+    await this.lockoutGuard.assert(email);
 
-    const { auth } = await this.authExistsGuard.assert(email, t);
+    const { auth } = await this.authExistsGuard.assert(email);
 
     const isValid = await this.otpRepo.verify(email, otp);
-    if (!isValid) await this.handleInvalidOtp(email, auth, req, t);
+    if (!isValid) await this.handleInvalidOtp(email, auth, req);
 
     const resetToken = await this.resetTokenRepo.createAndStore(email);
 
@@ -111,8 +110,7 @@ export class OtpForgotPasswordStrategy {
   private async handleInvalidOtp(
     email: string,
     auth: Awaited<ReturnType<AuthExistsGuard["assert"]>>["auth"],
-    req: FPOtpVerifyRequest,
-    t: TranslateFunction
+    req: FPOtpVerifyRequest
   ): Promise<never> {
     const attempts = await this.otpRepo.incrementFailedAttempts(email);
     this.audit.recordInvalidOtp({ email, auth, attempts, req });
@@ -120,17 +118,19 @@ export class OtpForgotPasswordStrategy {
     const remaining = FORGOT_PASSWORD_OTP_CONFIG.MAX_FAILED_ATTEMPTS - attempts;
 
     if (remaining <= 0) {
-      throw new BadRequestError(
-        t("forgotPassword:errors.otpLocked", {
-          minutes: FORGOT_PASSWORD_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-        }),
-        ERROR_CODES.FORGOT_PASSWORD_OTP_LOCKED
-      );
+      throw new BadRequestError({
+        i18nMessage: (t) =>
+          t("forgotPassword:errors.otpLocked", {
+            minutes: FORGOT_PASSWORD_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
+          }),
+        code: ERROR_CODES.FORGOT_PASSWORD_OTP_LOCKED
+      });
     }
 
-    throw new UnauthorizedError(
-      t("forgotPassword:errors.invalidOtpWithRemaining", { remaining }),
-      ERROR_CODES.FORGOT_PASSWORD_OTP_INVALID
-    );
+    throw new UnauthorizedError({
+      i18nMessage: (t) =>
+        t("forgotPassword:errors.invalidOtpWithRemaining", { remaining }),
+      code: ERROR_CODES.FORGOT_PASSWORD_OTP_INVALID
+    });
   }
 }

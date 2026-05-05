@@ -91,25 +91,22 @@ describe("PasswordLoginStrategy", () => {
       req
     );
 
-    expect(lockout.assert).toHaveBeenCalledWith(EMAIL, req.t);
+    expect(lockout.assert).toHaveBeenCalledWith(EMAIL);
     expect(accountExists.assertWithCredentialAudit).toHaveBeenCalledWith(
       EMAIL,
-      req,
-      req.t
+      req
     );
     expect(accountActive.assertWithAudit).toHaveBeenCalledWith(
       fixture.auth,
       EMAIL,
       LOGIN_METHODS.PASSWORD,
-      req,
-      req.t
+      req
     );
     expect(emailVerified.assertWithAudit).toHaveBeenCalledWith(
       fixture.auth,
       EMAIL,
       LOGIN_METHODS.PASSWORD,
-      req,
-      req.t
+      req
     );
     expect(failedAttemptsRepo.trackAttempt).not.toHaveBeenCalled();
     expect(completion.complete).toHaveBeenCalledWith({
@@ -176,7 +173,10 @@ describe("PasswordLoginStrategy", () => {
 
   it("propagates guard errors from lockout check", async () => {
     lockout.assert.mockRejectedValue(
-      new TooManyRequestsError("locked", ERROR_CODES.LOGIN_ACCOUNT_LOCKED)
+      new TooManyRequestsError({
+        message: "locked",
+        code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
+      })
     );
 
     await expect(
@@ -189,10 +189,10 @@ describe("PasswordLoginStrategy", () => {
     const fixture = buildUserWithAuth();
     accountExists.assertWithCredentialAudit.mockResolvedValue(fixture);
     accountActive.assertWithAudit.mockImplementation(() => {
-      throw new UnauthorizedError(
-        "inactive",
-        ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
-      );
+      throw new UnauthorizedError({
+        message: "inactive",
+        code: ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
+      });
     });
 
     await expect(
@@ -208,10 +208,10 @@ describe("PasswordLoginStrategy", () => {
     const fixture = buildUserWithAuth();
     accountExists.assertWithCredentialAudit.mockResolvedValue(fixture);
     emailVerified.assertWithAudit.mockImplementation(() => {
-      throw new UnauthorizedError(
-        "unverified",
-        ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
-      );
+      throw new UnauthorizedError({
+        message: "unverified",
+        code: ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
+      });
     });
 
     await expect(

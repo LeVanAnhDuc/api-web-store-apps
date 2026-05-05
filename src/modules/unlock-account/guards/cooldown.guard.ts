@@ -9,7 +9,7 @@ import { Logger } from "@/libs/logger";
 export class CooldownGuard {
   constructor(private readonly repo: UnlockAccountRepository) {}
 
-  async assert(email: string, t: TranslateFunction): Promise<void> {
+  async assert(email: string): Promise<void> {
     const remaining = await this.repo.getCooldownRemaining(email);
 
     if (!remaining) return;
@@ -18,9 +18,10 @@ export class CooldownGuard {
       email,
       remainingSeconds: remaining
     });
-    throw new BadRequestError(
-      t("unlockAccount:errors.unlockCooldown", { seconds: remaining }),
-      ERROR_CODES.UNLOCK_COOLDOWN
-    );
+    throw new BadRequestError({
+      i18nMessage: (t) =>
+        t("unlockAccount:errors.unlockCooldown", { seconds: remaining }),
+      code: ERROR_CODES.UNLOCK_COOLDOWN
+    });
   }
 }

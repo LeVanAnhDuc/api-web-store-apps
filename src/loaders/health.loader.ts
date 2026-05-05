@@ -15,7 +15,10 @@ const checkMongoDB = asyncHandler(async (req: Request, res: Response) => {
   const isHealthy = instanceMongoDB.isHealthy();
 
   if (!isHealthy) {
-    throw new InternalServerError("MongoDB is down", "MONGODB_UNHEALTHY");
+    throw new InternalServerError({
+      message: "MongoDB is down",
+      code: "MONGODB_UNHEALTHY"
+    });
   }
 
   new OkSuccess({
@@ -28,7 +31,10 @@ const checkRedis = asyncHandler(async (req: Request, res: Response) => {
   const redisHealth = await instanceRedis.healthCheck();
 
   if (!redisHealth.isHealthy) {
-    throw new InternalServerError("Redis is down", "REDIS_UNHEALTHY");
+    throw new InternalServerError({
+      message: "Redis is down",
+      code: "REDIS_UNHEALTHY"
+    });
   }
 
   new OkSuccess({
@@ -50,10 +56,10 @@ const checkAll = asyncHandler(async (req: Request, res: Response) => {
       !redisHealth.isHealthy && "Redis"
     ].filter(Boolean);
 
-    throw new InternalServerError(
-      `Services down: ${down.join(", ")}`,
-      "SERVICES_UNHEALTHY"
-    );
+    throw new InternalServerError({
+      message: `Services down: ${down.join(", ")}`,
+      code: "SERVICES_UNHEALTHY"
+    });
   }
 
   new OkSuccess({
