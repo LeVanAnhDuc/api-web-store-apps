@@ -21,6 +21,7 @@ import {
 import { toMyHistoryItemDto, toAllHistoryItemDto } from "./dtos";
 // others
 import { Logger } from "@/libs/logger";
+import { RequestContext } from "@/utils/request-context";
 // helpers
 import {
   extractIp,
@@ -81,9 +82,9 @@ export class LoginHistoryService {
   }
 
   async getMyLoginHistory(
-    userId: string,
     query: LoginHistoryQuery
   ): Promise<PaginatedResult<MyHistoryItemDto>> {
+    const userId = RequestContext.requireUserId();
     const {
       page = DEFAULT_PAGE,
       limit: rawLimit = DEFAULT_LIMIT,

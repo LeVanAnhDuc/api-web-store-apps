@@ -21,11 +21,13 @@ import { toMyProfileDto, toPublicProfileDto, toUploadAvatarDto } from "./dtos";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
 import { buildAvatarUrl } from "./helpers";
+import { RequestContext } from "@/utils/request-context";
 
 export class UserService {
   constructor(private readonly userRepo: UserRepository) {}
 
-  async getMyProfile(userId: string): Promise<MyProfileDto> {
+  async getMyProfile(): Promise<MyProfileDto> {
+    const userId = RequestContext.requireUserId();
     const user = await this.userRepo.findById(userId);
 
     if (!user) {
@@ -39,9 +41,9 @@ export class UserService {
   }
 
   async updateMyProfile(
-    userId: string,
     data: Partial<UpdateProfileData>
   ): Promise<MyProfileDto> {
+    const userId = RequestContext.requireUserId();
     const user = await this.userRepo.updateById(userId, data);
 
     if (!user) {
@@ -54,10 +56,9 @@ export class UserService {
     return toMyProfileDto(user, buildAvatarUrl(user.avatar ?? null));
   }
 
-  async updateAvatar(
-    userId: string,
-    filePath?: string
-  ): Promise<UploadAvatarDto> {
+  async updateAvatar(filePath?: string): Promise<UploadAvatarDto> {
+    const userId = RequestContext.requireUserId();
+
     if (!filePath) {
       throw new BadRequestError({
         i18nMessage: (t) => t("user:errors.noFileUploaded"),

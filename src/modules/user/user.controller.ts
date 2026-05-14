@@ -17,8 +17,7 @@ export class UserController {
     req: GetMyProfileRequest,
     res: Response
   ): Promise<void> => {
-    const { sub: userId } = req.user;
-    const data = await this.service.getMyProfile(userId);
+    const data = await this.service.getMyProfile();
     new OkSuccess({ data, message: "user:success.getProfile" }).send(req, res);
   };
 
@@ -26,8 +25,7 @@ export class UserController {
     req: UpdateProfileRequest,
     res: Response
   ): Promise<void> => {
-    const { sub: userId } = req.user;
-    const data = await this.service.updateMyProfile(userId, req.body);
+    const data = await this.service.updateMyProfile(req.body);
     new OkSuccess({ data, message: "user:success.updateProfile" }).send(
       req,
       res
@@ -38,8 +36,7 @@ export class UserController {
     req: UploadAvatarRequest,
     res: Response
   ): Promise<void> => {
-    const { sub: userId } = req.user;
-    const data = await this.service.updateAvatar(userId, req.file?.path);
+    const data = await this.service.updateAvatar(req.file?.path);
     new OkSuccess({ data, message: "user:success.uploadAvatar" }).send(
       req,
       res

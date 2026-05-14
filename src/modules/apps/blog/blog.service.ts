@@ -28,8 +28,7 @@ import {
   buildBlogFilter,
   buildBlogSort
 } from "./helpers";
-
-type RequestUser = Pick<RequestUserPayload, "sub" | "roles">;
+import { RequestContext } from "@/utils/request-context";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
@@ -39,10 +38,11 @@ export class BlogService {
   constructor(private readonly blogRepo: BlogRepository) {}
 
   async createBlog(
-    userId: string,
     dto: CreateBlogDto,
     file?: Express.Multer.File
   ): Promise<BlogDetailDto> {
+    const userId = RequestContext.requireUserId();
+
     if (file && dto.coverUrl) {
       throw new BadRequestError({
         message: "Provide either a cover URL or upload a file, not both",
@@ -75,10 +75,8 @@ export class BlogService {
     return toBlogDetailDto(doc as unknown as Record<string, unknown>);
   }
 
-  async listBlogs(
-    query: BlogQuery,
-    user?: RequestUser
-  ): Promise<PaginatedResult<BlogListItemDto>> {
+  async listBlogs(query: BlogQuery): Promise<PaginatedResult<BlogListItemDto>> {
+    const user = RequestContext.getUser();
     const page = query.page ?? DEFAULT_PAGE;
     const limit = Math.min(query.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
     const skip = (page - 1) * limit;
@@ -104,10 +102,8 @@ export class BlogService {
     };
   }
 
-  async getBlogBySlug(
-    slug: string,
-    user?: RequestUser
-  ): Promise<BlogDetailDto> {
+  async getBlogBySlug(slug: string): Promise<BlogDetailDto> {
+    const user = RequestContext.getUser();
     const doc = await this.blogRepo.findBySlug(slug);
 
     if (!doc) {
@@ -133,10 +129,10 @@ export class BlogService {
 
   async updateBlog(
     id: string,
-    userId: string,
     dto: UpdateBlogDto,
     file?: Express.Multer.File
   ): Promise<BlogDetailDto> {
+    const userId = RequestContext.requireUserId();
     const existing = await this.blogRepo.findById(id);
 
     if (!existing) {
@@ -193,7 +189,8 @@ export class BlogService {
     return toBlogDetailDto(updated as unknown as Record<string, unknown>);
   }
 
-  async deleteBlog(id: string, user: RequestUser): Promise<DeleteBlogDto> {
+  async deleteBlog(id: string): Promise<DeleteBlogDto> {
+    const user = RequestContext.requireUser();
     const existing = await this.blogRepo.findById(id);
 
     if (!existing) {
