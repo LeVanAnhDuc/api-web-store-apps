@@ -6,6 +6,7 @@ import { UnauthorizedError } from "@/common/exceptions";
 import { verifyAccessToken } from "@/modules/token/helpers";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
+import { RequestContext } from "@/utils/request-context";
 
 export const authGuard: RequestHandler = (req, _res, next) => {
   try {
@@ -41,6 +42,7 @@ export const authGuard: RequestHandler = (req, _res, next) => {
       authId: payload.authId,
       roles: payload.roles
     };
+    RequestContext.setUser(req.user);
 
     next();
   } catch (error) {

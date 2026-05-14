@@ -25,7 +25,8 @@ export const buildMongoConfig = (): MongoConfig => {
     retryWrites: true,
     w: "majority",
     autoCreate: true,
-    autoIndex: true
+    autoIndex: true,
+    replicaSet: "rs0"
   };
 
   return {

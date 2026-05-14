@@ -9,6 +9,7 @@ import { setupSwagger } from "@/libs/swagger";
 import config from "@/constants/env";
 import { requestId, requestLogger } from "@/middlewares";
 import { i18nMiddleware } from "./i18n";
+import { RequestContext } from "@/utils/request-context";
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use(cookieParser());
 // Middleware tự viết — gán một unique ID cho mỗi request (thường là UUID).
 // Dùng để tracing/debugging: khi log error có thể trace lại chính xác request nào gây lỗi.
 app.use(requestId);
+app.use(RequestContext.middleware());
 
 // Middleware tự viết — log thông tin mỗi request đến (method, URL, status code, thời gian xử lý...). Phục vụ monitoring và debug.
 app.use(requestLogger);
