@@ -37,12 +37,11 @@ export const authGuard: RequestHandler = (req, _res, next) => {
       });
     }
 
-    req.user = {
+    RequestContext.setUser({
       sub: payload.sub,
       authId: payload.authId,
       roles: payload.roles
-    };
-    RequestContext.setUser(req.user);
+    });
 
     next();
   } catch (error) {

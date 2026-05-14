@@ -59,7 +59,6 @@ declare global {
       requestId: string;
       language: string;
       t: TranslateFunction;
-      user?: RequestUserPayload;
     }
   }
 }

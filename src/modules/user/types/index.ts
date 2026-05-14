@@ -54,17 +54,13 @@ export interface UserWithAuth {
   auth: AuthenticationDocument;
 }
 
-export interface GetMyProfileRequest extends Omit<Request, "user"> {
-  user: RequestUserPayload;
-}
+export type GetMyProfileRequest = Request;
 
-export interface UpdateProfileRequest extends Omit<Request, "user" | "body"> {
-  user: RequestUserPayload;
+export interface UpdateProfileRequest extends Omit<Request, "body"> {
   body: UpdateProfileData;
 }
 
-export interface UploadAvatarRequest extends Omit<Request, "user"> {
-  user: RequestUserPayload;
+export interface UploadAvatarRequest extends Request {
   file?: Express.Multer.File;
 }
 

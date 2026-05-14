@@ -53,8 +53,7 @@ export interface PaginatedResult<T> {
   };
 }
 
-export interface MyHistoryRequest extends Omit<Request, "query" | "user"> {
-  user: RequestUserPayload;
+export interface MyHistoryRequest extends Omit<Request, "query"> {
   query: LoginHistoryQuery;
 }
 

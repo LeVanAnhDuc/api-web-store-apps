@@ -132,9 +132,8 @@ export interface PaginatedResult<T> {
 
 // ─── Typed Request interfaces ─────────────────────────────────────────────
 
-export interface CreateBlogRequest extends Omit<Request, "body" | "user"> {
+export interface CreateBlogRequest extends Omit<Request, "body"> {
   body: CreateBlogDto;
-  user: RequestUserPayload;
   file?: Express.Multer.File;
 }
 
@@ -146,33 +145,28 @@ export interface GetBlogBySlugRequest extends Omit<Request, "params"> {
   params: { slug: string };
 }
 
-export interface UpdateBlogRequest
-  extends Omit<Request, "params" | "body" | "user"> {
+export interface UpdateBlogRequest extends Omit<Request, "params" | "body"> {
   params: { id: string };
   body: UpdateBlogDto;
-  user: RequestUserPayload;
   file?: Express.Multer.File;
 }
 
-export interface DeleteBlogRequest extends Omit<Request, "params" | "user"> {
+export interface DeleteBlogRequest extends Omit<Request, "params"> {
   params: { id: string };
-  user: RequestUserPayload;
 }
 
 export interface SearchTagsRequest extends Omit<Request, "query"> {
   query: TagQuery;
 }
 
-export interface CreateTagRequest extends Omit<Request, "body" | "user"> {
+export interface CreateTagRequest extends Omit<Request, "body"> {
   body: CreateTagDto;
-  user: RequestUserPayload;
 }
 
 export interface SearchCategoriesRequest extends Omit<Request, "query"> {
   query: TagQuery;
 }
 
-export interface CreateCategoryRequest extends Omit<Request, "body" | "user"> {
+export interface CreateCategoryRequest extends Omit<Request, "body"> {
   body: CreateCategoryDto;
-  user: RequestUserPayload;
 }
