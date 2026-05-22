@@ -3,7 +3,7 @@ import type {
   MyHistoryRequest,
   AllHistoryRequest
 } from "@/modules/login-history/types";
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import type { LoginHistoryService } from "./login-history.service";
 // common
 import { OkSuccess } from "@/common/responses";
@@ -17,6 +17,14 @@ export class LoginHistoryController {
   ): Promise<void> => {
     const data = await this.service.getMyLoginHistory(req.query);
     new OkSuccess({ data, message: "loginHistory:success.getMyHistory" }).send(
+      req,
+      res
+    );
+  };
+
+  getMyStats = async (req: Request, res: Response): Promise<void> => {
+    const data = await this.service.getMyLoginStats();
+    new OkSuccess({ data, message: "loginHistory:success.getMyStats" }).send(
       req,
       res
     );

@@ -11,17 +11,27 @@ import type {
   LoginMethod,
   LoginFailReason
 } from "@/modules/login-history/types";
-import type { MyHistoryItemDto, AllHistoryItemDto } from "./dtos";
+import type {
+  MyHistoryItemDto,
+  AllHistoryItemDto,
+  MyLoginStatsDto
+} from "./dtos";
 // modules
 import {
   LOGIN_STATUSES,
-  HTTP_HEADERS
+  HTTP_HEADERS,
+  LOGIN_HISTORY_STATS
 } from "@/modules/login-history/constants";
 // dtos
-import { toMyHistoryItemDto, toAllHistoryItemDto } from "./dtos";
+import {
+  toMyHistoryItemDto,
+  toAllHistoryItemDto,
+  toMyLoginStatsDto
+} from "./dtos";
 // others
 import { Logger } from "@/libs/logger";
 import { RequestContext } from "@/utils/request-context";
+import { MILLISECONDS_PER_DAY } from "@/constants/time";
 // helpers
 import {
   extractIp,
@@ -84,7 +94,7 @@ export class LoginHistoryService {
   async getMyLoginHistory(
     query: LoginHistoryQuery
   ): Promise<PaginatedResult<MyHistoryItemDto>> {
-    const userId = RequestContext.requireUserId();
+    const userId = RequestContext.requireAuthId();
     const {
       page = DEFAULT_PAGE,
       limit: rawLimit = DEFAULT_LIMIT,
@@ -114,6 +124,23 @@ export class LoginHistoryService {
         totalPages: Math.ceil(total / limit)
       }
     };
+  }
+
+  async getMyLoginStats(): Promise<MyLoginStatsDto> {
+    const userId = RequestContext.requireAuthId();
+    const to = new Date();
+    const from = new Date(
+      to.getTime() -
+        LOGIN_HISTORY_STATS.DEFAULT_RANGE_DAYS * MILLISECONDS_PER_DAY
+    );
+
+    const aggregation = await this.loginHistoryRepo.aggregateMyStats({
+      userId,
+      from,
+      to
+    });
+
+    return toMyLoginStatsDto(aggregation, { from, to });
   }
 
   async getAllLoginHistory(

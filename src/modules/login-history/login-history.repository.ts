@@ -4,33 +4,16 @@ import { Types } from "mongoose";
 import type { FilterQuery } from "mongoose";
 import type {
   CreateLoginHistoryData,
-  LoginHistoryDocument
+  LoginHistoryDocument,
+  LoginHistoryFilter,
+  LoginStatsAggregationResult,
+  LoginStatsRange
 } from "@/modules/login-history/types";
+import type { PaginationOptions } from "@/types/common";
 // models
 import LoginHistoryModel from "@/models/login-history";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
-
-export type LoginHistoryFilter = {
-  userId?: string;
-  status?: string;
-  method?: string;
-  deviceType?: string;
-  clientType?: string;
-  country?: string;
-  city?: string;
-  os?: string;
-  browser?: string;
-  ip?: string;
-  fromDate?: Date;
-  toDate?: Date;
-};
-
-type PaginationOptions = {
-  skip: number;
-  limit: number;
-  sort: Record<string, 1 | -1>;
-};
 
 export type LoginHistoryRepository = {
   create(data: CreateLoginHistoryData): Promise<LoginHistoryDocument>;
@@ -42,6 +25,9 @@ export type LoginHistoryRepository = {
     filter: LoginHistoryFilter,
     options: PaginationOptions
   ): Promise<{ data: LoginHistoryDocument[]; total: number }>;
+  aggregateMyStats(
+    range: LoginStatsRange
+  ): Promise<LoginStatsAggregationResult>;
 };
 
 export class MongoLoginHistoryRepository implements LoginHistoryRepository {
@@ -89,6 +75,39 @@ export class MongoLoginHistoryRepository implements LoginHistoryRepository {
       ]);
 
       return { data: data as unknown as LoginHistoryDocument[], total };
+    });
+  }
+
+  async aggregateMyStats(
+    range: LoginStatsRange
+  ): Promise<LoginStatsAggregationResult> {
+    return asyncDatabaseHandler("aggregateMyStats", async () => {
+      const [result] =
+        await LoginHistoryModel.aggregate<LoginStatsAggregationResult>([
+          {
+            $match: {
+              userId: new Types.ObjectId(range.userId),
+              createdAt: { $gte: range.from, $lte: range.to }
+            }
+          },
+          {
+            $facet: {
+              total: [{ $count: "count" }],
+              byStatus: [{ $group: { _id: "$status", count: { $sum: 1 } } }],
+              byMethod: [{ $group: { _id: "$method", count: { $sum: 1 } } }],
+              byDevice: [{ $group: { _id: "$deviceType", count: { $sum: 1 } } }]
+            }
+          }
+        ]).exec();
+
+      return (
+        result ?? {
+          total: [],
+          byStatus: [],
+          byMethod: [],
+          byDevice: []
+        }
+      );
     });
   }
 

@@ -6,9 +6,9 @@ import type { Request } from "express";
 import type {
   ClientType,
   DeviceType,
-  LoginHistoryAdminQuery
+  LoginHistoryAdminQuery,
+  LoginHistoryFilter
 } from "@/modules/login-history/types";
-import type { LoginHistoryFilter } from "../login-history.repository";
 // modules
 import {
   CLIENT_TYPES,

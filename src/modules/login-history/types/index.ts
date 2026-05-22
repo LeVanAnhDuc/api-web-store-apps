@@ -119,3 +119,36 @@ export interface LoginEventPayload {
   req: Request;
   timezoneOffset?: string;
 }
+
+export interface LoginStatsAggregationBucket<TKey extends string> {
+  _id: TKey;
+  count: number;
+}
+
+export interface LoginStatsAggregationResult {
+  total: { count: number }[];
+  byStatus: LoginStatsAggregationBucket<LoginStatus>[];
+  byMethod: LoginStatsAggregationBucket<LoginMethod>[];
+  byDevice: LoginStatsAggregationBucket<DeviceType>[];
+}
+
+export interface LoginHistoryFilter {
+  userId?: string;
+  status?: string;
+  method?: string;
+  deviceType?: string;
+  clientType?: string;
+  country?: string;
+  city?: string;
+  os?: string;
+  browser?: string;
+  ip?: string;
+  fromDate?: Date;
+  toDate?: Date;
+}
+
+export interface LoginStatsRange {
+  userId: string;
+  from: Date;
+  to: Date;
+}

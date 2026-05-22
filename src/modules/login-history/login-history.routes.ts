@@ -19,6 +19,8 @@ export const createLoginHistoryUserRoutes = (
 
   loginHistory.use(authGuard);
 
+  loginHistory.get("/stats", asyncHandler(controller.getMyStats));
+
   loginHistory.get(
     "/",
     queryPipe(loginHistoryQuerySchema),

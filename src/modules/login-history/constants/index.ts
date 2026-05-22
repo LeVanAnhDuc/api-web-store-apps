@@ -69,6 +69,10 @@ export const LOGIN_HISTORY_CONFIG = {
   MAX_ANOMALY_REASONS: 20
 } as const;
 
+export const LOGIN_HISTORY_STATS = {
+  DEFAULT_RANGE_DAYS: 30
+} as const;
+
 export const LOCALHOST_VALUES = ["localhost", "0.0.0.0"] as const;
 
 export const PRIVATE_IP_PATTERNS = [

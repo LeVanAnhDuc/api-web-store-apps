@@ -1,16 +1,11 @@
 // types
 import type { FilterQuery } from "mongoose";
 import type { ContactDocument, ContactStatus } from "./types";
+import type { PaginationOptions } from "@/types/common";
 // models
 import ContactModel from "@/models/contact";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
-
-interface PaginationOptions {
-  skip: number;
-  limit: number;
-  sort: Record<string, 1 | -1>;
-}
 
 export type ContactRepository = {
   create(data: Partial<ContactDocument>): Promise<ContactDocument>;

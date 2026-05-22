@@ -5,7 +5,7 @@ import { REASON_PHRASES, STATUS_CODES } from "@/common/http";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
-export type I18nMessageThunk = (t: TranslateFunction) => string;
+type I18nMessageThunk = (t: TranslateFunction) => string;
 
 interface ErrorResponseInit {
   status: number;
@@ -13,6 +13,12 @@ interface ErrorResponseInit {
   code?: string;
   errors?: ValidationErrorItem[];
   i18nMessage?: I18nMessageThunk;
+}
+
+interface DomainErrorOptions {
+  i18nMessage?: I18nMessageThunk;
+  code?: string;
+  message?: string;
 }
 
 export class ErrorResponse extends Error {
@@ -34,12 +40,6 @@ export class ErrorResponse extends Error {
     this.errors = errors;
     this.i18nMessage = i18nMessage;
   }
-}
-
-export interface DomainErrorOptions {
-  i18nMessage?: I18nMessageThunk;
-  code?: string;
-  message?: string;
 }
 
 export class ConflictRequestError extends ErrorResponse {

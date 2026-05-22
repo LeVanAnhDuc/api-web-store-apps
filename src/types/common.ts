@@ -16,3 +16,9 @@ export interface PaginationMeta {
 export interface ResponseMeta {
   pagination?: PaginationMeta;
 }
+
+export interface PaginationOptions {
+  skip: number;
+  limit: number;
+  sort: Record<string, 1 | -1>;
+}
