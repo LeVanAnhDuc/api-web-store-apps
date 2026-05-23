@@ -1,6 +1,6 @@
-# Apartment App — Server
+# web-app-store-idms — Server
 
-A RESTful API server for apartment/property management with JWT authentication, email services, job queues, and comprehensive error handling.
+RESTful API server for **IDMS (Identity Management System)** — a central OAuth 2.0 / OIDC Identity Provider combined with a launcher portal for a constellation of satellite web apps. Provides multi-factor auth (password / OTP / magic-link), JWT issuance, user profile as single source of truth, app registry, per-user entitlement, login history, email queue, and admin operations.
 
 ## Tech Stack
 
@@ -46,7 +46,7 @@ CORS_ORIGINS=http://localhost:3000
 
 # ──── MongoDB ────
 DB_URL=mongodb://localhost:27017
-DB_NAME=Apartment_App
+DB_NAME=web_app_store_idms
 
 # ──── Redis ────
 REDIS_URL=redis://:password@host:port
@@ -148,7 +148,7 @@ src/
 │   ├── login-history/         # Login history tracking
 │   ├── user/                  # User profile management
 │   ├── contact-admin/         # Contact form submissions
-│   └── blog/                  # Blog/content management
+│   └── apps/blog/             # Blog (will be split into a satellite app — see docs/project-goals.md MVP-3)
 ├── services/                  # Cross-cutting services
 │   ├── email/                 # Email service (Nodemailer + React Email)
 │   └── queue/                 # BullMQ job queue
