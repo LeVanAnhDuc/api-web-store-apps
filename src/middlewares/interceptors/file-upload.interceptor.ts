@@ -9,7 +9,6 @@ import type { Request, RequestHandler } from "express";
 import { BadRequestError } from "@/common/exceptions";
 // modules
 import { USER_CONFIG } from "@/modules/user/constants";
-import { BLOG_CONFIG } from "@/modules/apps/blog/constants";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
@@ -172,101 +171,6 @@ export const uploadAvatar: RequestHandler = (req, res, next) => {
       next(
         new BadRequestError({
           i18nMessage: (t) => t("user:errors.fileUploadFailed"),
-          code: ERROR_CODES.FILE_UPLOAD_ERROR
-        })
-      );
-      return;
-    }
-
-    next(err);
-  });
-};
-
-const BLOG_COVER_ALLOWED_MIME_TYPES = new Set([
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-  "image/gif"
-]);
-
-const BLOG_COVER_ALLOWED_EXTENSIONS = new Set([
-  ".jpg",
-  ".jpeg",
-  ".png",
-  ".webp",
-  ".gif"
-]);
-
-const blogCoverStorage = multer.diskStorage({
-  destination: (_req: Request, _file: Express.Multer.File, cb) => {
-    const date = new Date().toISOString().slice(0, 10);
-    const uploadDir = path.join(
-      process.cwd(),
-      BLOG_CONFIG.COVER_UPLOAD_DIR,
-      date
-    );
-    fs.mkdirSync(uploadDir, { recursive: true });
-    cb(null, uploadDir);
-  },
-  filename: (_req: Request, file: Express.Multer.File, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `${uuidv4()}${ext}`);
-  }
-});
-
-const blogCoverFileFilter = (
-  _req: Request,
-  file: Express.Multer.File,
-  cb: FileFilterCallback
-) => {
-  const ext = path.extname(file.originalname).toLowerCase();
-
-  if (
-    !BLOG_COVER_ALLOWED_MIME_TYPES.has(file.mimetype) ||
-    !BLOG_COVER_ALLOWED_EXTENSIONS.has(ext)
-  ) {
-    cb(
-      new BadRequestError({
-        message: "File type not supported",
-        code: ERROR_CODES.FILE_TYPE_NOT_SUPPORTED
-      })
-    );
-    return;
-  }
-
-  cb(null, true);
-};
-
-const blogCoverUpload = multer({
-  storage: blogCoverStorage,
-  fileFilter: blogCoverFileFilter,
-  limits: {
-    fileSize: BLOG_CONFIG.COVER_MAX_SIZE_BYTES,
-    files: 1
-  }
-});
-
-export const uploadBlogCover: RequestHandler = (req, res, next) => {
-  blogCoverUpload.single("coverImage")(req, res, (err) => {
-    if (!err) {
-      next();
-      return;
-    }
-
-    if (err instanceof multer.MulterError) {
-      if (err.code === "LIMIT_FILE_SIZE") {
-        next(
-          new BadRequestError({
-            message: "File size exceeds the limit",
-            code: ERROR_CODES.FILE_TOO_LARGE
-          })
-        );
-        return;
-      }
-      next(
-        new BadRequestError({
-          message: "File upload failed. Please try again",
           code: ERROR_CODES.FILE_UPLOAD_ERROR
         })
       );

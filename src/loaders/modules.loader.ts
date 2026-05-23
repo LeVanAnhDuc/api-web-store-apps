@@ -17,7 +17,6 @@ import { createUnlockAccountModule } from "@/modules/unlock-account/unlock-accou
 import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-password.module";
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
 import { createUserModule } from "@/modules/user/user.module";
-import { createBlogModule } from "@/modules/apps/blog/blog.module";
 // others
 import { RateLimiterMiddleware } from "@/middlewares";
 import { Logger } from "@/libs/logger";
@@ -34,7 +33,6 @@ interface ModuleRoutes {
   loginHistoryAdmin: Router;
   contact: Router;
   contactAdmin: Router;
-  blog: Router;
 }
 
 const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
@@ -56,9 +54,6 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   // Contact
   v1Router.use(routes.contact);
   v1Router.use(routes.contactAdmin);
-
-  // Apps
-  v1Router.use(routes.blog);
 
   app.use("/api/v1", v1Router);
 };
@@ -123,8 +118,6 @@ export const loadModules = (
   const { contactAdminRouter, contactAdminQueryAdminRouter } =
     createContactAdminModule(rateLimiter);
 
-  const { blogRouter } = createBlogModule();
-
   // --- Route mounting ---
   mountRoutes(app, {
     signup: signupRouter,
@@ -137,8 +130,7 @@ export const loadModules = (
     loginHistoryUser: loginHistoryUserRouter,
     loginHistoryAdmin: loginHistoryAdminRouter,
     contact: contactAdminRouter,
-    contactAdmin: contactAdminQueryAdminRouter,
-    blog: blogRouter
+    contactAdmin: contactAdminQueryAdminRouter
   });
 
   Logger.info("Modules loaded and routes mounted successfully");

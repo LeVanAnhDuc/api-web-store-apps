@@ -3,8 +3,5 @@ export const MODEL_NAMES = {
   USER: "User",
   SESSION: "Session",
   LOGIN_HISTORY: "LoginHistory",
-  CONTACT: "Contact",
-  BLOG: "Blog",
-  BLOG_TAG: "BlogTag",
-  BLOG_CATEGORY: "BlogCategory"
+  CONTACT: "Contact"
 } as const;
