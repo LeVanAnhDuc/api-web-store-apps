@@ -13,3 +13,11 @@ export const USER_CONFIG = {
   AVATAR_UPLOAD_DIR: "uploads/avatars",
   BASE_URL: ENV.BASE_URL
 } as const;
+
+export const USER_ADDRESS_CONFIG = {
+  STREET_MAX_LENGTH: 200,
+  CITY_MAX_LENGTH: 100,
+  PROVINCE_MAX_LENGTH: 100,
+  COUNTRY_MAX_LENGTH: 100,
+  POSTAL_CODE_MAX_LENGTH: 20
+} as const;

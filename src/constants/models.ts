@@ -1,7 +1,14 @@
 export const MODEL_NAMES = {
   AUTHENTICATION: "Authentication",
   USER: "User",
+  USER_ADDRESS: "UserAddress",
   SESSION: "Session",
   LOGIN_HISTORY: "LoginHistory",
-  CONTACT: "Contact"
+  REFRESH_TOKEN: "RefreshToken",
+  CONTACT: "Contact",
+  WEB_APP: "WebApp",
+  WEB_APP_CATEGORY: "WebAppCategory",
+  ENTITLEMENT: "Entitlement",
+  OAUTH_CONSENT: "OAuthConsent",
+  NOTIFICATION: "Notification"
 } as const;

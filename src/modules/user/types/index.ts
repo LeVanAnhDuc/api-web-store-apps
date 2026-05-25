@@ -54,6 +54,18 @@ export interface UserWithAuth {
   auth: AuthenticationDocument;
 }
 
+export interface UserAddressDocument {
+  _id: Schema.Types.ObjectId;
+  userId: Schema.Types.ObjectId;
+  street: string;
+  city: string;
+  province: string;
+  country: string;
+  postalCode: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export type GetMyProfileRequest = Request;
 
 export interface UpdateProfileRequest extends Omit<Request, "body"> {
