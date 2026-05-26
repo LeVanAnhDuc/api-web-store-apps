@@ -3,6 +3,7 @@ import instanceMongoDB from "@/database/mongodb";
 // others
 import { Logger } from "@/libs/logger";
 import { seedUsers, clearUsers } from "./user.seeder";
+import { seedContacts, clearContacts } from "./contact.seeder";
 
 const runSeeders = async (): Promise<void> => {
   try {
@@ -15,10 +16,12 @@ const runSeeders = async (): Promise<void> => {
     if (shouldClear) {
       Logger.info("Clear flag detected, removing existing test data...");
       await clearUsers();
+      await clearContacts();
     }
 
     Logger.info("Running seeders...");
     await seedUsers();
+    await seedContacts();
 
     Logger.info("All seeders completed successfully!");
   } catch (error) {
