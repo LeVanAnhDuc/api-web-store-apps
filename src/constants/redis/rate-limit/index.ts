@@ -89,6 +89,14 @@ export const RATE_LIMIT_CONFIG = {
     }
   },
 
+  CHANGE_PASSWORD: {
+    PER_IP_USER: {
+      KEY: "rate-limit:change-password:ip-user:",
+      MAX_REQUESTS: 5,
+      WINDOW_SECONDS: 900
+    }
+  },
+
   CONTACT: {
     SUBMIT: {
       PER_IP: {

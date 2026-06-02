@@ -8,6 +8,7 @@ import type { createClient } from "redis";
 import { TooManyRequestsError } from "@/common/exceptions";
 // others
 import { RATE_LIMIT_CONFIG } from "@/constants/redis/rate-limit";
+import { RequestContext } from "@/utils/request-context";
 
 type RedisClient = ReturnType<typeof createClient>;
 type RateLimitHandler = (req: Request, res: Response) => void;
@@ -31,6 +32,7 @@ export class RateLimiterMiddleware {
   public readonly forgotPasswordMagicLinkByIp: RateLimitRequestHandler;
   public readonly forgotPasswordMagicLinkByEmail: RateLimitRequestHandler;
   public readonly forgotPasswordResetByIp: RateLimitRequestHandler;
+  public readonly changePasswordByIpAndUser: RateLimitRequestHandler;
   public readonly contactByIp: RateLimitRequestHandler;
   public readonly updateProfileByIp: RateLimitRequestHandler;
   public readonly uploadAvatarByIp: RateLimitRequestHandler;
@@ -252,6 +254,22 @@ export class RateLimiterMiddleware {
       legacyHeaders: false,
       handler: this.createRateLimitExceededHandler(
         "forgotPassword:errors.rateLimitExceeded"
+      )
+    });
+
+    this.changePasswordByIpAndUser = rateLimit({
+      windowMs:
+        RATE_LIMIT_CONFIG.CHANGE_PASSWORD.PER_IP_USER.WINDOW_SECONDS * 1000,
+      max: RATE_LIMIT_CONFIG.CHANGE_PASSWORD.PER_IP_USER.MAX_REQUESTS,
+      store: this.createRedisStore(
+        RATE_LIMIT_CONFIG.CHANGE_PASSWORD.PER_IP_USER.KEY
+      ),
+      standardHeaders: true,
+      legacyHeaders: false,
+      keyGenerator: (req) =>
+        `${req.ip ?? "unknown"}:${RequestContext.getUserId() ?? "anon"}`,
+      handler: this.createRateLimitExceededHandler(
+        "changePassword:errors.rateLimitExceeded"
       )
     });
   }
