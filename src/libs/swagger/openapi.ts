@@ -10,6 +10,10 @@ import {
   forgotPasswordPaths
 } from "@/modules/forgot-password/swagger";
 import {
+  changePasswordSwaggerSchemas,
+  changePasswordPaths
+} from "@/modules/change-password/swagger";
+import {
   contactAdminSwaggerSchemas,
   contactAdminPaths
 } from "@/modules/contact-admin/swagger";
@@ -27,6 +31,7 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...logoutSwaggerSchemas,
   ...tokenSwaggerSchemas,
   ...forgotPasswordSwaggerSchemas,
+  ...changePasswordSwaggerSchemas,
   ...contactAdminSwaggerSchemas,
   ...userSwaggerSchemas
 };
@@ -37,6 +42,7 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...logoutPaths,
   ...tokenPaths,
   ...forgotPasswordPaths,
+  ...changePasswordPaths,
   ...contactAdminPaths,
   ...userPaths
 };
