@@ -6,6 +6,7 @@ import type {
   ForgotPasswordOtpData,
   LoginOtpData,
   MagicLinkData,
+  PasswordChangedData,
   SendEmailOptions,
   SignupOtpData,
   UnlockTempPasswordData
@@ -26,6 +27,7 @@ import { SignupOtpEmail } from "./templates/signup-otp";
 import { MagicLinkEmail } from "./templates/magic-link";
 import { UnlockTempPasswordEmail } from "./templates/unlock-temp-password";
 import { ForgotPasswordOtpEmail } from "./templates/forgot-password-otp";
+import { PasswordChangedEmail } from "./templates/password-changed";
 
 const CIRCUIT_BREAKER_CONFIG = {
   FAILURE_THRESHOLD: 5,
@@ -105,6 +107,10 @@ export class SendEmailService {
         return render(
           ForgotPasswordOtpEmail(options.data as ForgotPasswordOtpData, locale)
         );
+      case EmailType.PASSWORD_CHANGED:
+        return render(
+          PasswordChangedEmail(options.data as PasswordChangedData, locale)
+        );
       default:
         throw new InternalServerError({
           message: `Unknown email template: ${type}`
@@ -126,6 +132,8 @@ export class SendEmailService {
         return strings.unlockTempPassword.title;
       case EmailType.FORGOT_PASSWORD_OTP:
         return strings.forgotPasswordOtp.title;
+      case EmailType.PASSWORD_CHANGED:
+        return strings.passwordChanged.title;
       default:
         throw new InternalServerError({
           message: `Unknown email template: ${type}`

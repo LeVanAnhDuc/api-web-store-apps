@@ -58,5 +58,11 @@
     "securityList4": "Use a strong, unique password",
     "footerNote": "This is an automated message. Please do not reply to this email.",
     "copyright": "© 2025 Apartment Management System. All rights reserved."
+  },
+  "passwordChanged": {
+    "title": "Your Password Was Changed",
+    "greeting": "Hello,",
+    "body": "Your account password was successfully changed at",
+    "warning": "If you did not make this change, your account may be compromised. Please reset your password and contact support immediately."
   }
 }
