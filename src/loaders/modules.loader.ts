@@ -15,6 +15,7 @@ import { createLogoutModule } from "@/modules/logout/logout.module";
 import { createTokenModule } from "@/modules/token/token.module";
 import { createUnlockAccountModule } from "@/modules/unlock-account/unlock-account.module";
 import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-password.module";
+import { createChangePasswordModule } from "@/modules/change-password/change-password.module";
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
 import { createUserModule } from "@/modules/user/user.module";
 // others
@@ -28,6 +29,7 @@ interface ModuleRoutes {
   token: Router;
   unlockAccount: Router;
   forgotPassword: Router;
+  changePassword: Router;
   user: Router;
   loginHistoryUser: Router;
   loginHistoryAdmin: Router;
@@ -45,6 +47,7 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   v1Router.use(routes.token);
   v1Router.use(routes.unlockAccount);
   v1Router.use(routes.forgotPassword);
+  v1Router.use(routes.changePassword);
 
   // User
   v1Router.use(routes.user);
@@ -115,6 +118,13 @@ export const loadModules = (
     rateLimiter
   );
 
+  const { changePasswordRouter } = createChangePasswordModule(
+    authService,
+    userService,
+    emailDispatcher,
+    rateLimiter
+  );
+
   const { contactAdminRouter, contactAdminQueryAdminRouter } =
     createContactAdminModule(rateLimiter);
 
@@ -126,6 +136,7 @@ export const loadModules = (
     token: tokenRouter,
     unlockAccount: unlockAccountRouter,
     forgotPassword: forgotPasswordRouter,
+    changePassword: changePasswordRouter,
     user: userRouter,
     loginHistoryUser: loginHistoryUserRouter,
     loginHistoryAdmin: loginHistoryAdminRouter,
