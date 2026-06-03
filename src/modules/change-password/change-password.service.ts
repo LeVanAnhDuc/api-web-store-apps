@@ -74,7 +74,12 @@ export class ChangePasswordService {
       }
     });
 
-    Logger.info("Password changed", { authId });
+    Logger.info("Password changed", {
+      authId,
+      userId: user._id.toString(),
+      ip: req.ip ?? "unknown",
+      userAgent: req.headers["user-agent"] ?? "unknown"
+    });
 
     return tokens;
   }

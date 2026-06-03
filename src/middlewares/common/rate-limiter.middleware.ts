@@ -267,7 +267,7 @@ export class RateLimiterMiddleware {
       standardHeaders: true,
       legacyHeaders: false,
       keyGenerator: (req) =>
-        `${req.ip ?? "unknown"}:${RequestContext.getUserId() ?? "anon"}`,
+        `${req.ip ?? "unknown"}:${RequestContext.requireAuthId()}`,
       handler: this.createRateLimitExceededHandler(
         "changePassword:errors.rateLimitExceeded"
       )

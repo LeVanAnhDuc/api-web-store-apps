@@ -38,7 +38,8 @@ const buildReq = () =>
       newPassword: "NewPass1!",
       confirmPassword: "NewPass1!"
     },
-    ip: "1.2.3.4"
+    ip: "1.2.3.4",
+    headers: { "user-agent": "jest" }
   }) as unknown as ChangePasswordRequest;
 
 const AUTH = {
