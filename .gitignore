@@ -38,3 +38,6 @@ coverage
 .mcp.json
 
 coverage
+
+# Worktrees (superpowers isolation)
+.worktrees/
