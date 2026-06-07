@@ -37,5 +37,8 @@
   },
   "categoryId": {
     "invalid": "Invalid category id."
+  },
+  "search": {
+    "invalid": "Search term is too long."
   }
 }

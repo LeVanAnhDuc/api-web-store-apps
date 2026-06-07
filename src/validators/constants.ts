@@ -43,3 +43,7 @@ export const CONTACT_CONFIG = {
   MESSAGE_MIN_LENGTH: 20,
   MESSAGE_MAX_LENGTH: 5000
 } as const;
+
+export const OBJECTID_PATTERN = /^[a-fA-F0-9]{24}$/;
+
+export const SEARCH_MAX_LENGTH = 200;

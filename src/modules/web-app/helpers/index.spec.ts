@@ -23,6 +23,15 @@ describe("buildWebAppFilter", () => {
     ]);
   });
 
+  it("escapes regex metacharacters in the search term", () => {
+    const filter = buildWebAppFilter({ search: "a.b" });
+    expect(filter.$or).toEqual([
+      { name: { $regex: "a\\.b", $options: "i" } },
+      { displayName: { $regex: "a\\.b", $options: "i" } },
+      { description: { $regex: "a\\.b", $options: "i" } }
+    ]);
+  });
+
   it("passes categoryId through and returns empty filter when no params", () => {
     expect(buildWebAppFilter({ categoryId: "cat1" }).categoryId).toBe("cat1");
     expect(buildWebAppFilter({})).toEqual({});

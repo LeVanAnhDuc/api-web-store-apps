@@ -4,13 +4,18 @@ import Joi from "joi";
 import type { AdminAppsQuery } from "@/modules/web-app/types";
 // modules
 import { WEB_APP_STATUS_PUBLIC } from "@/modules/web-app/constants";
+// validators
+import { OBJECTID_PATTERN, SEARCH_MAX_LENGTH } from "@/validators/constants";
 
 const STATUS_VALUES = Object.values(WEB_APP_STATUS_PUBLIC);
-const OBJECTID_PATTERN = /^[a-fA-F0-9]{24}$/;
 
 export const adminListAppsQuerySchema: Joi.ObjectSchema<AdminAppsQuery> =
   Joi.object({
-    search: Joi.string().trim().optional(),
+    search: Joi.string()
+      .trim()
+      .max(SEARCH_MAX_LENGTH)
+      .optional()
+      .messages({ "string.max": "validation:search.invalid" }),
 
     status: Joi.string()
       .valid(...STATUS_VALUES)

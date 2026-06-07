@@ -37,5 +37,8 @@
   },
   "categoryId": {
     "invalid": "Mã danh mục không hợp lệ."
+  },
+  "search": {
+    "invalid": "Từ khoá tìm kiếm quá dài."
   }
 }

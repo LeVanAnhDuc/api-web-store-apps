@@ -1,0 +1,123 @@
+// types
+import type { OpenAPIV3 } from "openapi-types";
+
+export const webAppPaths: OpenAPIV3.PathsObject = {
+  "/admin/apps": {
+    get: {
+      summary: "List apps (admin)",
+      description: `
+List registered apps for the admin console.
+
+**Authentication:**
+- Requires valid Bearer token (admin role)
+
+**Filtering:**
+- \`search\` — case-insensitive match on app name / display name
+- \`status\` — filter by app status (\`active\` | \`inactive\`)
+- \`categoryId\` — filter by owning category (MongoDB ObjectId)
+      `.trim(),
+      tags: ["Web App Admin"],
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "search",
+          in: "query",
+          required: false,
+          description:
+            "Case-insensitive keyword to match app name / display name",
+          schema: {
+            type: "string",
+            example: "monitor"
+          }
+        },
+        {
+          name: "status",
+          in: "query",
+          required: false,
+          description: "Filter by app status",
+          schema: {
+            type: "string",
+            enum: ["active", "inactive"],
+            example: "active"
+          }
+        },
+        {
+          name: "categoryId",
+          in: "query",
+          required: false,
+          description: "MongoDB ObjectId of the category to filter by",
+          schema: {
+            type: "string",
+            pattern: "^[a-fA-F0-9]{24}$",
+            example: "507f1f77bcf86cd799439012"
+          }
+        }
+      ],
+      responses: {
+        "200": {
+          description: "Apps retrieved successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: {
+                        $ref: "#/components/schemas/AdminAppListResponse"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": { $ref: "#/components/responses/Forbidden" },
+        "422": { $ref: "#/components/responses/ValidationError" }
+      }
+    }
+  },
+  "/admin/apps/categories": {
+    get: {
+      summary: "List categories (admin)",
+      description: `
+List all app categories for the admin console.
+
+**Authentication:**
+- Requires valid Bearer token (admin role)
+      `.trim(),
+      tags: ["Web App Admin"],
+      security: [{ bearerAuth: [] }],
+      responses: {
+        "200": {
+          description: "Categories retrieved successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: {
+                        type: "array",
+                        items: {
+                          $ref: "#/components/schemas/AdminCategoryResponse"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": { $ref: "#/components/responses/Forbidden" }
+      }
+    }
+  }
+};
