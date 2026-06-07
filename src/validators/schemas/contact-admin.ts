@@ -8,14 +8,13 @@ import {
   CONTACT_STATUSES
 } from "@/modules/contact-admin/constants";
 // validators
-import { CONTACT_CONFIG } from "@/validators/constants";
+import { CONTACT_CONFIG, OBJECTID_PATTERN } from "@/validators/constants";
 // others
 import { emailSchema } from "./base";
 
 const PRIORITY_VALUES = Object.values(CONTACT_PRIORITIES);
 const STATUS_VALUES = Object.values(CONTACT_STATUSES);
 
-const OBJECTID_PATTERN = /^[a-fA-F0-9]{24}$/;
 const LIMIT_MAX = 100;
 const SORT_ORDER_VALUES = ["asc", "desc"] as const;
 const ADMIN_SORT_BY_VALUES = ["createdAt", "priority", "status"] as const;

@@ -7,6 +7,8 @@ import {
   DEVICE_TYPES,
   CLIENT_TYPES
 } from "@/modules/login-history/constants";
+// validators
+import { OBJECTID_PATTERN } from "@/validators/constants";
 
 const STATUS_VALUES = Object.values(LOGIN_STATUSES);
 const METHOD_VALUES = Object.values(LOGIN_METHODS);
@@ -29,7 +31,6 @@ const SORT_BY_ADMIN_VALUES = [
 ] as const;
 const SORT_ORDER_VALUES = ["asc", "desc"] as const;
 
-const OBJECTID_PATTERN = /^[a-fA-F0-9]{24}$/;
 const LIMIT_MAX = 100;
 
 export const loginHistoryQuerySchema = Joi.object({

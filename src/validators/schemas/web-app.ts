@@ -4,9 +4,10 @@ import Joi from "joi";
 import type { AdminAppsQuery } from "@/modules/web-app/types";
 // modules
 import { WEB_APP_STATUS_PUBLIC } from "@/modules/web-app/constants";
+// validators
+import { OBJECTID_PATTERN } from "@/validators/constants";
 
 const STATUS_VALUES = Object.values(WEB_APP_STATUS_PUBLIC);
-const OBJECTID_PATTERN = /^[a-fA-F0-9]{24}$/;
 
 export const adminListAppsQuerySchema: Joi.ObjectSchema<AdminAppsQuery> =
   Joi.object({
