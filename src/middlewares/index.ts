@@ -11,8 +11,5 @@ export * from "./common/rate-limiter.middleware";
 // pipes
 export * from "./pipes/validation.pipe";
 
-// interceptors
-export * from "./interceptors/file-upload.interceptor";
-
 // filters
 export * from "./filters/error.filter";

@@ -9,7 +9,7 @@ import {
   getPublicProfileSchema
 } from "@/validators/schemas/user";
 // others
-import { authGuard, bodyPipe, paramsPipe, uploadAvatar } from "@/middlewares";
+import { authGuard, bodyPipe, paramsPipe } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createUserRoutes = (
@@ -27,14 +27,6 @@ export const createUserRoutes = (
     authGuard,
     bodyPipe(updateProfileSchema),
     asyncHandler(controller.updateMyProfile)
-  );
-
-  users.post(
-    "/me/avatar",
-    rl.uploadAvatarByIp,
-    authGuard,
-    uploadAvatar,
-    asyncHandler(controller.uploadAvatarHandler)
   );
 
   users.get(

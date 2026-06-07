@@ -30,7 +30,6 @@ export type UserRepository = {
     userId: string,
     data: Partial<UpdateProfileData>
   ): Promise<UserDocument | null>;
-  updateAvatar(userId: string, avatarPath: string): Promise<void>;
   findPublicById(userId: string): Promise<PublicUserRecord | null>;
   emailExists(email: string): Promise<boolean>;
   findByEmailWithAuth(email: string): Promise<UserWithAuth | null>;
@@ -100,12 +99,6 @@ export class MongoUserRepository implements UserRepository {
         )
         .lean<UserDocument>()
         .exec()
-    );
-  }
-
-  async updateAvatar(userId: string, avatarPath: string): Promise<void> {
-    await asyncDatabaseHandler("updateAvatar", () =>
-      UserModel.updateOne({ _id: userId }, { $set: { avatar: avatarPath } })
     );
   }
 
