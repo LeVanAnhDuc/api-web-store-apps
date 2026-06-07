@@ -1,9 +1,11 @@
 // types
+import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { AuthenticationRole } from "@/modules/authentication/types";
 import type {
   WEB_APP_STATUSES,
-  TOKEN_ENDPOINT_AUTH_METHODS
+  TOKEN_ENDPOINT_AUTH_METHODS,
+  WEB_APP_STATUS_PUBLIC
 } from "@/modules/web-app/constants";
 
 export type WebAppStatus =
@@ -44,4 +46,17 @@ export interface WebAppCategoryDocument {
   sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export type WebAppStatusPublic =
+  (typeof WEB_APP_STATUS_PUBLIC)[keyof typeof WEB_APP_STATUS_PUBLIC];
+
+export interface AdminAppsQuery {
+  search?: string;
+  status?: WebAppStatusPublic;
+  categoryId?: string;
+}
+
+export interface AdminAppsQueryRequest extends Omit<Request, "query"> {
+  query: AdminAppsQuery;
 }
