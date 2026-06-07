@@ -18,6 +18,7 @@ import {
   contactAdminPaths
 } from "@/modules/contact-admin/swagger";
 import { userSwaggerSchemas, userPaths } from "@/modules/user/swagger";
+import { webAppSwaggerSchemas, webAppPaths } from "@/modules/web-app/swagger";
 // others
 import ENV from "@/constants/env";
 import { commonSchemas, commonResponses } from "./common.schemas";
@@ -33,7 +34,8 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...forgotPasswordSwaggerSchemas,
   ...changePasswordSwaggerSchemas,
   ...contactAdminSwaggerSchemas,
-  ...userSwaggerSchemas
+  ...userSwaggerSchemas,
+  ...webAppSwaggerSchemas
 };
 
 const allPaths: OpenAPIV3.PathsObject = {
@@ -44,7 +46,8 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...forgotPasswordPaths,
   ...changePasswordPaths,
   ...contactAdminPaths,
-  ...userPaths
+  ...userPaths,
+  ...webAppPaths
 };
 
 export const openApiSpec: OpenAPIV3.Document = {
@@ -84,6 +87,10 @@ export const openApiSpec: OpenAPIV3.Document = {
     {
       name: "User Profile",
       description: "View and update user profile, upload avatar"
+    },
+    {
+      name: "Web App Admin",
+      description: "Admin endpoints for managing apps and categories"
     }
   ],
   paths: allPaths,
