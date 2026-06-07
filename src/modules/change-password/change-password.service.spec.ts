@@ -10,7 +10,7 @@ import type { AuthenticationService } from "@/modules/authentication/authenticat
 import type { UserService } from "@/modules/user/user.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError, UnauthorizedError } from "@/common/exceptions";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 import { EmailType } from "@/types/services/email";
@@ -86,6 +86,31 @@ describe("ChangePasswordService", () => {
       idToken: "i",
       expiresIn: 3600
     });
+  });
+
+  it("throws UnauthorizedError when the auth record is not found", async () => {
+    const { service, authService } = makeService();
+    authService.findById.mockResolvedValue(null as never);
+
+    await expect(service.changePassword(buildReq())).rejects.toThrow(
+      UnauthorizedError
+    );
+    expect(authService.updatePassword).not.toHaveBeenCalled();
+  });
+
+  it("throws UnauthorizedError when the user is not found after the password update", async () => {
+    const { service, authService, userService, emailDispatcher } =
+      makeService();
+    mockedIsValid.mockReturnValue(true);
+    authService.findById.mockResolvedValue(AUTH as never);
+    userService.findByAuthId.mockResolvedValue(null as never);
+
+    await expect(service.changePassword(buildReq())).rejects.toThrow(
+      UnauthorizedError
+    );
+    expect(authService.updatePassword).toHaveBeenCalledWith("auth1", "newHash");
+    expect(mockedGenTokens).not.toHaveBeenCalled();
+    expect(emailDispatcher.send).not.toHaveBeenCalled();
   });
 
   it("throws when current password is wrong", async () => {
