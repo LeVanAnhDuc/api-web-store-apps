@@ -60,3 +60,34 @@ export interface AdminAppsQuery {
 export interface AdminAppsQueryRequest extends Omit<Request, "query"> {
   query: AdminAppsQuery;
 }
+
+export interface AdminAppCreateBody {
+  name: string;
+  displayName: string;
+  description?: string;
+  iconUrl?: string;
+  homeUrl: string;
+  categoryId: string;
+  status: WebAppStatusPublic;
+  requiredRoles: AuthenticationRole[];
+  redirectUris: string[];
+}
+
+export interface AdminCreateAppRequest extends Omit<Request, "body"> {
+  body: AdminAppCreateBody;
+}
+
+export interface WebAppCreateInput {
+  name: string;
+  displayName: string;
+  description: string | null;
+  iconUrl: string | null;
+  homeUrl: string;
+  categoryId: string;
+  status: WebAppStatus;
+  requiredRoles: AuthenticationRole[];
+  redirectUris: string[];
+  clientId: string;
+  clientSecretHash: string;
+  scopes: string[];
+}

@@ -7,6 +7,7 @@ import { asyncDatabaseHandler } from "@/utils/async-handler";
 
 export type WebAppCategoryRepository = {
   findAll(): Promise<WebAppCategoryDocument[]>;
+  existsById(id: string): Promise<boolean>;
 };
 
 export class MongoWebAppCategoryRepository implements WebAppCategoryRepository {
@@ -17,5 +18,12 @@ export class MongoWebAppCategoryRepository implements WebAppCategoryRepository {
         .lean<WebAppCategoryDocument[]>()
         .exec()
     );
+  }
+
+  async existsById(id: string): Promise<boolean> {
+    return asyncDatabaseHandler("existsById", async () => {
+      const found = await WebAppCategoryModel.exists({ _id: id });
+      return found !== null;
+    });
   }
 }

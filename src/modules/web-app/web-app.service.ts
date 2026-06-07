@@ -1,14 +1,27 @@
 // types
-import type { AdminAppsQuery } from "./types";
+import type { AdminAppsQuery, AdminAppCreateBody } from "./types";
 import type {
   WebAppRepository,
   WebAppCategoryRepository
 } from "./repositories";
-import type { AdminAppDto, AdminCategoryDto } from "./dtos";
+import type { AdminAppDto, AdminCategoryDto, AdminAppCreatedDto } from "./dtos";
 // dtos
-import { toAdminAppDto, toAdminCategoryDto } from "./dtos";
+import {
+  toAdminAppDto,
+  toAdminCategoryDto,
+  toAdminAppCreatedDto
+} from "./dtos";
 // others
-import { buildWebAppFilter } from "./helpers";
+import {
+  buildWebAppFilter,
+  toInternalStatus,
+  generateClientId,
+  generateClientSecret
+} from "./helpers";
+import { WEB_APP_DEFAULT_SCOPES } from "./constants";
+import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
+import { ERROR_CODES } from "@/constants/error-code";
+import { hashValue } from "@/utils/crypto/bcrypt";
 
 export class WebAppService {
   constructor(
@@ -25,5 +38,43 @@ export class WebAppService {
   async listCategories(): Promise<AdminCategoryDto[]> {
     const docs = await this.categoryRepo.findAll();
     return docs.map(toAdminCategoryDto);
+  }
+
+  async createApp(body: AdminAppCreateBody): Promise<AdminAppCreatedDto> {
+    const nameTaken = await this.webAppRepo.existsByName(body.name);
+    if (nameTaken) {
+      throw new ConflictRequestError({
+        i18nMessage: (t) => t("webApp:errors.nameExists"),
+        code: ERROR_CODES.WEB_APP_NAME_EXISTS
+      });
+    }
+
+    const categoryExists = await this.categoryRepo.existsById(body.categoryId);
+    if (!categoryExists) {
+      throw new NotFoundError({
+        i18nMessage: (t) => t("webApp:errors.categoryNotFound"),
+        code: ERROR_CODES.WEB_APP_CATEGORY_NOT_FOUND
+      });
+    }
+
+    const clientId = generateClientId();
+    const clientSecret = generateClientSecret();
+
+    const doc = await this.webAppRepo.create({
+      name: body.name,
+      displayName: body.displayName,
+      description: body.description?.trim() ? body.description.trim() : null,
+      iconUrl: body.iconUrl?.trim() ? body.iconUrl.trim() : null,
+      homeUrl: body.homeUrl,
+      categoryId: body.categoryId,
+      status: toInternalStatus(body.status),
+      requiredRoles: body.requiredRoles,
+      redirectUris: body.redirectUris,
+      clientId,
+      clientSecretHash: hashValue(clientSecret),
+      scopes: [...WEB_APP_DEFAULT_SCOPES]
+    });
+
+    return toAdminAppCreatedDto(doc, clientSecret);
   }
 }

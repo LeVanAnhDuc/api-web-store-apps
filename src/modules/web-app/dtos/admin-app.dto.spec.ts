@@ -1,5 +1,5 @@
 // dtos
-import { toAdminAppDto } from "./admin-app.dto";
+import { toAdminAppDto, toAdminAppCreatedDto } from "./admin-app.dto";
 // modules
 import { WEB_APP_STATUSES, TOKEN_ENDPOINT_AUTH_METHODS } from "../constants";
 
@@ -46,5 +46,21 @@ describe("toAdminAppDto", () => {
     expect(dto._id).toBe("app1");
     expect(dto.categoryId).toBe("cat1");
     expect(dto.createdAt).toBe("2026-03-12T09:24:00.000Z");
+  });
+});
+
+describe("toAdminAppCreatedDto", () => {
+  it("includes the plaintext clientSecret", () => {
+    const dto = toAdminAppCreatedDto(baseDoc, "plaintext-secret");
+    expect(dto.clientSecret).toBe("plaintext-secret");
+  });
+
+  it("carries all AdminAppDto fields and still excludes the hash", () => {
+    const dto = toAdminAppCreatedDto(baseDoc, "x") as unknown as Record<
+      string,
+      unknown
+    >;
+    expect(dto.clientId).toBe("client_blog");
+    expect(dto.clientSecretHash).toBeUndefined();
   });
 });

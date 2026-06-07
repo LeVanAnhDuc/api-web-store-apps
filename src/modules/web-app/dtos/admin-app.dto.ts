@@ -35,3 +35,15 @@ export const toAdminAppDto = (doc: WebAppDocument): AdminAppDto => ({
   createdAt: doc.createdAt.toISOString(),
   updatedAt: doc.updatedAt.toISOString()
 });
+
+export interface AdminAppCreatedDto extends AdminAppDto {
+  clientSecret: string;
+}
+
+export const toAdminAppCreatedDto = (
+  doc: WebAppDocument,
+  clientSecret: string
+): AdminAppCreatedDto => ({
+  ...toAdminAppDto(doc),
+  clientSecret
+});

@@ -3,9 +3,12 @@ import { Router } from "express";
 // types
 import type { WebAppController } from "./web-app.controller";
 // validators
-import { adminListAppsQuerySchema } from "@/validators/schemas/web-app";
+import {
+  adminListAppsQuerySchema,
+  adminCreateAppBodySchema
+} from "@/validators/schemas/web-app";
 // others
-import { adminGuard, authGuard, queryPipe } from "@/middlewares";
+import { adminGuard, authGuard, queryPipe, bodyPipe } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createAdminWebAppRoutes = (
@@ -22,6 +25,12 @@ export const createAdminWebAppRoutes = (
     "/",
     queryPipe(adminListAppsQuerySchema),
     asyncHandler(controller.listApps)
+  );
+
+  adminApps.post(
+    "/",
+    bodyPipe(adminCreateAppBodySchema),
+    asyncHandler(controller.createApp)
   );
 
   router.use("/admin/apps", adminApps);
