@@ -222,6 +222,13 @@ modules/{feature}/
 | GET    | `/api/v1/admin/contacts`     | List all contacts (admin only)  |
 | GET    | `/api/v1/admin/contacts/:id` | Get contact detail (admin only) |
 
+### App Registry
+
+| Method | Endpoint                        | Description                                                                                       |
+| ------ | ------------------------------- | ------------------------------------------------------------------------------------------------- |
+| GET    | `/api/v1/admin/apps`            | List all apps (admin only). Query params: `search`, `status` (`active`\|`inactive`), `categoryId` |
+| GET    | `/api/v1/admin/apps/categories` | List all app categories (admin only)                                                              |
+
 ### Blog
 
 | Method | Endpoint                 | Description      |
