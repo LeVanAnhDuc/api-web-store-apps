@@ -34,5 +34,8 @@
     "invalid": "Please provide a valid date of birth",
     "tooYoung": "You must be at least 13 years old",
     "tooOld": "Date of birth cannot be more than 120 years ago"
+  },
+  "categoryId": {
+    "invalid": "Invalid category id."
   }
 }

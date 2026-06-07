@@ -1,0 +1,6 @@
+{
+  "success": {
+    "listApps": "Apps retrieved successfully.",
+    "listCategories": "Categories retrieved successfully."
+  }
+}

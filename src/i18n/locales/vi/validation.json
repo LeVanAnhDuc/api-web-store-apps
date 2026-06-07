@@ -34,5 +34,8 @@
     "invalid": "Ngày sinh không hợp lệ",
     "tooYoung": "Bạn phải từ 13 tuổi trở lên",
     "tooOld": "Ngày sinh không thể quá 120 năm trước"
+  },
+  "categoryId": {
+    "invalid": "Mã danh mục không hợp lệ."
   }
 }
