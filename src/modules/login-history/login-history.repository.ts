@@ -14,6 +14,7 @@ import type { PaginationOptions } from "@/types/common";
 import LoginHistoryModel from "@/models/login-history";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
+import { escapeRegex } from "@/utils/string/escape-regex";
 
 export type LoginHistoryRepository = {
   create(data: CreateLoginHistoryData): Promise<LoginHistoryDocument>;
@@ -122,12 +123,13 @@ export class MongoLoginHistoryRepository implements LoginHistoryRepository {
     if (filter.deviceType) mongo.deviceType = filter.deviceType;
     if (filter.clientType) mongo.clientType = filter.clientType;
     if (filter.country)
-      mongo.country = { $regex: filter.country, $options: "i" };
-    if (filter.city) mongo.city = { $regex: filter.city, $options: "i" };
-    if (filter.os) mongo.os = { $regex: filter.os, $options: "i" };
+      mongo.country = { $regex: escapeRegex(filter.country), $options: "i" };
+    if (filter.city)
+      mongo.city = { $regex: escapeRegex(filter.city), $options: "i" };
+    if (filter.os) mongo.os = { $regex: escapeRegex(filter.os), $options: "i" };
     if (filter.browser)
-      mongo.browser = { $regex: filter.browser, $options: "i" };
-    if (filter.ip) mongo.ip = { $regex: filter.ip, $options: "i" };
+      mongo.browser = { $regex: escapeRegex(filter.browser), $options: "i" };
+    if (filter.ip) mongo.ip = { $regex: escapeRegex(filter.ip), $options: "i" };
     if (filter.fromDate || filter.toDate) {
       mongo.createdAt = {};
       if (filter.fromDate) mongo.createdAt.$gte = filter.fromDate;

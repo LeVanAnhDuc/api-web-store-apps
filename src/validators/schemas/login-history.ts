@@ -8,7 +8,7 @@ import {
   CLIENT_TYPES
 } from "@/modules/login-history/constants";
 // validators
-import { OBJECTID_PATTERN } from "@/validators/constants";
+import { OBJECTID_PATTERN, SEARCH_MAX_LENGTH } from "@/validators/constants";
 
 const STATUS_VALUES = Object.values(LOGIN_STATUSES);
 const METHOD_VALUES = Object.values(LOGIN_METHODS);
@@ -75,13 +75,29 @@ export const loginHistoryQuerySchema = Joi.object({
       "any.only": "validation:clientType.invalid"
     }),
 
-  country: Joi.string().trim().optional(),
+  country: Joi.string()
+    .trim()
+    .max(SEARCH_MAX_LENGTH)
+    .optional()
+    .messages({ "string.max": "validation:search.invalid" }),
 
-  city: Joi.string().trim().optional(),
+  city: Joi.string()
+    .trim()
+    .max(SEARCH_MAX_LENGTH)
+    .optional()
+    .messages({ "string.max": "validation:search.invalid" }),
 
-  os: Joi.string().trim().optional(),
+  os: Joi.string()
+    .trim()
+    .max(SEARCH_MAX_LENGTH)
+    .optional()
+    .messages({ "string.max": "validation:search.invalid" }),
 
-  browser: Joi.string().trim().optional(),
+  browser: Joi.string()
+    .trim()
+    .max(SEARCH_MAX_LENGTH)
+    .optional()
+    .messages({ "string.max": "validation:search.invalid" }),
 
   fromDate: Joi.string().isoDate().optional().messages({
     "string.isoDate": "validation:fromDate.invalid"
@@ -123,7 +139,11 @@ export const loginHistoryAdminQuerySchema = loginHistoryQuerySchema
       "string.pattern.base": "validation:userId.invalid"
     }),
 
-    ip: Joi.string().trim().optional(),
+    ip: Joi.string()
+      .trim()
+      .max(SEARCH_MAX_LENGTH)
+      .optional()
+      .messages({ "string.max": "validation:search.invalid" }),
 
     sortBy: Joi.string()
       .valid(...SORT_BY_ADMIN_VALUES)

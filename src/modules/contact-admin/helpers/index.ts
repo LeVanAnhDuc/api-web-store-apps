@@ -1,6 +1,8 @@
 // types
 import type { FilterQuery } from "mongoose";
 import type { AdminContactsQuery, ContactDocument } from "../types";
+// others
+import { escapeRegex } from "@/utils/string/escape-regex";
 
 export const buildContactFilter = (
   query: AdminContactsQuery
@@ -12,11 +14,12 @@ export const buildContactFilter = (
   if (query.priority) filter.priority = query.priority;
 
   // Partial match (case-insensitive regex)
-  if (query.email) filter.email = { $regex: query.email, $options: "i" };
+  if (query.email)
+    filter.email = { $regex: escapeRegex(query.email), $options: "i" };
 
   // Text search: OR across subject, email
   if (query.search) {
-    const searchRegex = { $regex: query.search, $options: "i" };
+    const searchRegex = { $regex: escapeRegex(query.search), $options: "i" };
     filter.$or = [{ subject: searchRegex }, { email: searchRegex }];
   }
 
