@@ -45,3 +45,11 @@ export const WEB_APP_STATUS_PUBLIC = {
   ACTIVE: "active",
   INACTIVE: "inactive"
 } as const;
+
+export const WEB_APP_DEFAULT_SCOPES = ["openid", "profile", "email"] as const;
+
+export const CLIENT_CREDENTIALS_CONFIG = {
+  CLIENT_ID_PREFIX: "client_",
+  CLIENT_ID_RANDOM_BYTES: 6,
+  CLIENT_SECRET_RANDOM_BYTES: 32
+} as const;

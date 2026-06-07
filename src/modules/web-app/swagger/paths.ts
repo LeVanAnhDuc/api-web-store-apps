@@ -3,6 +3,66 @@ import type { OpenAPIV3 } from "openapi-types";
 
 export const webAppPaths: OpenAPIV3.PathsObject = {
   "/admin/apps": {
+    post: {
+      summary: "Register a new app (admin)",
+      description: `
+Register a satellite app with the IDMS. Generates an OAuth \`clientId\` and \`clientSecret\` — the secret is returned **once** in the response and will not be retrievable again.
+
+**Authentication:**
+- Requires valid Bearer token (admin role)
+
+**Business rules:**
+- \`name\` must be unique across all apps (lowercase, alphanumeric + hyphens)
+- \`categoryId\` must reference an existing category
+- \`clientSecret\` is bcrypt-hashed before storage; the plaintext is returned only in this response
+      `.trim(),
+      tags: ["Web App Admin"],
+      security: [{ bearerAuth: [] }],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: { $ref: "#/components/schemas/AdminAppCreateBody" }
+          }
+        }
+      },
+      responses: {
+        "201": {
+          description:
+            "App registered successfully — includes one-time clientSecret",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: {
+                        $ref: "#/components/schemas/AdminAppCreatedResponse"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": { $ref: "#/components/responses/BadRequest" },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": { $ref: "#/components/responses/Forbidden" },
+        "404": { $ref: "#/components/responses/NotFound" },
+        "409": {
+          description: "Conflict — an app with this name already exists",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+            }
+          }
+        },
+        "422": { $ref: "#/components/responses/ValidationError" }
+      }
+    },
     get: {
       summary: "List apps (admin)",
       description: `

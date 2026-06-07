@@ -1,10 +1,16 @@
 // types
 import type { FilterQuery } from "mongoose";
-import type { AdminAppsQuery, WebAppDocument } from "../types";
+import type {
+  AdminAppsQuery,
+  WebAppDocument,
+  WebAppStatus,
+  WebAppStatusPublic
+} from "../types";
 // modules
-import { WEB_APP_STATUSES } from "../constants";
+import { WEB_APP_STATUSES, CLIENT_CREDENTIALS_CONFIG } from "../constants";
 // others
 import { escapeRegex } from "@/utils/string/escape-regex";
+import { generateSecureToken } from "@/utils/crypto/secure-token";
 
 const PUBLIC_TO_STATUS = {
   active: WEB_APP_STATUSES.ACTIVE,
@@ -30,3 +36,14 @@ export const buildWebAppFilter = (
 
   return filter;
 };
+
+export const toInternalStatus = (status: WebAppStatusPublic): WebAppStatus =>
+  PUBLIC_TO_STATUS[status];
+
+export const generateClientId = (): string =>
+  `${CLIENT_CREDENTIALS_CONFIG.CLIENT_ID_PREFIX}${generateSecureToken(
+    CLIENT_CREDENTIALS_CONFIG.CLIENT_ID_RANDOM_BYTES
+  )}`;
+
+export const generateClientSecret = (): string =>
+  generateSecureToken(CLIENT_CREDENTIALS_CONFIG.CLIENT_SECRET_RANDOM_BYTES);
