@@ -3,7 +3,6 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import path from "path";
 // others
 import { setupSwagger } from "@/libs/swagger";
 import config from "@/constants/env";
@@ -55,8 +54,6 @@ app.use(requestLogger);
 // Middleware xử lý internationalization — detect ngôn ngữ từ request (header Accept-Language hoặc query param)
 // và set ngôn ngữ cho response message. Cho phép API trả message lỗi/thành công theo ngôn ngữ của client.
 app.use(i18nMiddleware);
-
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // Mount Swagger UI — tạo trang document API tự động, cho phép developer xem và test API trực tiếp trên trình duyệt.
 setupSwagger(app);

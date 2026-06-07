@@ -114,13 +114,6 @@ export const RATE_LIMIT_CONFIG = {
         MAX_REQUESTS: 10,
         WINDOW_SECONDS: 900
       }
-    },
-    UPLOAD_AVATAR: {
-      PER_IP: {
-        KEY: "rate-limit:user-avatar:ip:",
-        MAX_REQUESTS: 5,
-        WINDOW_SECONDS: 900
-      }
     }
   }
 } as const;

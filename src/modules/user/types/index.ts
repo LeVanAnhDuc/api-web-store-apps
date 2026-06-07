@@ -72,10 +72,6 @@ export interface UpdateProfileRequest extends Omit<Request, "body"> {
   body: UpdateProfileData;
 }
 
-export interface UploadAvatarRequest extends Request {
-  file?: Express.Multer.File;
-}
-
 export interface GetPublicProfileRequest extends Omit<Request, "params"> {
   params: { id: string };
 }

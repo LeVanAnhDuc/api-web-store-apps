@@ -2,7 +2,6 @@
 import type {
   GetMyProfileRequest,
   UpdateProfileRequest,
-  UploadAvatarRequest,
   GetPublicProfileRequest
 } from "@/modules/user/types";
 import type { Response } from "express";
@@ -27,17 +26,6 @@ export class UserController {
   ): Promise<void> => {
     const data = await this.service.updateMyProfile(req.body);
     new OkSuccess({ data, message: "user:success.updateProfile" }).send(
-      req,
-      res
-    );
-  };
-
-  uploadAvatarHandler = async (
-    req: UploadAvatarRequest,
-    res: Response
-  ): Promise<void> => {
-    const data = await this.service.updateAvatar(req.file?.path);
-    new OkSuccess({ data, message: "user:success.uploadAvatar" }).send(
       req,
       res
     );

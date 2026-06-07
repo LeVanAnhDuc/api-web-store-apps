@@ -16,7 +16,7 @@ export interface PaginationParams {
   limit: number;
 }
 
-export interface LoginHistoryQuery extends PaginationParams {
+export interface LoginHistoryQuery extends Partial<PaginationParams> {
   status?: LoginStatus;
   method?: LoginMethod;
   deviceType?: DeviceType;
@@ -31,7 +31,8 @@ export interface LoginHistoryQuery extends PaginationParams {
   sortOrder?: "asc" | "desc";
 }
 
-export interface LoginHistoryAdminQuery extends LoginHistoryQuery {
+export interface LoginHistoryAdminQuery
+  extends Omit<LoginHistoryQuery, "sortBy"> {
   userId?: string;
   ip?: string;
   sortBy?:

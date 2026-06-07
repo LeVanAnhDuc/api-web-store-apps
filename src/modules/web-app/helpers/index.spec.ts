@@ -1,0 +1,30 @@
+// helpers
+import { buildWebAppFilter } from "./index";
+// modules
+import { WEB_APP_STATUSES } from "../constants";
+
+describe("buildWebAppFilter", () => {
+  it("maps public status 'active' to BE enum ACTIVE", () => {
+    const filter = buildWebAppFilter({ status: "active" });
+    expect(filter.status).toBe(WEB_APP_STATUSES.ACTIVE);
+  });
+
+  it("maps public status 'inactive' to BE enum INACTIVE", () => {
+    const filter = buildWebAppFilter({ status: "inactive" });
+    expect(filter.status).toBe(WEB_APP_STATUSES.INACTIVE);
+  });
+
+  it("builds case-insensitive $or search across name, displayName, description", () => {
+    const filter = buildWebAppFilter({ search: "blog" });
+    expect(filter.$or).toEqual([
+      { name: { $regex: "blog", $options: "i" } },
+      { displayName: { $regex: "blog", $options: "i" } },
+      { description: { $regex: "blog", $options: "i" } }
+    ]);
+  });
+
+  it("passes categoryId through and returns empty filter when no params", () => {
+    expect(buildWebAppFilter({ categoryId: "cat1" }).categoryId).toBe("cat1");
+    expect(buildWebAppFilter({})).toEqual({});
+  });
+});

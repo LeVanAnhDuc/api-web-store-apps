@@ -35,7 +35,6 @@ export class RateLimiterMiddleware {
   public readonly changePasswordByIpAndUser: RateLimitRequestHandler;
   public readonly contactByIp: RateLimitRequestHandler;
   public readonly updateProfileByIp: RateLimitRequestHandler;
-  public readonly uploadAvatarByIp: RateLimitRequestHandler;
 
   constructor(redisClient: RedisClient) {
     this.redisClient = redisClient;
@@ -221,20 +220,6 @@ export class RateLimiterMiddleware {
       max: RATE_LIMIT_CONFIG.USER.UPDATE_PROFILE.PER_IP.MAX_REQUESTS,
       store: this.createRedisStore(
         RATE_LIMIT_CONFIG.USER.UPDATE_PROFILE.PER_IP.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      handler: this.createRateLimitExceededHandler(
-        "user:errors.rateLimitExceeded"
-      )
-    });
-
-    this.uploadAvatarByIp = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.USER.UPLOAD_AVATAR.PER_IP.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.USER.UPLOAD_AVATAR.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.USER.UPLOAD_AVATAR.PER_IP.KEY
       ),
       standardHeaders: true,
       legacyHeaders: false,

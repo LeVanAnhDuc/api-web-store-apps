@@ -40,3 +40,8 @@ export const WEB_APP_CATEGORY_CONFIG = {
   DISPLAY_NAME_MAX_LENGTH: 150,
   ICON_MAX_LENGTH: 500
 } as const;
+
+export const WEB_APP_STATUS_PUBLIC = {
+  ACTIVE: "active",
+  INACTIVE: "inactive"
+} as const;

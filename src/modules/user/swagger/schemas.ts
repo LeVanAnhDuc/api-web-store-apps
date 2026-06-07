@@ -119,35 +119,8 @@ const UpdateProfileRequestSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-const UploadAvatarRequestSchema: OpenAPIV3.SchemaObject = {
-  type: "object",
-  required: ["avatar"],
-  properties: {
-    avatar: {
-      type: "string",
-      format: "binary",
-      description:
-        "Image file. Max 10MB. Allowed types: jpg, jpeg, png, webp, gif, avif"
-    }
-  }
-};
-
-const UploadAvatarResponseSchema: OpenAPIV3.SchemaObject = {
-  type: "object",
-  properties: {
-    avatarUrl: {
-      type: "string",
-      example:
-        "http://localhost:3000/uploads/avatars/550e8400-e29b-41d4-a716-446655440000.jpg",
-      description: "Full URL to the uploaded avatar"
-    }
-  }
-};
-
 export const userSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   UserProfileResponse: UserProfileResponseSchema,
   PublicUserProfileResponse: PublicUserProfileResponseSchema,
-  UpdateProfileRequest: UpdateProfileRequestSchema,
-  UploadAvatarRequest: UploadAvatarRequestSchema,
-  UploadAvatarResponse: UploadAvatarResponseSchema
+  UpdateProfileRequest: UpdateProfileRequestSchema
 };

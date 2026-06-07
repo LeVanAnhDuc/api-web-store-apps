@@ -1,5 +1,3 @@
-// libs
-import path from "path";
 // types
 import type {
   CreateUserData,
@@ -10,17 +8,16 @@ import type {
 } from "@/modules/user/types";
 import type { ClientSession } from "mongoose";
 import type { UserRepository } from "./user.repository";
-import type { MyProfileDto, PublicProfileDto, UploadAvatarDto } from "./dtos";
+import type { MyProfileDto, PublicProfileDto } from "./dtos";
 // common
-import { BadRequestError, NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/common/exceptions";
 // validators
 import { validateEmail, validateObjectId } from "@/validators/utils";
 // dtos
-import { toMyProfileDto, toPublicProfileDto, toUploadAvatarDto } from "./dtos";
+import { toMyProfileDto, toPublicProfileDto } from "./dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
-import { buildAvatarUrl } from "./helpers";
 import { RequestContext } from "@/utils/request-context";
 
 export class UserService {
@@ -37,7 +34,7 @@ export class UserService {
       });
     }
 
-    return toMyProfileDto(user, buildAvatarUrl(user.avatar ?? null));
+    return toMyProfileDto(user, user.avatar ?? null);
   }
 
   async updateMyProfile(
@@ -53,26 +50,7 @@ export class UserService {
       });
     }
 
-    return toMyProfileDto(user, buildAvatarUrl(user.avatar ?? null));
-  }
-
-  async updateAvatar(filePath?: string): Promise<UploadAvatarDto> {
-    const userId = RequestContext.requireUserId();
-
-    if (!filePath) {
-      throw new BadRequestError({
-        i18nMessage: (t) => t("user:errors.noFileUploaded"),
-        code: ERROR_CODES.USER_NO_FILE_UPLOADED
-      });
-    }
-
-    const normalizedPath = path
-      .relative(process.cwd(), filePath)
-      .replace(/\\/g, "/");
-
-    await this.userRepo.updateAvatar(userId, normalizedPath);
-
-    return toUploadAvatarDto(buildAvatarUrl(normalizedPath) as string);
+    return toMyProfileDto(user, user.avatar ?? null);
   }
 
   async getPublicProfile(userId: string): Promise<PublicProfileDto> {
@@ -85,7 +63,7 @@ export class UserService {
       });
     }
 
-    return toPublicProfileDto(user, buildAvatarUrl(user.avatar ?? null));
+    return toPublicProfileDto(user, user.avatar ?? null);
   }
 
   async createProfile(
