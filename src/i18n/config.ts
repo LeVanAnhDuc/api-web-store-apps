@@ -37,7 +37,8 @@ i18next.use(Backend).init({
     "sendEmail",
     "forgotPassword",
     "contactAdmin",
-    "user"
+    "user",
+    "webApp"
   ],
 
   // Preload all supported languages and namespaces on startup

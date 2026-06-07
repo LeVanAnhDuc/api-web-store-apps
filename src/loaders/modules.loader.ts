@@ -17,6 +17,7 @@ import { createUnlockAccountModule } from "@/modules/unlock-account/unlock-accou
 import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-password.module";
 import { createChangePasswordModule } from "@/modules/change-password/change-password.module";
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
+import { createWebAppModule } from "@/modules/web-app/web-app.module";
 import { createUserModule } from "@/modules/user/user.module";
 // others
 import { RateLimiterMiddleware } from "@/middlewares";
@@ -35,6 +36,7 @@ interface ModuleRoutes {
   loginHistoryAdmin: Router;
   contact: Router;
   contactAdmin: Router;
+  webAppAdmin: Router;
 }
 
 const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
@@ -57,6 +59,9 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   // Contact
   v1Router.use(routes.contact);
   v1Router.use(routes.contactAdmin);
+
+  // App Registry
+  v1Router.use(routes.webAppAdmin);
 
   app.use("/api/v1", v1Router);
 };
@@ -128,6 +133,8 @@ export const loadModules = (
   const { contactAdminRouter, contactAdminQueryAdminRouter } =
     createContactAdminModule(rateLimiter);
 
+  const { webAppAdminRouter } = createWebAppModule();
+
   // --- Route mounting ---
   mountRoutes(app, {
     signup: signupRouter,
@@ -141,7 +148,8 @@ export const loadModules = (
     loginHistoryUser: loginHistoryUserRouter,
     loginHistoryAdmin: loginHistoryAdminRouter,
     contact: contactAdminRouter,
-    contactAdmin: contactAdminQueryAdminRouter
+    contactAdmin: contactAdminQueryAdminRouter,
+    webAppAdmin: webAppAdminRouter
   });
 
   Logger.info("Modules loaded and routes mounted successfully");

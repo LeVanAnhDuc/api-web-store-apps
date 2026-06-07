@@ -9,3 +9,4 @@ export { default as forgotPassword } from "./forgotPassword.json";
 export { default as changePassword } from "./changePassword.json";
 export { default as contactAdmin } from "./contactAdmin.json";
 export { default as user } from "./user.json";
+export { default as webApp } from "./webApp.json";
