@@ -91,3 +91,30 @@ export interface WebAppCreateInput {
   clientSecretHash: string;
   scopes: string[];
 }
+
+export interface PaginationParams {
+  page: number;
+  limit: number;
+}
+
+export interface UserAppsQuery extends Partial<PaginationParams> {
+  search?: string;
+}
+
+export interface UserAppsQueryRequest extends Omit<Request, "query"> {
+  query: UserAppsQuery;
+}
+
+export interface WebAppWithCategory extends WebAppDocument {
+  category: WebAppCategoryDocument | null;
+}
+
+export interface PaginatedResult<T> {
+  items: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
