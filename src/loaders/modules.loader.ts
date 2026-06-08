@@ -37,6 +37,7 @@ interface ModuleRoutes {
   contact: Router;
   contactAdmin: Router;
   webAppAdmin: Router;
+  webAppUser: Router;
 }
 
 const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
@@ -62,6 +63,7 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
 
   // App Registry
   v1Router.use(routes.webAppAdmin);
+  v1Router.use(routes.webAppUser);
 
   app.use("/api/v1", v1Router);
 };
@@ -133,7 +135,7 @@ export const loadModules = (
   const { contactAdminRouter, contactAdminQueryAdminRouter } =
     createContactAdminModule(rateLimiter);
 
-  const { webAppAdminRouter } = createWebAppModule();
+  const { webAppAdminRouter, webAppUserRouter } = createWebAppModule();
 
   // --- Route mounting ---
   mountRoutes(app, {
@@ -149,7 +151,8 @@ export const loadModules = (
     loginHistoryAdmin: loginHistoryAdminRouter,
     contact: contactAdminRouter,
     contactAdmin: contactAdminQueryAdminRouter,
-    webAppAdmin: webAppAdminRouter
+    webAppAdmin: webAppAdminRouter,
+    webAppUser: webAppUserRouter
   });
 
   Logger.info("Modules loaded and routes mounted successfully");

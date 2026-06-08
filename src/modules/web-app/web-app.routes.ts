@@ -5,7 +5,8 @@ import type { WebAppController } from "./web-app.controller";
 // validators
 import {
   adminListAppsQuerySchema,
-  adminCreateAppBodySchema
+  adminCreateAppBodySchema,
+  listAppsQuerySchema
 } from "@/validators/schemas/web-app";
 // others
 import { adminGuard, authGuard, queryPipe, bodyPipe } from "@/middlewares";
@@ -34,5 +35,23 @@ export const createAdminWebAppRoutes = (
   );
 
   router.use("/admin/apps", adminApps);
+  return router;
+};
+
+export const createUserWebAppRoutes = (
+  controller: WebAppController
+): Router => {
+  const router = Router();
+  const apps = Router();
+
+  apps.use(authGuard);
+
+  apps.get(
+    "/",
+    queryPipe(listAppsQuerySchema),
+    asyncHandler(controller.listUserApps)
+  );
+
+  router.use("/apps", apps);
   return router;
 };

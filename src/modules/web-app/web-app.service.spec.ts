@@ -7,6 +7,8 @@ import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
 const makeRepos = () => {
   const webAppRepo = {
     findAll: jest.fn(),
+    findActivePaginated: jest.fn().mockResolvedValue([]),
+    countActive: jest.fn().mockResolvedValue(0),
     existsByName: jest.fn().mockResolvedValue(false),
     create: jest.fn()
   };
@@ -91,5 +93,75 @@ describe("WebAppService.createApp", () => {
     expect(persisted.redirectUris).toEqual(validBody.redirectUris);
     expect(result.clientSecret).toMatch(/^[a-f0-9]{64}$/);
     expect(result.clientId).toBe("client_generated");
+  });
+});
+
+describe("WebAppService.listUserApps", () => {
+  const activeDoc = {
+    _id: { toString: () => "app1" },
+    displayName: "Blog",
+    description: "A blog",
+    iconUrl: null,
+    homeUrl: "https://blog.example.com",
+    category: { displayName: "Content" }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any;
+
+  it("forces an ACTIVE-only filter and applies search", async () => {
+    const { webAppRepo, categoryRepo } = makeRepos();
+    webAppRepo.findActivePaginated.mockResolvedValue([activeDoc]);
+    webAppRepo.countActive.mockResolvedValue(1);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const service = new WebAppService(webAppRepo as any, categoryRepo as any);
+
+    await service.listUserApps({ search: "blog" });
+
+    const filter = webAppRepo.findActivePaginated.mock.calls[0][0];
+    expect(filter.status).toBe(WEB_APP_STATUSES.ACTIVE);
+    expect(filter.$or).toHaveLength(3);
+  });
+
+  it("maps docs to UserAppDto and computes pagination meta", async () => {
+    const { webAppRepo, categoryRepo } = makeRepos();
+    webAppRepo.findActivePaginated.mockResolvedValue([activeDoc]);
+    webAppRepo.countActive.mockResolvedValue(25);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const service = new WebAppService(webAppRepo as any, categoryRepo as any);
+
+    const result = await service.listUserApps({ page: 2, limit: 12 });
+
+    expect(result.items[0]).toEqual({
+      _id: "app1",
+      displayName: "Blog",
+      description: "A blog",
+      iconUrl: null,
+      homeUrl: "https://blog.example.com",
+      category: "Content"
+    });
+    expect(result.meta).toEqual({
+      total: 25,
+      page: 2,
+      limit: 12,
+      totalPages: 3
+    });
+    const { skip, limit } = webAppRepo.findActivePaginated.mock.calls[0][1];
+    expect(skip).toBe(12);
+    expect(limit).toBe(12);
+  });
+
+  it("clamps limit to MAX_LIMIT and defaults page/limit", async () => {
+    const { webAppRepo, categoryRepo } = makeRepos();
+    webAppRepo.findActivePaginated.mockResolvedValue([]);
+    webAppRepo.countActive.mockResolvedValue(0);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const service = new WebAppService(webAppRepo as any, categoryRepo as any);
+
+    const result = await service.listUserApps({ limit: 9999 });
+
+    const { skip, limit } = webAppRepo.findActivePaginated.mock.calls[0][1];
+    expect(limit).toBe(100);
+    expect(skip).toBe(0);
+    expect(result.meta.page).toBe(1);
+    expect(result.meta.totalPages).toBe(1);
   });
 });

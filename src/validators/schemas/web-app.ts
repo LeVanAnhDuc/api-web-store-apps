@@ -1,8 +1,11 @@
 // libs
 import Joi from "joi";
 // types
-import type { AdminAppsQuery } from "@/modules/web-app/types";
-import type { AdminAppCreateBody } from "@/modules/web-app/types";
+import type {
+  AdminAppsQuery,
+  AdminAppCreateBody,
+  UserAppsQuery
+} from "@/modules/web-app/types";
 // modules
 import { WEB_APP_STATUS_PUBLIC } from "@/modules/web-app/constants";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
@@ -37,6 +40,27 @@ export const adminListAppsQuerySchema: Joi.ObjectSchema<AdminAppsQuery> =
       "string.pattern.base": "validation:categoryId.invalid"
     })
   }).options({ stripUnknown: true });
+
+const LIMIT_MAX = 100;
+
+export const listAppsQuerySchema: Joi.ObjectSchema<UserAppsQuery> = Joi.object({
+  page: Joi.number().integer().min(1).optional().messages({
+    "number.base": "validation:page.invalid",
+    "number.integer": "validation:page.invalid",
+    "number.min": "validation:page.invalid"
+  }),
+  limit: Joi.number().integer().min(1).max(LIMIT_MAX).optional().messages({
+    "number.base": "validation:limit.invalid",
+    "number.integer": "validation:limit.invalid",
+    "number.min": "validation:limit.invalid",
+    "number.max": "validation:limit.invalid"
+  }),
+  search: Joi.string()
+    .trim()
+    .max(SEARCH_MAX_LENGTH)
+    .optional()
+    .messages({ "string.max": "validation:search.invalid" })
+}).options({ stripUnknown: true });
 
 export const adminCreateAppBodySchema: Joi.ObjectSchema<AdminAppCreateBody> =
   Joi.object({

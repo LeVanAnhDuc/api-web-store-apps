@@ -5,3 +5,6 @@ export { toAdminAppCreatedDto } from "./admin-app.dto";
 
 export type { AdminCategoryDto } from "./admin-category.dto";
 export { toAdminCategoryDto } from "./admin-category.dto";
+
+export type { UserAppDto } from "./user-app.dto";
+export { toUserAppDto } from "./user-app.dto";
