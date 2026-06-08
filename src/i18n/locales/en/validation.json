@@ -40,5 +40,23 @@
   },
   "search": {
     "invalid": "Search term is too long."
+  },
+  "role": {
+    "invalid": "Invalid role filter."
+  },
+  "status": {
+    "invalid": "Invalid status filter."
+  },
+  "page": {
+    "invalid": "Invalid page number."
+  },
+  "limit": {
+    "invalid": "Invalid page size."
+  },
+  "sortBy": {
+    "invalid": "Invalid sort field."
+  },
+  "sortOrder": {
+    "invalid": "Invalid sort order."
   }
 }

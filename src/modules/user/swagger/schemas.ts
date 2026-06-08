@@ -119,8 +119,97 @@ const UpdateProfileRequestSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+const AdminUserSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  required: ["_id", "fullName", "email", "role", "isActive", "createdAt"],
+  properties: {
+    _id: {
+      type: "string",
+      example: "64f1b2c3d4e5f6a7b8c9d0e1",
+      description: "User ID (MongoDB ObjectId)"
+    },
+    fullName: {
+      type: "string",
+      example: "Nguyen Van A"
+    },
+    email: {
+      type: "string",
+      format: "email",
+      example: "user@example.com"
+    },
+    avatar: {
+      type: "string",
+      nullable: true,
+      example: "http://localhost:3000/uploads/avatars/uuid.jpg",
+      description: "Full URL to avatar image, or null if not set"
+    },
+    role: {
+      type: "string",
+      enum: ["user", "admin"],
+      example: "user"
+    },
+    isActive: {
+      type: "boolean",
+      example: true,
+      description: "False when account is locked"
+    },
+    lastLoginAt: {
+      type: "string",
+      format: "date-time",
+      nullable: true,
+      example: "2026-05-20T08:30:00.000Z",
+      description:
+        "ISO 8601 timestamp of last successful login, or null if never logged in"
+    },
+    createdAt: {
+      type: "string",
+      format: "date-time",
+      example: "2026-01-01T00:00:00.000Z"
+    }
+  }
+};
+
+const AdminUsersListResponseSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  required: ["items", "meta"],
+  properties: {
+    items: {
+      type: "array",
+      items: { $ref: "#/components/schemas/AdminUser" }
+    },
+    meta: {
+      type: "object",
+      required: ["total", "page", "limit", "totalPages"],
+      properties: {
+        total: {
+          type: "integer",
+          example: 120,
+          description: "Total number of matching users"
+        },
+        page: {
+          type: "integer",
+          example: 1,
+          description: "Current page number (1-based)"
+        },
+        limit: {
+          type: "integer",
+          example: 20,
+          description: "Number of items per page"
+        },
+        totalPages: {
+          type: "integer",
+          example: 6,
+          description: "Total number of pages"
+        }
+      }
+    }
+  }
+};
+
 export const userSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   UserProfileResponse: UserProfileResponseSchema,
   PublicUserProfileResponse: PublicUserProfileResponseSchema,
-  UpdateProfileRequest: UpdateProfileRequestSchema
+  UpdateProfileRequest: UpdateProfileRequestSchema,
+  AdminUser: AdminUserSchema,
+  AdminUsersListResponse: AdminUsersListResponseSchema
 };

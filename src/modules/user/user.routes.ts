@@ -6,10 +6,17 @@ import type { UserController } from "./user.controller";
 // validators
 import {
   updateProfileSchema,
-  getPublicProfileSchema
+  getPublicProfileSchema,
+  adminUsersQuerySchema
 } from "@/validators/schemas/user";
 // others
-import { authGuard, bodyPipe, paramsPipe } from "@/middlewares";
+import {
+  adminGuard,
+  authGuard,
+  bodyPipe,
+  paramsPipe,
+  queryPipe
+} from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createUserRoutes = (
@@ -36,5 +43,21 @@ export const createUserRoutes = (
   );
 
   router.use("/users", users);
+  return router;
+};
+
+export const createUserAdminRoutes = (controller: UserController): Router => {
+  const router = Router();
+  const adminUsers = Router();
+
+  adminUsers.use(authGuard, adminGuard);
+
+  adminUsers.get(
+    "/",
+    queryPipe(adminUsersQuerySchema),
+    asyncHandler(controller.getAdminUsers)
+  );
+
+  router.use("/admin/users", adminUsers);
   return router;
 };
