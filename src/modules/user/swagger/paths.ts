@@ -107,6 +107,139 @@ Partially update the profile of the authenticated user. All fields are optional.
       }
     }
   },
+  "/admin/users": {
+    get: {
+      summary: "List users (admin)",
+      description: `
+List all registered users with optional filtering, search, and pagination.
+
+**Authentication:**
+- Requires valid Bearer token (admin role)
+
+**Filtering:**
+- \`search\` — case-insensitive keyword match on fullName or email
+- \`role\` — filter by role (\`user\` | \`admin\`)
+- \`status\` — filter by account status (\`active\` | \`locked\`)
+
+**Sorting:**
+- \`sortBy\` — field to sort on (\`createdAt\` | \`fullName\` | \`lastLoginAt\`), default \`createdAt\`
+- \`sortOrder\` — direction (\`asc\` | \`desc\`), default \`desc\`
+
+**Pagination:**
+- \`page\` — 1-based page number, default 1
+- \`limit\` — items per page (1–100), default 20
+      `.trim(),
+      tags: ["User Admin"],
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "page",
+          in: "query",
+          required: false,
+          description: "Page number (1-based)",
+          schema: {
+            type: "integer",
+            minimum: 1,
+            default: 1,
+            example: 1
+          }
+        },
+        {
+          name: "limit",
+          in: "query",
+          required: false,
+          description: "Number of items per page (1–100)",
+          schema: {
+            type: "integer",
+            minimum: 1,
+            maximum: 100,
+            default: 20,
+            example: 20
+          }
+        },
+        {
+          name: "search",
+          in: "query",
+          required: false,
+          description: "Case-insensitive keyword to match fullName or email",
+          schema: {
+            type: "string",
+            example: "nguyen"
+          }
+        },
+        {
+          name: "role",
+          in: "query",
+          required: false,
+          description: "Filter by user role",
+          schema: {
+            type: "string",
+            enum: ["user", "admin"],
+            example: "user"
+          }
+        },
+        {
+          name: "status",
+          in: "query",
+          required: false,
+          description: "Filter by account status",
+          schema: {
+            type: "string",
+            enum: ["active", "locked"],
+            example: "active"
+          }
+        },
+        {
+          name: "sortBy",
+          in: "query",
+          required: false,
+          description: "Field to sort results by",
+          schema: {
+            type: "string",
+            enum: ["createdAt", "fullName", "lastLoginAt"],
+            default: "createdAt",
+            example: "createdAt"
+          }
+        },
+        {
+          name: "sortOrder",
+          in: "query",
+          required: false,
+          description: "Sort direction",
+          schema: {
+            type: "string",
+            enum: ["asc", "desc"],
+            default: "desc",
+            example: "desc"
+          }
+        }
+      ],
+      responses: {
+        "200": {
+          description: "Users retrieved successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: {
+                        $ref: "#/components/schemas/AdminUsersListResponse"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": { $ref: "#/components/responses/Forbidden" }
+      }
+    }
+  },
   "/users/{id}": {
     get: {
       summary: "Get public profile",

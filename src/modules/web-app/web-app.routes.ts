@@ -7,7 +7,8 @@ import {
   adminListAppsQuerySchema,
   adminCreateAppBodySchema,
   adminUpdateAppBodySchema,
-  adminAppIdParamSchema
+  adminAppIdParamSchema,
+  listAppsQuerySchema
 } from "@/validators/schemas/web-app";
 // others
 import {
@@ -49,5 +50,23 @@ export const createAdminWebAppRoutes = (
   );
 
   router.use("/admin/apps", adminApps);
+  return router;
+};
+
+export const createUserWebAppRoutes = (
+  controller: WebAppController
+): Router => {
+  const router = Router();
+  const apps = Router();
+
+  apps.use(authGuard);
+
+  apps.get(
+    "/",
+    queryPipe(listAppsQuerySchema),
+    asyncHandler(controller.listUserApps)
+  );
+
+  router.use("/apps", apps);
   return router;
 };

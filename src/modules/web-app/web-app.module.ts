@@ -5,7 +5,10 @@ import {
 } from "./repositories";
 import { WebAppService } from "./web-app.service";
 import { WebAppController } from "./web-app.controller";
-import { createAdminWebAppRoutes } from "./web-app.routes";
+import {
+  createAdminWebAppRoutes,
+  createUserWebAppRoutes
+} from "./web-app.routes";
 
 export const createWebAppModule = () => {
   const webAppRepo = new MongoWebAppRepository();
@@ -14,6 +17,7 @@ export const createWebAppModule = () => {
   const controller = new WebAppController(service);
 
   return {
-    webAppAdminRouter: createAdminWebAppRoutes(controller)
+    webAppAdminRouter: createAdminWebAppRoutes(controller),
+    webAppUserRouter: createUserWebAppRoutes(controller)
   };
 };

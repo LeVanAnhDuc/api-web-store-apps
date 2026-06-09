@@ -3,6 +3,7 @@ import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { GENDERS } from "@/modules/user/constants";
+import type { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 
 export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
 
@@ -74,4 +75,47 @@ export interface UpdateProfileRequest extends Omit<Request, "body"> {
 
 export interface GetPublicProfileRequest extends Omit<Request, "params"> {
   params: { id: string };
+}
+
+export type AdminUserRole =
+  (typeof AUTHENTICATION_ROLES)[keyof typeof AUTHENTICATION_ROLES];
+
+export type AdminUserStatusFilter = "active" | "locked";
+
+export interface AdminUsersQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: AdminUserRole;
+  status?: AdminUserStatusFilter;
+  sortBy?: "createdAt" | "fullName" | "lastLoginAt";
+  sortOrder?: "asc" | "desc";
+}
+
+export interface AdminUsersFilter {
+  search?: string;
+  role?: AdminUserRole;
+  isActive?: boolean;
+}
+
+export interface AdminUserListMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface AdminUserAggregateRow {
+  _id: Schema.Types.ObjectId;
+  fullName: string;
+  email: string;
+  avatar?: string | null;
+  createdAt: Date;
+  role: AdminUserRole;
+  isActive: boolean;
+  lastLoginAt: Date | null;
+}
+
+export interface GetAdminUsersRequest extends Omit<Request, "query"> {
+  query: AdminUsersQuery;
 }

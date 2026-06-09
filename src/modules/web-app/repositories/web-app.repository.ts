@@ -3,7 +3,9 @@ import type { FilterQuery } from "mongoose";
 import type {
   WebAppDocument,
   WebAppCreateInput,
-  WebAppUpdateInput
+  WebAppUpdateInput,
+  WebAppWithCategory,
+  WebAppCategoryDocument
 } from "../types";
 // models
 import WebAppModel from "@/models/web-app";
@@ -24,6 +26,11 @@ export type WebAppRepository = {
     id: string,
     data: WebAppUpdateInput
   ): Promise<WebAppDocument | null>;
+  findActivePaginated(
+    filter: FilterQuery<WebAppDocument>,
+    options: { skip: number; limit: number }
+  ): Promise<WebAppWithCategory[]>;
+  countActive(filter: FilterQuery<WebAppDocument>): Promise<number>;
 };
 
 export class MongoWebAppRepository implements WebAppRepository {
@@ -35,6 +42,30 @@ export class MongoWebAppRepository implements WebAppRepository {
         .sort({ sortOrder: 1, displayName: 1 })
         .lean<WebAppDocument[]>()
         .exec()
+    );
+  }
+
+  async findActivePaginated(
+    filter: FilterQuery<WebAppDocument>,
+    { skip, limit }: { skip: number; limit: number }
+  ): Promise<WebAppWithCategory[]> {
+    return asyncDatabaseHandler("findActivePaginated", () =>
+      WebAppModel.find(filter)
+        .sort({ sortOrder: 1, displayName: 1 })
+        .skip(skip)
+        .limit(limit)
+        .populate<{ category: WebAppCategoryDocument | null }>({
+          path: "category",
+          select: "displayName"
+        })
+        .lean<WebAppWithCategory[]>()
+        .exec()
+    );
+  }
+
+  async countActive(filter: FilterQuery<WebAppDocument>): Promise<number> {
+    return asyncDatabaseHandler("countActive", () =>
+      WebAppModel.countDocuments(filter).exec()
     );
   }
 

@@ -221,6 +221,68 @@ Update one or more fields of a registered app. At least one field must be provid
       }
     }
   },
+  "/apps": {
+    get: {
+      summary: "List apps (user)",
+      description: `
+List the active-app catalog for the launcher. Returns every app with \`status=active\`; OAuth internals and secrets are never exposed.
+
+**Authentication:**
+- Requires valid Bearer token (any authenticated user)
+
+**Query params:**
+- \`page\` — 1-based page number (default 1)
+- \`limit\` — page size (default 12, max 100)
+- \`search\` — case-insensitive match on name / display name / description
+      `.trim(),
+      tags: ["Web App"],
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "page",
+          in: "query",
+          required: false,
+          schema: { type: "integer", minimum: 1, example: 1 }
+        },
+        {
+          name: "limit",
+          in: "query",
+          required: false,
+          schema: { type: "integer", minimum: 1, maximum: 100, example: 12 }
+        },
+        {
+          name: "search",
+          in: "query",
+          required: false,
+          schema: { type: "string", example: "blog" }
+        }
+      ],
+      responses: {
+        "200": {
+          description: "Paginated active-app catalog",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: {
+                        $ref: "#/components/schemas/UserAppsListResponse"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "422": { $ref: "#/components/responses/ValidationError" }
+      }
+    }
+  },
   "/admin/apps/categories": {
     get: {
       summary: "List categories (admin)",

@@ -4,7 +4,7 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import { MongoUserRepository } from "./user.repository";
 import { UserService } from "./user.service";
 import { UserController } from "./user.controller";
-import { createUserRoutes } from "./user.routes";
+import { createUserRoutes, createUserAdminRoutes } from "./user.routes";
 
 export const createUserModule = (rateLimiter: RateLimiterMiddleware) => {
   const userRepo = new MongoUserRepository();
@@ -13,6 +13,7 @@ export const createUserModule = (rateLimiter: RateLimiterMiddleware) => {
 
   return {
     userRouter: createUserRoutes(userController, rateLimiter),
+    userAdminRouter: createUserAdminRoutes(userController),
     userService
   };
 };

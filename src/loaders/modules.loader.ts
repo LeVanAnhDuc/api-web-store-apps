@@ -32,11 +32,13 @@ interface ModuleRoutes {
   forgotPassword: Router;
   changePassword: Router;
   user: Router;
+  userAdmin: Router;
   loginHistoryUser: Router;
   loginHistoryAdmin: Router;
   contact: Router;
   contactAdmin: Router;
   webAppAdmin: Router;
+  webAppUser: Router;
 }
 
 const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
@@ -53,6 +55,7 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
 
   // User
   v1Router.use(routes.user);
+  v1Router.use(routes.userAdmin);
   v1Router.use(routes.loginHistoryUser);
   v1Router.use(routes.loginHistoryAdmin);
 
@@ -62,6 +65,7 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
 
   // App Registry
   v1Router.use(routes.webAppAdmin);
+  v1Router.use(routes.webAppUser);
 
   app.use("/api/v1", v1Router);
 };
@@ -77,7 +81,8 @@ export const loadModules = (
   const rateLimiter = new RateLimiterMiddleware(redisClient);
 
   // --- Module creation ---
-  const { userRouter, userService } = createUserModule(rateLimiter);
+  const { userRouter, userAdminRouter, userService } =
+    createUserModule(rateLimiter);
 
   const {
     loginHistoryService,
@@ -133,7 +138,7 @@ export const loadModules = (
   const { contactAdminRouter, contactAdminQueryAdminRouter } =
     createContactAdminModule(rateLimiter);
 
-  const { webAppAdminRouter } = createWebAppModule();
+  const { webAppAdminRouter, webAppUserRouter } = createWebAppModule();
 
   // --- Route mounting ---
   mountRoutes(app, {
@@ -145,11 +150,13 @@ export const loadModules = (
     forgotPassword: forgotPasswordRouter,
     changePassword: changePasswordRouter,
     user: userRouter,
+    userAdmin: userAdminRouter,
     loginHistoryUser: loginHistoryUserRouter,
     loginHistoryAdmin: loginHistoryAdminRouter,
     contact: contactAdminRouter,
     contactAdmin: contactAdminQueryAdminRouter,
-    webAppAdmin: webAppAdminRouter
+    webAppAdmin: webAppAdminRouter,
+    webAppUser: webAppUserRouter
   });
 
   Logger.info("Modules loaded and routes mounted successfully");

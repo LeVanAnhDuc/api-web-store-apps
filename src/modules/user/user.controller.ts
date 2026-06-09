@@ -2,7 +2,8 @@
 import type {
   GetMyProfileRequest,
   UpdateProfileRequest,
-  GetPublicProfileRequest
+  GetPublicProfileRequest,
+  GetAdminUsersRequest
 } from "@/modules/user/types";
 import type { Response } from "express";
 import type { UserService } from "./user.service";
@@ -37,6 +38,17 @@ export class UserController {
   ): Promise<void> => {
     const data = await this.service.getPublicProfile(req.params.id);
     new OkSuccess({ data, message: "user:success.getPublicProfile" }).send(
+      req,
+      res
+    );
+  };
+
+  getAdminUsers = async (
+    req: GetAdminUsersRequest,
+    res: Response
+  ): Promise<void> => {
+    const data = await this.service.getAdminUsers(req.query);
+    new OkSuccess({ data, message: "user:success.getAdminUsers" }).send(
       req,
       res
     );

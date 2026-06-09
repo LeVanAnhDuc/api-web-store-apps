@@ -40,5 +40,23 @@
   },
   "search": {
     "invalid": "Từ khoá tìm kiếm quá dài."
+  },
+  "role": {
+    "invalid": "Vai trò lọc không hợp lệ."
+  },
+  "status": {
+    "invalid": "Trạng thái lọc không hợp lệ."
+  },
+  "page": {
+    "invalid": "Số trang không hợp lệ."
+  },
+  "limit": {
+    "invalid": "Kích thước trang không hợp lệ."
+  },
+  "sortBy": {
+    "invalid": "Trường sắp xếp không hợp lệ."
+  },
+  "sortOrder": {
+    "invalid": "Thứ tự sắp xếp không hợp lệ."
   }
 }

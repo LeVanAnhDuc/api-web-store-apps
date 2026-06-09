@@ -251,6 +251,53 @@ export const webAppSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
       }
     }
   },
+  UserAppResponse: {
+    type: "object",
+    required: [
+      "_id",
+      "displayName",
+      "description",
+      "iconUrl",
+      "homeUrl",
+      "category"
+    ],
+    properties: {
+      _id: { type: "string", example: "507f1f77bcf86cd799439011" },
+      displayName: { type: "string", example: "Satellite Monitor" },
+      description: {
+        type: "string",
+        nullable: true,
+        example: "Real-time constellation monitoring dashboard"
+      },
+      iconUrl: {
+        type: "string",
+        nullable: true,
+        example: "https://cdn.example.com/icons/monitor.png"
+      },
+      homeUrl: { type: "string", example: "https://monitor.example.com" },
+      category: { type: "string", nullable: true, example: "Internal Tools" }
+    }
+  },
+  UserAppsListResponse: {
+    type: "object",
+    required: ["items", "meta"],
+    properties: {
+      items: {
+        type: "array",
+        items: { $ref: "#/components/schemas/UserAppResponse" }
+      },
+      meta: {
+        type: "object",
+        required: ["total", "page", "limit", "totalPages"],
+        properties: {
+          total: { type: "integer", example: 25 },
+          page: { type: "integer", example: 1 },
+          limit: { type: "integer", example: 12 },
+          totalPages: { type: "integer", example: 3 }
+        }
+      }
+    }
+  },
   AdminAppCreatedResponse: {
     allOf: [
       { $ref: "#/components/schemas/AdminAppResponse" },
