@@ -39,10 +39,6 @@ export interface NotificationListRequest extends Omit<Request, "query"> {
   query: NotificationListQuery;
 }
 
-export interface NotificationIdParams {
-  id: string;
-}
-
 export interface NotificationIdRequest extends Omit<Request, "params"> {
-  params: NotificationIdParams;
+  params: { id: string };
 }

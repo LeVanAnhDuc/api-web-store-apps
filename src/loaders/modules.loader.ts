@@ -19,6 +19,7 @@ import { createChangePasswordModule } from "@/modules/change-password/change-pas
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
 import { createWebAppModule } from "@/modules/web-app/web-app.module";
 import { createUserModule } from "@/modules/user/user.module";
+import { createNotificationModule } from "@/modules/notification/notification.module";
 // others
 import { RateLimiterMiddleware } from "@/middlewares";
 import { Logger } from "@/libs/logger";
@@ -35,6 +36,7 @@ interface ModuleRoutes {
   userAdmin: Router;
   loginHistoryUser: Router;
   loginHistoryAdmin: Router;
+  notification: Router;
   contact: Router;
   contactAdmin: Router;
   webAppAdmin: Router;
@@ -58,6 +60,7 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   v1Router.use(routes.userAdmin);
   v1Router.use(routes.loginHistoryUser);
   v1Router.use(routes.loginHistoryAdmin);
+  v1Router.use(routes.notification);
 
   // Contact
   v1Router.use(routes.contact);
@@ -140,6 +143,8 @@ export const loadModules = (
 
   const { webAppAdminRouter, webAppUserRouter } = createWebAppModule();
 
+  const notificationModule = createNotificationModule();
+
   // --- Route mounting ---
   mountRoutes(app, {
     signup: signupRouter,
@@ -153,6 +158,7 @@ export const loadModules = (
     userAdmin: userAdminRouter,
     loginHistoryUser: loginHistoryUserRouter,
     loginHistoryAdmin: loginHistoryAdminRouter,
+    notification: notificationModule.notificationUserRouter,
     contact: contactAdminRouter,
     contactAdmin: contactAdminQueryAdminRouter,
     webAppAdmin: webAppAdminRouter,
