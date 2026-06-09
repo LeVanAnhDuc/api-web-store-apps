@@ -30,6 +30,7 @@ import {
   generateClientSecret
 } from "./helpers";
 import { WEB_APP_DEFAULT_SCOPES } from "./constants";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
 import { ERROR_CODES } from "@/constants/error-code";
 import { hashValue } from "@/utils/crypto/bcrypt";
@@ -51,7 +52,8 @@ export class WebAppService {
   }
 
   async listUserApps(
-    query: UserAppsQuery
+    query: UserAppsQuery,
+    role?: string
   ): Promise<PaginatedResult<UserAppDto>> {
     const page = query.page && query.page > 0 ? query.page : DEFAULT_PAGE;
     const limit = Math.min(query.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
@@ -59,6 +61,14 @@ export class WebAppService {
       search: query.search,
       status: "active"
     });
+
+    // Role-scoped visibility: admins see the full active catalog; everyone else
+    // (non-admins, and any unauthenticated edge case) sees only apps whose
+    // requiredRoles include the USER role. Matching a scalar against the array
+    // field returns documents whose requiredRoles array contains that role.
+    if (role !== AUTHENTICATION_ROLES.ADMIN) {
+      filter.requiredRoles = AUTHENTICATION_ROLES.USER;
+    }
 
     const [docs, total] = await Promise.all([
       this.webAppRepo.findActivePaginated(filter, {

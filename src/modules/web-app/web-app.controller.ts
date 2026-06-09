@@ -8,6 +8,8 @@ import type {
 } from "./types";
 // common
 import { OkSuccess, CreatedSuccess } from "@/common/responses";
+// others
+import { RequestContext } from "@/utils/request-context";
 
 export class WebAppController {
   constructor(private readonly service: WebAppService) {}
@@ -27,7 +29,8 @@ export class WebAppController {
     req: UserAppsQueryRequest,
     res: Response
   ): Promise<void> => {
-    const data = await this.service.listUserApps(req.query);
+    const role = RequestContext.getUser()?.roles;
+    const data = await this.service.listUserApps(req.query, role);
     new OkSuccess({
       data,
       message: "webApp:success.listApps"

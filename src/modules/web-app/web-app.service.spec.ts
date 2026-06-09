@@ -165,3 +165,37 @@ describe("WebAppService.listUserApps", () => {
     expect(result.meta.totalPages).toBe(1);
   });
 });
+
+describe("WebAppService.listUserApps role visibility", () => {
+  const setup = () => {
+    const { webAppRepo, categoryRepo } = makeRepos();
+    webAppRepo.findActivePaginated.mockResolvedValue([]);
+    webAppRepo.countActive.mockResolvedValue(0);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const service = new WebAppService(webAppRepo as any, categoryRepo as any);
+    return { webAppRepo, service };
+  };
+
+  it("restricts a non-admin (user) to apps requiring their role", async () => {
+    const { webAppRepo, service } = setup();
+    await service.listUserApps({}, "user");
+    const filter = webAppRepo.findActivePaginated.mock.calls[0][0];
+    expect(filter.requiredRoles).toBe("user");
+    expect(filter.status).toBe(WEB_APP_STATUSES.ACTIVE);
+  });
+
+  it("does not role-filter for an admin (sees the full active catalog)", async () => {
+    const { webAppRepo, service } = setup();
+    await service.listUserApps({}, "admin");
+    const filter = webAppRepo.findActivePaginated.mock.calls[0][0];
+    expect(filter.requiredRoles).toBeUndefined();
+    expect(filter.status).toBe(WEB_APP_STATUSES.ACTIVE);
+  });
+
+  it("defaults to the user role when no role is provided (least exposure)", async () => {
+    const { webAppRepo, service } = setup();
+    await service.listUserApps({});
+    const filter = webAppRepo.findActivePaginated.mock.calls[0][0];
+    expect(filter.requiredRoles).toBe("user");
+  });
+});
