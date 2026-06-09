@@ -140,6 +140,87 @@ List registered apps for the admin console.
       }
     }
   },
+  "/admin/apps/{id}": {
+    patch: {
+      summary: "Update an app (admin)",
+      description: `
+Update one or more fields of a registered app. At least one field must be provided.
+
+**Authentication:**
+- Requires valid Bearer token (admin role)
+
+**Business rules:**
+- \`name\` must remain unique across all apps (conflict returns 409)
+- \`categoryId\` must reference an existing category (not found returns 404)
+- Setting \`status\` to \`inactive\` pauses the app — it stays in the registry but is hidden from users' dashboards
+      `.trim(),
+      tags: ["Web App Admin"],
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          description: "MongoDB ObjectId of the app to update",
+          schema: {
+            type: "string",
+            pattern: "^[a-fA-F0-9]{24}$",
+            example: "507f1f77bcf86cd799439011"
+          }
+        }
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: { $ref: "#/components/schemas/AdminAppUpdateInput" }
+          }
+        }
+      },
+      responses: {
+        "200": {
+          description: "App updated successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: { $ref: "#/components/schemas/AdminAppResponse" }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": { $ref: "#/components/responses/BadRequest" },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": { $ref: "#/components/responses/Forbidden" },
+        "404": {
+          description:
+            "Not found — app id does not exist (WEB_APP_NOT_FOUND) or category not found (WEB_APP_CATEGORY_NOT_FOUND)",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+            }
+          }
+        },
+        "409": {
+          description:
+            "Conflict — an app with this name already exists (WEB_APP_NAME_EXISTS)",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+            }
+          }
+        },
+        "422": { $ref: "#/components/responses/ValidationError" }
+      }
+    }
+  },
   "/admin/apps/categories": {
     get: {
       summary: "List categories (admin)",

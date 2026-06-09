@@ -1,7 +1,11 @@
 // types
 import type { Request, Response } from "express";
 import type { WebAppService } from "./web-app.service";
-import type { AdminAppsQueryRequest, AdminCreateAppRequest } from "./types";
+import type {
+  AdminAppsQueryRequest,
+  AdminCreateAppRequest,
+  AdminUpdateAppRequest
+} from "./types";
 // common
 import { OkSuccess, CreatedSuccess } from "@/common/responses";
 
@@ -35,6 +39,17 @@ export class WebAppController {
     new CreatedSuccess({
       data,
       message: "webApp:success.createApp"
+    }).send(req, res);
+  };
+
+  updateApp = async (
+    req: AdminUpdateAppRequest,
+    res: Response
+  ): Promise<void> => {
+    const data = await this.service.updateApp(req.params.id, req.body);
+    new OkSuccess({
+      data,
+      message: "webApp:success.updateApp"
     }).send(req, res);
   };
 }

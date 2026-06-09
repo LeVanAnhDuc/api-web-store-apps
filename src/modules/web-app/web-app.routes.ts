@@ -5,10 +5,18 @@ import type { WebAppController } from "./web-app.controller";
 // validators
 import {
   adminListAppsQuerySchema,
-  adminCreateAppBodySchema
+  adminCreateAppBodySchema,
+  adminUpdateAppBodySchema,
+  adminAppIdParamSchema
 } from "@/validators/schemas/web-app";
 // others
-import { adminGuard, authGuard, queryPipe, bodyPipe } from "@/middlewares";
+import {
+  adminGuard,
+  authGuard,
+  queryPipe,
+  bodyPipe,
+  paramsPipe
+} from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createAdminWebAppRoutes = (
@@ -31,6 +39,13 @@ export const createAdminWebAppRoutes = (
     "/",
     bodyPipe(adminCreateAppBodySchema),
     asyncHandler(controller.createApp)
+  );
+
+  adminApps.patch(
+    "/:id",
+    paramsPipe(adminAppIdParamSchema),
+    bodyPipe(adminUpdateAppBodySchema),
+    asyncHandler(controller.updateApp)
   );
 
   router.use("/admin/apps", adminApps);

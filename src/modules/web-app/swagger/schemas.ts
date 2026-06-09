@@ -189,6 +189,68 @@ export const webAppSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
       }
     }
   },
+  AdminAppUpdateInput: {
+    type: "object",
+    minProperties: 1,
+    properties: {
+      name: {
+        type: "string",
+        example: "satellite-monitor",
+        description:
+          "Internal unique app name — lowercase letters, numbers, and hyphens only (min 2, max 64)"
+      },
+      displayName: {
+        type: "string",
+        example: "Satellite Monitor",
+        description:
+          "Human-readable name displayed in the portal (min 2, max 80)"
+      },
+      description: {
+        type: "string",
+        example: "Real-time constellation monitoring dashboard",
+        description: "Optional description (max 500 characters)"
+      },
+      iconUrl: {
+        type: "string",
+        example: "https://cdn.example.com/icons/satellite-monitor.png",
+        description: "Optional icon URL (must start with http:// or https://)"
+      },
+      homeUrl: {
+        type: "string",
+        example: "https://monitor.example.com",
+        description: "App home URL (must start with http:// or https://)"
+      },
+      categoryId: {
+        type: "string",
+        pattern: "^[a-fA-F0-9]{24}$",
+        example: "507f1f77bcf86cd799439012",
+        description: "MongoDB ObjectId of the owning category"
+      },
+      status: {
+        type: "string",
+        enum: ["active", "inactive"],
+        example: "active"
+      },
+      requiredRoles: {
+        type: "array",
+        items: {
+          type: "string",
+          enum: ["user", "admin"]
+        },
+        minItems: 1,
+        example: ["user"],
+        description: "Roles required to access this app"
+      },
+      redirectUris: {
+        type: "array",
+        items: { type: "string" },
+        minItems: 1,
+        maxItems: 20,
+        example: ["https://monitor.example.com/callback"],
+        description: "OAuth redirect URIs (max 20)"
+      }
+    }
+  },
   AdminAppCreatedResponse: {
     allOf: [
       { $ref: "#/components/schemas/AdminAppResponse" },

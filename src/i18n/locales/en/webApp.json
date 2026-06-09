@@ -2,11 +2,13 @@
   "success": {
     "listApps": "Apps retrieved successfully.",
     "listCategories": "Categories retrieved successfully.",
-    "createApp": "App registered successfully."
+    "createApp": "App registered successfully.",
+    "updateApp": "App updated successfully."
   },
   "errors": {
     "nameExists": "An app with this name already exists.",
-    "categoryNotFound": "The selected category does not exist."
+    "categoryNotFound": "The selected category does not exist.",
+    "notFound": "App not found."
   },
   "validation": {
     "name": {
@@ -45,6 +47,13 @@
       "required": "Add at least one redirect URI.",
       "maxItems": "Too many redirect URIs (max 20).",
       "invalid": "Each redirect URI must start with http:// or https://."
+    },
+    "id": {
+      "required": "App id is required.",
+      "invalid": "Invalid app id."
+    },
+    "body": {
+      "empty": "Provide at least one field to update."
     }
   }
 }
