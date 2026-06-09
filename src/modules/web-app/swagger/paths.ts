@@ -225,7 +225,11 @@ Update one or more fields of a registered app. At least one field must be provid
     get: {
       summary: "List apps (user)",
       description: `
-List the active-app catalog for the launcher. Returns every app with \`status=active\`; OAuth internals and secrets are never exposed.
+List the active-app catalog for the launcher. Returns apps with \`status=active\`; OAuth internals and secrets are never exposed.
+
+**Role-scoped visibility:**
+- Admins receive the full active catalog.
+- Non-admin users receive only apps whose \`requiredRoles\` include the \`user\` role (admin-only apps are hidden).
 
 **Authentication:**
 - Requires valid Bearer token (any authenticated user)
