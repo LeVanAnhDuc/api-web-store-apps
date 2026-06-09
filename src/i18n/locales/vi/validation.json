@@ -58,5 +58,11 @@
   },
   "sortOrder": {
     "invalid": "Thứ tự sắp xếp không hợp lệ."
+  },
+  "isRead": {
+    "invalid": "isRead phải là giá trị boolean"
+  },
+  "id": {
+    "invalid": "Định danh không hợp lệ"
   }
 }

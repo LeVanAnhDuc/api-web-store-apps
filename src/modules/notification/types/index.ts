@@ -1,4 +1,5 @@
 // types
+import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { NOTIFICATION_TYPES } from "@/modules/notification/constants";
 
@@ -15,4 +16,33 @@ export interface NotificationDocument {
   isRead: boolean;
   readAt: Date | null;
   createdAt: Date;
+}
+
+export interface NotificationListQuery {
+  page?: number;
+  limit?: number;
+  isRead?: boolean;
+  sortOrder?: "asc" | "desc";
+}
+
+export interface NotificationFilter {
+  userId: string;
+  isRead?: boolean;
+}
+
+export interface PaginatedResult<T> {
+  items: T[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}
+
+export interface NotificationListRequest extends Omit<Request, "query"> {
+  query: NotificationListQuery;
+}
+
+export interface NotificationIdParams {
+  id: string;
+}
+
+export interface NotificationIdRequest extends Omit<Request, "params"> {
+  params: NotificationIdParams;
 }
