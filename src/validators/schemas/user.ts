@@ -4,11 +4,13 @@ import Joi from "joi";
 import type { UpdateProfileData } from "@/modules/user/types";
 // modules
 import { GENDERS } from "@/modules/user/constants";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // validators
 import {
   FULLNAME_VALIDATION,
   SAFE_FULLNAME_PATTERN,
-  SAFE_ADDRESS_PATTERN
+  SAFE_ADDRESS_PATTERN,
+  SEARCH_MAX_LENGTH
 } from "@/validators/constants";
 
 const GENDER_VALUES = Object.values(GENDERS);
@@ -90,3 +92,50 @@ export const getPublicProfileSchema = Joi.object({
       "any.required": "user:errors.invalidId"
     })
 });
+
+const ROLE_VALUES = Object.values(AUTHENTICATION_ROLES);
+const STATUS_FILTER_VALUES = ["active", "locked"] as const;
+const ADMIN_USERS_SORT_BY = ["createdAt", "fullName", "lastLoginAt"] as const;
+const SORT_ORDER_VALUES = ["asc", "desc"] as const;
+const LIMIT_MAX = 100;
+
+export const adminUsersQuerySchema = Joi.object({
+  page: Joi.number().integer().min(1).optional().messages({
+    "number.base": "validation:page.invalid",
+    "number.integer": "validation:page.invalid",
+    "number.min": "validation:page.invalid"
+  }),
+
+  limit: Joi.number().integer().min(1).max(LIMIT_MAX).optional().messages({
+    "number.base": "validation:limit.invalid",
+    "number.integer": "validation:limit.invalid",
+    "number.min": "validation:limit.invalid",
+    "number.max": "validation:limit.invalid"
+  }),
+
+  search: Joi.string()
+    .trim()
+    .max(SEARCH_MAX_LENGTH)
+    .optional()
+    .messages({ "string.max": "validation:search.invalid" }),
+
+  role: Joi.string()
+    .valid(...ROLE_VALUES)
+    .optional()
+    .messages({ "any.only": "validation:role.invalid" }),
+
+  status: Joi.string()
+    .valid(...STATUS_FILTER_VALUES)
+    .optional()
+    .messages({ "any.only": "validation:status.invalid" }),
+
+  sortBy: Joi.string()
+    .valid(...ADMIN_USERS_SORT_BY)
+    .optional()
+    .messages({ "any.only": "validation:sortBy.invalid" }),
+
+  sortOrder: Joi.string()
+    .valid(...SORT_ORDER_VALUES)
+    .optional()
+    .messages({ "any.only": "validation:sortOrder.invalid" })
+}).options({ stripUnknown: true });
