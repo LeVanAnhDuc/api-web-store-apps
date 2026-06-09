@@ -4,6 +4,8 @@ import Joi from "joi";
 import type {
   AdminAppsQuery,
   AdminAppCreateBody,
+  AdminAppUpdateBody,
+  AdminAppIdParams,
   UserAppsQuery
 } from "@/modules/web-app/types";
 // modules
@@ -149,3 +151,30 @@ export const adminCreateAppBodySchema: Joi.ObjectSchema<AdminAppCreateBody> =
         "string.pattern.base": "webApp:validation.redirectUris.invalid"
       })
   }).options({ stripUnknown: true });
+
+export const adminAppIdParamSchema: Joi.ObjectSchema<AdminAppIdParams> =
+  Joi.object({
+    id: Joi.string().pattern(OBJECTID_PATTERN).required().messages({
+      "string.empty": "webApp:validation.id.required",
+      "any.required": "webApp:validation.id.required",
+      "string.pattern.base": "webApp:validation.id.invalid"
+    })
+  });
+
+export const adminUpdateAppBodySchema = adminCreateAppBodySchema
+  .fork(
+    [
+      "name",
+      "displayName",
+      "homeUrl",
+      "categoryId",
+      "status",
+      "requiredRoles",
+      "redirectUris"
+    ],
+    (schema) => schema.optional()
+  )
+  .min(1)
+  .messages({
+    "object.min": "webApp:validation.body.empty"
+  }) as Joi.ObjectSchema<AdminAppUpdateBody>;

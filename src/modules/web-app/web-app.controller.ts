@@ -4,6 +4,7 @@ import type { WebAppService } from "./web-app.service";
 import type {
   AdminAppsQueryRequest,
   AdminCreateAppRequest,
+  AdminUpdateAppRequest,
   UserAppsQueryRequest
 } from "./types";
 // common
@@ -50,6 +51,17 @@ export class WebAppController {
     new CreatedSuccess({
       data,
       message: "webApp:success.createApp"
+    }).send(req, res);
+  };
+
+  updateApp = async (
+    req: AdminUpdateAppRequest,
+    res: Response
+  ): Promise<void> => {
+    const data = await this.service.updateApp(req.params.id, req.body);
+    new OkSuccess({
+      data,
+      message: "webApp:success.updateApp"
     }).send(req, res);
   };
 }

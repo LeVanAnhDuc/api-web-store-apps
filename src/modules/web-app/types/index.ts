@@ -92,6 +92,40 @@ export interface WebAppCreateInput {
   scopes: string[];
 }
 
+export interface AdminAppUpdateBody {
+  name?: string;
+  displayName?: string;
+  description?: string;
+  iconUrl?: string;
+  homeUrl?: string;
+  categoryId?: string;
+  status?: WebAppStatusPublic;
+  requiredRoles?: AuthenticationRole[];
+  redirectUris?: string[];
+}
+
+export interface AdminAppIdParams {
+  id: string;
+}
+
+export interface AdminUpdateAppRequest
+  extends Omit<Request, "body" | "params"> {
+  body: AdminAppUpdateBody;
+  params: { id: string };
+}
+
+export interface WebAppUpdateInput {
+  name?: string;
+  displayName?: string;
+  description?: string | null;
+  iconUrl?: string | null;
+  homeUrl?: string;
+  categoryId?: string;
+  status?: WebAppStatus;
+  requiredRoles?: AuthenticationRole[];
+  redirectUris?: string[];
+}
+
 export interface PaginationParams {
   page: number;
   limit: number;
