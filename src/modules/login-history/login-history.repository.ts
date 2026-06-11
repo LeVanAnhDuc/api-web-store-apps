@@ -29,6 +29,7 @@ export type LoginHistoryRepository = {
   aggregateMyStats(
     range: LoginStatsRange
   ): Promise<LoginStatsAggregationResult>;
+  findById(id: string): Promise<LoginHistoryDocument | null>;
 };
 
 export class MongoLoginHistoryRepository implements LoginHistoryRepository {
@@ -36,6 +37,13 @@ export class MongoLoginHistoryRepository implements LoginHistoryRepository {
     return asyncDatabaseHandler("create", async () => {
       const doc = await LoginHistoryModel.create(data);
       return doc as unknown as LoginHistoryDocument;
+    });
+  }
+
+  async findById(id: string): Promise<LoginHistoryDocument | null> {
+    return asyncDatabaseHandler("findById", async () => {
+      const doc = await LoginHistoryModel.findById(id).lean().exec();
+      return doc as unknown as LoginHistoryDocument | null;
     });
   }
 

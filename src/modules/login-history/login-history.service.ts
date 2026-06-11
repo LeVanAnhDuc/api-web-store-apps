@@ -14,7 +14,8 @@ import type {
 import type {
   MyHistoryItemDto,
   AllHistoryItemDto,
-  MyLoginStatsDto
+  MyLoginStatsDto,
+  HistoryDetailItemDto
 } from "./dtos";
 // modules
 import {
@@ -26,8 +27,13 @@ import {
 import {
   toMyHistoryItemDto,
   toAllHistoryItemDto,
-  toMyLoginStatsDto
+  toMyLoginStatsDto,
+  toHistoryDetailItemDto
 } from "./dtos";
+// common
+import { NotFoundError } from "@/common/exceptions";
+// constants
+import { ERROR_CODES } from "@/constants/error-code";
 // others
 import { Logger } from "@/libs/logger";
 import { RequestContext } from "@/utils/request-context";
@@ -172,6 +178,19 @@ export class LoginHistoryService {
         totalPages: Math.ceil(total / limit)
       }
     };
+  }
+
+  async getLoginHistoryDetail(id: string): Promise<HistoryDetailItemDto> {
+    const doc = await this.loginHistoryRepo.findById(id);
+
+    if (!doc) {
+      throw new NotFoundError({
+        i18nMessage: (t) => t("loginHistory:errors.notFound"),
+        code: ERROR_CODES.LOGIN_HISTORY_NOT_FOUND
+      });
+    }
+
+    return toHistoryDetailItemDto(doc);
   }
 
   private async logLoginAttempt(payload: LoginEventPayload): Promise<void> {
