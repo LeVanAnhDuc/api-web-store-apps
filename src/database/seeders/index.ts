@@ -5,6 +5,7 @@ import { Logger } from "@/libs/logger";
 import { seedUsers, clearUsers } from "./user.seeder";
 import { seedContacts, clearContacts } from "./contact.seeder";
 import { seedWebApps, clearWebApps } from "./web-app.seeder";
+import { seedNotifications, clearNotifications } from "./notification.seeder";
 
 const runSeeders = async (): Promise<void> => {
   try {
@@ -19,10 +20,12 @@ const runSeeders = async (): Promise<void> => {
       await clearUsers();
       await clearContacts();
       await clearWebApps();
+      await clearNotifications();
     }
 
     Logger.info("Running seeders...");
     await seedUsers();
+    await seedNotifications();
     await seedContacts();
     await seedWebApps();
 

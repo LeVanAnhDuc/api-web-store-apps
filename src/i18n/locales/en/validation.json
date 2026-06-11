@@ -58,5 +58,11 @@
   },
   "sortOrder": {
     "invalid": "Invalid sort order."
+  },
+  "isRead": {
+    "invalid": "isRead must be a boolean"
+  },
+  "id": {
+    "invalid": "Invalid identifier"
   }
 }
