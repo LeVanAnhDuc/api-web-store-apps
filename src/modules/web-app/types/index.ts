@@ -133,6 +133,7 @@ export interface PaginationParams {
 
 export interface UserAppsQuery extends Partial<PaginationParams> {
   search?: string;
+  categoryId?: string;
 }
 
 export interface UserAppsQueryRequest extends Omit<Request, "query"> {

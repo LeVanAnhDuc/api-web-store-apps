@@ -238,6 +238,7 @@ List the active-app catalog for the launcher. Returns apps with \`status=active\
 - \`page\` — 1-based page number (default 1)
 - \`limit\` — page size (default 12, max 100)
 - \`search\` — case-insensitive match on name / display name / description
+- \`categoryId\` — filter the catalog by owning category (MongoDB ObjectId)
       `.trim(),
       tags: ["Web App"],
       security: [{ bearerAuth: [] }],
@@ -259,6 +260,17 @@ List the active-app catalog for the launcher. Returns apps with \`status=active\
           in: "query",
           required: false,
           schema: { type: "string", example: "blog" }
+        },
+        {
+          name: "categoryId",
+          in: "query",
+          required: false,
+          description: "MongoDB ObjectId of the category to filter by",
+          schema: {
+            type: "string",
+            pattern: "^[a-fA-F0-9]{24}$",
+            example: "507f1f77bcf86cd799439012"
+          }
         }
       ],
       responses: {
@@ -282,8 +294,49 @@ List the active-app catalog for the launcher. Returns apps with \`status=active\
             }
           }
         },
+        "400": { $ref: "#/components/responses/BadRequest" },
         "401": { $ref: "#/components/responses/Unauthorized" },
         "422": { $ref: "#/components/responses/ValidationError" }
+      }
+    }
+  },
+  "/apps/categories": {
+    get: {
+      summary: "List categories (user)",
+      description: `
+List all app categories for the launcher catalog filter. Returns every
+category so the user can filter the active-app catalog by \`categoryId\`.
+
+**Authentication:**
+- Requires valid Bearer token (any authenticated user)
+      `.trim(),
+      tags: ["Web App"],
+      security: [{ bearerAuth: [] }],
+      responses: {
+        "200": {
+          description: "Categories retrieved successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: {
+                        type: "array",
+                        items: {
+                          $ref: "#/components/schemas/UserCategoryResponse"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "401": { $ref: "#/components/responses/Unauthorized" }
       }
     }
   },

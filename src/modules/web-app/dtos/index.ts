@@ -8,3 +8,6 @@ export { toAdminCategoryDto } from "./admin-category.dto";
 
 export type { UserAppDto } from "./user-app.dto";
 export { toUserAppDto } from "./user-app.dto";
+
+export type { UserCategoryDto } from "./user-category.dto";
+export { toUserCategoryDto } from "./user-category.dto";

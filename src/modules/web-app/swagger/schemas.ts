@@ -278,6 +278,22 @@ export const webAppSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
       category: { type: "string", nullable: true, example: "Internal Tools" }
     }
   },
+  UserCategoryResponse: {
+    type: "object",
+    required: ["_id", "displayName"],
+    properties: {
+      _id: {
+        type: "string",
+        example: "507f1f77bcf86cd799439012",
+        description: "MongoDB _id of the category"
+      },
+      displayName: {
+        type: "string",
+        example: "Monitoring",
+        description: "Human-readable category display name"
+      }
+    }
+  },
   UserAppsListResponse: {
     type: "object",
     required: ["items", "meta"],
