@@ -61,7 +61,10 @@ export const listAppsQuerySchema: Joi.ObjectSchema<UserAppsQuery> = Joi.object({
     .trim()
     .max(SEARCH_MAX_LENGTH)
     .optional()
-    .messages({ "string.max": "validation:search.invalid" })
+    .messages({ "string.max": "validation:search.invalid" }),
+  categoryId: Joi.string().pattern(OBJECTID_PATTERN).optional().messages({
+    "string.pattern.base": "validation:categoryId.invalid"
+  })
 }).options({ stripUnknown: true });
 
 export const adminCreateAppBodySchema: Joi.ObjectSchema<AdminAppCreateBody> =

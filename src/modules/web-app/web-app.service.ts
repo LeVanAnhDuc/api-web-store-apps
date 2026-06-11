@@ -15,14 +15,16 @@ import type {
   AdminAppDto,
   AdminCategoryDto,
   AdminAppCreatedDto,
-  UserAppDto
+  UserAppDto,
+  UserCategoryDto
 } from "./dtos";
 // dtos
 import {
   toAdminAppDto,
   toAdminCategoryDto,
   toAdminAppCreatedDto,
-  toUserAppDto
+  toUserAppDto,
+  toUserCategoryDto
 } from "./dtos";
 // others
 import {
@@ -61,7 +63,8 @@ export class WebAppService {
     const limit = Math.min(query.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
     const filter = buildWebAppFilter({
       search: query.search,
-      status: "active"
+      status: "active",
+      categoryId: query.categoryId
     });
 
     // Role-scoped visibility: admins see the full active catalog; everyone else
@@ -94,6 +97,11 @@ export class WebAppService {
   async listCategories(): Promise<AdminCategoryDto[]> {
     const docs = await this.categoryRepo.findAll();
     return docs.map(toAdminCategoryDto);
+  }
+
+  async listUserCategories(): Promise<UserCategoryDto[]> {
+    const docs = await this.categoryRepo.findAll();
+    return docs.map(toUserCategoryDto);
   }
 
   async createApp(body: AdminAppCreateBody): Promise<AdminAppCreatedDto> {

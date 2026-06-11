@@ -46,6 +46,14 @@ export class WebAppController {
     }).send(req, res);
   };
 
+  listUserCategories = async (req: Request, res: Response): Promise<void> => {
+    const data = await this.service.listUserCategories();
+    new OkSuccess({
+      data,
+      message: "webApp:success.listCategories"
+    }).send(req, res);
+  };
+
   createApp = async (
     req: AdminCreateAppRequest,
     res: Response

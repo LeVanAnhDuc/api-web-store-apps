@@ -283,6 +283,35 @@ describe("WebAppService.listUserApps", () => {
     expect(result.meta.page).toBe(1);
     expect(result.meta.totalPages).toBe(1);
   });
+
+  it("passes categoryId into the filter when provided", async () => {
+    const { webAppRepo, categoryRepo } = makeRepos();
+    webAppRepo.findActivePaginated.mockResolvedValue([]);
+    webAppRepo.countActive.mockResolvedValue(0);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const service = new WebAppService(webAppRepo as any, categoryRepo as any);
+
+    await service.listUserApps(
+      { categoryId: "64b2f0c2f1a2b3c4d5e6f7a8" },
+      "user"
+    );
+
+    const filter = webAppRepo.findActivePaginated.mock.calls[0][0];
+    expect(filter.categoryId).toBe("64b2f0c2f1a2b3c4d5e6f7a8");
+  });
+
+  it("omits categoryId from the filter when not provided", async () => {
+    const { webAppRepo, categoryRepo } = makeRepos();
+    webAppRepo.findActivePaginated.mockResolvedValue([]);
+    webAppRepo.countActive.mockResolvedValue(0);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const service = new WebAppService(webAppRepo as any, categoryRepo as any);
+
+    await service.listUserApps({}, "user");
+
+    const filter = webAppRepo.findActivePaginated.mock.calls[0][0];
+    expect(filter.categoryId).toBeUndefined();
+  });
 });
 
 describe("WebAppService.listUserApps role visibility", () => {
@@ -316,5 +345,32 @@ describe("WebAppService.listUserApps role visibility", () => {
     await service.listUserApps({});
     const filter = webAppRepo.findActivePaginated.mock.calls[0][0];
     expect(filter.requiredRoles).toBe("user");
+  });
+});
+
+describe("WebAppService.listUserCategories", () => {
+  it("returns all categories mapped to UserCategoryDto", async () => {
+    const { webAppRepo, categoryRepo } = makeRepos();
+    categoryRepo.findAll.mockResolvedValue([
+      {
+        _id: { toString: () => "c1" },
+        displayName: "Productivity",
+        name: "productivity"
+      },
+      {
+        _id: { toString: () => "c2" },
+        displayName: "Entertainment",
+        name: "entertainment"
+      }
+    ]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const service = new WebAppService(webAppRepo as any, categoryRepo as any);
+
+    const result = await service.listUserCategories();
+
+    expect(result).toEqual([
+      { _id: "c1", displayName: "Productivity" },
+      { _id: "c2", displayName: "Entertainment" }
+    ]);
   });
 });

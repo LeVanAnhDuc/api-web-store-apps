@@ -61,6 +61,8 @@ export const createUserWebAppRoutes = (
 
   apps.use(authGuard);
 
+  apps.get("/categories", asyncHandler(controller.listUserCategories));
+
   apps.get(
     "/",
     queryPipe(listAppsQuerySchema),
