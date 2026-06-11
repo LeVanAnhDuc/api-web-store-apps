@@ -153,3 +153,11 @@ export const loginHistoryAdminQuerySchema = loginHistoryQuerySchema
       })
   })
   .options({ stripUnknown: true });
+
+export const loginHistoryIdParamSchema = Joi.object({
+  id: Joi.string().pattern(OBJECTID_PATTERN).required().messages({
+    "string.empty": "loginHistory:errors.invalidId",
+    "string.pattern.base": "loginHistory:errors.invalidId",
+    "any.required": "loginHistory:errors.invalidId"
+  })
+});

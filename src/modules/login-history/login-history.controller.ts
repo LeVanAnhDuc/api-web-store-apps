@@ -1,7 +1,8 @@
 // types
 import type {
   MyHistoryRequest,
-  AllHistoryRequest
+  AllHistoryRequest,
+  HistoryIdParamRequest
 } from "@/modules/login-history/types";
 import type { Request, Response } from "express";
 import type { LoginHistoryService } from "./login-history.service";
@@ -38,6 +39,17 @@ export class LoginHistoryController {
     new OkSuccess({
       data,
       message: "loginHistory:success.getAllHistory"
+    }).send(req, res);
+  };
+
+  getHistoryDetail = async (
+    req: HistoryIdParamRequest,
+    res: Response
+  ): Promise<void> => {
+    const data = await this.service.getLoginHistoryDetail(req.params.id);
+    new OkSuccess({
+      data,
+      message: "loginHistory:success.getHistoryDetail"
     }).send(req, res);
   };
 }

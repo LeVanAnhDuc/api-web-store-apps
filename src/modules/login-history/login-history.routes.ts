@@ -5,10 +5,11 @@ import type { LoginHistoryController } from "./login-history.controller";
 // validators
 import {
   loginHistoryQuerySchema,
-  loginHistoryAdminQuerySchema
+  loginHistoryAdminQuerySchema,
+  loginHistoryIdParamSchema
 } from "@/validators/schemas/login-history";
 // others
-import { adminGuard, authGuard, queryPipe } from "@/middlewares";
+import { adminGuard, authGuard, paramsPipe, queryPipe } from "@/middlewares";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createLoginHistoryUserRoutes = (
@@ -43,6 +44,12 @@ export const createLoginHistoryAdminRoutes = (
     "/",
     queryPipe(loginHistoryAdminQuerySchema),
     asyncHandler(controller.getAllHistory)
+  );
+
+  adminLoginHistory.get(
+    "/:id",
+    paramsPipe(loginHistoryIdParamSchema),
+    asyncHandler(controller.getHistoryDetail)
   );
 
   router.use("/admin/login-history", adminLoginHistory);

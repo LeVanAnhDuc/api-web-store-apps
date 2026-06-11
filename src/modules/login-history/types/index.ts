@@ -62,6 +62,10 @@ export interface AllHistoryRequest extends Omit<Request, "query"> {
   query: LoginHistoryAdminQuery;
 }
 
+export interface HistoryIdParamRequest extends Omit<Request, "params"> {
+  params: { id: string };
+}
+
 export type LoginStatus = (typeof LOGIN_STATUSES)[keyof typeof LOGIN_STATUSES];
 
 export type LoginFailReason =
