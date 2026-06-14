@@ -56,7 +56,7 @@ export class MongoWebAppRepository implements WebAppRepository {
         .limit(limit)
         .populate<{ category: WebAppCategoryDocument | null }>({
           path: "category",
-          select: "displayName"
+          select: "displayName name"
         })
         .lean<WebAppWithCategory[]>()
         .exec()
