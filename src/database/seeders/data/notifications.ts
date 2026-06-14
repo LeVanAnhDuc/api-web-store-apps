@@ -13,7 +13,8 @@ export interface SeedNotification {
   ageMs: number;
 }
 
-export const TARGET_USER_EMAIL = "user@test.com";
+// Accounts that receive seeded notifications (regular user + admin for UI testing)
+export const TARGET_NOTIFICATION_EMAILS = ["user@test.com", "admin@test.com"];
 
 export const buildSeedNotifications = (): SeedNotification[] => {
   const items: SeedNotification[] = [
