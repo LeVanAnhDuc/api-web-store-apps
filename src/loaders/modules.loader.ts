@@ -20,6 +20,7 @@ import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.
 import { createWebAppModule } from "@/modules/web-app/web-app.module";
 import { createUserModule } from "@/modules/user/user.module";
 import { createNotificationModule } from "@/modules/notification/notification.module";
+import { createFavoriteModule } from "@/modules/favorite/favorite.module";
 // others
 import { RateLimiterMiddleware } from "@/middlewares";
 import { Logger } from "@/libs/logger";
@@ -37,6 +38,7 @@ interface ModuleRoutes {
   loginHistoryUser: Router;
   loginHistoryAdmin: Router;
   notification: Router;
+  favorite: Router;
   contact: Router;
   contactAdmin: Router;
   webAppAdmin: Router;
@@ -61,6 +63,7 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   v1Router.use(routes.loginHistoryUser);
   v1Router.use(routes.loginHistoryAdmin);
   v1Router.use(routes.notification);
+  v1Router.use(routes.favorite);
 
   // Contact
   v1Router.use(routes.contact);
@@ -145,6 +148,8 @@ export const loadModules = (
 
   const notificationModule = createNotificationModule();
 
+  const { favoriteUserRouter } = createFavoriteModule();
+
   // --- Route mounting ---
   mountRoutes(app, {
     signup: signupRouter,
@@ -159,6 +164,7 @@ export const loadModules = (
     loginHistoryUser: loginHistoryUserRouter,
     loginHistoryAdmin: loginHistoryAdminRouter,
     notification: notificationModule.notificationUserRouter,
+    favorite: favoriteUserRouter,
     contact: contactAdminRouter,
     contactAdmin: contactAdminQueryAdminRouter,
     webAppAdmin: webAppAdminRouter,

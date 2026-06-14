@@ -9,6 +9,7 @@ export const MODEL_NAMES = {
   WEB_APP: "WebApp",
   WEB_APP_CATEGORY: "WebAppCategory",
   ENTITLEMENT: "Entitlement",
+  USER_FAVORITE: "UserFavorite",
   OAUTH_CONSENT: "OAuthConsent",
   NOTIFICATION: "Notification"
 } as const;

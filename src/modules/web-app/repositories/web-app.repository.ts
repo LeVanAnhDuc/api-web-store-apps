@@ -1,3 +1,5 @@
+// libs
+import { Types } from "mongoose";
 // types
 import type { FilterQuery } from "mongoose";
 import type {
@@ -11,6 +13,9 @@ import type {
 import WebAppModel from "@/models/web-app";
 // common
 import { ConflictRequestError } from "@/common/exceptions";
+// modules
+import { buildWebAppFilter } from "../helpers";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 import { isDuplicateKeyError, getDuplicatedField } from "@/utils/mongo-errors";
@@ -29,6 +34,10 @@ export type WebAppRepository = {
   findActivePaginated(
     filter: FilterQuery<WebAppDocument>,
     options: { skip: number; limit: number }
+  ): Promise<WebAppWithCategory[]>;
+  findActiveByIds(
+    ids: string[],
+    filter: { role?: string; search?: string; categoryId?: string }
   ): Promise<WebAppWithCategory[]>;
   countActive(filter: FilterQuery<WebAppDocument>): Promise<number>;
 };
@@ -61,6 +70,30 @@ export class MongoWebAppRepository implements WebAppRepository {
         .lean<WebAppWithCategory[]>()
         .exec()
     );
+  }
+
+  async findActiveByIds(
+    ids: string[],
+    filter: { role?: string; search?: string; categoryId?: string }
+  ): Promise<WebAppWithCategory[]> {
+    return asyncDatabaseHandler("findActiveByIds", () => {
+      const mongoFilter = buildWebAppFilter({
+        search: filter.search,
+        status: "active",
+        categoryId: filter.categoryId
+      });
+      mongoFilter._id = { $in: ids.map((id) => new Types.ObjectId(id)) };
+      if (filter.role !== AUTHENTICATION_ROLES.ADMIN) {
+        mongoFilter.requiredRoles = AUTHENTICATION_ROLES.USER;
+      }
+      return WebAppModel.find(mongoFilter)
+        .populate<{ category: WebAppCategoryDocument | null }>({
+          path: "category",
+          select: "displayName"
+        })
+        .lean<WebAppWithCategory[]>()
+        .exec();
+    });
   }
 
   async countActive(filter: FilterQuery<WebAppDocument>): Promise<number> {
