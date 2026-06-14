@@ -11,6 +11,7 @@ import type {
   WebAppRepository,
   WebAppCategoryRepository
 } from "./repositories";
+import type { FavoriteRepository } from "@/modules/favorite/favorite.repository";
 import type {
   AdminAppDto,
   AdminCategoryDto,
@@ -38,6 +39,7 @@ import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
 import { ERROR_CODES } from "@/constants/error-code";
 import { hashValue } from "@/utils/crypto/bcrypt";
+import { RequestContext } from "@/utils/request-context";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 12;
@@ -46,7 +48,8 @@ const MAX_LIMIT = 100;
 export class WebAppService {
   constructor(
     private readonly webAppRepo: WebAppRepository,
-    private readonly categoryRepo: WebAppCategoryRepository
+    private readonly categoryRepo: WebAppCategoryRepository,
+    private readonly favoriteRepo: FavoriteRepository
   ) {}
 
   async listApps(query: AdminAppsQuery): Promise<{ items: AdminAppDto[] }> {
@@ -83,8 +86,18 @@ export class WebAppService {
       this.webAppRepo.countActive(filter)
     ]);
 
+    const userId = RequestContext.getUserId();
+    const favoriteIds = userId
+      ? await this.favoriteRepo.findFavoritedAppIds(
+          userId,
+          docs.map((d) => d._id.toString())
+        )
+      : new Set<string>();
+
     return {
-      items: docs.map(toUserAppDto),
+      items: docs.map((d) =>
+        toUserAppDto(d, favoriteIds.has(d._id.toString()))
+      ),
       meta: {
         total,
         page,

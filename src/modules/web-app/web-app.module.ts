@@ -3,6 +3,7 @@ import {
   MongoWebAppRepository,
   MongoWebAppCategoryRepository
 } from "./repositories";
+import { MongoFavoriteRepository } from "@/modules/favorite/favorite.repository";
 import { WebAppService } from "./web-app.service";
 import { WebAppController } from "./web-app.controller";
 import {
@@ -13,7 +14,8 @@ import {
 export const createWebAppModule = () => {
   const webAppRepo = new MongoWebAppRepository();
   const categoryRepo = new MongoWebAppCategoryRepository();
-  const service = new WebAppService(webAppRepo, categoryRepo);
+  const favoriteRepo = new MongoFavoriteRepository();
+  const service = new WebAppService(webAppRepo, categoryRepo, favoriteRepo);
   const controller = new WebAppController(service);
 
   return {
