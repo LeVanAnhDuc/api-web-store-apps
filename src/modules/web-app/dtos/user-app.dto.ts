@@ -8,6 +8,7 @@ export interface UserAppDto {
   iconUrl: string | null;
   homeUrl: string;
   category: string | null;
+  categorySlug: string | null;
   isFavorite: boolean;
 }
 
@@ -21,5 +22,6 @@ export const toUserAppDto = (
   iconUrl: doc.iconUrl ?? null,
   homeUrl: doc.homeUrl,
   category: doc.category?.displayName ?? null,
+  categorySlug: doc.category?.name ?? null,
   isFavorite
 });

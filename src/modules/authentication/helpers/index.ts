@@ -14,7 +14,8 @@ export const generateAuthTokensResponse = ({
   email,
   roles,
   fullName,
-  avatar
+  avatar,
+  tokenVersion
 }: {
   userId: string;
   authId: string;
@@ -22,6 +23,7 @@ export const generateAuthTokensResponse = ({
   roles: string;
   fullName: string;
   avatar?: string | null;
+  tokenVersion: number;
 }): AuthTokensResponse => {
   const { accessToken, refreshToken, idToken } = {
     accessToken: generateAccessToken({
@@ -31,7 +33,8 @@ export const generateAuthTokensResponse = ({
     }),
     refreshToken: generateRefreshToken({
       sub: userId,
-      authId: authId
+      authId: authId,
+      tokenVersion: tokenVersion
     }),
     idToken: generateIdToken({
       sub: userId,

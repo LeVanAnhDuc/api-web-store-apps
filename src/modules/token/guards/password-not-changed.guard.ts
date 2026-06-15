@@ -6,17 +6,21 @@ import { ForbiddenError } from "@/common/exceptions";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
 
-const MILLISECONDS_PER_SECOND = 1000;
-
+/**
+ * Why `tokenVersion`, not JWT `iat`: `iat` is second-granular, so a refresh
+ * token issued in the same second as a password change is indistinguishable
+ * from one issued just before it. `tokenVersion` has no such ambiguity.
+ *
+ * Why `?? 0`: tokens predating this field carry no version claim; treating
+ * them as 0 keeps existing sessions valid until the next password change.
+ */
 export class PasswordNotChangedGuard {
   assert(auth: AuthenticationDocument, payload: RefreshTokenPayload): void {
-    if (!auth.passwordChangedAt || !payload.iat) return;
+    if (!auth) return;
 
-    const passwordChangedAtSec = Math.floor(
-      auth.passwordChangedAt.getTime() / MILLISECONDS_PER_SECOND
-    );
+    const tokenVersion = payload.tokenVersion ?? 0;
 
-    if (payload.iat < passwordChangedAtSec) {
+    if (tokenVersion < auth.tokenVersion) {
       Logger.warn(
         "Token refresh rejected - password changed after token issued",
         { authId: payload.authId }

@@ -47,6 +47,10 @@ declare global {
   interface RefreshTokenPayload extends BaseTokenClaims {
     sub: string;
     authId: string;
+    // Per-token revocation discriminator. Optional on the payload so
+    // pre-existing in-flight tokens (issued before this field) verify as
+    // undefined → treated as 0 by the guard (graceful migration).
+    tokenVersion?: number;
   }
 
   type RequestUserPayload = Pick<

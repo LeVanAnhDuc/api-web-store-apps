@@ -47,6 +47,10 @@ const AuthenticationSchema = new Schema<AuthenticationDocument>(
     passwordChangedAt: {
       type: Date,
       default: null
+    },
+    tokenVersion: {
+      type: Number,
+      default: 0
     }
   },
   {

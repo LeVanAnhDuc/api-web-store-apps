@@ -16,6 +16,7 @@ export interface AuthenticationDocument {
   tempPasswordUsed: boolean;
   mustChangePassword: boolean;
   passwordChangedAt: Date | null;
+  tokenVersion: number;
   createdAt: Date;
   updatedAt: Date;
 }

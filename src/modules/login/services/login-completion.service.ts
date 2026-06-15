@@ -30,7 +30,8 @@ export class LoginCompletionService {
         email: user.email,
         roles: auth.roles,
         fullName: user.fullName,
-        avatar: user.avatar ?? null
+        avatar: user.avatar ?? null,
+        tokenVersion: auth.tokenVersion ?? 0
       })
     );
   }

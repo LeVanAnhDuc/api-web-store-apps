@@ -9,5 +9,6 @@ export const toFavoriteAppDto = (doc: WebAppWithCategory): UserAppDto => ({
   iconUrl: doc.iconUrl ?? null,
   homeUrl: doc.homeUrl,
   category: doc.category?.displayName ?? null,
+  categorySlug: doc.category?.name ?? null,
   isFavorite: true
 });
