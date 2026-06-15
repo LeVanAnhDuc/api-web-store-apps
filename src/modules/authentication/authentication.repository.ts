@@ -28,7 +28,7 @@ export type AuthenticationRepository = {
     authId: string,
     hashedPassword: string,
     session?: ClientSession
-  ): Promise<void>;
+  ): Promise<number>;
 };
 
 export class MongoAuthenticationRepository implements AuthenticationRepository {
@@ -90,16 +90,23 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
     authId: string,
     hashedPassword: string,
     session?: ClientSession
-  ): Promise<void> {
-    await asyncDatabaseHandler("updatePassword", () =>
+  ): Promise<number> {
+    // Bump tokenVersion so every prior refresh token (older version) is
+    // revoked; return it so the caller stamps the fresh tokens with it.
+    const updated = await asyncDatabaseHandler("updatePassword", () =>
       AuthenticationModel.findByIdAndUpdate(
         authId,
         {
           password: hashedPassword,
-          passwordChangedAt: new Date()
+          passwordChangedAt: new Date(),
+          $inc: { tokenVersion: 1 }
         },
-        { session }
-      ).exec()
+        { new: true, session }
+      )
+        .lean<AuthenticationDocument>()
+        .exec()
     );
+
+    return updated?.tokenVersion ?? 0;
   }
 }

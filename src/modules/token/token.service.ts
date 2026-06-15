@@ -48,7 +48,9 @@ export class TokenService {
       email: user.email,
       roles: auth.roles,
       fullName: user.fullName,
-      avatar: user.avatar ?? null
+      avatar: user.avatar ?? null,
+      // Carry the auth's CURRENT version forward — refresh must not bump it.
+      tokenVersion: auth.tokenVersion ?? 0
     });
 
     Logger.info("Token refresh successful", { userId: user._id.toString() });

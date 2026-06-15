@@ -43,7 +43,10 @@ export class ChangePasswordService {
     this.samePasswordGuard.assert(currentPassword, newPassword);
 
     const hashedPassword = hashValue(newPassword);
-    await this.authService.updatePassword(authId, hashedPassword);
+    const newTokenVersion = await this.authService.updatePassword(
+      authId,
+      hashedPassword
+    );
 
     const user = await this.userService.findByAuthId(authId);
     if (!user) {
@@ -53,16 +56,16 @@ export class ChangePasswordService {
       });
     }
 
-    // Tokens issued AFTER passwordChangedAt is set, so the current device
-    // survives while every previously-issued refresh token (other devices)
-    // is rejected by PasswordNotChangedGuard at /auth/token/refresh.
+    // Stamp with the incremented tokenVersion so this device survives while
+    // prior refresh tokens (other devices) are rejected on next refresh.
     const tokens = generateAuthTokensResponse({
       userId: user._id.toString(),
       authId: auth._id.toString(),
       email: user.email,
       roles: auth.roles,
       fullName: user.fullName,
-      avatar: user.avatar ?? null
+      avatar: user.avatar ?? null,
+      tokenVersion: newTokenVersion
     });
 
     // Fire-and-forget security alert (queued).

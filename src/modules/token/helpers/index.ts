@@ -73,7 +73,11 @@ const verifyToken = <T>(token: string, type: VerifiableTokenType): T => {
 
 type AccessTokenInput = Omit<AccessTokenPayload, keyof BaseTokenClaims>;
 type IdTokenInput = Omit<IdTokenPayload, keyof BaseTokenClaims>;
-type RefreshTokenInput = Omit<RefreshTokenPayload, keyof BaseTokenClaims>;
+// tokenVersion is optional on the payload (graceful migration for old tokens)
+// but REQUIRED when issuing — every newly-signed refresh token must embed it.
+type RefreshTokenInput = Omit<RefreshTokenPayload, keyof BaseTokenClaims> & {
+  tokenVersion: number;
+};
 
 export const generateAccessToken = (payload: AccessTokenInput): string =>
   signToken(payload, TOKEN_TYPES.ACCESS);
