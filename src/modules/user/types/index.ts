@@ -2,8 +2,14 @@
 import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
-import type { GENDERS } from "@/modules/user/constants";
+import type {
+  GENDERS,
+  ADMIN_USER_STATUS_FILTERS,
+  ADMIN_USERS_SORT_BY
+} from "@/modules/user/constants";
 import type { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+// common
+import type { SortOrder } from "@/common/sort";
 
 export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
 
@@ -80,7 +86,10 @@ export interface GetPublicProfileRequest extends Omit<Request, "params"> {
 export type AdminUserRole =
   (typeof AUTHENTICATION_ROLES)[keyof typeof AUTHENTICATION_ROLES];
 
-export type AdminUserStatusFilter = "active" | "locked";
+export type AdminUserStatusFilter =
+  (typeof ADMIN_USER_STATUS_FILTERS)[keyof typeof ADMIN_USER_STATUS_FILTERS];
+
+export type AdminUsersSortBy = (typeof ADMIN_USERS_SORT_BY)[number];
 
 export interface AdminUsersQuery {
   page?: number;
@@ -88,8 +97,8 @@ export interface AdminUsersQuery {
   search?: string;
   role?: AdminUserRole;
   status?: AdminUserStatusFilter;
-  sortBy?: "createdAt" | "fullName" | "lastLoginAt";
-  sortOrder?: "asc" | "desc";
+  sortBy?: AdminUsersSortBy;
+  sortOrder?: SortOrder;
 }
 
 export interface AdminUsersFilter {

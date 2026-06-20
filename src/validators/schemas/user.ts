@@ -3,7 +3,11 @@ import Joi from "joi";
 // types
 import type { UpdateProfileData } from "@/modules/user/types";
 // modules
-import { GENDERS } from "@/modules/user/constants";
+import {
+  GENDERS,
+  ADMIN_USER_STATUS_FILTERS,
+  ADMIN_USERS_SORT_BY
+} from "@/modules/user/constants";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // common
 import { SORT_ORDER_VALUES } from "@/common/sort";
@@ -96,8 +100,7 @@ export const getPublicProfileSchema = Joi.object({
 });
 
 const ROLE_VALUES = Object.values(AUTHENTICATION_ROLES);
-const STATUS_FILTER_VALUES = ["active", "locked"] as const;
-const ADMIN_USERS_SORT_BY = ["createdAt", "fullName", "lastLoginAt"] as const;
+const STATUS_FILTER_VALUES = Object.values(ADMIN_USER_STATUS_FILTERS);
 const LIMIT_MAX = 100;
 
 export const adminUsersQuerySchema = Joi.object({

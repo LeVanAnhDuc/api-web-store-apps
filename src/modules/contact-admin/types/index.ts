@@ -1,12 +1,20 @@
 // types
 import type { Request } from "express";
 import type { Document } from "mongoose";
-import type { CONTACT_PRIORITIES, CONTACT_STATUSES } from "../constants";
+import type {
+  CONTACT_PRIORITIES,
+  CONTACT_STATUSES,
+  ADMIN_CONTACTS_SORT_BY
+} from "../constants";
+// common
+import type { SortOrder } from "@/common/sort";
 
 export type ContactPriority =
   (typeof CONTACT_PRIORITIES)[keyof typeof CONTACT_PRIORITIES];
 export type ContactStatus =
   (typeof CONTACT_STATUSES)[keyof typeof CONTACT_STATUSES];
+
+export type AdminContactsSortBy = (typeof ADMIN_CONTACTS_SORT_BY)[number];
 
 export interface ContactDocument extends Document {
   email?: string;
@@ -39,8 +47,8 @@ export interface AdminContactsQuery {
   search?: string;
   fromDate?: string;
   toDate?: string;
-  sortBy?: "createdAt" | "priority" | "status";
-  sortOrder?: "asc" | "desc";
+  sortBy?: AdminContactsSortBy;
+  sortOrder?: SortOrder;
 }
 
 export interface AdminContactsQueryRequest extends Omit<Request, "query"> {

@@ -45,6 +45,22 @@ export const CLIENT_TYPES = {
   MOBILE_ANDROID: "MOBILE_ANDROID"
 } as const;
 
+export const LOGIN_HISTORY_SORT_BY_USER = [
+  "createdAt",
+  "method",
+  "status",
+  "country"
+] as const;
+
+export const LOGIN_HISTORY_SORT_BY_ADMIN = [
+  "createdAt",
+  "method",
+  "status",
+  "country",
+  "ip",
+  "usernameAttempted"
+] as const;
+
 export const GEO_DEFAULTS = {
   UNKNOWN_COUNTRY: "UNKNOWN",
   UNKNOWN_CITY: "UNKNOWN",

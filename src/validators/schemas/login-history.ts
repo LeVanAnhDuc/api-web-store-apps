@@ -5,7 +5,9 @@ import {
   LOGIN_STATUSES,
   LOGIN_METHODS,
   DEVICE_TYPES,
-  CLIENT_TYPES
+  CLIENT_TYPES,
+  LOGIN_HISTORY_SORT_BY_USER,
+  LOGIN_HISTORY_SORT_BY_ADMIN
 } from "@/modules/login-history/constants";
 // common
 import { SORT_ORDER_VALUES } from "@/common/sort";
@@ -17,20 +19,8 @@ const METHOD_VALUES = Object.values(LOGIN_METHODS);
 const DEVICE_TYPE_VALUES = Object.values(DEVICE_TYPES);
 const CLIENT_TYPE_VALUES = Object.values(CLIENT_TYPES);
 
-const SORT_BY_USER_VALUES = [
-  "createdAt",
-  "method",
-  "status",
-  "country"
-] as const;
-const SORT_BY_ADMIN_VALUES = [
-  "createdAt",
-  "method",
-  "status",
-  "country",
-  "ip",
-  "usernameAttempted"
-] as const;
+const SORT_BY_USER_VALUES = LOGIN_HISTORY_SORT_BY_USER;
+const SORT_BY_ADMIN_VALUES = LOGIN_HISTORY_SORT_BY_ADMIN;
 
 const LIMIT_MAX = 100;
 
