@@ -141,7 +141,7 @@ export const loadModules = (
     rateLimiter
   );
 
-  const { contactAdminRouter, contactAdminQueryAdminRouter } =
+  const { contactAdminRouter, adminContactsRouter } =
     createContactAdminModule(rateLimiter);
 
   const { webAppAdminRouter, webAppUserRouter } = createWebAppModule();
@@ -166,7 +166,7 @@ export const loadModules = (
     notification: notificationUserRouter,
     favorite: favoriteUserRouter,
     contact: contactAdminRouter,
-    contactAdmin: contactAdminQueryAdminRouter,
+    contactAdmin: adminContactsRouter,
     webAppAdmin: webAppAdminRouter,
     webAppUser: webAppUserRouter
   });
