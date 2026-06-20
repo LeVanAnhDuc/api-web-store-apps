@@ -1,6 +1,8 @@
 // types
 import type { Request } from "express";
 import type { Schema } from "mongoose";
+// constants
+import type { FAVORITE_SORTS } from "../constants";
 
 export interface UserFavoriteDocument {
   _id: Schema.Types.ObjectId;
@@ -9,7 +11,7 @@ export interface UserFavoriteDocument {
   createdAt: Date;
 }
 
-export type FavoriteSort = "recent" | "name";
+export type FavoriteSort = (typeof FAVORITE_SORTS)[keyof typeof FAVORITE_SORTS];
 
 export interface ListFavoritesQuery {
   search?: string;

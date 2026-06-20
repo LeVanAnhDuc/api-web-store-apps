@@ -5,6 +5,8 @@ import type {
   FavoriteAppIdParams,
   ListFavoritesQuery
 } from "@/modules/favorite/types";
+// constants
+import { FAVORITE_SORTS } from "@/modules/favorite/constants";
 // validators
 import { OBJECTID_PATTERN, SEARCH_MAX_LENGTH } from "@/validators/constants";
 
@@ -25,7 +27,10 @@ export const listFavoritesQuerySchema: Joi.ObjectSchema<ListFavoritesQuery> =
     categoryId: Joi.string().pattern(OBJECTID_PATTERN).optional().messages({
       "string.pattern.base": "validation:categoryId.invalid"
     }),
-    sort: Joi.string().valid("recent", "name").optional().messages({
-      "any.only": "favorite:validation.sort.invalid"
-    })
+    sort: Joi.string()
+      .valid(...Object.values(FAVORITE_SORTS))
+      .optional()
+      .messages({
+        "any.only": "favorite:validation.sort.invalid"
+      })
   }).options({ stripUnknown: true });
