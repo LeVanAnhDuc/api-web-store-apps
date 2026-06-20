@@ -32,6 +32,7 @@ import {
 } from "./dtos";
 // common
 import { NotFoundError } from "@/common/exceptions";
+import { PAGINATION } from "@/common/pagination";
 // constants
 import { ERROR_CODES } from "@/constants/error-code";
 // others
@@ -46,10 +47,6 @@ import {
   determineClientType,
   buildLoginHistoryFilter
 } from "./helpers";
-
-const DEFAULT_PAGE = 1;
-const DEFAULT_LIMIT = 20;
-const MAX_LIMIT = 100;
 
 export class LoginHistoryService {
   constructor(private readonly loginHistoryRepo: LoginHistoryRepository) {}
@@ -101,6 +98,7 @@ export class LoginHistoryService {
     query: LoginHistoryQuery
   ): Promise<PaginatedResult<MyHistoryItemDto>> {
     const userId = RequestContext.requireAuthId();
+    const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = PAGINATION;
     const {
       page = DEFAULT_PAGE,
       limit: rawLimit = DEFAULT_LIMIT,
@@ -152,6 +150,7 @@ export class LoginHistoryService {
   async getAllLoginHistory(
     query: LoginHistoryAdminQuery
   ): Promise<PaginatedResult<AllHistoryItemDto>> {
+    const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = PAGINATION;
     const {
       page = DEFAULT_PAGE,
       limit: rawLimit = DEFAULT_LIMIT,

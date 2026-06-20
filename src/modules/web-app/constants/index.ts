@@ -1,3 +1,11 @@
+// common
+import { PAGINATION } from "@/common/pagination";
+
+export const WEB_APP_PAGINATION = {
+  ...PAGINATION,
+  DEFAULT_LIMIT: 12
+} as const;
+
 export const WEB_APP_STATUSES = {
   ACTIVE: "ACTIVE",
   INACTIVE: "INACTIVE"

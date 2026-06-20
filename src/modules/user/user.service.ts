@@ -14,6 +14,7 @@ import type { UserRepository } from "./user.repository";
 import type { MyProfileDto, PublicProfileDto, AdminUserDto } from "./dtos";
 // common
 import { NotFoundError } from "@/common/exceptions";
+import { PAGINATION } from "@/common/pagination";
 // validators
 import { validateEmail, validateObjectId } from "@/validators/utils";
 // dtos
@@ -22,10 +23,6 @@ import { toMyProfileDto, toPublicProfileDto, toAdminUserDto } from "./dtos";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
 import { RequestContext } from "@/utils/request-context";
-
-const DEFAULT_PAGE = 1;
-const DEFAULT_LIMIT = 20;
-const MAX_LIMIT = 100;
 
 export class UserService {
   constructor(private readonly userRepo: UserRepository) {}
@@ -121,6 +118,7 @@ export class UserService {
   async getAdminUsers(
     query: AdminUsersQuery
   ): Promise<{ items: AdminUserDto[]; meta: AdminUserListMeta }> {
+    const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = PAGINATION;
     const {
       page = DEFAULT_PAGE,
       limit: rawLimit = DEFAULT_LIMIT,

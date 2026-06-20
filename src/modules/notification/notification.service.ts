@@ -7,8 +7,7 @@ import type {
 import type { NotificationItemDto } from "./dtos";
 // common
 import { NotFoundError } from "@/common/exceptions";
-// modules
-import { NOTIFICATION_PAGINATION } from "@/modules/notification/constants";
+import { PAGINATION } from "@/common/pagination";
 // dtos
 import { toNotificationItemDto } from "./dtos";
 // others
@@ -17,7 +16,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 // helpers
 import { buildNotificationFilter } from "./helpers";
 
-const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = NOTIFICATION_PAGINATION;
+const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = PAGINATION;
 
 export class NotificationService {
   constructor(private readonly repo: NotificationRepository) {}
