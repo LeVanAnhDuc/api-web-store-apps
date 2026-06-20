@@ -7,6 +7,8 @@ import {
   DEVICE_TYPES,
   CLIENT_TYPES
 } from "@/modules/login-history/constants";
+// common
+import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
 import { OBJECTID_PATTERN, SEARCH_MAX_LENGTH } from "@/validators/constants";
 
@@ -29,7 +31,6 @@ const SORT_BY_ADMIN_VALUES = [
   "ip",
   "usernameAttempted"
 ] as const;
-const SORT_ORDER_VALUES = ["asc", "desc"] as const;
 
 const LIMIT_MAX = 100;
 

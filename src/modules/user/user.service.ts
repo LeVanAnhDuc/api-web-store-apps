@@ -15,6 +15,7 @@ import type { MyProfileDto, PublicProfileDto, AdminUserDto } from "./dtos";
 // common
 import { NotFoundError } from "@/common/exceptions";
 import { PAGINATION } from "@/common/pagination";
+import { resolveSortDirection } from "@/common/sort";
 // validators
 import { validateEmail, validateObjectId } from "@/validators/utils";
 // dtos
@@ -131,7 +132,7 @@ export class UserService {
 
     const limit = Math.min(rawLimit, MAX_LIMIT);
     const skip = (page - 1) * limit;
-    const sortOrder = rawSortOrder === "asc" ? 1 : -1;
+    const sortOrder = resolveSortDirection(rawSortOrder);
 
     const filter: AdminUsersFilter = {
       ...(search ? { search } : {}),

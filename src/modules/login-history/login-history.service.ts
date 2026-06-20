@@ -33,6 +33,7 @@ import {
 // common
 import { NotFoundError } from "@/common/exceptions";
 import { PAGINATION } from "@/common/pagination";
+import { resolveSortDirection } from "@/common/sort";
 // constants
 import { ERROR_CODES } from "@/constants/error-code";
 // others
@@ -107,7 +108,7 @@ export class LoginHistoryService {
     } = query;
     const limit = Math.min(rawLimit, MAX_LIMIT);
     const skip = (page - 1) * limit;
-    const sortOrder = rawSortOrder === "asc" ? 1 : -1;
+    const sortOrder = resolveSortDirection(rawSortOrder);
 
     const filter = buildLoginHistoryFilter(
       query as LoginHistoryAdminQuery,
@@ -159,7 +160,7 @@ export class LoginHistoryService {
     } = query;
     const limit = Math.min(rawLimit, MAX_LIMIT);
     const skip = (page - 1) * limit;
-    const sortOrder = rawSortOrder === "asc" ? 1 : -1;
+    const sortOrder = resolveSortDirection(rawSortOrder);
 
     const filter = buildLoginHistoryFilter(query);
     const { data, total } = await this.loginHistoryRepo.findAll(filter, {

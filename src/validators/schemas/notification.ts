@@ -1,10 +1,11 @@
 // libs
 import Joi from "joi";
+// common
+import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
 import { OBJECTID_PATTERN } from "@/validators/constants";
 
 const LIMIT_MAX = 100;
-const SORT_ORDER_VALUES = ["asc", "desc"] as const;
 
 export const notificationListQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).optional().messages({

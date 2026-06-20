@@ -5,6 +5,8 @@ import type { UpdateProfileData } from "@/modules/user/types";
 // modules
 import { GENDERS } from "@/modules/user/constants";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+// common
+import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
 import {
   FULLNAME_VALIDATION,
@@ -96,7 +98,6 @@ export const getPublicProfileSchema = Joi.object({
 const ROLE_VALUES = Object.values(AUTHENTICATION_ROLES);
 const STATUS_FILTER_VALUES = ["active", "locked"] as const;
 const ADMIN_USERS_SORT_BY = ["createdAt", "fullName", "lastLoginAt"] as const;
-const SORT_ORDER_VALUES = ["asc", "desc"] as const;
 const LIMIT_MAX = 100;
 
 export const adminUsersQuerySchema = Joi.object({

@@ -15,6 +15,7 @@ import type {
 // common
 import { NotFoundError } from "@/common/exceptions";
 import { PAGINATION } from "@/common/pagination";
+import { resolveSortDirection } from "@/common/sort";
 // validators
 import { sanitizeText, validateStringLength } from "@/validators/utils";
 import { CONTACT_CONFIG } from "@/validators/constants";
@@ -77,7 +78,7 @@ export class ContactAdminService {
 
     const limit = Math.min(rawLimit, MAX_LIMIT);
     const skip = (page - 1) * limit;
-    const sortOrder = rawSortOrder === "asc" ? 1 : -1;
+    const sortOrder = resolveSortDirection(rawSortOrder);
 
     const filter = buildContactFilter(query);
     const { data, total } = await this.contactRepo.findAll(filter, {
