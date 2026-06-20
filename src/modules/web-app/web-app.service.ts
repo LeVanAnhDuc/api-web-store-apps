@@ -34,7 +34,11 @@ import {
   generateClientId,
   generateClientSecret
 } from "./helpers";
-import { WEB_APP_DEFAULT_SCOPES, WEB_APP_PAGINATION } from "./constants";
+import {
+  WEB_APP_DEFAULT_SCOPES,
+  WEB_APP_PAGINATION,
+  WEB_APP_STATUS_PUBLIC
+} from "./constants";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -63,7 +67,7 @@ export class WebAppService {
     const limit = Math.min(query.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
     const filter = buildWebAppFilter({
       search: query.search,
-      status: "active",
+      status: WEB_APP_STATUS_PUBLIC.ACTIVE,
       categoryId: query.categoryId
     });
 
