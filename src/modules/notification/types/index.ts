@@ -3,6 +3,9 @@ import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { NOTIFICATION_TYPES } from "@/modules/notification/constants";
 
+// common
+import type { SortOrder } from "@/common/sort";
+
 export type NotificationType =
   (typeof NOTIFICATION_TYPES)[keyof typeof NOTIFICATION_TYPES];
 
@@ -22,7 +25,7 @@ export interface NotificationListQuery {
   page?: number;
   limit?: number;
   isRead?: boolean;
-  sortOrder?: "asc" | "desc";
+  sortOrder?: SortOrder;
 }
 
 export interface NotificationFilter {
