@@ -146,7 +146,7 @@ export const loadModules = (
 
   const { webAppAdminRouter, webAppUserRouter } = createWebAppModule();
 
-  const notificationModule = createNotificationModule();
+  const { notificationUserRouter } = createNotificationModule();
 
   const { favoriteUserRouter } = createFavoriteModule();
 
@@ -163,7 +163,7 @@ export const loadModules = (
     userAdmin: userAdminRouter,
     loginHistoryUser: loginHistoryUserRouter,
     loginHistoryAdmin: loginHistoryAdminRouter,
-    notification: notificationModule.notificationUserRouter,
+    notification: notificationUserRouter,
     favorite: favoriteUserRouter,
     contact: contactAdminRouter,
     contactAdmin: contactAdminQueryAdminRouter,
