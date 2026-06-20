@@ -131,5 +131,4 @@ export const adminListContactsQuerySchema = Joi.object({
     }
     return value;
   })
-  .messages({ "date.range": "validation:dateRange.invalid" })
-  .options({ stripUnknown: true });
+  .messages({ "date.range": "validation:dateRange.invalid" });

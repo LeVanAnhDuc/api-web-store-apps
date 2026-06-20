@@ -41,7 +41,7 @@ export const adminListAppsQuerySchema: Joi.ObjectSchema<AdminAppsQuery> =
     categoryId: Joi.string().pattern(OBJECTID_PATTERN).optional().messages({
       "string.pattern.base": "validation:categoryId.invalid"
     })
-  }).options({ stripUnknown: true });
+  });
 
 const LIMIT_MAX = 100;
 
@@ -65,7 +65,7 @@ export const listAppsQuerySchema: Joi.ObjectSchema<UserAppsQuery> = Joi.object({
   categoryId: Joi.string().pattern(OBJECTID_PATTERN).optional().messages({
     "string.pattern.base": "validation:categoryId.invalid"
   })
-}).options({ stripUnknown: true });
+});
 
 export const adminCreateAppBodySchema: Joi.ObjectSchema<AdminAppCreateBody> =
   Joi.object({
@@ -153,7 +153,7 @@ export const adminCreateAppBodySchema: Joi.ObjectSchema<AdminAppCreateBody> =
         "any.required": "webApp:validation.redirectUris.required",
         "string.pattern.base": "webApp:validation.redirectUris.invalid"
       })
-  }).options({ stripUnknown: true });
+  });
 
 export const adminAppIdParamSchema: Joi.ObjectSchema<AdminAppIdParams> =
   Joi.object({

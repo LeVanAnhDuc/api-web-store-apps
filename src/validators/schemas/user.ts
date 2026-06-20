@@ -86,7 +86,7 @@ export const updateProfileSchema: Joi.ObjectSchema<UpdateProfileData> =
       .messages({
         "any.only": "validation:gender.invalid"
       })
-  }).options({ stripUnknown: true });
+  });
 
 export const getPublicProfileSchema = Joi.object({
   id: Joi.string()
@@ -142,4 +142,4 @@ export const adminUsersQuerySchema = Joi.object({
     .valid(...SORT_ORDER_VALUES)
     .optional()
     .messages({ "any.only": "validation:sortOrder.invalid" })
-}).options({ stripUnknown: true });
+});

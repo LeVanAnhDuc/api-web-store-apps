@@ -33,4 +33,4 @@ export const listFavoritesQuerySchema: Joi.ObjectSchema<ListFavoritesQuery> =
       .messages({
         "any.only": "favorite:validation.sort.invalid"
       })
-  }).options({ stripUnknown: true });
+  });

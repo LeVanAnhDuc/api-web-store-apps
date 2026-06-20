@@ -26,7 +26,7 @@ export const notificationListQuerySchema = Joi.object({
     .valid(...SORT_ORDER_VALUES)
     .optional()
     .messages({ "any.only": "validation:sortOrder.invalid" })
-}).options({ stripUnknown: true });
+});
 
 export const notificationIdParamSchema = Joi.object({
   id: Joi.string().pattern(OBJECTID_PATTERN).required().messages({

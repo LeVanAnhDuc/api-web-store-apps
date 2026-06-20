@@ -121,29 +121,26 @@ export const loginHistoryQuerySchema = Joi.object({
   })
   .messages({
     "date.range": "validation:dateRange.invalid"
-  })
-  .options({ stripUnknown: true });
+  });
 
-export const loginHistoryAdminQuerySchema = loginHistoryQuerySchema
-  .keys({
-    userId: Joi.string().pattern(OBJECTID_PATTERN).optional().messages({
-      "string.pattern.base": "validation:userId.invalid"
-    }),
+export const loginHistoryAdminQuerySchema = loginHistoryQuerySchema.keys({
+  userId: Joi.string().pattern(OBJECTID_PATTERN).optional().messages({
+    "string.pattern.base": "validation:userId.invalid"
+  }),
 
-    ip: Joi.string()
-      .trim()
-      .max(SEARCH_MAX_LENGTH)
-      .optional()
-      .messages({ "string.max": "validation:search.invalid" }),
+  ip: Joi.string()
+    .trim()
+    .max(SEARCH_MAX_LENGTH)
+    .optional()
+    .messages({ "string.max": "validation:search.invalid" }),
 
-    sortBy: Joi.string()
-      .valid(...SORT_BY_ADMIN_VALUES)
-      .optional()
-      .messages({
-        "any.only": "validation:sortBy.invalid"
-      })
-  })
-  .options({ stripUnknown: true });
+  sortBy: Joi.string()
+    .valid(...SORT_BY_ADMIN_VALUES)
+    .optional()
+    .messages({
+      "any.only": "validation:sortBy.invalid"
+    })
+});
 
 export const loginHistoryIdParamSchema = Joi.object({
   id: Joi.string().pattern(OBJECTID_PATTERN).required().messages({
