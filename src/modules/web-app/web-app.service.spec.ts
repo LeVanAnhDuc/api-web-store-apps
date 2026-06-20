@@ -333,6 +333,7 @@ describe("WebAppService.listUserApps", () => {
       iconUrl: null,
       homeUrl: "https://blog.example.com",
       category: "Content",
+      categorySlug: null,
       isFavorite: false
     });
     expect(result.meta).toEqual({
@@ -477,8 +478,8 @@ describe("WebAppService.listUserCategories", () => {
     const result = await service.listUserCategories();
 
     expect(result).toEqual([
-      { _id: "c1", displayName: "Productivity" },
-      { _id: "c2", displayName: "Entertainment" }
+      { _id: "c1", displayName: "Productivity", slug: "productivity" },
+      { _id: "c2", displayName: "Entertainment", slug: "entertainment" }
     ]);
   });
 });

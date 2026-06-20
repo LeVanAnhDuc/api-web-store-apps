@@ -57,7 +57,8 @@ describe("LoginCompletionService", () => {
       email: user.email,
       roles: auth.roles,
       fullName: user.fullName,
-      avatar: null
+      avatar: null,
+      tokenVersion: auth.tokenVersion
     });
     expect(result).toEqual({
       accessToken: "a",
