@@ -38,7 +38,7 @@ export const createContactRoutes = (
   return router;
 };
 
-export const createContactAdminRoutes = (
+export const createAdminContactsRoutes = (
   controller: ContactAdminController
 ): Router => {
   const router = Router();

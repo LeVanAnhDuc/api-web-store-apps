@@ -6,6 +6,7 @@ import type {
   ForgotPasswordOtpData,
   LoginOtpData,
   MagicLinkData,
+  Mailer,
   PasswordChangedData,
   SendEmailOptions,
   SignupOtpData,
@@ -34,7 +35,7 @@ const CIRCUIT_BREAKER_CONFIG = {
   RESET_TIMEOUT_MS: 30000
 } as const;
 
-export class SendEmailService {
+export class SendEmailService implements Mailer {
   private readonly circuitBreaker: CircuitBreaker;
 
   constructor(private readonly transport: EmailTransport) {

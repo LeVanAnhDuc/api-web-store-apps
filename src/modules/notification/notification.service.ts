@@ -7,8 +7,8 @@ import type {
 import type { NotificationItemDto } from "./dtos";
 // common
 import { NotFoundError } from "@/common/exceptions";
-// modules
-import { NOTIFICATION_PAGINATION } from "@/modules/notification/constants";
+import { PAGINATION } from "@/common/pagination";
+import { resolveSortDirection } from "@/common/sort";
 // dtos
 import { toNotificationItemDto } from "./dtos";
 // others
@@ -17,7 +17,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 // helpers
 import { buildNotificationFilter } from "./helpers";
 
-const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = NOTIFICATION_PAGINATION;
+const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = PAGINATION;
 
 export class NotificationService {
   constructor(private readonly repo: NotificationRepository) {}
@@ -29,7 +29,7 @@ export class NotificationService {
     const page = query.page ?? DEFAULT_PAGE;
     const limit = Math.min(query.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
     const skip = (page - 1) * limit;
-    const sortOrder = query.sortOrder === "asc" ? 1 : -1;
+    const sortOrder = resolveSortDirection(query.sortOrder);
 
     const filter = buildNotificationFilter(query, userId);
     const { data, total } = await this.repo.findByUser(filter, {

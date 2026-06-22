@@ -34,16 +34,16 @@ import {
   generateClientId,
   generateClientSecret
 } from "./helpers";
-import { WEB_APP_DEFAULT_SCOPES } from "./constants";
+import {
+  WEB_APP_DEFAULT_SCOPES,
+  WEB_APP_PAGINATION,
+  WEB_APP_STATUS_PUBLIC
+} from "./constants";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
 import { ERROR_CODES } from "@/constants/error-code";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { RequestContext } from "@/utils/request-context";
-
-const DEFAULT_PAGE = 1;
-const DEFAULT_LIMIT = 12;
-const MAX_LIMIT = 100;
 
 export class WebAppService {
   constructor(
@@ -62,11 +62,12 @@ export class WebAppService {
     query: UserAppsQuery,
     role?: string
   ): Promise<PaginatedResult<UserAppDto>> {
+    const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = WEB_APP_PAGINATION;
     const page = query.page && query.page > 0 ? query.page : DEFAULT_PAGE;
     const limit = Math.min(query.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
     const filter = buildWebAppFilter({
       search: query.search,
-      status: "active",
+      status: WEB_APP_STATUS_PUBLIC.ACTIVE,
       categoryId: query.categoryId
     });
 

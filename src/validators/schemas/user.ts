@@ -3,8 +3,14 @@ import Joi from "joi";
 // types
 import type { UpdateProfileData } from "@/modules/user/types";
 // modules
-import { GENDERS } from "@/modules/user/constants";
+import {
+  GENDERS,
+  ADMIN_USER_STATUS_FILTERS,
+  ADMIN_USERS_SORT_BY
+} from "@/modules/user/constants";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+// common
+import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
 import {
   FULLNAME_VALIDATION,
@@ -80,7 +86,7 @@ export const updateProfileSchema: Joi.ObjectSchema<UpdateProfileData> =
       .messages({
         "any.only": "validation:gender.invalid"
       })
-  }).options({ stripUnknown: true });
+  });
 
 export const getPublicProfileSchema = Joi.object({
   id: Joi.string()
@@ -94,9 +100,7 @@ export const getPublicProfileSchema = Joi.object({
 });
 
 const ROLE_VALUES = Object.values(AUTHENTICATION_ROLES);
-const STATUS_FILTER_VALUES = ["active", "locked"] as const;
-const ADMIN_USERS_SORT_BY = ["createdAt", "fullName", "lastLoginAt"] as const;
-const SORT_ORDER_VALUES = ["asc", "desc"] as const;
+const STATUS_FILTER_VALUES = Object.values(ADMIN_USER_STATUS_FILTERS);
 const LIMIT_MAX = 100;
 
 export const adminUsersQuerySchema = Joi.object({
@@ -138,4 +142,4 @@ export const adminUsersQuerySchema = Joi.object({
     .valid(...SORT_ORDER_VALUES)
     .optional()
     .messages({ "any.only": "validation:sortOrder.invalid" })
-}).options({ stripUnknown: true });
+});

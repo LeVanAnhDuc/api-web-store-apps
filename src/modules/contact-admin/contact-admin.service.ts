@@ -14,6 +14,8 @@ import type {
 } from "./dtos";
 // common
 import { NotFoundError } from "@/common/exceptions";
+import { PAGINATION } from "@/common/pagination";
+import { resolveSortDirection } from "@/common/sort";
 // validators
 import { sanitizeText, validateStringLength } from "@/validators/utils";
 import { CONTACT_CONFIG } from "@/validators/constants";
@@ -28,10 +30,6 @@ import {
 import { ERROR_CODES } from "@/constants/error-code";
 import { CONTACT_STATUSES } from "./constants";
 import { buildContactFilter } from "./helpers";
-
-const DEFAULT_PAGE = 1;
-const DEFAULT_LIMIT = 20;
-const MAX_LIMIT = 100;
 
 export class ContactAdminService {
   constructor(private readonly contactRepo: ContactRepository) {}
@@ -70,6 +68,7 @@ export class ContactAdminService {
   async getContactList(
     query: AdminContactsQuery
   ): Promise<PaginatedResult<ContactListItemDto>> {
+    const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = PAGINATION;
     const {
       page = DEFAULT_PAGE,
       limit: rawLimit = DEFAULT_LIMIT,
@@ -79,7 +78,7 @@ export class ContactAdminService {
 
     const limit = Math.min(rawLimit, MAX_LIMIT);
     const skip = (page - 1) * limit;
-    const sortOrder = rawSortOrder === "asc" ? 1 : -1;
+    const sortOrder = resolveSortDirection(rawSortOrder);
 
     const filter = buildContactFilter(query);
     const { data, total } = await this.contactRepo.findAll(filter, {

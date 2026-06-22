@@ -51,3 +51,11 @@ export interface SendEmailOptions<T extends EmailType> {
   data: EmailDataMap[T];
   locale?: I18n.Locale;
 }
+
+export interface Mailer {
+  send<T extends EmailType>(type: T, options: SendEmailOptions<T>): void;
+  executeSend(
+    type: EmailType,
+    options: { email: string; data: Record<string, unknown>; locale?: string }
+  ): Promise<void>;
+}

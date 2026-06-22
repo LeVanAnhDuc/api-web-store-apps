@@ -6,10 +6,20 @@ import type {
   LOGIN_STATUSES,
   LOGIN_FAIL_REASONS,
   DEVICE_TYPES,
-  CLIENT_TYPES
+  CLIENT_TYPES,
+  LOGIN_HISTORY_SORT_BY_USER,
+  LOGIN_HISTORY_SORT_BY_ADMIN
 } from "@/modules/login-history/constants";
+// common
+import type { SortOrder } from "@/common/sort";
 
 export type LoginMethod = (typeof LOGIN_METHODS)[keyof typeof LOGIN_METHODS];
+
+export type LoginHistorySortByUser =
+  (typeof LOGIN_HISTORY_SORT_BY_USER)[number];
+
+export type LoginHistorySortByAdmin =
+  (typeof LOGIN_HISTORY_SORT_BY_ADMIN)[number];
 
 export interface PaginationParams {
   page: number;
@@ -27,21 +37,15 @@ export interface LoginHistoryQuery extends Partial<PaginationParams> {
   browser?: string;
   fromDate?: string;
   toDate?: string;
-  sortBy?: "createdAt" | "method" | "status" | "country";
-  sortOrder?: "asc" | "desc";
+  sortBy?: LoginHistorySortByUser;
+  sortOrder?: SortOrder;
 }
 
 export interface LoginHistoryAdminQuery
   extends Omit<LoginHistoryQuery, "sortBy"> {
   userId?: string;
   ip?: string;
-  sortBy?:
-    | "createdAt"
-    | "method"
-    | "status"
-    | "country"
-    | "ip"
-    | "usernameAttempted";
+  sortBy?: LoginHistorySortByAdmin;
 }
 
 export interface PaginatedResult<T> {

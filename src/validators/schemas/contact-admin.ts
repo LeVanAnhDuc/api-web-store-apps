@@ -5,8 +5,11 @@ import type { SubmitContactBody } from "@/modules/contact-admin/types";
 // modules
 import {
   CONTACT_PRIORITIES,
-  CONTACT_STATUSES
+  CONTACT_STATUSES,
+  ADMIN_CONTACTS_SORT_BY
 } from "@/modules/contact-admin/constants";
+// common
+import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
 import {
   CONTACT_CONFIG,
@@ -20,8 +23,7 @@ const PRIORITY_VALUES = Object.values(CONTACT_PRIORITIES);
 const STATUS_VALUES = Object.values(CONTACT_STATUSES);
 
 const LIMIT_MAX = 100;
-const SORT_ORDER_VALUES = ["asc", "desc"] as const;
-const ADMIN_SORT_BY_VALUES = ["createdAt", "priority", "status"] as const;
+const ADMIN_SORT_BY_VALUES = ADMIN_CONTACTS_SORT_BY;
 
 export const submitContactSchema: Joi.ObjectSchema<SubmitContactBody> =
   Joi.object({
@@ -129,5 +131,4 @@ export const adminListContactsQuerySchema = Joi.object({
     }
     return value;
   })
-  .messages({ "date.range": "validation:dateRange.invalid" })
-  .options({ stripUnknown: true });
+  .messages({ "date.range": "validation:dateRange.invalid" });

@@ -9,3 +9,9 @@ export const CONTACT_STATUSES = {
   PROCESSING: "processing",
   RESOLVED: "resolved"
 } as const;
+
+export const ADMIN_CONTACTS_SORT_BY = [
+  "createdAt",
+  "priority",
+  "status"
+] as const;

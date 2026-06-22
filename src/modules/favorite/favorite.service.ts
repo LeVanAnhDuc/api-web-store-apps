@@ -6,6 +6,8 @@ import type { UserAppDto } from "@/modules/web-app/dtos";
 import type { ListFavoritesQuery } from "./types";
 // dtos
 import { toFavoriteAppDto } from "./dtos";
+// constants
+import { FAVORITE_SORTS } from "./constants";
 // others
 import { RequestContext } from "@/utils/request-context";
 
@@ -43,7 +45,7 @@ export class FavoriteService {
 
     let items = docs.map(toFavoriteAppDto);
 
-    if (query.sort === "name") {
+    if (query.sort === FAVORITE_SORTS.NAME) {
       items = [...items].sort((a, b) =>
         a.displayName.localeCompare(b.displayName)
       );
