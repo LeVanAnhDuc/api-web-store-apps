@@ -9,6 +9,7 @@ import {
   ADMIN_CONTACTS_SORT_BY
 } from "@/modules/contact-admin/constants";
 // common
+import { PAGINATION } from "@/common/pagination";
 import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
 import {
@@ -22,7 +23,6 @@ import { emailSchema } from "./base";
 const PRIORITY_VALUES = Object.values(CONTACT_PRIORITIES);
 const STATUS_VALUES = Object.values(CONTACT_STATUSES);
 
-const LIMIT_MAX = 100;
 const ADMIN_SORT_BY_VALUES = ADMIN_CONTACTS_SORT_BY;
 
 export const submitContactSchema: Joi.ObjectSchema<SubmitContactBody> =
@@ -81,12 +81,17 @@ export const adminListContactsQuerySchema = Joi.object({
     "number.min": "validation:page.invalid"
   }),
 
-  limit: Joi.number().integer().min(1).max(LIMIT_MAX).optional().messages({
-    "number.base": "validation:limit.invalid",
-    "number.integer": "validation:limit.invalid",
-    "number.min": "validation:limit.invalid",
-    "number.max": "validation:limit.invalid"
-  }),
+  limit: Joi.number()
+    .integer()
+    .min(1)
+    .max(PAGINATION.MAX_LIMIT)
+    .optional()
+    .messages({
+      "number.base": "validation:limit.invalid",
+      "number.integer": "validation:limit.invalid",
+      "number.min": "validation:limit.invalid",
+      "number.max": "validation:limit.invalid"
+    }),
 
   status: Joi.string()
     .valid(...STATUS_VALUES)

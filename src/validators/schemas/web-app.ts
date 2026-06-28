@@ -11,6 +11,8 @@ import type {
 // modules
 import { WEB_APP_STATUS_PUBLIC } from "@/modules/web-app/constants";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+// common
+import { PAGINATION } from "@/common/pagination";
 // validators
 import { OBJECTID_PATTERN, SEARCH_MAX_LENGTH } from "@/validators/constants";
 
@@ -43,20 +45,23 @@ export const adminListAppsQuerySchema: Joi.ObjectSchema<AdminAppsQuery> =
     })
   });
 
-const LIMIT_MAX = 100;
-
 export const listAppsQuerySchema: Joi.ObjectSchema<UserAppsQuery> = Joi.object({
   page: Joi.number().integer().min(1).optional().messages({
     "number.base": "validation:page.invalid",
     "number.integer": "validation:page.invalid",
     "number.min": "validation:page.invalid"
   }),
-  limit: Joi.number().integer().min(1).max(LIMIT_MAX).optional().messages({
-    "number.base": "validation:limit.invalid",
-    "number.integer": "validation:limit.invalid",
-    "number.min": "validation:limit.invalid",
-    "number.max": "validation:limit.invalid"
-  }),
+  limit: Joi.number()
+    .integer()
+    .min(1)
+    .max(PAGINATION.MAX_LIMIT)
+    .optional()
+    .messages({
+      "number.base": "validation:limit.invalid",
+      "number.integer": "validation:limit.invalid",
+      "number.min": "validation:limit.invalid",
+      "number.max": "validation:limit.invalid"
+    }),
   search: Joi.string()
     .trim()
     .max(SEARCH_MAX_LENGTH)

@@ -1,11 +1,10 @@
 // libs
 import Joi from "joi";
 // common
+import { PAGINATION } from "@/common/pagination";
 import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
 import { OBJECTID_PATTERN } from "@/validators/constants";
-
-const LIMIT_MAX = 100;
 
 export const notificationListQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).optional().messages({
@@ -13,12 +12,17 @@ export const notificationListQuerySchema = Joi.object({
     "number.integer": "validation:page.invalid",
     "number.min": "validation:page.invalid"
   }),
-  limit: Joi.number().integer().min(1).max(LIMIT_MAX).optional().messages({
-    "number.base": "validation:limit.invalid",
-    "number.integer": "validation:limit.invalid",
-    "number.min": "validation:limit.invalid",
-    "number.max": "validation:limit.invalid"
-  }),
+  limit: Joi.number()
+    .integer()
+    .min(1)
+    .max(PAGINATION.MAX_LIMIT)
+    .optional()
+    .messages({
+      "number.base": "validation:limit.invalid",
+      "number.integer": "validation:limit.invalid",
+      "number.min": "validation:limit.invalid",
+      "number.max": "validation:limit.invalid"
+    }),
   isRead: Joi.boolean().optional().messages({
     "boolean.base": "validation:isRead.invalid"
   }),

@@ -10,6 +10,7 @@ import {
   LOGIN_HISTORY_SORT_BY_ADMIN
 } from "@/modules/login-history/constants";
 // common
+import { PAGINATION } from "@/common/pagination";
 import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
 import { OBJECTID_PATTERN, SEARCH_MAX_LENGTH } from "@/validators/constants";
@@ -22,8 +23,6 @@ const CLIENT_TYPE_VALUES = Object.values(CLIENT_TYPES);
 const SORT_BY_USER_VALUES = LOGIN_HISTORY_SORT_BY_USER;
 const SORT_BY_ADMIN_VALUES = LOGIN_HISTORY_SORT_BY_ADMIN;
 
-const LIMIT_MAX = 100;
-
 export const loginHistoryQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).optional().messages({
     "number.base": "validation:page.invalid",
@@ -31,12 +30,17 @@ export const loginHistoryQuerySchema = Joi.object({
     "number.min": "validation:page.invalid"
   }),
 
-  limit: Joi.number().integer().min(1).max(LIMIT_MAX).optional().messages({
-    "number.base": "validation:limit.invalid",
-    "number.integer": "validation:limit.invalid",
-    "number.min": "validation:limit.invalid",
-    "number.max": "validation:limit.invalid"
-  }),
+  limit: Joi.number()
+    .integer()
+    .min(1)
+    .max(PAGINATION.MAX_LIMIT)
+    .optional()
+    .messages({
+      "number.base": "validation:limit.invalid",
+      "number.integer": "validation:limit.invalid",
+      "number.min": "validation:limit.invalid",
+      "number.max": "validation:limit.invalid"
+    }),
 
   status: Joi.string()
     .valid(...STATUS_VALUES)

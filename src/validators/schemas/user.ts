@@ -10,6 +10,7 @@ import {
 } from "@/modules/user/constants";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // common
+import { PAGINATION } from "@/common/pagination";
 import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
 import {
@@ -101,7 +102,6 @@ export const getPublicProfileSchema = Joi.object({
 
 const ROLE_VALUES = Object.values(AUTHENTICATION_ROLES);
 const STATUS_FILTER_VALUES = Object.values(ADMIN_USER_STATUS_FILTERS);
-const LIMIT_MAX = 100;
 
 export const adminUsersQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).optional().messages({
@@ -110,12 +110,17 @@ export const adminUsersQuerySchema = Joi.object({
     "number.min": "validation:page.invalid"
   }),
 
-  limit: Joi.number().integer().min(1).max(LIMIT_MAX).optional().messages({
-    "number.base": "validation:limit.invalid",
-    "number.integer": "validation:limit.invalid",
-    "number.min": "validation:limit.invalid",
-    "number.max": "validation:limit.invalid"
-  }),
+  limit: Joi.number()
+    .integer()
+    .min(1)
+    .max(PAGINATION.MAX_LIMIT)
+    .optional()
+    .messages({
+      "number.base": "validation:limit.invalid",
+      "number.integer": "validation:limit.invalid",
+      "number.min": "validation:limit.invalid",
+      "number.max": "validation:limit.invalid"
+    }),
 
   search: Joi.string()
     .trim()
