@@ -48,6 +48,7 @@ export class WebAppController {
 
   listUserCategories = async (req: Request, res: Response): Promise<void> => {
     const data = await this.service.listUserCategories();
+    res.set("Cache-Control", "public, max-age=300");
     new OkSuccess({
       data,
       message: "webApp:success.listCategories"
