@@ -8,7 +8,8 @@
   "errors": {
     "nameExists": "Đã tồn tại ứng dụng với tên này.",
     "categoryNotFound": "Danh mục đã chọn không tồn tại.",
-    "notFound": "Không tìm thấy ứng dụng."
+    "notFound": "Không tìm thấy ứng dụng.",
+    "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau"
   },
   "validation": {
     "name": {
