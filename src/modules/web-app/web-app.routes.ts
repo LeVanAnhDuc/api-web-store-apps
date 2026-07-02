@@ -14,10 +14,12 @@ import {
 import {
   adminGuard,
   authGuard,
+  optionalAuthGuard,
   queryPipe,
   bodyPipe,
   paramsPipe
 } from "@/middlewares";
+import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
 import { asyncHandler } from "@/utils/async-handler";
 
 export const createAdminWebAppRoutes = (
@@ -54,17 +56,22 @@ export const createAdminWebAppRoutes = (
 };
 
 export const createUserWebAppRoutes = (
-  controller: WebAppController
+  controller: WebAppController,
+  rateLimiter: RateLimiterMiddleware
 ): Router => {
   const router = Router();
   const apps = Router();
 
-  apps.use(authGuard);
-
-  apps.get("/categories", asyncHandler(controller.listUserCategories));
+  apps.get(
+    "/categories",
+    rateLimiter.categoriesByIp,
+    optionalAuthGuard,
+    asyncHandler(controller.listUserCategories)
+  );
 
   apps.get(
     "/",
+    authGuard,
     queryPipe(listAppsQuerySchema),
     asyncHandler(controller.listUserApps)
   );

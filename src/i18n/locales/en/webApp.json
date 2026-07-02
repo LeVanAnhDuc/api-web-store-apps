@@ -8,7 +8,8 @@
   "errors": {
     "nameExists": "An app with this name already exists.",
     "categoryNotFound": "The selected category does not exist.",
-    "notFound": "App not found."
+    "notFound": "App not found.",
+    "rateLimitExceeded": "Too many requests. Please try again later"
   },
   "validation": {
     "name": {

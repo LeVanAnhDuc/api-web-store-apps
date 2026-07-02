@@ -115,5 +115,13 @@ export const RATE_LIMIT_CONFIG = {
         WINDOW_SECONDS: 900
       }
     }
+  },
+
+  CATEGORIES: {
+    PER_IP: {
+      KEY: "rate-limit:categories:ip:",
+      MAX_REQUESTS: 100,
+      WINDOW_SECONDS: 300
+    }
   }
 } as const;

@@ -144,7 +144,8 @@ export const loadModules = (
   const { contactAdminRouter, adminContactsRouter } =
     createContactAdminModule(rateLimiter);
 
-  const { webAppAdminRouter, webAppUserRouter } = createWebAppModule();
+  const { webAppAdminRouter, webAppUserRouter } =
+    createWebAppModule(rateLimiter);
 
   const { notificationUserRouter } = createNotificationModule();
 

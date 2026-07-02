@@ -302,16 +302,22 @@ List the active-app catalog for the launcher. Returns apps with \`status=active\
   },
   "/apps/categories": {
     get: {
-      summary: "List categories (user)",
+      summary: "List categories (public)",
       description: `
 List all app categories for the launcher catalog filter. Returns every
-category so the user can filter the active-app catalog by \`categoryId\`.
+category so callers can filter the active-app catalog by \`categoryId\`.
 
 **Authentication:**
-- Requires valid Bearer token (any authenticated user)
+- Public endpoint — no authentication required.
+- An optional Bearer token is accepted (attaches the requesting user when present) but anonymous requests are allowed.
+
+**Rate limiting:**
+- IP-based rate limit applies (see \`429\` response).
+
+**Caching:**
+- Response is cacheable — served with \`Cache-Control: public, max-age=300\`.
       `.trim(),
       tags: ["Web App"],
-      security: [{ bearerAuth: [] }],
       responses: {
         "200": {
           description: "Categories retrieved successfully",
@@ -336,7 +342,7 @@ category so the user can filter the active-app catalog by \`categoryId\`.
             }
           }
         },
-        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
       }
     }
   },
