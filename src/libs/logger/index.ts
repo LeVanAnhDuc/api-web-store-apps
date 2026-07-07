@@ -2,13 +2,20 @@
 import logger from "./winston";
 
 export class Logger {
-  static error(message: string, error?: Error | unknown): void {
+  static error(
+    message: string,
+    error?: Error | unknown,
+    meta?: Record<string, unknown>
+  ): void {
     if (error instanceof Error) {
-      logger.error(`${message} - ${error.message}`, { stack: error.stack });
+      logger.error(`${message} - ${error.message}`, {
+        ...meta,
+        stack: error.stack
+      });
     } else if (error) {
-      logger.error(`${message} - ${JSON.stringify(error)}`);
+      logger.error(`${message} - ${JSON.stringify(error)}`, meta);
     } else {
-      logger.error(message);
+      logger.error(message, meta);
     }
   }
 
@@ -34,3 +41,6 @@ export class Logger {
 }
 
 export default Logger;
+
+export { LogMethod } from "./log-method.decorator";
+export type { LogMethodOptions } from "./log-method.decorator";

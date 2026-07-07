@@ -20,7 +20,7 @@ import { toSendOtpResponseDto, toVerifyOtpResponseDto } from "../dtos";
 // others
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/libs/logger";
+import { Logger, LogMethod } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { FORGOT_PASSWORD_OTP_CONFIG } from "../constants";
 
@@ -36,11 +36,10 @@ export class OtpForgotPasswordStrategy {
     private readonly audit: ForgotPasswordAuditService
   ) {}
 
+  @LogMethod({ name: "Forgot password OTP send", fields: ["body.email"] })
   async sendCode(req: FPOtpSendRequest): Promise<SendOtpResponseDto> {
     const { email } = req.body;
     const { language } = req;
-
-    Logger.info("Forgot password OTP send initiated", { email });
 
     await this.cooldownGuard.assert(email);
     await this.resendLimitGuard.assert(email);
@@ -71,22 +70,18 @@ export class OtpForgotPasswordStrategy {
       locale: language as I18n.Locale
     });
 
-    Logger.info("Forgot password OTP send completed", {
-      email,
-      expiresIn: this.otpRepo.OTP_EXPIRY_SECONDS,
-      cooldown: this.otpRepo.OTP_COOLDOWN_SECONDS
-    });
-
     return toSendOtpResponseDto(
       this.otpRepo.OTP_EXPIRY_SECONDS,
       this.otpRepo.OTP_COOLDOWN_SECONDS
     );
   }
 
+  @LogMethod({
+    name: "Forgot password OTP verification",
+    fields: ["body.email"]
+  })
   async verifyCode(req: FPOtpVerifyRequest): Promise<VerifyOtpResponseDto> {
     const { email, otp } = req.body;
-
-    Logger.info("Forgot password OTP verification initiated", { email });
 
     await this.lockoutGuard.assert(email);
 
@@ -101,8 +96,6 @@ export class OtpForgotPasswordStrategy {
       operationName: "cleanupForgotPasswordOtpData",
       context: { email }
     });
-
-    Logger.info("Forgot password OTP verified successfully", { email });
 
     return toVerifyOtpResponseDto(resetToken);
   }

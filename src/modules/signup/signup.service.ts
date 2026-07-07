@@ -46,7 +46,7 @@ import {
 // others
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/libs/logger";
+import { Logger, LogMethod } from "@/libs/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { isDuplicateKeyError, getDuplicatedField } from "@/utils/mongo-errors";
 import { OTP_CONFIG, SESSION_CONFIG } from "./constants";
@@ -72,11 +72,10 @@ export class SignupService {
     private readonly cooldownGuard: CooldownGuard
   ) {}
 
+  @LogMethod({ name: "SendOtp", fields: ["email"] })
   async sendOtp(body: SendOtpBody, req: Request): Promise<SendOtpDto> {
     const { email } = body;
     const { language } = req;
-
-    Logger.info("SendOtp initiated", { email });
 
     await this.cooldownGuard.assert(email);
     await this.emailAvailableGuard.assert(email);
@@ -94,19 +93,12 @@ export class SignupService {
       locale: language as I18n.Locale
     });
 
-    Logger.info("SendOtp completed", {
-      email,
-      expiresIn: OTP_EXPIRY_SECONDS,
-      cooldownSeconds: OTP_COOLDOWN_SECONDS
-    });
-
     return toSendOtpDto(OTP_EXPIRY_SECONDS, OTP_COOLDOWN_SECONDS);
   }
 
+  @LogMethod({ name: "VerifyOtp", fields: ["email"] })
   async verifyOtp(body: VerifyOtpBody): Promise<VerifyOtpDto> {
     const { email, otp } = body;
-
-    Logger.info("VerifyOtp initiated", { email });
 
     const isLocked = await this.otpSignupRepo.isLocked(
       email,
@@ -133,19 +125,13 @@ export class SignupService {
 
     await this.otpSignupRepo.cleanupOtpData(email);
 
-    Logger.info("VerifyOtp completed successfully", {
-      email,
-      sessionExpiresIn: SESSION_EXPIRY_SECONDS
-    });
-
     return toVerifyOtpDto(sessionToken, SESSION_EXPIRY_SECONDS);
   }
 
+  @LogMethod({ name: "ResendOtp", fields: ["email"] })
   async resendOtp(body: ResendOtpBody, req: Request): Promise<ResendOtpDto> {
     const { email } = body;
     const { language } = req;
-
-    Logger.info("ResendOtp initiated", { email });
 
     await this.cooldownGuard.assert(email);
 
@@ -192,13 +178,6 @@ export class SignupService {
       locale: language as I18n.Locale
     });
 
-    Logger.info("ResendOtp completed", {
-      email,
-      resendCount: currentResendCount,
-      maxResends: MAX_RESEND_COUNT,
-      expiresIn: OTP_EXPIRY_SECONDS
-    });
-
     return toResendOtpDto(
       OTP_EXPIRY_SECONDS,
       OTP_COOLDOWN_SECONDS,
@@ -207,11 +186,10 @@ export class SignupService {
     );
   }
 
+  @LogMethod({ name: "CompleteSignup", fields: ["email"] })
   async completeSignup(body: CompleteSignupBody): Promise<CompleteSignupDto> {
     const { email, password, fullName, gender, dateOfBirth, sessionToken } =
       body;
-
-    Logger.info("CompleteSignup initiated", { email });
 
     const isValid = await this.sessionSignupRepo.verify(email, sessionToken);
 
@@ -251,7 +229,7 @@ export class SignupService {
 
     Logger.debug("Signup data cleaned up", { email });
 
-    Logger.info("CompleteSignup finished - new user registered", {
+    Logger.info("New user registered", {
       email,
       userId: account.userId.toString()
     });
@@ -259,14 +237,11 @@ export class SignupService {
     return toCompleteSignupDto(account, tokens);
   }
 
+  @LogMethod({ name: "CheckEmail", fields: ["email"] })
   async checkEmail(params: CheckEmailParams): Promise<CheckEmailDto> {
     const { email } = params;
 
-    Logger.info("CheckEmail initiated", { email });
-
     const exists = await this.userService.emailExists(email);
-
-    Logger.info("CheckEmail completed", { email });
 
     return toCheckEmailDto(!exists);
   }

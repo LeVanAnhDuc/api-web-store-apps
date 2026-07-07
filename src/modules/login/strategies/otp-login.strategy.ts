@@ -27,7 +27,7 @@ import { toOtpSendDto } from "../dtos";
 // others
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/libs/logger";
+import { Logger, LogMethod } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { LOGIN_OTP_CONFIG } from "../constants";
 
@@ -44,11 +44,10 @@ export class OtpLoginStrategy {
     private readonly completion: LoginCompletionService
   ) {}
 
+  @LogMethod({ name: "Login OTP send", fields: ["email"] })
   async sendCode(body: OtpSendBody, req: Request): Promise<OtpSendDto> {
     const { email } = body;
     const { language } = req;
-
-    Logger.info("Login OTP send initiated", { email });
 
     await this.otpCooldownGuard.assert(email);
 
@@ -86,25 +85,18 @@ export class OtpLoginStrategy {
       locale: language as I18n.Locale
     });
 
-    Logger.info("Login OTP send completed", {
-      email,
-      expiresIn: this.otpLoginRepo.OTP_EXPIRY_SECONDS,
-      cooldown: this.otpLoginRepo.OTP_COOLDOWN_SECONDS
-    });
-
     return toOtpSendDto(
       this.otpLoginRepo.OTP_EXPIRY_SECONDS,
       this.otpLoginRepo.OTP_COOLDOWN_SECONDS
     );
   }
 
+  @LogMethod({ name: "Login OTP verification", fields: ["email"] })
   async verifyCode(
     body: OtpVerifyBody,
     req: Request
   ): Promise<LoginResponseDto> {
     const { email, otp } = body;
-
-    Logger.info("Login OTP verification initiated", { email });
 
     await this.otpLockoutGuard.assert(email);
 

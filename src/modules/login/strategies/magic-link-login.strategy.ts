@@ -22,7 +22,7 @@ import { toMagicLinkSendDto } from "../dtos";
 import ENV from "@/constants/env";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/libs/logger";
+import { Logger, LogMethod } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { MAGIC_LINK_CONFIG } from "../constants";
 
@@ -38,14 +38,13 @@ export class MagicLinkLoginStrategy {
     private readonly completion: LoginCompletionService
   ) {}
 
+  @LogMethod({ name: "Magic link send", fields: ["email"] })
   async sendLink(
     body: MagicLinkSendBody,
     req: Request
   ): Promise<MagicLinkSendDto> {
     const { email } = body;
     const { language } = req;
-
-    Logger.info("Magic link send initiated", { email });
 
     await this.magicLinkCooldownGuard.assert(email);
 
@@ -80,25 +79,18 @@ export class MagicLinkLoginStrategy {
       locale: language as I18n.Locale
     });
 
-    Logger.info("Magic link send completed", {
-      email,
-      expiresIn: this.magicLinkLoginRepo.MAGIC_LINK_EXPIRY_SECONDS,
-      cooldown: this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
-    });
-
     return toMagicLinkSendDto(
       this.magicLinkLoginRepo.MAGIC_LINK_EXPIRY_SECONDS,
       this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
     );
   }
 
+  @LogMethod({ name: "Magic link verification", fields: ["email"] })
   async verifyLink(
     body: MagicLinkVerifyBody,
     req: Request
   ): Promise<LoginResponseDto> {
     const { email, token } = body;
-
-    Logger.info("Magic link verification initiated", { email });
 
     const { auth, user } = await this.accountExistsGuard.assert(email);
 
