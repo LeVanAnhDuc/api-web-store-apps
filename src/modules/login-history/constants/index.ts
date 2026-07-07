@@ -64,7 +64,8 @@ export const LOGIN_HISTORY_SORT_BY_ADMIN = [
 export const GEO_DEFAULTS = {
   UNKNOWN_COUNTRY: "UNKNOWN",
   UNKNOWN_CITY: "UNKNOWN",
-  UNKNOWN_IP: "UNKNOWN"
+  UNKNOWN_IP: "UNKNOWN",
+  LOCAL: "LOCAL"
 } as const;
 
 export const USER_AGENT_DEFAULTS = {
@@ -75,8 +76,7 @@ export const USER_AGENT_DEFAULTS = {
 
 export const HTTP_HEADERS = {
   USER_AGENT: "user-agent",
-  CLIENT_TYPE: "x-client-type",
-  X_FORWARDED_FOR: "x-forwarded-for"
+  CLIENT_TYPE: "x-client-type"
 } as const;
 
 export const LOGIN_HISTORY_CONFIG = {

@@ -15,34 +15,39 @@ import {
   DEVICE_TYPES,
   GEO_DEFAULTS,
   USER_AGENT_DEFAULTS,
-  HTTP_HEADERS,
   LOCALHOST_VALUES,
   PRIVATE_IP_PATTERNS
 } from "@/modules/login-history/constants";
 // others
 import { Logger } from "@/libs/logger";
 
-const COMMA_SEPARATOR = ",";
-const FIRST_IP_INDEX = 0;
+const IPV4_MAPPED_PREFIX = "::ffff:";
+const IPV6_LOOPBACK = "::1";
+const IPV4_LOOPBACK = "127.0.0.1";
+
+export const normalizeIp = (ip: string): string => {
+  if (!ip) return ip;
+  let normalized = ip.trim();
+  if (normalized.startsWith(IPV4_MAPPED_PREFIX)) {
+    normalized = normalized.slice(IPV4_MAPPED_PREFIX.length);
+  }
+  if (normalized === IPV6_LOOPBACK) {
+    normalized = IPV4_LOOPBACK;
+  }
+  return normalized;
+};
+
+const isPrivateOrLocalIp = (ip: string): boolean => {
+  const isPrivate = PRIVATE_IP_PATTERNS.some((pattern) => pattern.test(ip));
+  const isLocalhost = LOCALHOST_VALUES.includes(
+    ip as (typeof LOCALHOST_VALUES)[number]
+  );
+  return isPrivate || isLocalhost;
+};
 
 export const extractIp = (req: Request): string => {
-  const xForwardedFor = req.headers[HTTP_HEADERS.X_FORWARDED_FOR];
-
-  if (xForwardedFor) {
-    if (typeof xForwardedFor === "string") {
-      return xForwardedFor.split(COMMA_SEPARATOR)[FIRST_IP_INDEX].trim();
-    }
-
-    if (Array.isArray(xForwardedFor)) {
-      return xForwardedFor[FIRST_IP_INDEX].trim();
-    }
-  }
-
-  if (req.socket.remoteAddress) {
-    return req.socket.remoteAddress;
-  }
-
-  return GEO_DEFAULTS.UNKNOWN_IP;
+  const rawIp = req.ip || req.socket.remoteAddress || GEO_DEFAULTS.UNKNOWN_IP;
+  return normalizeIp(rawIp);
 };
 
 // ──────────────────────────────────────────────
@@ -125,15 +130,10 @@ export const geoipLookup = (
       };
     }
 
-    const isPrivate = PRIVATE_IP_PATTERNS.some((pattern) => pattern.test(ip));
-    const isLocalhost = LOCALHOST_VALUES.includes(
-      ip as (typeof LOCALHOST_VALUES)[number]
-    );
-
-    if (isPrivate || isLocalhost) {
+    if (isPrivateOrLocalIp(ip)) {
       return {
-        country: GEO_DEFAULTS.UNKNOWN_COUNTRY,
-        city: GEO_DEFAULTS.UNKNOWN_CITY
+        country: GEO_DEFAULTS.LOCAL,
+        city: GEO_DEFAULTS.LOCAL
       };
     }
 
@@ -169,7 +169,13 @@ const IPV4_KEEP_PARTS = 2;
 const IPV6_MIN_PARTS = 4;
 const IPV6_KEEP_PARTS = 3;
 
-export const maskIp = (ip: string): string => {
+export const maskIp = (rawIp: string): string => {
+  const ip = normalizeIp(rawIp);
+
+  if (isPrivateOrLocalIp(ip)) {
+    return ip;
+  }
+
   const ipv4Parts = ip.split(".");
   if (ipv4Parts.length === IPV4_PARTS) {
     return `${ipv4Parts.slice(0, IPV4_KEEP_PARTS).join(".")}.*.*`;
