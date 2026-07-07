@@ -29,7 +29,7 @@ import {
 import ENV from "@/constants/env";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
-import { Logger } from "@/libs/logger";
+import { Logger, LogMethod } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { FORGOT_PASSWORD_MAGIC_LINK_CONFIG } from "../constants";
 
@@ -44,13 +44,15 @@ export class MagicLinkForgotPasswordStrategy {
     private readonly audit: ForgotPasswordAuditService
   ) {}
 
+  @LogMethod({
+    name: "Forgot password magic link send",
+    fields: ["body.email"]
+  })
   async sendLink(
     req: FPMagicLinkSendRequest
   ): Promise<SendMagicLinkResponseDto> {
     const { email } = req.body;
     const { language } = req;
-
-    Logger.info("Forgot password magic link send initiated", { email });
 
     await this.cooldownGuard.assert(email);
     await this.resendLimitGuard.assert(email);
@@ -77,24 +79,20 @@ export class MagicLinkForgotPasswordStrategy {
 
     this.sendMagicLinkEmail(email, token, language);
 
-    Logger.info("Forgot password magic link send completed", {
-      email,
-      expiresIn: this.magicLinkRepo.MAGIC_LINK_EXPIRY_SECONDS,
-      cooldown: this.magicLinkRepo.MAGIC_LINK_COOLDOWN_SECONDS
-    });
-
     return toSendMagicLinkResponseDto(
       this.magicLinkRepo.MAGIC_LINK_EXPIRY_SECONDS,
       this.magicLinkRepo.MAGIC_LINK_COOLDOWN_SECONDS
     );
   }
 
+  @LogMethod({
+    name: "Forgot password magic link verification",
+    fields: ["body.email"]
+  })
   async verifyLink(
     req: FPMagicLinkVerifyRequest
   ): Promise<VerifyMagicLinkResponseDto> {
     const { email, token } = req.body;
-
-    Logger.info("Forgot password magic link verification initiated", { email });
 
     const { auth } = await this.authExistsGuard.assert(email);
 
@@ -113,8 +111,6 @@ export class MagicLinkForgotPasswordStrategy {
       operationName: "cleanupForgotPasswordMagicLinkData",
       context: { email }
     });
-
-    Logger.info("Forgot password magic link verified successfully", { email });
 
     return toVerifyMagicLinkResponseDto(resetToken);
   }

@@ -9,15 +9,27 @@ import { ERROR_CODES } from "@/constants/error-code";
 
 interface RequestStore {
   user?: RequestUserPayload;
+  requestId?: string;
 }
 
 // AsyncLocalStorage share data across the same Async Context
 const storage = new AsyncLocalStorage<RequestStore>();
 
 export const RequestContext = {
-  middleware: (): RequestHandler => (_req, _res, next) => {
-    storage.run({}, next);
+  middleware: (): RequestHandler => (req, _res, next) => {
+    storage.run({}, () => {
+      const store = storage.getStore();
+      if (store && req.requestId) store.requestId = req.requestId;
+      next();
+    });
   },
+
+  setRequestId: (requestId: string): void => {
+    const store = storage.getStore();
+    if (store) store.requestId = requestId;
+  },
+
+  getRequestId: (): string | undefined => storage.getStore()?.requestId,
 
   setUser: (user: RequestUserPayload): void => {
     const store = storage.getStore();

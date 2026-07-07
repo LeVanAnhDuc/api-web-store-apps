@@ -3,7 +3,7 @@ import type { NextFunction, Request, Response } from "express";
 // common
 import { DatabaseError, ErrorResponse } from "@/common/exceptions";
 // others
-import Logger from "@/libs/logger";
+import { Logger } from "@/libs/logger";
 import {
   isDuplicateKeyError,
   isMongooseValidationError,

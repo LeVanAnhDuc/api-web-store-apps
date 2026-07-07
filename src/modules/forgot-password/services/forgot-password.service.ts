@@ -24,7 +24,7 @@ import type { ForgotPasswordAuditService } from "./forgot-password-audit.service
 // dtos
 import { toResetPasswordResponseDto } from "../dtos";
 // others
-import { Logger } from "@/libs/logger";
+import { LogMethod } from "@/libs/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 
 export class ForgotPasswordService {
@@ -58,12 +58,11 @@ export class ForgotPasswordService {
     return this.magicLinkStrategy.verifyLink(req);
   }
 
+  @LogMethod({ name: "Forgot password reset", fields: ["body.email"] })
   async resetPassword(
     req: FPResetPasswordRequest
   ): Promise<ResetPasswordResponseDto> {
     const { email, resetToken, newPassword } = req.body;
-
-    Logger.info("Forgot password reset initiated", { email });
 
     await this.resetTokenValidGuard.assert(email, resetToken);
 
