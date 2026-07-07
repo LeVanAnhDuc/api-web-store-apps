@@ -35,7 +35,7 @@ yarn install
 
 ### 2. Configure environment variables
 
-Create a `.env` file in the project root:
+Copy `.env.example` to `.env` in the project root and fill in the values:
 
 ```env
 # ──── Server ────
@@ -43,6 +43,7 @@ APP_PORT=5000
 NODE_ENV=development
 CLIENT_URL=http://localhost:3000
 CORS_ORIGINS=http://localhost:3000
+TRUST_PROXY=loopback
 
 # ──── MongoDB ────
 DB_URL=mongodb://localhost:27017
@@ -69,6 +70,8 @@ LOG_LEVEL=http
 ```
 
 > **Note:** All environment variables are accessed through `src/config/env.ts`. Never read `process.env` directly in application code.
+
+> **`TRUST_PROXY` security note:** controls Express's `trust proxy` setting, which determines how `req.ip` resolves the `x-forwarded-for` header (used for login-history IP capture). In production, set it to the number of trusted proxy hops (e.g. `1`) or a trusted proxy subnet — do **not** use `"true"`, as it lets clients spoof the logged IP. The default `loopback` is safe for local development / no-proxy setups.
 
 ### 3. Seed the database (optional)
 

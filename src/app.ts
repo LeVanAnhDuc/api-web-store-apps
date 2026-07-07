@@ -12,6 +12,11 @@ import { RequestContext } from "@/utils/request-context";
 
 const app = express();
 
+// Tin tưởng reverse proxy/LB theo cấu hình TRUST_PROXY (default "loopback").
+// Cần thiết để req.ip lấy đúng IP client thật từ x-forwarded-for; cấu hình
+// hẹp (loopback) tránh bị spoof header khi không có proxy tin cậy.
+app.set("trust proxy", config.TRUST_PROXY);
+
 // Tự động set các HTTP security headers để chống các tấn công phổ biến:
 // - X-Content-Type-Options: nosniff — chống MIME sniffing
 // - X-Frame-Options: SAMEORIGIN — chống clickjacking

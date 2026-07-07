@@ -3,6 +3,15 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
+const parseTrustProxy = (raw?: string): boolean | number | string => {
+  const value = (raw ?? "loopback").trim();
+  if (value === "true") return true;
+  if (value === "false") return false;
+  const asNumber = Number(value);
+  if (!Number.isNaN(asNumber) && value !== "") return asNumber;
+  return value;
+};
+
 const ENV = {
   NODE_ENV: process.env.NODE_ENV || "development",
   APP_PORT: process.env.APP_PORT,
@@ -12,6 +21,7 @@ const ENV = {
   ),
   LOG_LEVEL: process.env.LOG_LEVEL || "info",
   ALLOW_CROSS_ORIGIN_COOKIES: process.env.ALLOW_CROSS_ORIGIN_COOKIES,
+  TRUST_PROXY: parseTrustProxy(process.env.TRUST_PROXY),
 
   DB_URL: process.env.DB_URL,
   DB_NAME: process.env.DB_NAME,
