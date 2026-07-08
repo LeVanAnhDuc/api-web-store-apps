@@ -4,45 +4,11 @@ import { RequestContext } from "@/utils/request-context";
 
 export interface LogMethodOptions {
   name?: string;
-  fields?: string[];
   level?: "info" | "debug";
 }
 
-function resolvePath(obj: unknown, path: string): unknown {
-  return path
-    .split(".")
-    .reduce<unknown>(
-      (acc, key) =>
-        acc && typeof acc === "object"
-          ? (acc as Record<string, unknown>)[key]
-          : undefined,
-      obj
-    );
-}
-
-function pickFields(arg: unknown, fields: string[]): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  if (!fields.length || typeof arg !== "object" || arg === null) return out;
-  for (const path of fields) {
-    const value = resolvePath(arg, path);
-    // Only log leaf primitives — never copy an object/array/function into the
-    // log, which could leak sibling secrets (password/otp/token) if a caller
-    // ever points `fields` at a container instead of a leaf.
-    if (
-      value !== undefined &&
-      value !== null &&
-      typeof value !== "object" &&
-      typeof value !== "function"
-    ) {
-      const key = path.split(".").pop() as string;
-      out[key] = value;
-    }
-  }
-  return out;
-}
-
 export function LogMethod(options: LogMethodOptions = {}): MethodDecorator {
-  const { name, fields = [], level = "info" } = options;
+  const { name, level = "info" } = options;
 
   return (
     target: object,
@@ -56,13 +22,16 @@ export function LogMethod(options: LogMethodOptions = {}): MethodDecorator {
       name ?? (className ? `${className}.${methodName}` : methodName);
 
     descriptor.value = function (this: unknown, ...args: unknown[]): unknown {
-      // The aspect must NEVER throw from its own logging and break the business
-      // flow (design §7). Building meta and every Logger call is guarded.
+      // Aspect chỉ lấy correlation từ RequestContext, KHÔNG đọc args.
+      // Logging không bao giờ throw ra business flow.
       let baseMeta: Record<string, unknown> = {};
       try {
-        const picked = pickFields(args[0], fields);
         const requestId = RequestContext.getRequestId();
-        baseMeta = { ...picked, ...(requestId ? { requestId } : {}) };
+        const userId = RequestContext.getUserId();
+        baseMeta = {
+          ...(requestId ? { requestId } : {}),
+          ...(userId ? { userId } : {})
+        };
       } catch {
         baseMeta = {};
       }

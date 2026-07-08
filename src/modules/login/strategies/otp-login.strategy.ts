@@ -44,7 +44,7 @@ export class OtpLoginStrategy {
     private readonly completion: LoginCompletionService
   ) {}
 
-  @LogMethod({ name: "Login OTP send", fields: ["email"] })
+  @LogMethod({ name: "Login OTP send" })
   async sendCode(body: OtpSendBody, req: Request): Promise<OtpSendDto> {
     const { email } = body;
     const { language } = req;
@@ -85,13 +85,19 @@ export class OtpLoginStrategy {
       locale: language as I18n.Locale
     });
 
+    Logger.info("Login OTP sent", {
+      email,
+      expiresIn: this.otpLoginRepo.OTP_EXPIRY_SECONDS,
+      cooldown: this.otpLoginRepo.OTP_COOLDOWN_SECONDS
+    });
+
     return toOtpSendDto(
       this.otpLoginRepo.OTP_EXPIRY_SECONDS,
       this.otpLoginRepo.OTP_COOLDOWN_SECONDS
     );
   }
 
-  @LogMethod({ name: "Login OTP verification", fields: ["email"] })
+  @LogMethod({ name: "Login OTP verification" })
   async verifyCode(
     body: OtpVerifyBody,
     req: Request
@@ -122,6 +128,8 @@ export class OtpLoginStrategy {
       operationName: "cleanupLoginOtpData",
       context: { email }
     });
+
+    Logger.info("Login OTP verified", { email });
 
     return this.completion.complete({
       auth,

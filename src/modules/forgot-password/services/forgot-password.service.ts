@@ -58,7 +58,7 @@ export class ForgotPasswordService {
     return this.magicLinkStrategy.verifyLink(req);
   }
 
-  @LogMethod({ name: "Forgot password reset", fields: ["body.email"] })
+  @LogMethod({ name: "Forgot password reset" })
   async resetPassword(
     req: FPResetPasswordRequest
   ): Promise<ResetPasswordResponseDto> {

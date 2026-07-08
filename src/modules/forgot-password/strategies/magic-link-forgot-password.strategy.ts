@@ -44,10 +44,7 @@ export class MagicLinkForgotPasswordStrategy {
     private readonly audit: ForgotPasswordAuditService
   ) {}
 
-  @LogMethod({
-    name: "Forgot password magic link send",
-    fields: ["body.email"]
-  })
+  @LogMethod({ name: "Forgot password magic link send" })
   async sendLink(
     req: FPMagicLinkSendRequest
   ): Promise<SendMagicLinkResponseDto> {
@@ -79,16 +76,19 @@ export class MagicLinkForgotPasswordStrategy {
 
     this.sendMagicLinkEmail(email, token, language);
 
+    Logger.info("Forgot-password magic link sent", {
+      email,
+      expiresIn: this.magicLinkRepo.MAGIC_LINK_EXPIRY_SECONDS,
+      cooldown: this.magicLinkRepo.MAGIC_LINK_COOLDOWN_SECONDS
+    });
+
     return toSendMagicLinkResponseDto(
       this.magicLinkRepo.MAGIC_LINK_EXPIRY_SECONDS,
       this.magicLinkRepo.MAGIC_LINK_COOLDOWN_SECONDS
     );
   }
 
-  @LogMethod({
-    name: "Forgot password magic link verification",
-    fields: ["body.email"]
-  })
+  @LogMethod({ name: "Forgot password magic link verification" })
   async verifyLink(
     req: FPMagicLinkVerifyRequest
   ): Promise<VerifyMagicLinkResponseDto> {
@@ -111,6 +111,8 @@ export class MagicLinkForgotPasswordStrategy {
       operationName: "cleanupForgotPasswordMagicLinkData",
       context: { email }
     });
+
+    Logger.info("Forgot-password magic link verified", { email });
 
     return toVerifyMagicLinkResponseDto(resetToken);
   }

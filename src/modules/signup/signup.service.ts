@@ -72,7 +72,7 @@ export class SignupService {
     private readonly cooldownGuard: CooldownGuard
   ) {}
 
-  @LogMethod({ name: "SendOtp", fields: ["email"] })
+  @LogMethod({ name: "SendOtp" })
   async sendOtp(body: SendOtpBody, req: Request): Promise<SendOtpDto> {
     const { email } = body;
     const { language } = req;
@@ -93,10 +93,16 @@ export class SignupService {
       locale: language as I18n.Locale
     });
 
+    Logger.info("Signup OTP sent", {
+      email,
+      expiresIn: OTP_EXPIRY_SECONDS,
+      cooldownSeconds: OTP_COOLDOWN_SECONDS
+    });
+
     return toSendOtpDto(OTP_EXPIRY_SECONDS, OTP_COOLDOWN_SECONDS);
   }
 
-  @LogMethod({ name: "VerifyOtp", fields: ["email"] })
+  @LogMethod({ name: "VerifyOtp" })
   async verifyOtp(body: VerifyOtpBody): Promise<VerifyOtpDto> {
     const { email, otp } = body;
 
@@ -125,10 +131,15 @@ export class SignupService {
 
     await this.otpSignupRepo.cleanupOtpData(email);
 
+    Logger.info("Signup session issued", {
+      email,
+      sessionExpiresIn: SESSION_EXPIRY_SECONDS
+    });
+
     return toVerifyOtpDto(sessionToken, SESSION_EXPIRY_SECONDS);
   }
 
-  @LogMethod({ name: "ResendOtp", fields: ["email"] })
+  @LogMethod({ name: "ResendOtp" })
   async resendOtp(body: ResendOtpBody, req: Request): Promise<ResendOtpDto> {
     const { email } = body;
     const { language } = req;
@@ -178,6 +189,12 @@ export class SignupService {
       locale: language as I18n.Locale
     });
 
+    Logger.info("Signup OTP resent", {
+      email,
+      resendCount: currentResendCount,
+      maxResends: MAX_RESEND_COUNT
+    });
+
     return toResendOtpDto(
       OTP_EXPIRY_SECONDS,
       OTP_COOLDOWN_SECONDS,
@@ -186,7 +203,7 @@ export class SignupService {
     );
   }
 
-  @LogMethod({ name: "CompleteSignup", fields: ["email"] })
+  @LogMethod({ name: "CompleteSignup" })
   async completeSignup(body: CompleteSignupBody): Promise<CompleteSignupDto> {
     const { email, password, fullName, gender, dateOfBirth, sessionToken } =
       body;
@@ -237,7 +254,7 @@ export class SignupService {
     return toCompleteSignupDto(account, tokens);
   }
 
-  @LogMethod({ name: "CheckEmail", fields: ["email"] })
+  @LogMethod({ name: "CheckEmail" })
   async checkEmail(params: CheckEmailParams): Promise<CheckEmailDto> {
     const { email } = params;
 
