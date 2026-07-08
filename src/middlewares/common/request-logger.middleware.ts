@@ -2,6 +2,7 @@
 import type { Request, Response, NextFunction } from "express";
 // others
 import { Logger } from "@/libs/logger";
+import { redactSensitive } from "@/utils/redact";
 
 export const requestLogger = (
   req: Request,
@@ -14,9 +15,9 @@ export const requestLogger = (
     requestId: req.requestId,
     ip: req.ip,
     userAgent: req.get("user-agent"),
-    body: req.body,
-    query: req.query,
-    params: req.params
+    body: redactSensitive(req.body),
+    query: redactSensitive(req.query),
+    params: redactSensitive(req.params)
   });
 
   res.on("finish", () => {
