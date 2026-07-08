@@ -38,7 +38,7 @@ export class MagicLinkLoginStrategy {
     private readonly completion: LoginCompletionService
   ) {}
 
-  @LogMethod({ name: "Magic link send", fields: ["email"] })
+  @LogMethod({ name: "Magic link send" })
   async sendLink(
     body: MagicLinkSendBody,
     req: Request
@@ -79,13 +79,19 @@ export class MagicLinkLoginStrategy {
       locale: language as I18n.Locale
     });
 
+    Logger.info("Magic link sent", {
+      email,
+      expiresIn: this.magicLinkLoginRepo.MAGIC_LINK_EXPIRY_SECONDS,
+      cooldown: this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
+    });
+
     return toMagicLinkSendDto(
       this.magicLinkLoginRepo.MAGIC_LINK_EXPIRY_SECONDS,
       this.magicLinkLoginRepo.MAGIC_LINK_COOLDOWN_SECONDS
     );
   }
 
-  @LogMethod({ name: "Magic link verification", fields: ["email"] })
+  @LogMethod({ name: "Magic link verification" })
   async verifyLink(
     body: MagicLinkVerifyBody,
     req: Request
@@ -120,6 +126,8 @@ export class MagicLinkLoginStrategy {
       operationName: "cleanupMagicLinkData",
       context: { email }
     });
+
+    Logger.info("Magic link verified", { email });
 
     return this.completion.complete({
       auth,

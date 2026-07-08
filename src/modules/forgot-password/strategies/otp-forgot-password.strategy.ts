@@ -36,7 +36,7 @@ export class OtpForgotPasswordStrategy {
     private readonly audit: ForgotPasswordAuditService
   ) {}
 
-  @LogMethod({ name: "Forgot password OTP send", fields: ["body.email"] })
+  @LogMethod({ name: "Forgot password OTP send" })
   async sendCode(req: FPOtpSendRequest): Promise<SendOtpResponseDto> {
     const { email } = req.body;
     const { language } = req;
@@ -70,16 +70,19 @@ export class OtpForgotPasswordStrategy {
       locale: language as I18n.Locale
     });
 
+    Logger.info("Forgot-password OTP sent", {
+      email,
+      expiresIn: this.otpRepo.OTP_EXPIRY_SECONDS,
+      cooldown: this.otpRepo.OTP_COOLDOWN_SECONDS
+    });
+
     return toSendOtpResponseDto(
       this.otpRepo.OTP_EXPIRY_SECONDS,
       this.otpRepo.OTP_COOLDOWN_SECONDS
     );
   }
 
-  @LogMethod({
-    name: "Forgot password OTP verification",
-    fields: ["body.email"]
-  })
+  @LogMethod({ name: "Forgot password OTP verification" })
   async verifyCode(req: FPOtpVerifyRequest): Promise<VerifyOtpResponseDto> {
     const { email, otp } = req.body;
 
@@ -96,6 +99,8 @@ export class OtpForgotPasswordStrategy {
       operationName: "cleanupForgotPasswordOtpData",
       context: { email }
     });
+
+    Logger.info("Forgot-password OTP verified", { email });
 
     return toVerifyOtpResponseDto(resetToken);
   }

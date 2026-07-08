@@ -18,7 +18,7 @@ import { TooManyRequestsError, UnauthorizedError } from "@/common/exceptions";
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { LogMethod } from "@/libs/logger";
+import { Logger, LogMethod } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { LOGIN_LOCKOUT } from "../constants";
@@ -34,7 +34,7 @@ export class PasswordLoginStrategy {
     private readonly completion: LoginCompletionService
   ) {}
 
-  @LogMethod({ name: "Password login", fields: ["email"] })
+  @LogMethod({ name: "Password login" })
   async authenticate(
     body: PasswordLoginBody,
     req: Request
@@ -65,6 +65,8 @@ export class PasswordLoginStrategy {
       operationName: "resetFailedLoginAttempts",
       context: { email }
     });
+
+    Logger.info("Password login succeeded", { email });
 
     return this.completion.complete({
       auth,
