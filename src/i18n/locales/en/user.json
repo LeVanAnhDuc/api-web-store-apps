@@ -3,11 +3,14 @@
     "getProfile": "Profile retrieved successfully",
     "updateProfile": "Profile updated successfully",
     "getPublicProfile": "Public profile retrieved successfully",
-    "getAdminUsers": "Users retrieved successfully."
+    "getAdminUsers": "Users retrieved successfully.",
+    "lockUser": "User locked successfully",
+    "unlockUser": "User unlocked successfully"
   },
   "errors": {
     "rateLimitExceeded": "Too many requests. Please try again later",
     "notFound": "User not found",
-    "invalidId": "Invalid user ID format"
+    "invalidId": "Invalid user ID format",
+    "cannotLockSelf": "You cannot lock your own account"
   }
 }

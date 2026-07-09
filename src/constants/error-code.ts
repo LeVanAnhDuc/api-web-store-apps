@@ -82,6 +82,7 @@ export const ERROR_CODES = {
 
   // ── User ──
   USER_NOT_FOUND: "USER_NOT_FOUND",
+  ADMIN_CANNOT_LOCK_SELF: "ADMIN_CANNOT_LOCK_SELF",
 
   // ── Contact Admin ──
   CONTACT_NOT_FOUND: "CONTACT_NOT_FOUND",
