@@ -29,6 +29,7 @@ export type AuthenticationRepository = {
     hashedPassword: string,
     session?: ClientSession
   ): Promise<number>;
+  setActive(authId: string, isActive: boolean): Promise<void>;
 };
 
 export class MongoAuthenticationRepository implements AuthenticationRepository {
@@ -108,5 +109,13 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
     );
 
     return updated?.tokenVersion ?? 0;
+  }
+
+  async setActive(authId: string, isActive: boolean): Promise<void> {
+    await asyncDatabaseHandler("setActive", () =>
+      AuthenticationModel.findByIdAndUpdate(authId, {
+        $set: { isActive }
+      }).exec()
+    );
   }
 }
