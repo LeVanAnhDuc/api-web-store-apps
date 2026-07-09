@@ -206,10 +206,28 @@ const AdminUsersListResponseSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+const SetUserActiveResultSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  required: ["_id", "isActive"],
+  properties: {
+    _id: {
+      type: "string",
+      example: "64f1b2c3d4e5f6a7b8c9d0e1",
+      description: "User ID (MongoDB ObjectId)"
+    },
+    isActive: {
+      type: "boolean",
+      example: false,
+      description: "False when the account is locked, true when active"
+    }
+  }
+};
+
 export const userSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   UserProfileResponse: UserProfileResponseSchema,
   PublicUserProfileResponse: PublicUserProfileResponseSchema,
   UpdateProfileRequest: UpdateProfileRequestSchema,
   AdminUser: AdminUserSchema,
-  AdminUsersListResponse: AdminUsersListResponseSchema
+  AdminUsersListResponse: AdminUsersListResponseSchema,
+  SetUserActiveResult: SetUserActiveResultSchema
 };

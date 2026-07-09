@@ -62,9 +62,6 @@ export class UserController {
 
   unlockUser = async (req: LockUserRequest, res: Response): Promise<void> => {
     const data = await this.service.setUserActive(req.params.id, true);
-    new OkSuccess({ data, message: "user:success.unlockUser" }).send(
-      req,
-      res
-    );
+    new OkSuccess({ data, message: "user:success.unlockUser" }).send(req, res);
   };
 }

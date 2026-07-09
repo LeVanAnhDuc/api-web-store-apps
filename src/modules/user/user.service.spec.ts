@@ -139,9 +139,7 @@ describe("UserService.setUserActive", () => {
   });
 
   it("throws ForbiddenError when an admin tries to lock their own account", async () => {
-    const findAuthIdById = jest
-      .fn()
-      .mockResolvedValue({ authId: adminAuthId });
+    const findAuthIdById = jest.fn().mockResolvedValue({ authId: adminAuthId });
     const setActive = jest.fn();
     const service = new UserService(
       buildRepo({ findAuthIdById }),
@@ -155,9 +153,7 @@ describe("UserService.setUserActive", () => {
   });
 
   it("allows an admin to unlock their own account", async () => {
-    const findAuthIdById = jest
-      .fn()
-      .mockResolvedValue({ authId: adminAuthId });
+    const findAuthIdById = jest.fn().mockResolvedValue({ authId: adminAuthId });
     const setActive = jest.fn().mockResolvedValue(undefined);
     const service = new UserService(
       buildRepo({ findAuthIdById }),

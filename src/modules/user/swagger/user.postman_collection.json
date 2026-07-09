@@ -388,6 +388,227 @@
       ]
     },
     {
+      "name": "PATCH /admin/users/:id/lock - Lock User (admin)",
+      "item": [
+        {
+          "name": "TC-05.1 Happy - Lock another user's account",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userId}}/lock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{userId}}", "lock"]
+            },
+            "description": "Expect: 200 with { _id, isActive: false }"
+          }
+        },
+        {
+          "name": "TC-05.2 Idempotent - Lock an already-locked account",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userId}}/lock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{userId}}", "lock"]
+            },
+            "description": "Call twice in a row. Expect: 200 both times, no error"
+          }
+        },
+        {
+          "name": "TC-05.3 Error - Admin locks their own account",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{myUserId}}/lock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{myUserId}}", "lock"]
+            },
+            "description": "Set {{myUserId}} to your own user ID. Expect: 403 ADMIN_CANNOT_LOCK_SELF"
+          }
+        },
+        {
+          "name": "TC-05.4 Error - Non-admin caller",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userId}}/lock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{userId}}", "lock"]
+            },
+            "description": "Use a non-admin idToken. Expect: 403 Forbidden"
+          }
+        },
+        {
+          "name": "TC-05.5 Edge - Invalid ObjectId format",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/abc123/lock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "abc123", "lock"]
+            },
+            "description": "Expect: 400 Bad Request - Invalid user ID format"
+          }
+        },
+        {
+          "name": "TC-05.6 Edge - Valid ObjectId but user not found",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/000000000000000000000000/lock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "000000000000000000000000", "lock"]
+            },
+            "description": "Expect: 404 Not Found"
+          }
+        },
+        {
+          "name": "TC-05.7 Error - No Authorization header",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userId}}/lock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{userId}}", "lock"]
+            },
+            "description": "Expect: 401 Unauthorized"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PATCH /admin/users/:id/unlock - Unlock User (admin)",
+      "item": [
+        {
+          "name": "TC-06.1 Happy - Unlock a locked account",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userId}}/unlock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{userId}}", "unlock"]
+            },
+            "description": "Expect: 200 with { _id, isActive: true }"
+          }
+        },
+        {
+          "name": "TC-06.2 Idempotent - Unlock an already-active account",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userId}}/unlock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{userId}}", "unlock"]
+            },
+            "description": "Call twice in a row. Expect: 200 both times, no error"
+          }
+        },
+        {
+          "name": "TC-06.3 Happy - Admin unlocks their own account",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{myUserId}}/unlock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{myUserId}}", "unlock"]
+            },
+            "description": "Set {{myUserId}} to your own user ID. Expect: 200 (self-unlock is allowed)"
+          }
+        },
+        {
+          "name": "TC-06.4 Error - Non-admin caller",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userId}}/unlock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{userId}}", "unlock"]
+            },
+            "description": "Use a non-admin idToken. Expect: 403 Forbidden"
+          }
+        },
+        {
+          "name": "TC-06.5 Edge - Valid ObjectId but user not found",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/000000000000000000000000/unlock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "000000000000000000000000", "unlock"]
+            },
+            "description": "Expect: 404 Not Found"
+          }
+        }
+      ]
+    },
+    {
       "name": "GET /users/:id - Get Public Profile",
       "item": [
         {
