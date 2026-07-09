@@ -3,7 +3,8 @@ import type {
   GetMyProfileRequest,
   UpdateProfileRequest,
   GetPublicProfileRequest,
-  GetAdminUsersRequest
+  GetAdminUsersRequest,
+  LockUserRequest
 } from "@/modules/user/types";
 import type { Response } from "express";
 import type { UserService } from "./user.service";
@@ -49,6 +50,19 @@ export class UserController {
   ): Promise<void> => {
     const data = await this.service.getAdminUsers(req.query);
     new OkSuccess({ data, message: "user:success.getAdminUsers" }).send(
+      req,
+      res
+    );
+  };
+
+  lockUser = async (req: LockUserRequest, res: Response): Promise<void> => {
+    const data = await this.service.setUserActive(req.params.id, false);
+    new OkSuccess({ data, message: "user:success.lockUser" }).send(req, res);
+  };
+
+  unlockUser = async (req: LockUserRequest, res: Response): Promise<void> => {
+    const data = await this.service.setUserActive(req.params.id, true);
+    new OkSuccess({ data, message: "user:success.unlockUser" }).send(
       req,
       res
     );

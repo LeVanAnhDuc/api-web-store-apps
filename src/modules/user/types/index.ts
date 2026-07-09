@@ -133,3 +133,7 @@ export interface SetUserActiveResult {
   _id: string;
   isActive: boolean;
 }
+
+export interface LockUserRequest extends Omit<Request, "params"> {
+  params: { id: string };
+}

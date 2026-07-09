@@ -100,6 +100,17 @@ export const getPublicProfileSchema = Joi.object({
     })
 });
 
+export const adminUserIdParamsSchema = Joi.object({
+  id: Joi.string()
+    .pattern(/^[a-fA-F0-9]{24}$/)
+    .required()
+    .messages({
+      "string.empty": "user:errors.invalidId",
+      "string.pattern.base": "user:errors.invalidId",
+      "any.required": "user:errors.invalidId"
+    })
+});
+
 const ROLE_VALUES = Object.values(AUTHENTICATION_ROLES);
 const STATUS_FILTER_VALUES = Object.values(ADMIN_USER_STATUS_FILTERS);
 
