@@ -128,3 +128,8 @@ export interface AdminUserAggregateRow {
 export interface GetAdminUsersRequest extends Omit<Request, "query"> {
   query: AdminUsersQuery;
 }
+
+export interface SetUserActiveResult {
+  _id: string;
+  isActive: boolean;
+}
