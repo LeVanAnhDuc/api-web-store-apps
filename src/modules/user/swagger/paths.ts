@@ -107,6 +107,45 @@ Partially update the profile of the authenticated user. All fields are optional.
       }
     }
   },
+  "/admin/users/options": {
+    get: {
+      summary: "List user options (admin)",
+      description: `
+List all registered users as a flat, unpaginated array of lightweight options
+(id, fullName, email, role) for populating admin selectors (e.g. the entitlement
+user picker).
+
+**Authentication:**
+- Requires valid Bearer token (admin role)
+      `.trim(),
+      tags: ["User Admin"],
+      security: [{ bearerAuth: [] }],
+      responses: {
+        "200": {
+          description: "User options retrieved successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: {
+                        $ref: "#/components/schemas/AdminUserOptionsListResponse"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": { $ref: "#/components/responses/Forbidden" }
+      }
+    }
+  },
   "/admin/users": {
     get: {
       summary: "List users (admin)",

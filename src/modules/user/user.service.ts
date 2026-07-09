@@ -11,7 +11,12 @@ import type {
 } from "@/modules/user/types";
 import type { ClientSession } from "mongoose";
 import type { UserRepository } from "./user.repository";
-import type { MyProfileDto, PublicProfileDto, AdminUserDto } from "./dtos";
+import type {
+  MyProfileDto,
+  PublicProfileDto,
+  AdminUserDto,
+  AdminUserOptionDto
+} from "./dtos";
 // common
 import { NotFoundError } from "@/common/exceptions";
 import { PAGINATION } from "@/common/pagination";
@@ -19,7 +24,12 @@ import { resolveSortDirection } from "@/common/sort";
 // validators
 import { validateEmail, validateObjectId } from "@/validators/utils";
 // dtos
-import { toMyProfileDto, toPublicProfileDto, toAdminUserDto } from "./dtos";
+import {
+  toMyProfileDto,
+  toPublicProfileDto,
+  toAdminUserDto,
+  toAdminUserOptionDto
+} from "./dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -155,5 +165,10 @@ export class UserService {
         totalPages: Math.ceil(total / limit)
       }
     };
+  }
+
+  async getAdminUserOptions(): Promise<AdminUserOptionDto[]> {
+    const rows = await this.userRepo.findAdminUserOptions();
+    return rows.map(toAdminUserOptionDto);
   }
 }

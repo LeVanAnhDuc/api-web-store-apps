@@ -206,10 +206,43 @@ const AdminUsersListResponseSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+const AdminUserOptionSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  required: ["_id", "fullName", "email", "role"],
+  properties: {
+    _id: {
+      type: "string",
+      example: "64f1b2c3d4e5f6a7b8c9d0e1",
+      description: "User ID (MongoDB ObjectId)"
+    },
+    fullName: {
+      type: "string",
+      example: "Nguyen Van A"
+    },
+    email: {
+      type: "string",
+      format: "email",
+      example: "user@example.com"
+    },
+    role: {
+      type: "string",
+      enum: ["user", "admin"],
+      example: "user"
+    }
+  }
+};
+
+const AdminUserOptionsListResponseSchema: OpenAPIV3.SchemaObject = {
+  type: "array",
+  items: { $ref: "#/components/schemas/AdminUserOption" }
+};
+
 export const userSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   UserProfileResponse: UserProfileResponseSchema,
   PublicUserProfileResponse: PublicUserProfileResponseSchema,
   UpdateProfileRequest: UpdateProfileRequestSchema,
   AdminUser: AdminUserSchema,
-  AdminUsersListResponse: AdminUsersListResponseSchema
+  AdminUsersListResponse: AdminUsersListResponseSchema,
+  AdminUserOption: AdminUserOptionSchema,
+  AdminUserOptionsListResponse: AdminUserOptionsListResponseSchema
 };

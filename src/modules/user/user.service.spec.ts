@@ -63,3 +63,43 @@ describe("UserService.getAdminUsers", () => {
     );
   });
 });
+
+describe("UserService.getAdminUserOptions", () => {
+  it("maps repository rows to option DTOs", async () => {
+    const findAdminUserOptions = jest.fn().mockResolvedValue([
+      {
+        _id: { toString: () => "u1" },
+        fullName: "Alice",
+        email: "alice@example.com",
+        role: "admin"
+      },
+      {
+        _id: { toString: () => "u2" },
+        fullName: "Bob",
+        email: "bob@example.com",
+        role: "user"
+      }
+    ]);
+    const service = new UserService(buildRepo({ findAdminUserOptions }));
+
+    const result = await service.getAdminUserOptions();
+
+    expect(findAdminUserOptions).toHaveBeenCalledTimes(1);
+    expect(result).toEqual([
+      {
+        _id: "u1",
+        fullName: "Alice",
+        email: "alice@example.com",
+        role: "admin"
+      },
+      { _id: "u2", fullName: "Bob", email: "bob@example.com", role: "user" }
+    ]);
+  });
+
+  it("returns an empty array when there are no users", async () => {
+    const findAdminUserOptions = jest.fn().mockResolvedValue([]);
+    const service = new UserService(buildRepo({ findAdminUserOptions }));
+
+    await expect(service.getAdminUserOptions()).resolves.toEqual([]);
+  });
+});

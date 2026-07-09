@@ -7,6 +7,7 @@ import type {
   PublicUserRecord,
   UserWithAuth,
   AdminUserAggregateRow,
+  AdminUserOptionRow,
   AdminUsersFilter
 } from "@/modules/user/types";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
@@ -41,6 +42,7 @@ export type UserRepository = {
     filter: AdminUsersFilter,
     options: PaginationOptions
   ): Promise<{ data: AdminUserAggregateRow[]; total: number }>;
+  findAdminUserOptions(): Promise<AdminUserOptionRow[]>;
 };
 
 export class MongoUserRepository implements UserRepository {
@@ -233,5 +235,30 @@ export class MongoUserRepository implements UserRepository {
         total: result?.total[0]?.count ?? 0
       };
     });
+  }
+
+  async findAdminUserOptions(): Promise<AdminUserOptionRow[]> {
+    return asyncDatabaseHandler("findAdminUserOptions", () =>
+      UserModel.aggregate<AdminUserOptionRow>([
+        {
+          $lookup: {
+            from: "auths",
+            localField: "authId",
+            foreignField: "_id",
+            as: "auth"
+          }
+        },
+        { $unwind: "$auth" },
+        {
+          $project: {
+            _id: 1,
+            fullName: 1,
+            email: 1,
+            role: "$auth.roles"
+          }
+        },
+        { $sort: { fullName: 1 } }
+      ]).exec()
+    );
   }
 }

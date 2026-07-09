@@ -4,3 +4,5 @@ export type { PublicProfileDto } from "./public-profile.dto";
 export { toPublicProfileDto } from "./public-profile.dto";
 export type { AdminUserDto } from "./admin-user-item.dto";
 export { toAdminUserDto } from "./admin-user-item.dto";
+export type { AdminUserOptionDto } from "./admin-user-option.dto";
+export { toAdminUserOptionDto } from "./admin-user-option.dto";

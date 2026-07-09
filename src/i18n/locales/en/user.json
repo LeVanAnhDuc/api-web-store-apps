@@ -3,7 +3,8 @@
     "getProfile": "Profile retrieved successfully",
     "updateProfile": "Profile updated successfully",
     "getPublicProfile": "Public profile retrieved successfully",
-    "getAdminUsers": "Users retrieved successfully."
+    "getAdminUsers": "Users retrieved successfully.",
+    "getAdminUserOptions": "User options retrieved successfully."
   },
   "errors": {
     "rateLimitExceeded": "Too many requests. Please try again later",

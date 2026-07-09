@@ -128,3 +128,12 @@ export interface AdminUserAggregateRow {
 export interface GetAdminUsersRequest extends Omit<Request, "query"> {
   query: AdminUsersQuery;
 }
+
+export interface AdminUserOptionRow {
+  _id: Schema.Types.ObjectId;
+  fullName: string;
+  email: string;
+  role: AdminUserRole;
+}
+
+export type GetAdminUserOptionsRequest = Request;

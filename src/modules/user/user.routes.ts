@@ -52,6 +52,8 @@ export const createUserAdminRoutes = (controller: UserController): Router => {
 
   adminUsers.use(authGuard, adminGuard);
 
+  adminUsers.get("/options", asyncHandler(controller.getAdminUserOptions));
+
   adminUsers.get(
     "/",
     queryPipe(adminUsersQuerySchema),
