@@ -11,6 +11,7 @@
     "rateLimitExceeded": "Too many requests. Please try again later",
     "notFound": "User not found",
     "invalidId": "Invalid user ID format",
-    "cannotLockSelf": "You cannot lock your own account"
+    "cannotLockSelf": "You cannot lock your own account",
+    "cannotLockLastAdmin": "Cannot lock the last active admin account"
   }
 }

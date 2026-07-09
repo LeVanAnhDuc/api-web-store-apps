@@ -253,7 +253,8 @@ login attempts and refresh token usage; does not affect any in-flight request.
 **Behavior:**
 - Idempotent — locking an already-locked account returns 200 with no error
 - An admin cannot lock their own account (403 \`ADMIN_CANNOT_LOCK_SELF\`)
-- Locking another admin's account is allowed
+- Locking another admin's account is allowed, unless they are the last remaining
+  active admin (403 \`ADMIN_CANNOT_LOCK_LAST_ADMIN\`) — prevents total admin lockout
 
 **Params:**
 - \`id\` must be a valid MongoDB ObjectId (24 hex characters)
@@ -305,7 +306,7 @@ login attempts and refresh token usage; does not affect any in-flight request.
         "401": { $ref: "#/components/responses/Unauthorized" },
         "403": {
           description:
-            "Forbidden — non-admin caller, or admin attempting to lock their own account",
+            "Forbidden — non-admin caller, admin attempting to lock their own account, or admin attempting to lock the last remaining active admin",
           content: {
             "application/json": {
               schema: { $ref: "#/components/schemas/ErrorResponse" },

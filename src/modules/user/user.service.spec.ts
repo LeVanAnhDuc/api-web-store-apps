@@ -22,6 +22,8 @@ const buildAuthService = (
 ): AuthenticationService =>
   ({
     setActive: jest.fn(),
+    findById: jest.fn().mockResolvedValue({ roles: "user", isActive: true }),
+    countActiveAdmins: jest.fn().mockResolvedValue(2),
     ...over
   }) as unknown as AuthenticationService;
 
@@ -92,19 +94,84 @@ describe("UserService.setUserActive", () => {
     jest.mocked(RequestContext.requireAuthId).mockReturnValue(adminAuthId);
   });
 
-  it("locks a user and returns the result", async () => {
+  it("locks a non-admin user and returns the result", async () => {
     const findAuthIdById = jest
       .fn()
       .mockResolvedValue({ authId: targetAuthId });
     const setActive = jest.fn().mockResolvedValue(undefined);
+    const findById = jest
+      .fn()
+      .mockResolvedValue({ roles: "user", isActive: true });
+    const countActiveAdmins = jest.fn().mockResolvedValue(0);
     const service = new UserService(
       buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive })
+      buildAuthService({ setActive, findById, countActiveAdmins })
     );
 
     const result = await service.setUserActive(targetUserId, false);
 
     expect(result).toEqual({ _id: targetUserId, isActive: false });
+    expect(setActive).toHaveBeenCalledWith(targetAuthId, false);
+  });
+
+  it("locks an admin when other active admins remain", async () => {
+    const findAuthIdById = jest
+      .fn()
+      .mockResolvedValue({ authId: targetAuthId });
+    const setActive = jest.fn().mockResolvedValue(undefined);
+    const findById = jest
+      .fn()
+      .mockResolvedValue({ roles: "admin", isActive: true });
+    const countActiveAdmins = jest.fn().mockResolvedValue(2);
+    const service = new UserService(
+      buildRepo({ findAuthIdById }),
+      buildAuthService({ setActive, findById, countActiveAdmins })
+    );
+
+    const result = await service.setUserActive(targetUserId, false);
+
+    expect(result).toEqual({ _id: targetUserId, isActive: false });
+    expect(setActive).toHaveBeenCalledWith(targetAuthId, false);
+  });
+
+  it("throws ForbiddenError when locking the last active admin", async () => {
+    const findAuthIdById = jest
+      .fn()
+      .mockResolvedValue({ authId: targetAuthId });
+    const setActive = jest.fn();
+    const findById = jest
+      .fn()
+      .mockResolvedValue({ roles: "admin", isActive: true });
+    const countActiveAdmins = jest.fn().mockResolvedValue(1);
+    const service = new UserService(
+      buildRepo({ findAuthIdById }),
+      buildAuthService({ setActive, findById, countActiveAdmins })
+    );
+
+    await expect(service.setUserActive(targetUserId, false)).rejects.toThrow(
+      ForbiddenError
+    );
+    expect(setActive).not.toHaveBeenCalled();
+  });
+
+  it("does not consult countActiveAdmins when locking an admin who is already inactive", async () => {
+    const findAuthIdById = jest
+      .fn()
+      .mockResolvedValue({ authId: targetAuthId });
+    const setActive = jest.fn().mockResolvedValue(undefined);
+    const findById = jest
+      .fn()
+      .mockResolvedValue({ roles: "admin", isActive: false });
+    const countActiveAdmins = jest.fn().mockResolvedValue(0);
+    const service = new UserService(
+      buildRepo({ findAuthIdById }),
+      buildAuthService({ setActive, findById, countActiveAdmins })
+    );
+
+    const result = await service.setUserActive(targetUserId, false);
+
+    expect(result).toEqual({ _id: targetUserId, isActive: false });
+    expect(countActiveAdmins).not.toHaveBeenCalled();
     expect(setActive).toHaveBeenCalledWith(targetAuthId, false);
   });
 
@@ -182,5 +249,27 @@ describe("UserService.setUserActive", () => {
     expect(setActive).toHaveBeenCalledTimes(2);
     expect(setActive).toHaveBeenNthCalledWith(1, targetAuthId, false);
     expect(setActive).toHaveBeenNthCalledWith(2, targetAuthId, false);
+  });
+
+  it("unlocking the last active admin is never blocked by the last-admin guard", async () => {
+    const findAuthIdById = jest
+      .fn()
+      .mockResolvedValue({ authId: targetAuthId });
+    const setActive = jest.fn().mockResolvedValue(undefined);
+    const findById = jest
+      .fn()
+      .mockResolvedValue({ roles: "admin", isActive: false });
+    const countActiveAdmins = jest.fn().mockResolvedValue(1);
+    const service = new UserService(
+      buildRepo({ findAuthIdById }),
+      buildAuthService({ setActive, findById, countActiveAdmins })
+    );
+
+    const result = await service.setUserActive(targetUserId, true);
+
+    expect(result).toEqual({ _id: targetUserId, isActive: true });
+    expect(findById).not.toHaveBeenCalled();
+    expect(countActiveAdmins).not.toHaveBeenCalled();
+    expect(setActive).toHaveBeenCalledWith(targetAuthId, true);
   });
 });

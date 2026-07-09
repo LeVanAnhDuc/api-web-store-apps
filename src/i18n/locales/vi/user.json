@@ -11,6 +11,7 @@
     "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau",
     "notFound": "Không tìm thấy người dùng",
     "invalidId": "Định dạng ID người dùng không hợp lệ",
-    "cannotLockSelf": "Bạn không thể tự khóa tài khoản của chính mình"
+    "cannotLockSelf": "Bạn không thể tự khóa tài khoản của chính mình",
+    "cannotLockLastAdmin": "Không thể khóa tài khoản admin đang hoạt động cuối cùng"
   }
 }

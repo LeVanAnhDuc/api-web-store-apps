@@ -119,4 +119,13 @@ export class AuthenticationService {
       throw error;
     }
   }
+
+  async countActiveAdmins(): Promise<number> {
+    try {
+      return await this.authRepo.countActiveAdmins();
+    } catch (error) {
+      Logger.error("Failed to count active admins", { error });
+      throw error;
+    }
+  }
 }

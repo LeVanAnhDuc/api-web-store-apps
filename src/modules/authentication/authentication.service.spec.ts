@@ -9,6 +9,7 @@ const buildRepo = (
 ): AuthenticationRepository =>
   ({
     setActive: jest.fn(),
+    countActiveAdmins: jest.fn(),
     ...over
   }) as unknown as AuthenticationRepository;
 
@@ -39,5 +40,24 @@ describe("AuthenticationService.setActive", () => {
     const authId = "64f1b2c3d4e5f6a7b8c9d0e1";
 
     await expect(service.setActive(authId, true)).rejects.toThrow("db down");
+  });
+});
+
+describe("AuthenticationService.countActiveAdmins", () => {
+  it("returns the count from the repository", async () => {
+    const countActiveAdmins = jest.fn().mockResolvedValue(3);
+    const service = new AuthenticationService(buildRepo({ countActiveAdmins }));
+
+    const result = await service.countActiveAdmins();
+
+    expect(result).toBe(3);
+    expect(countActiveAdmins).toHaveBeenCalledWith();
+  });
+
+  it("propagates repository errors", async () => {
+    const countActiveAdmins = jest.fn().mockRejectedValue(new Error("db down"));
+    const service = new AuthenticationService(buildRepo({ countActiveAdmins }));
+
+    await expect(service.countActiveAdmins()).rejects.toThrow("db down");
   });
 });

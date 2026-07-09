@@ -30,6 +30,7 @@ export type AuthenticationRepository = {
     session?: ClientSession
   ): Promise<number>;
   setActive(authId: string, isActive: boolean): Promise<void>;
+  countActiveAdmins(): Promise<number>;
 };
 
 export class MongoAuthenticationRepository implements AuthenticationRepository {
@@ -115,6 +116,15 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
     await asyncDatabaseHandler("setActive", () =>
       AuthenticationModel.findByIdAndUpdate(authId, {
         $set: { isActive }
+      }).exec()
+    );
+  }
+
+  async countActiveAdmins(): Promise<number> {
+    return asyncDatabaseHandler("countActiveAdmins", () =>
+      AuthenticationModel.countDocuments({
+        roles: AUTHENTICATION_ROLES.ADMIN,
+        isActive: true
       }).exec()
     );
   }

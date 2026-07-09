@@ -22,6 +22,8 @@ import { resolveSortDirection } from "@/common/sort";
 import { validateEmail, validateObjectId } from "@/validators/utils";
 // dtos
 import { toMyProfileDto, toPublicProfileDto, toAdminUserDto } from "./dtos";
+// modules
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -181,6 +183,23 @@ export class UserService {
         i18nMessage: (t) => t("user:errors.cannotLockSelf"),
         code: ERROR_CODES.ADMIN_CANNOT_LOCK_SELF
       });
+    }
+
+    if (!isActive) {
+      const targetAuth = await this.authService.findById(target.authId);
+
+      if (
+        targetAuth?.roles === AUTHENTICATION_ROLES.ADMIN &&
+        targetAuth.isActive
+      ) {
+        const activeAdmins = await this.authService.countActiveAdmins();
+        if (activeAdmins <= 1) {
+          throw new ForbiddenError({
+            i18nMessage: (t) => t("user:errors.cannotLockLastAdmin"),
+            code: ERROR_CODES.ADMIN_CANNOT_LOCK_LAST_ADMIN
+          });
+        }
+      }
     }
 
     await this.authService.setActive(target.authId, isActive);
