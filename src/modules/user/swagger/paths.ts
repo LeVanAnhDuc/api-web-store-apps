@@ -240,6 +240,156 @@ List all registered users with optional filtering, search, and pagination.
       }
     }
   },
+  "/admin/users/{id}/lock": {
+    patch: {
+      summary: "Lock a user account (admin)",
+      description: `
+Soft-lock a user account by setting \`auth.isActive\` to \`false\`. Blocks future
+login attempts and refresh token usage; does not affect any in-flight request.
+
+**Authentication:**
+- Requires valid Bearer token (admin role)
+
+**Behavior:**
+- Idempotent — locking an already-locked account returns 200 with no error
+- An admin cannot lock their own account (403 \`ADMIN_CANNOT_LOCK_SELF\`)
+- Locking another admin's account is allowed, unless they are the last remaining
+  active admin (403 \`ADMIN_CANNOT_LOCK_LAST_ADMIN\`) — prevents total admin lockout
+
+**Params:**
+- \`id\` must be a valid MongoDB ObjectId (24 hex characters)
+      `.trim(),
+      tags: ["User Admin"],
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          description: "MongoDB ObjectId of the target user",
+          schema: {
+            type: "string",
+            pattern: "^[a-fA-F0-9]{24}$",
+            example: "64f1b2c3d4e5f6a7b8c9d0e1"
+          }
+        }
+      ],
+      responses: {
+        "200": {
+          description: "User locked successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: {
+                        $ref: "#/components/schemas/SetUserActiveResult"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          description: "Bad Request — invalid ObjectId format",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+            }
+          }
+        },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": {
+          description:
+            "Forbidden — non-admin caller, admin attempting to lock their own account, or admin attempting to lock the last remaining active admin",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+              example: {
+                code: ERROR_CODES.ADMIN_CANNOT_LOCK_SELF,
+                message: "You cannot lock your own account",
+                timestamp: "2026-01-01T00:00:00.000Z",
+                path: "/api/v1/admin/users/64f1b2c3d4e5f6a7b8c9d0e1/lock"
+              }
+            }
+          }
+        },
+        "404": { $ref: "#/components/responses/NotFound" }
+      }
+    }
+  },
+  "/admin/users/{id}/unlock": {
+    patch: {
+      summary: "Unlock a user account (admin)",
+      description: `
+Re-activate a previously locked user account by setting \`auth.isActive\` to
+\`true\`.
+
+**Authentication:**
+- Requires valid Bearer token (admin role)
+
+**Behavior:**
+- Idempotent — unlocking an already-active account returns 200 with no error
+- An admin may unlock their own account
+
+**Params:**
+- \`id\` must be a valid MongoDB ObjectId (24 hex characters)
+      `.trim(),
+      tags: ["User Admin"],
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          description: "MongoDB ObjectId of the target user",
+          schema: {
+            type: "string",
+            pattern: "^[a-fA-F0-9]{24}$",
+            example: "64f1b2c3d4e5f6a7b8c9d0e1"
+          }
+        }
+      ],
+      responses: {
+        "200": {
+          description: "User unlocked successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: {
+                        $ref: "#/components/schemas/SetUserActiveResult"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          description: "Bad Request — invalid ObjectId format",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+            }
+          }
+        },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": { $ref: "#/components/responses/Forbidden" },
+        "404": { $ref: "#/components/responses/NotFound" }
+      }
+    }
+  },
   "/users/{id}": {
     get: {
       summary: "Get public profile",

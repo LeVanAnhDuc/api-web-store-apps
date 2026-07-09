@@ -7,26 +7,33 @@ import type {
   UserWithAuth,
   AdminUsersQuery,
   AdminUsersFilter,
-  AdminUserListMeta
+  AdminUserListMeta,
+  SetUserActiveResult
 } from "@/modules/user/types";
 import type { ClientSession } from "mongoose";
 import type { UserRepository } from "./user.repository";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { MyProfileDto, PublicProfileDto, AdminUserDto } from "./dtos";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { ForbiddenError, NotFoundError } from "@/common/exceptions";
 import { PAGINATION } from "@/common/pagination";
 import { resolveSortDirection } from "@/common/sort";
 // validators
 import { validateEmail, validateObjectId } from "@/validators/utils";
 // dtos
 import { toMyProfileDto, toPublicProfileDto, toAdminUserDto } from "./dtos";
+// modules
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
 import { RequestContext } from "@/utils/request-context";
 
 export class UserService {
-  constructor(private readonly userRepo: UserRepository) {}
+  constructor(
+    private readonly userRepo: UserRepository,
+    private readonly authService: AuthenticationService
+  ) {}
 
   async getMyProfile(): Promise<MyProfileDto> {
     const userId = RequestContext.requireUserId();
@@ -155,5 +162,47 @@ export class UserService {
         totalPages: Math.ceil(total / limit)
       }
     };
+  }
+
+  async setUserActive(
+    id: string,
+    isActive: boolean
+  ): Promise<SetUserActiveResult> {
+    validateObjectId(id, "id");
+
+    const target = await this.userRepo.findAuthIdById(id);
+    if (!target) {
+      throw new NotFoundError({
+        i18nMessage: (t) => t("user:errors.notFound"),
+        code: ERROR_CODES.USER_NOT_FOUND
+      });
+    }
+
+    if (!isActive && target.authId === RequestContext.requireAuthId()) {
+      throw new ForbiddenError({
+        i18nMessage: (t) => t("user:errors.cannotLockSelf"),
+        code: ERROR_CODES.ADMIN_CANNOT_LOCK_SELF
+      });
+    }
+
+    if (!isActive) {
+      const targetAuth = await this.authService.findById(target.authId);
+
+      if (
+        targetAuth?.roles === AUTHENTICATION_ROLES.ADMIN &&
+        targetAuth.isActive
+      ) {
+        const activeAdmins = await this.authService.countActiveAdmins();
+        if (activeAdmins <= 1) {
+          throw new ForbiddenError({
+            i18nMessage: (t) => t("user:errors.cannotLockLastAdmin"),
+            code: ERROR_CODES.ADMIN_CANNOT_LOCK_LAST_ADMIN
+          });
+        }
+      }
+    }
+
+    await this.authService.setActive(target.authId, isActive);
+    return { _id: id, isActive };
   }
 }

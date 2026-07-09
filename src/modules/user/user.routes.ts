@@ -7,7 +7,8 @@ import type { UserController } from "./user.controller";
 import {
   updateProfileSchema,
   getPublicProfileSchema,
-  adminUsersQuerySchema
+  adminUsersQuerySchema,
+  adminUserIdParamsSchema
 } from "@/validators/schemas/user";
 // others
 import {
@@ -56,6 +57,17 @@ export const createUserAdminRoutes = (controller: UserController): Router => {
     "/",
     queryPipe(adminUsersQuerySchema),
     asyncHandler(controller.getAdminUsers)
+  );
+
+  adminUsers.patch(
+    "/:id/lock",
+    paramsPipe(adminUserIdParamsSchema),
+    asyncHandler(controller.lockUser)
+  );
+  adminUsers.patch(
+    "/:id/unlock",
+    paramsPipe(adminUserIdParamsSchema),
+    asyncHandler(controller.unlockUser)
   );
 
   router.use("/admin/users", adminUsers);

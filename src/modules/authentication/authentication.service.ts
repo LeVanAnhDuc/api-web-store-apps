@@ -103,4 +103,29 @@ export class AuthenticationService {
       throw error;
     }
   }
+
+  async setActive(authId: string, isActive: boolean): Promise<void> {
+    validateObjectId(authId, "authId");
+
+    try {
+      await this.authRepo.setActive(authId, isActive);
+      Logger.info("Account active flag updated", { authId, isActive });
+    } catch (error) {
+      Logger.error("Failed to update account active flag", {
+        authId,
+        isActive,
+        error
+      });
+      throw error;
+    }
+  }
+
+  async countActiveAdmins(): Promise<number> {
+    try {
+      return await this.authRepo.countActiveAdmins();
+    } catch (error) {
+      Logger.error("Failed to count active admins", { error });
+      throw error;
+    }
+  }
 }

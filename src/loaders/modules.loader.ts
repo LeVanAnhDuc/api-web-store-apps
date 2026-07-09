@@ -87,8 +87,10 @@ export const loadModules = (
   const rateLimiter = new RateLimiterMiddleware(redisClient);
 
   // --- Module creation ---
-  const { userRouter, userAdminRouter, userService } =
-    createUserModule(rateLimiter);
+  const { userRouter, userAdminRouter, userService } = createUserModule(
+    rateLimiter,
+    authService
+  );
 
   const {
     loginHistoryService,
