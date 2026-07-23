@@ -29,6 +29,7 @@ export type AuthenticationRepository = {
     hashedPassword: string,
     session?: ClientSession
   ): Promise<number>;
+  adminResetPassword(authId: string, hashedPassword: string): Promise<void>;
   setActive(authId: string, isActive: boolean): Promise<void>;
   countActiveAdmins(): Promise<number>;
 };
@@ -101,6 +102,7 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
         {
           password: hashedPassword,
           passwordChangedAt: new Date(),
+          mustChangePassword: false,
           $inc: { tokenVersion: 1 }
         },
         { new: true, session }
@@ -110,6 +112,20 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
     );
 
     return updated?.tokenVersion ?? 0;
+  }
+
+  async adminResetPassword(
+    authId: string,
+    hashedPassword: string
+  ): Promise<void> {
+    await asyncDatabaseHandler("adminResetPassword", () =>
+      AuthenticationModel.findByIdAndUpdate(authId, {
+        password: hashedPassword,
+        passwordChangedAt: new Date(),
+        mustChangePassword: true,
+        $inc: { tokenVersion: 1 }
+      }).exec()
+    );
   }
 
   async setActive(authId: string, isActive: boolean): Promise<void> {
