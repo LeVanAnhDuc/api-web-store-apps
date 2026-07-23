@@ -66,7 +66,9 @@ describe("AuthenticationService.countActiveAdmins", () => {
 describe("AuthenticationService.adminResetPassword", () => {
   it("rejects an invalid authId before touching the repository", async () => {
     const adminResetPassword = jest.fn();
-    const service = new AuthenticationService(buildRepo({ adminResetPassword }));
+    const service = new AuthenticationService(
+      buildRepo({ adminResetPassword })
+    );
 
     await expect(
       service.adminResetPassword("not-an-id", "hash")
@@ -76,7 +78,9 @@ describe("AuthenticationService.adminResetPassword", () => {
 
   it("calls the repository with the given authId and hashed password", async () => {
     const adminResetPassword = jest.fn().mockResolvedValue(undefined);
-    const service = new AuthenticationService(buildRepo({ adminResetPassword }));
+    const service = new AuthenticationService(
+      buildRepo({ adminResetPassword })
+    );
     const authId = "64f1b2c3d4e5f6a7b8c9d0e1";
 
     await service.adminResetPassword(authId, "newHash");
@@ -88,11 +92,13 @@ describe("AuthenticationService.adminResetPassword", () => {
     const adminResetPassword = jest
       .fn()
       .mockRejectedValue(new Error("db down"));
-    const service = new AuthenticationService(buildRepo({ adminResetPassword }));
+    const service = new AuthenticationService(
+      buildRepo({ adminResetPassword })
+    );
     const authId = "64f1b2c3d4e5f6a7b8c9d0e1";
 
-    await expect(
-      service.adminResetPassword(authId, "newHash")
-    ).rejects.toThrow("db down");
+    await expect(service.adminResetPassword(authId, "newHash")).rejects.toThrow(
+      "db down"
+    );
   });
 });

@@ -64,5 +64,17 @@
     "greeting": "Xin chào,",
     "body": "Mật khẩu tài khoản của bạn đã được thay đổi thành công vào lúc",
     "warning": "Nếu bạn không thực hiện thay đổi này, tài khoản của bạn có thể đã bị xâm phạm. Vui lòng đặt lại mật khẩu và liên hệ hỗ trợ ngay lập tức."
+  },
+  "adminResetPassword": {
+    "title": "Mật Khẩu Của Bạn Đã Được Quản Trị Viên Đặt Lại",
+    "greeting": "Xin chào,",
+    "body": "Quản trị viên đã đặt lại mật khẩu tài khoản của bạn. Sử dụng mật khẩu tạm thời bên dưới để đăng nhập:",
+    "passwordLabel": "Mật Khẩu Tạm Thời:",
+    "changePasswordNote": "Bạn sẽ phải đặt mật khẩu mới ngay sau khi đăng nhập.",
+    "loginButton": "Đăng Nhập Ngay",
+    "securityTitle": "Thông Báo Bảo Mật",
+    "securityWarning": "Nếu bạn không mong đợi điều này, vui lòng liên hệ hỗ trợ ngay lập tức.",
+    "footerNote": "Đây là tin nhắn tự động. Vui lòng không trả lời email này.",
+    "copyright": "© 2025 Apartment Management System. Bản quyền thuộc về chúng tôi."
   }
 }
