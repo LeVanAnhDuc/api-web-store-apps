@@ -58,6 +58,8 @@ export class ChangePasswordService {
 
     // Stamp with the incremented tokenVersion so this device survives while
     // prior refresh tokens (other devices) are rejected on next refresh.
+    // mustChangePassword is explicitly false — updatePassword() just cleared
+    // it in the DB (see authentication.repository.ts).
     const tokens = generateAuthTokensResponse({
       userId: user._id.toString(),
       authId: auth._id.toString(),
@@ -65,7 +67,8 @@ export class ChangePasswordService {
       roles: auth.roles,
       fullName: user.fullName,
       avatar: user.avatar ?? null,
-      tokenVersion: newTokenVersion
+      tokenVersion: newTokenVersion,
+      mustChangePassword: false
     });
 
     // Fire-and-forget security alert (queued).

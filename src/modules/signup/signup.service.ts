@@ -235,8 +235,9 @@ export class SignupService {
       roles: AUTHENTICATION_ROLES.USER,
       fullName: account.fullName,
       avatar: null,
-      // Freshly-created auth → schema default tokenVersion is 0.
-      tokenVersion: 0
+      // Freshly-created auth → schema defaults: tokenVersion 0, mustChangePassword false.
+      tokenVersion: 0,
+      mustChangePassword: false
     });
 
     await Promise.all([

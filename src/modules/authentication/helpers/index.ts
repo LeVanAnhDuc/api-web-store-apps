@@ -15,7 +15,8 @@ export const generateAuthTokensResponse = ({
   roles,
   fullName,
   avatar,
-  tokenVersion
+  tokenVersion,
+  mustChangePassword
 }: {
   userId: string;
   authId: string;
@@ -24,6 +25,7 @@ export const generateAuthTokensResponse = ({
   fullName: string;
   avatar?: string | null;
   tokenVersion: number;
+  mustChangePassword: boolean;
 }): AuthTokensResponse => {
   const { accessToken, refreshToken, idToken } = {
     accessToken: generateAccessToken({
@@ -40,7 +42,8 @@ export const generateAuthTokensResponse = ({
       sub: userId,
       name: fullName,
       email: email,
-      picture: avatar ?? null
+      picture: avatar ?? null,
+      mustChangePassword: mustChangePassword
     })
   };
 

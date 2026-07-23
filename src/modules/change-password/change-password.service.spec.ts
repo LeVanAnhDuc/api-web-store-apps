@@ -140,7 +140,8 @@ describe("ChangePasswordService", () => {
       email: "u@e.vn",
       roles: "user",
       fullName: "U",
-      avatar: null
+      avatar: null,
+      mustChangePassword: false
     });
     expect(emailDispatcher.send).toHaveBeenCalledWith(
       EmailType.PASSWORD_CHANGED,
