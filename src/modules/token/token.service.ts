@@ -50,7 +50,8 @@ export class TokenService {
       fullName: user.fullName,
       avatar: user.avatar ?? null,
       // Carry the auth's CURRENT version forward — refresh must not bump it.
-      tokenVersion: auth.tokenVersion ?? 0
+      tokenVersion: auth.tokenVersion ?? 0,
+      mustChangePassword: auth.mustChangePassword ?? false
     });
 
     Logger.info("Token refresh successful", { userId: user._id.toString() });

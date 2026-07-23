@@ -3,6 +3,7 @@ import { render } from "@react-email/render";
 // types
 import type { EmailTransport } from "@/services/cores/NodemailerTransport";
 import type {
+  AdminResetPasswordData,
   ForgotPasswordOtpData,
   LoginOtpData,
   MagicLinkData,
@@ -29,6 +30,7 @@ import { MagicLinkEmail } from "./templates/magic-link";
 import { UnlockTempPasswordEmail } from "./templates/unlock-temp-password";
 import { ForgotPasswordOtpEmail } from "./templates/forgot-password-otp";
 import { PasswordChangedEmail } from "./templates/password-changed";
+import { AdminResetPasswordEmail } from "./templates/admin-reset-password";
 
 const CIRCUIT_BREAKER_CONFIG = {
   FAILURE_THRESHOLD: 5,
@@ -112,6 +114,13 @@ export class SendEmailService implements Mailer {
         return render(
           PasswordChangedEmail(options.data as PasswordChangedData, locale)
         );
+      case EmailType.ADMIN_RESET_PASSWORD:
+        return render(
+          AdminResetPasswordEmail(
+            options.data as AdminResetPasswordData,
+            locale
+          )
+        );
       default:
         throw new InternalServerError({
           message: `Unknown email template: ${type}`
@@ -135,6 +144,8 @@ export class SendEmailService implements Mailer {
         return strings.forgotPasswordOtp.title;
       case EmailType.PASSWORD_CHANGED:
         return strings.passwordChanged.title;
+      case EmailType.ADMIN_RESET_PASSWORD:
+        return strings.adminResetPassword.title;
       default:
         throw new InternalServerError({
           message: `Unknown email template: ${type}`

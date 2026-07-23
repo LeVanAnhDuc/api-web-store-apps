@@ -31,7 +31,8 @@ export class LoginCompletionService {
         roles: auth.roles,
         fullName: user.fullName,
         avatar: user.avatar ?? null,
-        tokenVersion: auth.tokenVersion ?? 0
+        tokenVersion: auth.tokenVersion ?? 0,
+        mustChangePassword: auth.mustChangePassword ?? false
       })
     );
   }

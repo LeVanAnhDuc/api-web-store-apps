@@ -22,7 +22,7 @@ import { LOGIN_METHODS } from "@/modules/login-history/constants";
 import { toUnlockRequestDto, toUnlockVerifyDto } from "./dtos";
 // others
 import ENV from "@/constants/env";
-import { generateTempPassword } from "./helpers";
+import { generateTempPassword } from "@/utils/crypto/temp-password";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -175,7 +175,8 @@ export class UnlockAccountService {
         roles: auth.roles,
         fullName: user.fullName,
         avatar: user.avatar ?? null,
-        tokenVersion: auth.tokenVersion ?? 0
+        tokenVersion: auth.tokenVersion ?? 0,
+        mustChangePassword: auth.mustChangePassword ?? false
       })
     );
   }

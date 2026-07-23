@@ -64,5 +64,17 @@
     "greeting": "Hello,",
     "body": "Your account password was successfully changed at",
     "warning": "If you did not make this change, your account may be compromised. Please reset your password and contact support immediately."
+  },
+  "adminResetPassword": {
+    "title": "Your Password Was Reset by an Administrator",
+    "greeting": "Hello,",
+    "body": "An administrator has reset your account password. Use the temporary password below to log in:",
+    "passwordLabel": "Temporary Password:",
+    "changePasswordNote": "You will be required to set a new password immediately after logging in.",
+    "loginButton": "Log In Now",
+    "securityTitle": "Security Notice",
+    "securityWarning": "If you did not expect this, please contact support immediately.",
+    "footerNote": "This is an automated message. Please do not reply to this email.",
+    "copyright": "© 2025 Apartment Management System. All rights reserved."
   }
 }

@@ -4,6 +4,7 @@ import { Queue, Worker } from "bullmq";
 import type { ConnectionOptions, Job, JobsOptions, Processor } from "bullmq";
 // others
 import { Logger } from "@/libs/logger";
+import { redactSensitive } from "@/utils/redact";
 
 const DEFAULT_CONCURRENCY = 5;
 const DEFAULT_ATTEMPTS = 3;
@@ -108,7 +109,7 @@ export class QueueService<TData = unknown> {
         Logger.error(`[DLQ] Job permanently failed: ${job.name}`, {
           queue: this.name,
           jobId: job.id,
-          data: job.data,
+          data: redactSensitive(job.data),
           attempts: job.attemptsMade,
           error: error.message
         });

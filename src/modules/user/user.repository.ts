@@ -41,7 +41,9 @@ export type UserRepository = {
     filter: AdminUsersFilter,
     options: PaginationOptions
   ): Promise<{ data: AdminUserAggregateRow[]; total: number }>;
-  findAuthIdById(userId: string): Promise<{ authId: string } | null>;
+  findAuthIdById(
+    userId: string
+  ): Promise<{ authId: string; email: string } | null>;
 };
 
 export class MongoUserRepository implements UserRepository {
@@ -236,13 +238,15 @@ export class MongoUserRepository implements UserRepository {
     });
   }
 
-  async findAuthIdById(userId: string): Promise<{ authId: string } | null> {
+  async findAuthIdById(
+    userId: string
+  ): Promise<{ authId: string; email: string } | null> {
     return asyncDatabaseHandler("findAuthIdById", async () => {
       const doc = await UserModel.findById(userId)
-        .select("authId")
-        .lean<{ authId: { toString(): string } }>()
+        .select("authId email")
+        .lean<{ authId: { toString(): string }; email: string }>()
         .exec();
-      return doc ? { authId: doc.authId.toString() } : null;
+      return doc ? { authId: doc.authId.toString(), email: doc.email } : null;
     });
   }
 }

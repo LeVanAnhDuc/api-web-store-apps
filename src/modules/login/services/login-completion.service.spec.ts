@@ -58,7 +58,8 @@ describe("LoginCompletionService", () => {
       roles: auth.roles,
       fullName: user.fullName,
       avatar: null,
-      tokenVersion: auth.tokenVersion
+      tokenVersion: auth.tokenVersion,
+      mustChangePassword: auth.mustChangePassword
     });
     expect(result).toEqual({
       accessToken: "a",

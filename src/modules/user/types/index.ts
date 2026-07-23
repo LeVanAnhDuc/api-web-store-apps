@@ -137,3 +137,12 @@ export interface SetUserActiveResult {
 export interface LockUserRequest extends Omit<Request, "params"> {
   params: { id: string };
 }
+
+export interface AdminResetPasswordResult {
+  _id: string;
+  email: string;
+}
+
+export interface ResetPasswordRequest extends Omit<Request, "params"> {
+  params: { id: string };
+}

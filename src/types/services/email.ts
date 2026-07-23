@@ -4,7 +4,8 @@ export enum EmailType {
   MAGIC_LINK = "MAGIC_LINK",
   UNLOCK_TEMP_PASSWORD = "UNLOCK_TEMP_PASSWORD",
   FORGOT_PASSWORD_OTP = "FORGOT_PASSWORD_OTP",
-  PASSWORD_CHANGED = "PASSWORD_CHANGED"
+  PASSWORD_CHANGED = "PASSWORD_CHANGED",
+  ADMIN_RESET_PASSWORD = "ADMIN_RESET_PASSWORD"
 }
 
 export interface LoginOtpData {
@@ -37,6 +38,11 @@ export interface PasswordChangedData {
   ipAddress: string;
 }
 
+export interface AdminResetPasswordData {
+  tempPassword: string;
+  loginUrl: string;
+}
+
 export interface EmailDataMap {
   [EmailType.LOGIN_OTP]: LoginOtpData;
   [EmailType.SIGNUP_OTP]: SignupOtpData;
@@ -44,6 +50,7 @@ export interface EmailDataMap {
   [EmailType.UNLOCK_TEMP_PASSWORD]: UnlockTempPasswordData;
   [EmailType.FORGOT_PASSWORD_OTP]: ForgotPasswordOtpData;
   [EmailType.PASSWORD_CHANGED]: PasswordChangedData;
+  [EmailType.ADMIN_RESET_PASSWORD]: AdminResetPasswordData;
 }
 
 export interface SendEmailOptions<T extends EmailType> {

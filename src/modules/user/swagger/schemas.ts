@@ -223,11 +223,30 @@ const SetUserActiveResultSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+const AdminResetPasswordResultSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  required: ["_id", "email"],
+  properties: {
+    _id: {
+      type: "string",
+      example: "64f1b2c3d4e5f6a7b8c9d0e1",
+      description: "User ID (MongoDB ObjectId)"
+    },
+    email: {
+      type: "string",
+      format: "email",
+      example: "user@example.com",
+      description: "Email address the temporary password was sent to"
+    }
+  }
+};
+
 export const userSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   UserProfileResponse: UserProfileResponseSchema,
   PublicUserProfileResponse: PublicUserProfileResponseSchema,
   UpdateProfileRequest: UpdateProfileRequestSchema,
   AdminUser: AdminUserSchema,
   AdminUsersListResponse: AdminUsersListResponseSchema,
-  SetUserActiveResult: SetUserActiveResultSchema
+  SetUserActiveResult: SetUserActiveResultSchema,
+  AdminResetPasswordResult: AdminResetPasswordResultSchema
 };

@@ -390,6 +390,94 @@ Re-activate a previously locked user account by setting \`auth.isActive\` to
       }
     }
   },
+  "/admin/users/{id}/reset-password": {
+    post: {
+      summary: "Reset a user's password (admin)",
+      description: `
+Admin-initiated password reset. Overwrites the target account's real password
+with a freshly generated temporary password, which is emailed to the user.
+Bumps \`tokenVersion\` (revokes all outstanding refresh tokens for that account)
+and sets \`mustChangePassword\` so the user is forced to set a new password on
+their next login.
+
+**Authentication:**
+- Requires valid Bearer token (admin role)
+
+**Behavior:**
+- The admin never sees the generated temporary password — it is only emailed
+  to the target user
+- An admin cannot reset their own password via this endpoint (403
+  \`ADMIN_CANNOT_RESET_SELF\`) — use the regular change-password flow instead
+- Resetting another admin's password is allowed
+- Response returns only \`{ _id, email }\` — never the password or its hash
+
+**Params:**
+- \`id\` must be a valid MongoDB ObjectId (24 hex characters)
+      `.trim(),
+      tags: ["User Admin"],
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          description: "MongoDB ObjectId of the target user",
+          schema: {
+            type: "string",
+            pattern: "^[a-fA-F0-9]{24}$",
+            example: "64f1b2c3d4e5f6a7b8c9d0e1"
+          }
+        }
+      ],
+      responses: {
+        "200": {
+          description: "Password reset successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: {
+                        $ref: "#/components/schemas/AdminResetPasswordResult"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          description: "Bad Request — invalid ObjectId format",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+            }
+          }
+        },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": {
+          description:
+            "Forbidden — non-admin caller, or admin attempting to reset their own password",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+              example: {
+                code: ERROR_CODES.ADMIN_CANNOT_RESET_SELF,
+                message: "You cannot reset your own password here.",
+                timestamp: "2026-01-01T00:00:00.000Z",
+                path: "/api/v1/admin/users/64f1b2c3d4e5f6a7b8c9d0e1/reset-password"
+              }
+            }
+          }
+        },
+        "404": { $ref: "#/components/responses/NotFound" }
+      }
+    }
+  },
   "/users/{id}": {
     get: {
       summary: "Get public profile",

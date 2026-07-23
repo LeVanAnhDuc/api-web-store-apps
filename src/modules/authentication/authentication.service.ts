@@ -104,6 +104,22 @@ export class AuthenticationService {
     }
   }
 
+  async adminResetPassword(
+    authId: string,
+    hashedPassword: string
+  ): Promise<void> {
+    validateObjectId(authId, "authId");
+    validateRequiredString(hashedPassword, "hashedPassword");
+
+    try {
+      await this.authRepo.adminResetPassword(authId, hashedPassword);
+      Logger.info("Password reset by admin", { authId });
+    } catch (error) {
+      Logger.error("Failed to admin-reset password", { authId, error });
+      throw error;
+    }
+  }
+
   async setActive(authId: string, isActive: boolean): Promise<void> {
     validateObjectId(authId, "authId");
 

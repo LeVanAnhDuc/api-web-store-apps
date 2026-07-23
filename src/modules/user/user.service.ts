@@ -8,11 +8,13 @@ import type {
   AdminUsersQuery,
   AdminUsersFilter,
   AdminUserListMeta,
-  SetUserActiveResult
+  SetUserActiveResult,
+  AdminResetPasswordResult
 } from "@/modules/user/types";
 import type { ClientSession } from "mongoose";
 import type { UserRepository } from "./user.repository";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { MyProfileDto, PublicProfileDto, AdminUserDto } from "./dtos";
 // common
 import { ForbiddenError, NotFoundError } from "@/common/exceptions";
@@ -25,14 +27,19 @@ import { toMyProfileDto, toPublicProfileDto, toAdminUserDto } from "./dtos";
 // modules
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // others
+import ENV from "@/constants/env";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
 import { RequestContext } from "@/utils/request-context";
+import { hashValue } from "@/utils/crypto/bcrypt";
+import { generateTempPassword } from "@/utils/crypto/temp-password";
+import { EmailType } from "@/types/services/email";
 
 export class UserService {
   constructor(
     private readonly userRepo: UserRepository,
-    private readonly authService: AuthenticationService
+    private readonly authService: AuthenticationService,
+    private readonly emailDispatcher: EmailDispatcher
   ) {}
 
   async getMyProfile(): Promise<MyProfileDto> {
@@ -204,5 +211,44 @@ export class UserService {
 
     await this.authService.setActive(target.authId, isActive);
     return { _id: id, isActive };
+  }
+
+  async adminResetPassword(id: string): Promise<AdminResetPasswordResult> {
+    validateObjectId(id, "id");
+
+    const target = await this.userRepo.findAuthIdById(id);
+    if (!target) {
+      throw new NotFoundError({
+        i18nMessage: (t) => t("user:errors.notFound"),
+        code: ERROR_CODES.USER_NOT_FOUND
+      });
+    }
+
+    if (target.authId === RequestContext.requireAuthId()) {
+      throw new ForbiddenError({
+        i18nMessage: (t) => t("user:errors.cannotResetSelf"),
+        code: ERROR_CODES.ADMIN_CANNOT_RESET_SELF
+      });
+    }
+
+    const tempPassword = generateTempPassword();
+    const hashed = await hashValue(tempPassword);
+
+    await this.authService.adminResetPassword(target.authId, hashed);
+
+    this.emailDispatcher.send(EmailType.ADMIN_RESET_PASSWORD, {
+      email: target.email,
+      data: {
+        tempPassword,
+        loginUrl: ENV.CLIENT_URL || "http://localhost:3000/login"
+      }
+    });
+
+    Logger.info("Password reset by admin", {
+      userId: id,
+      authId: target.authId
+    });
+
+    return { _id: id, email: target.email };
   }
 }

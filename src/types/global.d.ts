@@ -42,6 +42,7 @@ declare global {
     name: string;
     email: string;
     picture: string | null;
+    mustChangePassword?: boolean;
   }
 
   interface RefreshTokenPayload extends BaseTokenClaims {
