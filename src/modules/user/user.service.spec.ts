@@ -1,15 +1,27 @@
 jest.mock("@/utils/request-context", () => ({
   RequestContext: { requireUserId: jest.fn(), requireAuthId: jest.fn() }
 }));
+jest.mock("@/utils/crypto/bcrypt");
+jest.mock("@/utils/crypto/temp-password");
 
 // types
 import type { UserRepository } from "./user.repository";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import { UserService } from "./user.service";
 // common
 import { ForbiddenError, NotFoundError } from "@/common/exceptions";
+// modules
+import { EmailType } from "@/types/services/email";
 // others
 import { RequestContext } from "@/utils/request-context";
+import { hashValue } from "@/utils/crypto/bcrypt";
+import { generateTempPassword } from "@/utils/crypto/temp-password";
+import { createEmailDispatcherMock } from "@test/mocks/email-dispatcher.mock";
+import { UserService } from "./user.service";
+
+const mockedHash = hashValue as jest.MockedFunction<typeof hashValue>;
+const mockedGenerateTempPassword = generateTempPassword as jest.MockedFunction<
+  typeof generateTempPassword
+>;
 
 const buildRepo = (over: Partial<UserRepository> = {}): UserRepository =>
   ({
@@ -24,6 +36,7 @@ const buildAuthService = (
     setActive: jest.fn(),
     findById: jest.fn().mockResolvedValue({ roles: "user", isActive: true }),
     countActiveAdmins: jest.fn().mockResolvedValue(2),
+    adminResetPassword: jest.fn().mockResolvedValue(undefined),
     ...over
   }) as unknown as AuthenticationService;
 
@@ -46,7 +59,8 @@ describe("UserService.getAdminUsers", () => {
     });
     const service = new UserService(
       buildRepo({ findAdminUsers }),
-      buildAuthService()
+      buildAuthService(),
+      createEmailDispatcherMock()
     );
 
     const result = await service.getAdminUsers({ page: 2, limit: 10 });
@@ -69,7 +83,8 @@ describe("UserService.getAdminUsers", () => {
     const findAdminUsers = jest.fn().mockResolvedValue({ data: [], total: 0 });
     const service = new UserService(
       buildRepo({ findAdminUsers }),
-      buildAuthService()
+      buildAuthService(),
+      createEmailDispatcherMock()
     );
 
     await service.getAdminUsers({
@@ -105,7 +120,8 @@ describe("UserService.setUserActive", () => {
     const countActiveAdmins = jest.fn().mockResolvedValue(0);
     const service = new UserService(
       buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive, findById, countActiveAdmins })
+      buildAuthService({ setActive, findById, countActiveAdmins }),
+      createEmailDispatcherMock()
     );
 
     const result = await service.setUserActive(targetUserId, false);
@@ -125,7 +141,8 @@ describe("UserService.setUserActive", () => {
     const countActiveAdmins = jest.fn().mockResolvedValue(2);
     const service = new UserService(
       buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive, findById, countActiveAdmins })
+      buildAuthService({ setActive, findById, countActiveAdmins }),
+      createEmailDispatcherMock()
     );
 
     const result = await service.setUserActive(targetUserId, false);
@@ -145,7 +162,8 @@ describe("UserService.setUserActive", () => {
     const countActiveAdmins = jest.fn().mockResolvedValue(1);
     const service = new UserService(
       buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive, findById, countActiveAdmins })
+      buildAuthService({ setActive, findById, countActiveAdmins }),
+      createEmailDispatcherMock()
     );
 
     await expect(service.setUserActive(targetUserId, false)).rejects.toThrow(
@@ -165,7 +183,8 @@ describe("UserService.setUserActive", () => {
     const countActiveAdmins = jest.fn().mockResolvedValue(0);
     const service = new UserService(
       buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive, findById, countActiveAdmins })
+      buildAuthService({ setActive, findById, countActiveAdmins }),
+      createEmailDispatcherMock()
     );
 
     const result = await service.setUserActive(targetUserId, false);
@@ -182,7 +201,8 @@ describe("UserService.setUserActive", () => {
     const setActive = jest.fn().mockResolvedValue(undefined);
     const service = new UserService(
       buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive })
+      buildAuthService({ setActive }),
+      createEmailDispatcherMock()
     );
 
     const result = await service.setUserActive(targetUserId, true);
@@ -196,7 +216,8 @@ describe("UserService.setUserActive", () => {
     const setActive = jest.fn();
     const service = new UserService(
       buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive })
+      buildAuthService({ setActive }),
+      createEmailDispatcherMock()
     );
 
     await expect(service.setUserActive(targetUserId, false)).rejects.toThrow(
@@ -210,7 +231,8 @@ describe("UserService.setUserActive", () => {
     const setActive = jest.fn();
     const service = new UserService(
       buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive })
+      buildAuthService({ setActive }),
+      createEmailDispatcherMock()
     );
 
     await expect(service.setUserActive(targetUserId, false)).rejects.toThrow(
@@ -224,7 +246,8 @@ describe("UserService.setUserActive", () => {
     const setActive = jest.fn().mockResolvedValue(undefined);
     const service = new UserService(
       buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive })
+      buildAuthService({ setActive }),
+      createEmailDispatcherMock()
     );
 
     const result = await service.setUserActive(targetUserId, true);
@@ -240,7 +263,8 @@ describe("UserService.setUserActive", () => {
     const setActive = jest.fn().mockResolvedValue(undefined);
     const service = new UserService(
       buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive })
+      buildAuthService({ setActive }),
+      createEmailDispatcherMock()
     );
 
     await service.setUserActive(targetUserId, false);
@@ -262,7 +286,8 @@ describe("UserService.setUserActive", () => {
     const countActiveAdmins = jest.fn().mockResolvedValue(1);
     const service = new UserService(
       buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive, findById, countActiveAdmins })
+      buildAuthService({ setActive, findById, countActiveAdmins }),
+      createEmailDispatcherMock()
     );
 
     const result = await service.setUserActive(targetUserId, true);
@@ -271,5 +296,81 @@ describe("UserService.setUserActive", () => {
     expect(findById).not.toHaveBeenCalled();
     expect(countActiveAdmins).not.toHaveBeenCalled();
     expect(setActive).toHaveBeenCalledWith(targetAuthId, true);
+  });
+});
+
+describe("UserService.adminResetPassword", () => {
+  const targetUserId = "64f1b2c3d4e5f6a7b8c9d0e1";
+  const targetAuthId = "64f1b2c3d4e5f6a7b8c9d0e2";
+  const adminAuthId = "64f1b2c3d4e5f6a7b8c9d0e3";
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.mocked(RequestContext.requireAuthId).mockReturnValue(adminAuthId);
+    mockedGenerateTempPassword.mockReturnValue("Temp1234!@");
+    mockedHash.mockReturnValue("hashedTemp");
+  });
+
+  it("generates a temp password, resets it via authService, emails the user, and returns {_id, email}", async () => {
+    const findAuthIdById = jest.fn().mockResolvedValue({
+      authId: targetAuthId,
+      email: "target@e.vn"
+    });
+    const adminResetPassword = jest.fn().mockResolvedValue(undefined);
+    const emailDispatcher = createEmailDispatcherMock();
+    const service = new UserService(
+      buildRepo({ findAuthIdById }),
+      buildAuthService({ adminResetPassword }),
+      emailDispatcher
+    );
+
+    const result = await service.adminResetPassword(targetUserId);
+
+    expect(mockedGenerateTempPassword).toHaveBeenCalled();
+    expect(adminResetPassword).toHaveBeenCalledWith(targetAuthId, "hashedTemp");
+    expect(emailDispatcher.send).toHaveBeenCalledWith(
+      EmailType.ADMIN_RESET_PASSWORD,
+      expect.objectContaining({
+        email: "target@e.vn",
+        data: expect.objectContaining({ tempPassword: "Temp1234!@" })
+      })
+    );
+    expect(result).toEqual({ _id: targetUserId, email: "target@e.vn" });
+  });
+
+  it("throws ForbiddenError with ADMIN_CANNOT_RESET_SELF when the admin resets their own account", async () => {
+    const findAuthIdById = jest
+      .fn()
+      .mockResolvedValue({ authId: adminAuthId, email: "admin@e.vn" });
+    const adminResetPassword = jest.fn();
+    const emailDispatcher = createEmailDispatcherMock();
+    const service = new UserService(
+      buildRepo({ findAuthIdById }),
+      buildAuthService({ adminResetPassword }),
+      emailDispatcher
+    );
+
+    await expect(service.adminResetPassword(targetUserId)).rejects.toThrow(
+      ForbiddenError
+    );
+    expect(adminResetPassword).not.toHaveBeenCalled();
+    expect(emailDispatcher.send).not.toHaveBeenCalled();
+  });
+
+  it("throws NotFoundError with USER_NOT_FOUND when the target does not exist", async () => {
+    const findAuthIdById = jest.fn().mockResolvedValue(null);
+    const adminResetPassword = jest.fn();
+    const emailDispatcher = createEmailDispatcherMock();
+    const service = new UserService(
+      buildRepo({ findAuthIdById }),
+      buildAuthService({ adminResetPassword }),
+      emailDispatcher
+    );
+
+    await expect(service.adminResetPassword(targetUserId)).rejects.toThrow(
+      NotFoundError
+    );
+    expect(adminResetPassword).not.toHaveBeenCalled();
+    expect(emailDispatcher.send).not.toHaveBeenCalled();
   });
 });

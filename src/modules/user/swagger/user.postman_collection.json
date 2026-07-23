@@ -609,6 +609,119 @@
       ]
     },
     {
+      "name": "POST /admin/users/:id/reset-password - Reset Password (admin)",
+      "item": [
+        {
+          "name": "TC-07.1 Happy - Reset another user's password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userId}}/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{userId}}", "reset-password"]
+            },
+            "description": "Expect: 200 with { _id, email }. A temporary password is emailed to the user; response never contains the password."
+          }
+        },
+        {
+          "name": "TC-07.2 Error - Admin resets their own password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{myUserId}}/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{myUserId}}", "reset-password"]
+            },
+            "description": "Set {{myUserId}} to your own user ID. Expect: 403 ADMIN_CANNOT_RESET_SELF"
+          }
+        },
+        {
+          "name": "TC-07.3 Error - Non-admin caller",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userId}}/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{userId}}", "reset-password"]
+            },
+            "description": "Use a non-admin idToken. Expect: 403 Forbidden"
+          }
+        },
+        {
+          "name": "TC-07.4 Edge - Invalid ObjectId format",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/abc123/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "abc123", "reset-password"]
+            },
+            "description": "Expect: 400 Bad Request - Invalid user ID format"
+          }
+        },
+        {
+          "name": "TC-07.5 Edge - Valid ObjectId but user not found",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/000000000000000000000000/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "admin",
+                "users",
+                "000000000000000000000000",
+                "reset-password"
+              ]
+            },
+            "description": "Expect: 404 Not Found"
+          }
+        },
+        {
+          "name": "TC-07.6 Error - No Authorization header",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userId}}/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{userId}}", "reset-password"]
+            },
+            "description": "Expect: 401 Unauthorized"
+          }
+        }
+      ]
+    },
+    {
       "name": "GET /users/:id - Get Public Profile",
       "item": [
         {

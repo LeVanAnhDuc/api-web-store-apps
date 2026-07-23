@@ -89,7 +89,8 @@ export const loadModules = (
   // --- Module creation ---
   const { userRouter, userAdminRouter, userService } = createUserModule(
     rateLimiter,
-    authService
+    authService,
+    emailDispatcher
   );
 
   const {

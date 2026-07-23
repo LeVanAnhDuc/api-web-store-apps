@@ -69,6 +69,11 @@ export const createUserAdminRoutes = (controller: UserController): Router => {
     paramsPipe(adminUserIdParamsSchema),
     asyncHandler(controller.unlockUser)
   );
+  adminUsers.post(
+    "/:id/reset-password",
+    paramsPipe(adminUserIdParamsSchema),
+    asyncHandler(controller.resetUserPassword)
+  );
 
   router.use("/admin/users", adminUsers);
   return router;
