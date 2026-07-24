@@ -250,6 +250,9 @@ login attempts and refresh token usage; does not affect any in-flight request.
 **Authentication:**
 - Requires valid Bearer token (admin role)
 
+**Rate Limits:**
+- 20 requests per IP+admin per 15 minutes
+
 **Behavior:**
 - Idempotent — locking an already-locked account returns 200 with no error
 - An admin cannot lock their own account (403 \`ADMIN_CANNOT_LOCK_SELF\`)
@@ -319,7 +322,8 @@ login attempts and refresh token usage; does not affect any in-flight request.
             }
           }
         },
-        "404": { $ref: "#/components/responses/NotFound" }
+        "404": { $ref: "#/components/responses/NotFound" },
+        "429": { $ref: "#/components/responses/TooManyRequests" }
       }
     }
   },
@@ -332,6 +336,9 @@ Re-activate a previously locked user account by setting \`auth.isActive\` to
 
 **Authentication:**
 - Requires valid Bearer token (admin role)
+
+**Rate Limits:**
+- 20 requests per IP+admin per 15 minutes
 
 **Behavior:**
 - Idempotent — unlocking an already-active account returns 200 with no error
@@ -386,7 +393,8 @@ Re-activate a previously locked user account by setting \`auth.isActive\` to
         },
         "401": { $ref: "#/components/responses/Unauthorized" },
         "403": { $ref: "#/components/responses/Forbidden" },
-        "404": { $ref: "#/components/responses/NotFound" }
+        "404": { $ref: "#/components/responses/NotFound" },
+        "429": { $ref: "#/components/responses/TooManyRequests" }
       }
     }
   },
@@ -402,6 +410,9 @@ their next login.
 
 **Authentication:**
 - Requires valid Bearer token (admin role)
+
+**Rate Limits:**
+- 20 requests per IP+admin per 15 minutes
 
 **Behavior:**
 - The admin never sees the generated temporary password — it is only emailed
@@ -474,7 +485,8 @@ their next login.
             }
           }
         },
-        "404": { $ref: "#/components/responses/NotFound" }
+        "404": { $ref: "#/components/responses/NotFound" },
+        "429": { $ref: "#/components/responses/TooManyRequests" }
       }
     }
   },

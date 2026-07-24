@@ -19,7 +19,7 @@ export const createUserModule = (
 
   return {
     userRouter: createUserRoutes(userController, rateLimiter),
-    userAdminRouter: createUserAdminRoutes(userController),
+    userAdminRouter: createUserAdminRoutes(userController, rateLimiter),
     userService
   };
 };
