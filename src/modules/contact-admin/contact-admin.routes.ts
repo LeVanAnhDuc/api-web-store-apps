@@ -8,12 +8,14 @@ import {
   submitContactSchema,
   contactIdParamSchema,
   updateContactStatusSchema,
-  adminListContactsQuerySchema
+  adminListContactsQuerySchema,
+  myContactsQuerySchema
 } from "@/validators/schemas/contact-admin";
 // others
 import {
   adminGuard,
   authGuard,
+  optionalAuthGuard,
   bodyPipe,
   paramsPipe,
   queryPipe
@@ -30,6 +32,7 @@ export const createContactRoutes = (
   contact.post(
     "/submit",
     rl.contactByIp,
+    optionalAuthGuard,
     bodyPipe(submitContactSchema),
     asyncHandler(controller.submit)
   );
@@ -66,5 +69,29 @@ export const createAdminContactsRoutes = (
   );
 
   router.use("/admin/contacts", adminContacts);
+  return router;
+};
+
+export const createMyContactsRoutes = (
+  controller: ContactAdminController
+): Router => {
+  const router = Router();
+  const myContacts = Router();
+
+  myContacts.use(authGuard);
+
+  myContacts.get(
+    "/",
+    queryPipe(myContactsQuerySchema),
+    asyncHandler(controller.getMyContacts)
+  );
+
+  myContacts.get(
+    "/:id",
+    paramsPipe(contactIdParamSchema),
+    asyncHandler(controller.getMyContactDetail)
+  );
+
+  router.use("/contacts", myContacts);
   return router;
 };

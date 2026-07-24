@@ -6,7 +6,8 @@ import { ContactAdminService } from "./contact-admin.service";
 import { ContactAdminController } from "./contact-admin.controller";
 import {
   createContactRoutes,
-  createAdminContactsRoutes
+  createAdminContactsRoutes,
+  createMyContactsRoutes
 } from "./contact-admin.routes";
 
 export const createContactAdminModule = (
@@ -18,6 +19,7 @@ export const createContactAdminModule = (
 
   return {
     contactAdminRouter: createContactRoutes(controller, rateLimiter),
-    adminContactsRouter: createAdminContactsRoutes(controller)
+    adminContactsRouter: createAdminContactsRoutes(controller),
+    myContactsRouter: createMyContactsRoutes(controller)
   };
 };

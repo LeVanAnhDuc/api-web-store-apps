@@ -41,6 +41,7 @@ interface ModuleRoutes {
   favorite: Router;
   contact: Router;
   contactAdmin: Router;
+  myContacts: Router;
   webAppAdmin: Router;
   webAppUser: Router;
 }
@@ -68,6 +69,7 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   // Contact
   v1Router.use(routes.contact);
   v1Router.use(routes.contactAdmin);
+  v1Router.use(routes.myContacts);
 
   // App Registry
   v1Router.use(routes.webAppAdmin);
@@ -144,7 +146,7 @@ export const loadModules = (
     rateLimiter
   );
 
-  const { contactAdminRouter, adminContactsRouter } =
+  const { contactAdminRouter, adminContactsRouter, myContactsRouter } =
     createContactAdminModule(rateLimiter);
 
   const { webAppAdminRouter, webAppUserRouter } =
@@ -171,6 +173,7 @@ export const loadModules = (
     favorite: favoriteUserRouter,
     contact: contactAdminRouter,
     contactAdmin: adminContactsRouter,
+    myContacts: myContactsRouter,
     webAppAdmin: webAppAdminRouter,
     webAppUser: webAppUserRouter
   });

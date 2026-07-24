@@ -86,3 +86,14 @@ export const TEST_CONTACTS = [
     status: CONTACT_STATUSES.RESOLVED
   }
 ] as const;
+
+// MyContacts feature (§A4): seed user (email below) owns these sample
+// contacts (matched by subject) so the "my contacts" list/detail endpoints
+// and E2E have owned data across ≥2 statuses to exercise.
+export const MY_CONTACTS_SEED_OWNER_EMAIL = "user@test.com";
+
+export const MY_CONTACTS_SEED_SUBJECTS = [
+  "App crashes on launch after latest update", // status: new
+  "Billing question about pro plan", // status: processing
+  "Suggestion: dark mode for dashboard" // status: resolved
+] as const;

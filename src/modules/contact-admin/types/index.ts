@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { Document } from "mongoose";
+import type { Document, Types } from "mongoose";
 import type {
   CONTACT_PRIORITIES,
   CONTACT_STATUSES,
@@ -22,6 +22,7 @@ export interface ContactDocument extends Document {
   priority: ContactPriority;
   message: string;
   status: ContactStatus;
+  userId?: Types.ObjectId | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -57,6 +58,21 @@ export interface AdminContactsQueryRequest extends Omit<Request, "query"> {
 
 export interface ContactIdParamRequest extends Omit<Request, "params"> {
   params: { id: string };
+}
+
+// ─── MyContacts (authenticated user, owner-scoped) ─────────────────────────
+
+export interface MyContactsQuery {
+  page?: number;
+  limit?: number;
+  status?: ContactStatus;
+  search?: string;
+  sortBy?: AdminContactsSortBy;
+  sortOrder?: SortOrder;
+}
+
+export interface MyContactsQueryRequest extends Omit<Request, "query"> {
+  query: MyContactsQuery;
 }
 
 export interface UpdateContactStatusRequest

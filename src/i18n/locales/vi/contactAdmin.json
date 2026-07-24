@@ -18,6 +18,8 @@
   },
   "success": {
     "submitted": "Yêu cầu của bạn đã được gửi thành công",
-    "updateContactCategory": "Cập nhật danh mục thành công"
+    "updateContactCategory": "Cập nhật danh mục thành công",
+    "getMyContacts": "Lấy danh sách liên hệ thành công",
+    "getMyContactDetail": "Lấy chi tiết liên hệ thành công"
   }
 }
