@@ -1,3 +1,5 @@
+// libs
+import { Types } from "mongoose";
 // types
 import type { FilterQuery } from "mongoose";
 import type { ContactDocument, ContactStatus } from "./types";
@@ -7,8 +9,12 @@ import ContactModel from "@/models/contact";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 
+export type CreateContactInput = Omit<Partial<ContactDocument>, "userId"> & {
+  userId?: string | null;
+};
+
 export type ContactRepository = {
-  create(data: Partial<ContactDocument>): Promise<ContactDocument>;
+  create(data: CreateContactInput): Promise<ContactDocument>;
   findAll(
     filter: FilterQuery<ContactDocument>,
     options: PaginationOptions
@@ -21,9 +27,12 @@ export type ContactRepository = {
 };
 
 export class MongoContactRepository implements ContactRepository {
-  async create(data: Partial<ContactDocument>): Promise<ContactDocument> {
+  async create(data: CreateContactInput): Promise<ContactDocument> {
     return asyncDatabaseHandler("create", async () => {
-      const doc = await ContactModel.create(data);
+      const doc = await ContactModel.create({
+        ...data,
+        userId: data.userId ? new Types.ObjectId(data.userId) : null
+      });
       return doc as unknown as ContactDocument;
     });
   }

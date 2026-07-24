@@ -30,6 +30,7 @@ import {
 import { ERROR_CODES } from "@/constants/error-code";
 import { CONTACT_STATUSES } from "./constants";
 import { buildContactFilter } from "./helpers";
+import { RequestContext } from "@/utils/request-context";
 
 export class ContactAdminService {
   constructor(private readonly contactRepo: ContactRepository) {}
@@ -55,11 +56,16 @@ export class ContactAdminService {
       CONTACT_CONFIG.MESSAGE_MAX_LENGTH
     );
 
+    // Owner attach: nullable — logged-in submitter gets userId, guest stays null.
+    // MUST come from RequestContext (server-verified JWT), never from client body.
+    const userId = RequestContext.getUserId() ?? null;
+
     const contact = await this.contactRepo.create({
       email,
       subject,
       message,
-      status: CONTACT_STATUSES.NEW
+      status: CONTACT_STATUSES.NEW,
+      userId
     });
 
     return toSubmitContactResponseDto(contact);

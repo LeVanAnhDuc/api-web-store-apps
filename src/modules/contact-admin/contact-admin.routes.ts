@@ -14,6 +14,7 @@ import {
 import {
   adminGuard,
   authGuard,
+  optionalAuthGuard,
   bodyPipe,
   paramsPipe,
   queryPipe
@@ -30,6 +31,7 @@ export const createContactRoutes = (
   contact.post(
     "/submit",
     rl.contactByIp,
+    optionalAuthGuard,
     bodyPipe(submitContactSchema),
     asyncHandler(controller.submit)
   );
