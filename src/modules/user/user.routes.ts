@@ -47,7 +47,10 @@ export const createUserRoutes = (
   return router;
 };
 
-export const createUserAdminRoutes = (controller: UserController): Router => {
+export const createUserAdminRoutes = (
+  controller: UserController,
+  rl: RateLimiterMiddleware
+): Router => {
   const router = Router();
   const adminUsers = Router();
 
@@ -61,16 +64,19 @@ export const createUserAdminRoutes = (controller: UserController): Router => {
 
   adminUsers.patch(
     "/:id/lock",
+    rl.adminUserMutationByIpAndUser,
     paramsPipe(adminUserIdParamsSchema),
     asyncHandler(controller.lockUser)
   );
   adminUsers.patch(
     "/:id/unlock",
+    rl.adminUserMutationByIpAndUser,
     paramsPipe(adminUserIdParamsSchema),
     asyncHandler(controller.unlockUser)
   );
   adminUsers.post(
     "/:id/reset-password",
+    rl.adminUserMutationByIpAndUser,
     paramsPipe(adminUserIdParamsSchema),
     asyncHandler(controller.resetUserPassword)
   );
