@@ -60,6 +60,21 @@ export interface ContactIdParamRequest extends Omit<Request, "params"> {
   params: { id: string };
 }
 
+// ─── MyContacts (authenticated user, owner-scoped) ─────────────────────────
+
+export interface MyContactsQuery {
+  page?: number;
+  limit?: number;
+  status?: ContactStatus;
+  search?: string;
+  sortBy?: AdminContactsSortBy;
+  sortOrder?: SortOrder;
+}
+
+export interface MyContactsQueryRequest extends Omit<Request, "query"> {
+  query: MyContactsQuery;
+}
+
 export interface UpdateContactStatusRequest
   extends Omit<Request, "params" | "body"> {
   params: { id: string };

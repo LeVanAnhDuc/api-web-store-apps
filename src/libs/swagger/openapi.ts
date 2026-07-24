@@ -82,7 +82,8 @@ export const openApiSpec: OpenAPIV3.Document = {
     },
     {
       name: "Contact Admin",
-      description: "Submit contact requests to the admin"
+      description:
+        "Submit contact requests to the admin; authenticated users can list/view their own submitted contacts"
     },
     {
       name: "User Profile",

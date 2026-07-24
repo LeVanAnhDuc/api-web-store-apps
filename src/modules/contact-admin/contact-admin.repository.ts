@@ -24,6 +24,12 @@ export type ContactRepository = {
     id: string,
     status: ContactStatus
   ): Promise<ContactDocument | null>;
+  findByUser(
+    userId: string,
+    filter: FilterQuery<ContactDocument>,
+    options: PaginationOptions
+  ): Promise<{ data: ContactDocument[]; total: number }>;
+  findByIdForUser(id: string, userId: string): Promise<ContactDocument | null>;
 };
 
 export class MongoContactRepository implements ContactRepository {
@@ -68,6 +74,42 @@ export class MongoContactRepository implements ContactRepository {
   ): Promise<ContactDocument | null> {
     return asyncDatabaseHandler("updateStatus", () =>
       ContactModel.findByIdAndUpdate(id, { $set: { status } }, { new: true })
+        .lean<ContactDocument>()
+        .exec()
+    );
+  }
+
+  async findByUser(
+    userId: string,
+    filter: FilterQuery<ContactDocument>,
+    options: PaginationOptions
+  ): Promise<{ data: ContactDocument[]; total: number }> {
+    return asyncDatabaseHandler("findByUser", async () => {
+      const scopedFilter: FilterQuery<ContactDocument> = {
+        ...filter,
+        userId: new Types.ObjectId(userId)
+      };
+
+      const [data, total] = await Promise.all([
+        ContactModel.find(scopedFilter)
+          .skip(options.skip)
+          .limit(options.limit)
+          .sort(options.sort)
+          .lean()
+          .exec(),
+        ContactModel.countDocuments(scopedFilter).exec()
+      ]);
+
+      return { data: data as unknown as ContactDocument[], total };
+    });
+  }
+
+  async findByIdForUser(
+    id: string,
+    userId: string
+  ): Promise<ContactDocument | null> {
+    return asyncDatabaseHandler("findByIdForUser", () =>
+      ContactModel.findOne({ _id: id, userId: new Types.ObjectId(userId) })
         .lean<ContactDocument>()
         .exec()
     );

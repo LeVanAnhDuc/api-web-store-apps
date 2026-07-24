@@ -1,7 +1,10 @@
 // libs
 import Joi from "joi";
 // types
-import type { SubmitContactBody } from "@/modules/contact-admin/types";
+import type {
+  SubmitContactBody,
+  MyContactsQuery
+} from "@/modules/contact-admin/types";
 // modules
 import {
   CONTACT_PRIORITIES,
@@ -137,3 +140,47 @@ export const adminListContactsQuerySchema = Joi.object({
     return value;
   })
   .messages({ "date.range": "validation:dateRange.invalid" });
+
+// ─── MyContacts (user, owner-scoped) ────────────────────────────────────────
+
+export const myContactsQuerySchema: Joi.ObjectSchema<MyContactsQuery> =
+  Joi.object({
+    page: Joi.number().integer().min(1).optional().messages({
+      "number.base": "validation:page.invalid",
+      "number.integer": "validation:page.invalid",
+      "number.min": "validation:page.invalid"
+    }),
+
+    limit: Joi.number()
+      .integer()
+      .min(1)
+      .max(PAGINATION.MAX_LIMIT)
+      .optional()
+      .messages({
+        "number.base": "validation:limit.invalid",
+        "number.integer": "validation:limit.invalid",
+        "number.min": "validation:limit.invalid",
+        "number.max": "validation:limit.invalid"
+      }),
+
+    status: Joi.string()
+      .valid(...STATUS_VALUES)
+      .optional()
+      .messages({ "any.only": "validation:status.invalid" }),
+
+    search: Joi.string()
+      .trim()
+      .max(SEARCH_MAX_LENGTH)
+      .optional()
+      .messages({ "string.max": "validation:search.invalid" }),
+
+    sortBy: Joi.string()
+      .valid(...ADMIN_SORT_BY_VALUES)
+      .optional()
+      .messages({ "any.only": "validation:sortBy.invalid" }),
+
+    sortOrder: Joi.string()
+      .valid(...SORT_ORDER_VALUES)
+      .optional()
+      .messages({ "any.only": "validation:sortOrder.invalid" })
+  });

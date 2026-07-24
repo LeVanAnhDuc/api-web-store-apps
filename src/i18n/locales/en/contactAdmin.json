@@ -18,6 +18,8 @@
   },
   "success": {
     "submitted": "Your request has been submitted successfully",
-    "updateContactCategory": "Category updated successfully"
+    "updateContactCategory": "Category updated successfully",
+    "getMyContacts": "Contacts retrieved successfully",
+    "getMyContactDetail": "Contact detail retrieved successfully"
   }
 }

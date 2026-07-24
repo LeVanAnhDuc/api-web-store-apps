@@ -2,6 +2,7 @@
 import type {
   SubmitContactBody,
   AdminContactsQuery,
+  MyContactsQuery,
   PaginatedResult,
   ContactStatus
 } from "./types";
@@ -126,5 +127,52 @@ export class ContactAdminService {
     }
 
     return toUpdateContactStatusDto(updated);
+  }
+
+  async getMyContacts(
+    userId: string,
+    query: MyContactsQuery
+  ): Promise<PaginatedResult<ContactListItemDto>> {
+    const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = PAGINATION;
+    const {
+      page = DEFAULT_PAGE,
+      limit: rawLimit = DEFAULT_LIMIT,
+      sortBy = "createdAt",
+      sortOrder: rawSortOrder = "desc"
+    } = query;
+
+    const limit = Math.min(rawLimit, MAX_LIMIT);
+    const skip = (page - 1) * limit;
+    const sortOrder = resolveSortDirection(rawSortOrder);
+
+    const filter = buildContactFilter(query);
+    const { data, total } = await this.contactRepo.findByUser(userId, filter, {
+      skip,
+      limit,
+      sort: { [sortBy]: sortOrder }
+    });
+
+    return {
+      items: data.map(toContactListItemDto),
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) }
+    };
+  }
+
+  async getMyContactDetail(
+    id: string,
+    userId: string
+  ): Promise<ContactDetailItemDto> {
+    const doc = await this.contactRepo.findByIdForUser(id, userId);
+
+    if (!doc) {
+      // Own vs. other-user's contact are indistinguishable to the caller —
+      // both surface as 404 CONTACT_NOT_FOUND to avoid leaking existence.
+      throw new NotFoundError({
+        i18nMessage: (t) => t("contactAdmin:errors.notFound"),
+        code: ERROR_CODES.CONTACT_NOT_FOUND
+      });
+    }
+
+    return toContactDetailItemDto(doc);
   }
 }
