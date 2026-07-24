@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { Document } from "mongoose";
+import type { Document, Types } from "mongoose";
 import type {
   CONTACT_PRIORITIES,
   CONTACT_STATUSES,
@@ -22,6 +22,7 @@ export interface ContactDocument extends Document {
   priority: ContactPriority;
   message: string;
   status: ContactStatus;
+  userId?: Types.ObjectId | null;
   createdAt: Date;
   updatedAt: Date;
 }

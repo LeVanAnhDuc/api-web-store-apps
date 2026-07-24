@@ -61,6 +61,11 @@ const ContactSchema = new Schema<ContactDocument>(
       required: [true, "Status is required"],
       enum: Object.values(CONTACT_STATUSES),
       default: CONTACT_STATUSES.NEW
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: MODEL_NAMES.USER,
+      default: null
     }
   },
   {
@@ -72,6 +77,7 @@ const ContactSchema = new Schema<ContactDocument>(
 ContactSchema.index({ status: 1 });
 ContactSchema.index({ createdAt: -1 });
 ContactSchema.index({ status: 1, createdAt: -1 });
+ContactSchema.index({ userId: 1, createdAt: -1 });
 
 const ContactModel: Model<ContactDocument> = model<ContactDocument>(
   CONTACT,
